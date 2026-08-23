@@ -63,8 +63,11 @@ gh repo create ai-paper-study --public --source=. --remote=origin --push
 ### 3. 开启 Pages 部署（约 30 秒）
 
 浏览器打开 `https://github.com/<你的用户名>/ai-paper-study/settings/pages`：
-- **Source** 选择 **`GitHub Actions`**（不是 Deploy from a branch！）
-- 工作流文件 `.github/workflows/pages.yml` 已备好，推送后会自动触发部署
+- **Source** 选择 **`Deploy from a branch`**
+- **Branch** 选 `main` · 目录选 `/ (root)`
+- 保存后首次构建约 1 分钟（仓库已含 `.nojekyll`，跳过 Jekyll 直接发布）
+
+> 也可以用一条 API 命令开启：`gh api -X POST repos/<用户>/ai-paper-study/pages -f "source[branch]=main" -f "source[path]=/"`
 
 ### 4. 访问网站
 
@@ -77,7 +80,7 @@ gh repo create ai-paper-study --public --source=. --remote=origin --push
 | 每日 09:30 / 14:30 | crontab 自动运行 `tools/site-update.sh` |
 | 重建索引 | 脚本先执行 `tools/build.py`，有新文章才有变更 |
 | 提交推送 | 有变更才 commit + push（确定性构建，无文章时自动跳过） |
-| 自动部署 | GitHub Actions 检测到 push 即重新部署 Pages（约 1 分钟） |
+| 自动部署 | GitHub Pages 检测到 `main` 分支 push 即重新部署（约 1 分钟） |
 
 查看更新日志：`tools/logs/site-update.log`；手动更新一次：`bash tools/site-update.sh`。
 
@@ -90,7 +93,7 @@ gh repo create ai-paper-study --public --source=. --remote=origin --push
 ### 常见问题
 
 - **push 失败 / 401**：重新 `gh auth login` + `gh auth setup-git`
-- **部署后页面空白**：确认 Pages Source 选了 **GitHub Actions**，并在 Actions 页看部署日志
+- **推送被拒（workflow scope）**：本仓库采用分支部署，不含 `.github/workflows/`，故不需要 workflow 权限
+- **部署后页面空白 / 404**：确认 Pages Source 选了 **Deploy from a branch**（main · root），并等首次构建状态变为 `built`
+- **构建卡住**：仓库根目录的 `.nojekyll` 已解决（跳过 Jekyll 处理），请勿删除
 - **想换平台**（Cloudflare Pages / Netlify / Vercel）：它们都支持"连接 GitHub 仓库自动部署"，把仓库公开后按平台向导接入即可，无需改代码
-
-Sun Aug 23 14:38:56 CST 2026
