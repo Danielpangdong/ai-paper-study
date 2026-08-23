@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 每日论文解读 · 2026-06-04 ｜ OpenAI 推翻 Erdős 单位距离猜想</title>
+<script>
+  MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+  :root {
+    --bg: #0f172a;
+    --bg-soft: #1e293b;
+    --card: #ffffff;
+    --ink: #0f172a;
+    --ink-soft: #475569;
+    --accent: #2563eb;
+    --accent-2: #7c3aed;
+    --accent-3: #059669;
+    --warn: #d97706;
+    --danger: #dc2626;
+    --border: #e2e8f0;
+    --code-bg: #f1f5f9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", Roboto, sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%);
+    color: var(--ink);
+    line-height: 1.75;
+  }
+  .hero {
+    color: #fff;
+    padding: 60px 24px 80px;
+    text-align: center;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .hero .tag {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  .hero h1 {
+    font-size: 38px;
+    margin: 18px 0 12px;
+    line-height: 1.3;
+  }
+  .hero .sub {
+    color: #cbd5e1;
+    font-size: 16px;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 24px;
+  }
+  .meta-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #e2e8f0;
+  }
+  .container {
+    max-width: 1100px;
+    margin: -40px auto 60px;
+    padding: 0 20px;
+  }
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px -20px rgba(15,23,42,0.45);
+    padding: 32px 36px;
+    margin-bottom: 24px;
+  }
+  .card h2 {
+    font-size: 24px;
+    margin: 0 0 6px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h2::before {
+    content: "";
+    width: 6px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    border-radius: 3px;
+  }
+  .card h3 {
+    font-size: 18px;
+    color: var(--ink);
+    margin: 22px 0 6px;
+  }
+  .card p {
+    color: var(--ink-soft);
+    margin: 10px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 18px 0 6px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 18px 0 6px;
+  }
+  .stat {
+    background: linear-gradient(180deg, #f8fafc, #f1f5f9);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .stat .k {
+    color: var(--accent);
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .stat .l {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+  .timeline {
+    position: relative;
+    margin: 16px 0 0;
+    padding-left: 26px;
+    border-left: 2px dashed #cbd5e1;
+  }
+  .timeline .item {
+    position: relative;
+    margin-bottom: 18px;
+  }
+  .timeline .item::before {
+    content: "";
+    position: absolute;
+    left: -33px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px rgba(37,99,235,0.15);
+  }
+  .timeline .yr {
+    font-weight: 700;
+    color: var(--accent-2);
+    margin-right: 8px;
+  }
+  .quote {
+    border-left: 4px solid var(--accent);
+    background: #f8fafc;
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 14px 0;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .quote .who {
+    display: block;
+    margin-top: 8px;
+    font-style: normal;
+    color: var(--accent-2);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .formula {
+    background: var(--code-bg);
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 16px;
+    overflow-x: auto;
+    margin: 12px 0;
+    border: 1px solid var(--border);
+  }
+  table.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 14px;
+  }
+  table.compare th, table.compare td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: top;
+  }
+  table.compare th {
+    background: #f1f5f9;
+    color: var(--ink);
+    font-weight: 600;
+  }
+  table.compare tr:last-child td { border-bottom: none; }
+  .badge {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .b-high { background: #dcfce7; color: #166534; }
+  .b-med  { background: #fef3c7; color: #92400e; }
+  .b-low  { background: #fee2e2; color: #991b1b; }
+  .b-info { background: #dbeafe; color: #1e40af; }
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin: 18px 0;
+  }
+  .flow .step {
+    background: linear-gradient(180deg, #eef2ff, #ffffff);
+    border: 1px solid #c7d2fe;
+    border-radius: 12px;
+    padding: 14px;
+    position: relative;
+  }
+  .flow .step .n {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .flow .step h4 { margin: 0 0 6px; font-size: 14px; color: var(--ink); }
+  .flow .step p { margin: 0; font-size: 12.5px; color: var(--ink-soft); }
+  .conf {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 6px;
+  }
+  .conf.high { background: #dcfce7; color: #166534; }
+  .conf.med  { background: #fef3c7; color: #92400e; }
+  .conf.low  { background: #fee2e2; color: #991b1b; }
+  .conf.unknown { background: #e5e7eb; color: #374151; }
+  ul.tight li { margin: 6px 0; color: var(--ink-soft); }
+  .footer {
+    color: #cbd5e1;
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+  }
+  .footer a { color: #93c5fd; text-decoration: none; }
+  @media (max-width: 760px) {
+    .grid-3, .flow { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 26px; }
+    .card { padding: 22px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="tag">AI 每日论文解读 · 2026 / 06 / 04</span>
+  <h1>AI 自主推翻 80 年未解几何猜想<br/>OpenAI 通用推理模型反证 Erdős 单位距离猜想</h1>
+  <p class="sub">这是首次有 AI 系统在完全自主的情况下，解决离散几何主流子领域中的核心公开问题——而且用的是来自代数数论的"出乎意料"的工具。</p>
+  <div class="meta-row">
+    <span class="meta-pill">来源：OpenAI 官方研究博客</span>
+    <span class="meta-pill">配套论文：arXiv:2605.20695（数学家联合署名）</span>
+    <span class="meta-pill">发布日期：2026-05-20</span>
+    <span class="meta-pill">研究领域：组合几何 × 代数数论 × AI 推理</span>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- 速览 -->
+  <section class="card">
+    <h2>一图速览 · 这件事为什么重要</h2>
+    <div class="grid-3">
+      <div class="stat">
+        <div class="k">80 年</div>
+        <div class="l">Paul Erdős 1946 年提出，长期被认为最优构造是"方格点阵"</div>
+      </div>
+      <div class="stat">
+        <div class="k">$n^{1+\delta}$</div>
+        <div class="l">AI 构造给出多项式量级超越；Sawin 后续把 $\delta$ 显式做到 0.014</div>
+      </div>
+      <div class="stat">
+        <div class="k">9 位数学家</div>
+        <div class="l">Alon、Gowers（菲尔兹奖得主）等联合验证并撰写配套论文</div>
+      </div>
+    </div>
+    <p>结论一句话：一个 <b>未经数学专项训练</b> 的通用推理模型，自主提出并完成了一份能直接发表在顶刊水准的反例构造。Tim Gowers 直言"如果是人写的，我会毫不犹豫推荐《Annals of Mathematics》接收"。<span class="conf high">高置信</span></p>
+  </section>
+
+  <!-- 问题是什么 -->
+  <section class="card">
+    <h2>1. 这个 80 年老问题到底问什么</h2>
+    <p>平面单位距离问题（Planar Unit Distance Problem）问题陈述简单到不可思议：</p>
+    <div class="formula">
+      在平面上任意放 $n$ 个点，距离恰好为 1 的"点对"数量，最多能有多少？记最大值为 $u(n)$。
+    </div>
+
+    <h3>已知的上下界与"主流信念"</h3>
+    <table class="compare">
+      <thead>
+        <tr><th>构造 / 界</th><th>结果</th><th>提出者 / 年份</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>一条直线放 n 个点</td><td>$n-1$ 对（线性下界）</td><td>平凡构造</td></tr>
+        <tr><td>方格点阵</td><td>约 $2n$ 对</td><td>初级构造</td></tr>
+        <tr><td>"再缩放的方格点阵"</td><td>$n^{1 + C/\log\log n}$</td><td>Erdős 1946，长期最佳下界</td></tr>
+        <tr><td>已知最佳上界</td><td>$O(n^{4/3})$</td><td>Spencer–Szemerédi–Trotter, 1984</td></tr>
+        <tr><td>Erdős 猜想（被推翻者）</td><td>真值应为 $n^{1+o(1)}$</td><td>Erdős 本人长期推崇的猜想</td></tr>
+      </tbody>
+    </table>
+
+    <p>"再缩放方格"已经能比 $n$ 多一点点，但因为 $\log\log n$ 增长极慢，$C/\log\log n$ 终究趋于 0，因此被认为"几乎线性"。<b>这就是被广泛相信、却被本次结果推翻的猜想：上界应该是 $n^{1+o(1)}$ 形式</b>。</p>
+
+    <div class="quote">
+      "这是 Erdős 最喜欢的问题之一，每个搞组合几何的人都想过它，很多搞别的方向的人也至少花过点时间想它。"
+      <span class="who">— Noga Alon（普林斯顿组合学家）</span>
+    </div>
+  </section>
+
+  <!-- AI做了什么 -->
+  <section class="card">
+    <h2>2. AI 这次做了什么（与"以前的 AI 数学"区别在哪）</h2>
+    <p>OpenAI 给出的核心叙述有几个关键点，每一点都对应一个常见质疑：</p>
+
+    <table class="compare">
+      <thead>
+        <tr><th>关注点</th><th>本次工作</th><th>关键意义</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>是否针对该问题训练？</td>
+          <td><b>否</b>。是一个"通用推理模型"，在一批 Erdős 类问题上被一并评测时偶然解决</td>
+          <td>说明能力是<b>通用的</b>，不是题库记忆/特调</td>
+        </tr>
+        <tr>
+          <td>是否依赖外部搜索框架？</td>
+          <td><b>否</b>。没有 AlphaProof 式的搜索脚手架，也没有手工证明策略</td>
+          <td>这是<b>端到端思维链</b>层面的推理胜利</td>
+        </tr>
+        <tr>
+          <td>结论形式</td>
+          <td>构造一族无穷多 $n$，使点对数达到 $n^{1+\delta}$，$\delta>0$ 固定</td>
+          <td>多项式量级超越方格构造，<b>定性推翻</b>主流信念</td>
+        </tr>
+        <tr>
+          <td>$\delta$ 的具体数值</td>
+          <td>原始 AI 证明未给显式值；Princeton 教授 <b>Will Sawin</b> 后续精化到 $\delta = 0.014$</td>
+          <td>体现"AI 出原始想法，人类做精修"的协作范式</td>
+        </tr>
+        <tr>
+          <td>是否被独立验证</td>
+          <td>Alon、Bloom、Gowers、Litt、Sawin、Shankar、Tsimerman、Wang、Wood 9 位数学家联合写了 19 页"消化版"配套论文 arXiv:2605.20695</td>
+          <td><b>外部同行验证已完成</b>，非自吹</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="quote">
+      "模型的思维链非常有趣——绝大多数推理都在试图<b>构造反例</b>，而不是去证明那个被广泛相信的上界。这说明模型有不错的直觉、愿意去试社区认为是 long-shot 的路径、并且偏好动手构造。"
+      <span class="who">— Arul Shankar（数论学家）</span>
+    </div>
+  </section>
+
+  <!-- 证明思路 -->
+  <section class="card">
+    <h2>3. 证明思路（科普版）：从高斯整数到无穷类域塔</h2>
+    <p>整篇构造的灵魂是一条"借力代数数论"的链条。下面尽量用直觉语言把四个台阶讲清楚。</p>
+
+    <div class="flow">
+      <div class="step">
+        <div class="n">1</div>
+        <h4>把"距离 1 的点对"翻译成代数</h4>
+        <p>Erdős 原始构造其实是基于<b>高斯整数</b> $a+bi$：很多差值的模长可以恰好相等，因此造出大量等距点对。</p>
+      </div>
+      <div class="step">
+        <div class="n">2</div>
+        <h4>换用更复杂的数域</h4>
+        <p>把"高斯整数"升级为更一般的<b>代数数域</b>，它们的乘法/加法结构能制造出更多"长度恰为 1"的差值。</p>
+      </div>
+      <div class="step">
+        <div class="n">3</div>
+        <h4>调用 Golod–Shafarevich 与无穷类域塔</h4>
+        <p>关键困难是：所需的"足够好的"数域真的存在吗？这里用到 1960s 的 <b>Golod–Shafarevich 定理</b>以及 <b>Hajir–Maire–Ramakrishna</b> 等关于<b>无穷类域塔</b>的工作来保证存在性。</p>
+      </div>
+      <div class="step">
+        <div class="n">4</div>
+        <h4>把数论结构投回平面</h4>
+        <p>将这些数域中"丰富的等模差"几何化为平面点集，导出 $n^{1+\delta}$ 量级的单位距离对。</p>
+      </div>
+    </div>
+
+    <p>arXiv:2605.20695 的摘要把谱系归得很干脆：本质上是 <b>Ellenberg–Venkatesh</b>、<b>Golod–Shafarevich</b>、<b>Hajir–Maire–Ramakrishna</b> 三股思想在新背景下的组合。这些工具早就存在，但<b>把它们用到平面单位距离</b>是出乎所有人意料的连线——这恰是这次工作最"原创"的部分。<span class="conf high">高置信</span></p>
+
+    <div class="quote">
+      "毋庸置疑，这是 AI 数学的里程碑：如果是人写的、投到 Annals of Mathematics，让我给个 quick opinion，我会毫不犹豫推荐接收。之前没有任何 AI 生成的证明接近这个水准。"
+      <span class="who">— Tim Gowers（菲尔兹奖得主）</span>
+    </div>
+  </section>
+
+  <!-- 时间线 -->
+  <section class="card">
+    <h2>4. 80 年时间线：从 Erdős 到 AI</h2>
+    <div class="timeline">
+      <div class="item"><span class="yr">1946</span> Erdős 提出单位距离问题，并给出 $n^{1+C/\log\log n}$ 下界；他本人为问题悬赏。</div>
+      <div class="item"><span class="yr">1984</span> Spencer、Szemerédi、Trotter 证得上界 $O(n^{4/3})$，此后多年未被显著改进。</div>
+      <div class="item"><span class="yr">2005</span> Brass-Moser-Pach 在《Research Problems in Discrete Geometry》称其为"可能是组合几何中最知名、也最易陈述的问题"。</div>
+      <div class="item"><span class="yr">~2010s</span> Matoušek、Alon–Bucić–Sauermann 在"非欧距离"版本上得到支持猜想的结果，强化主流信念。</div>
+      <div class="item"><span class="yr">2026-05-20</span> OpenAI 公布：一个内部通用推理模型自主给出反例构造；9 位数学家联合发布 arXiv:2605.20695 验证版。</div>
+      <div class="item"><span class="yr">2026-05 后</span> Will Sawin 把指数显式精化到 $\delta = 0.014$。</div>
+    </div>
+  </section>
+
+  <!-- 反驳与边界 -->
+  <section class="card">
+    <h2>5. 在欢呼之前：最强反驳与边界</h2>
+    <p>按用户偏好，先把"最锋利的反对意见"摆出来：</p>
+    <ul class="tight">
+      <li><span class="badge b-med">反驳 1</span><b>"这是个被精心策划的展示"</b>：模型是在 OpenAI 内部对一批 Erdős 问题做评测时解决的，外界看不到原始失败率、prompt、推理预算。OpenAI 自称展示了"不同 test-time compute 下的成功率曲线"，但未公开数值。<span class="conf med">中置信：这是合理但属实的方法论保留</span></li>
+      <li><span class="badge b-med">反驳 2</span><b>"它只解决了一个问题"</b>：从一个特例不能外推到"AI 能做前沿数学"。这正是 Bloom 在配套论文中所说的"前沿是高度尖刺状的"。<span class="conf high">高置信</span></li>
+      <li><span class="badge b-low">反驳 3</span><b>"用的工具是现成的"</b>：Golod–Shafarevich、Hajir–Maire–Ramakrishna 都是已知工具。<b>但</b>真正难的部分是"看到它们能用在这"——而这正是结果被称为里程碑的原因。<span class="conf high">高置信</span></li>
+      <li><span class="badge b-low">反驳 4</span><b>"$\delta$ 很小"</b>：$\delta = 0.014$ 在数量级上离 $4/3$ 还远。下一步真正的目标是缩小 $u(n)$ 上下界之间的鸿沟。<span class="conf high">事实陈述</span></li>
+      <li><span class="badge b-info">值得注意</span> 这个证明<b>不能</b>简单复用到三维或更高维单位距离问题，也<b>不直接</b>蕴含 Erdős distinct-distance（不同距离数）问题的进展——后者已在 2015 年由 Guth–Katz 几乎完全解决。</li>
+    </ul>
+
+    <h3>事实 / 推断 / 观点 分层</h3>
+    <table class="compare">
+      <thead><tr><th>陈述</th><th>类别</th><th>置信度</th></tr></thead>
+      <tbody>
+        <tr><td>AI 给出了一族构造，无穷多 $n$ 达到 $n^{1+\delta}$，$\delta>0$ 固定</td><td>事实（已被独立数学家验证）</td><td><span class="conf high">高</span></td></tr>
+        <tr><td>$\delta = 0.014$ 是 Sawin 的精化结果</td><td>事实（OpenAI 公告明示）</td><td><span class="conf high">高</span></td></tr>
+        <tr><td>这是首次 AI 自主解决某子领域核心公开问题</td><td>推断（取决于"核心"和"自主"定义）</td><td><span class="conf med">中</span></td></tr>
+        <tr><td>"AI 已不止是数学家的助手，而能产生原创想法"</td><td>观点（Shankar 个人评论）</td><td><span class="conf med">中</span></td></tr>
+        <tr><td>"未来几个月会有更多类似突破"</td><td>预测（Bloom 评论）</td><td><span class="conf low">低</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 启示 -->
+  <section class="card">
+    <h2>6. 给从业者的可执行启示</h2>
+    <div class="grid-2">
+      <div class="stat">
+        <div class="k">AI 研究者</div>
+        <div class="l" style="margin-top:8px; color: var(--ink);">
+          可视化研究信号：长链推理 + 跨域知识连接成为新的能力维度评测点；指标光看 MATH/AIME 不再够用——应增加"开放数学问题"与"罕见连接"类基准。
+        </div>
+      </div>
+      <div class="stat">
+        <div class="k">数学家</div>
+        <div class="l" style="margin-top:8px; color: var(--ink);">
+          可执行动作：用现成的代数数论工具（Golod–Shafarevich、无穷类域塔）去扫描其它离散几何/极值组合开放问题——AI 用得上，人手也用得上。
+        </div>
+      </div>
+      <div class="stat">
+        <div class="k">产品/工程</div>
+        <div class="l" style="margin-top:8px; color: var(--ink);">
+          通用推理模型 + 大量"test-time compute"已经能换来真实科研产出。意味着"代理人 + 思维链 + 验证器"的产品形态会持续扩张到更专业的科研工作流。
+        </div>
+      </div>
+      <div class="stat">
+        <div class="k">政策 / 安全</div>
+        <div class="l" style="margin-top:8px; color: var(--ink);">
+          OpenAI 在公告末尾自己点出："AI 即将进入科研创造环节，包括 AI 研究自身"。对齐与可解释性的紧迫性随之上升。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 资料源 -->
+  <section class="card">
+    <h2>资料来源（仅英文原始资料）</h2>
+    <ul class="tight">
+      <li>OpenAI 官方公告：<a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/" target="_blank">An OpenAI model has disproved a central conjecture in discrete geometry</a>（2026-05-20）</li>
+      <li>原始证明 PDF：<a href="https://cdn.openai.com/pdf/74c24085-19b0-4534-9c90-465b8e29ad73/unit-distance-proof.pdf" target="_blank">unit-distance-proof.pdf</a></li>
+      <li>数学家配套论文：<a href="https://arxiv.org/abs/2605.20695" target="_blank">arXiv:2605.20695 — Remarks on the disproof of the unit distance conjecture</a>（Alon, Bloom, Gowers, Litt, Sawin, Shankar, Tsimerman, Wang, Wood）</li>
+      <li>模型思维链摘要：<a href="https://cdn.openai.com/pdf/1625eff6-5ac1-40d8-b1db-5d5cf925de8b/unit-distance-cot.pdf" target="_blank">unit-distance-cot.pdf</a></li>
+      <li>背景历史：Spencer-Szemerédi-Trotter (1984), Brass-Moser-Pach (2005)</li>
+    </ul>
+    <p style="font-size:12px; color: var(--ink-soft); margin-top: 12px;">
+      ⚠️ 免责：本页面为自动化每日解读，所有事实、量化结果、引用均来自上述英文原始资料；含模型可能误解的成分时，请以原始 PDF 与 arXiv 论文为准。
+    </p>
+  </section>
+
+</main>
+
+<footer class="footer">
+  自动生成 · 2026-06-04 · 数据严格基于官方与权威英文来源
+</footer>
+
+</body>
+</html>

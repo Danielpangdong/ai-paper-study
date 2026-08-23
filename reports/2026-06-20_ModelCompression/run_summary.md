@@ -1,0 +1,25 @@
+# 2026-06-20 AI Concept Run Summary
+
+- Run time: 2026-06-20 08:11:45 CST / 2026-06-20T08:11:45+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `模型压缩（Model Compression）`.
+- Rationale: the previous two concept runs covered `模型量化（Quantization）` and `推测解码（Speculative Decoding）`; today's concept continues the inference-cost and deployment learning path by explaining the broader idea of making models smaller, faster, cheaper, and still reliable.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/2026-06-20_模型压缩（Model Compression）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/2026-06-20_模型压缩（Model Compression）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/chatgpt_model_compression_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/chatgpt_model_compression_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-20_ModelCompression/email_body.txt`
+- Visuals: generated with ChatGPT Image 2.0 under `/Users/mac/.codex/generated_images/019ee254-f0db-71d2-9bea-c59da22d7572/`; selected the suitcase analogy and workflow infographic variants and copied them into the report directory.
+- Verification:
+  - `python3 reports/2026-06-20_ModelCompression/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 10 A4 pages and a 5,083,748 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed two inline base64 image data URIs.
+  - PDF pages rendered to `rendered/page-*.png`; cover, first section, analogy figure, workflow figure, terminology table, misconceptions, summary, and quiz pages were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ee25e3d1c516e6`.
+- Continuity note: avoid repeating `模型压缩`, `推测解码`, and `模型量化` soon. Strong next candidates for the learning path: `边缘AI（Edge AI）`, `批处理与吞吐量（Batching and Throughput）`, `推理路由（Inference Routing）`, or `AI芯片（AI Chips）`.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

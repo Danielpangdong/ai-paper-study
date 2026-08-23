@@ -1,0 +1,22 @@
+# 2026-06-17 AI Concept Run Summary
+
+- Run time: 2026-06-17 08:11:29 CST / 2026-06-17T08:11:29+0800.
+- Automation ID: `ai-pdf`.
+- Selected concept: `AI工具使用（Tool Use）`.
+- Rationale: recent concept reports covered `提示词工程（Prompt Engineering）`, `AI工作流（AI Workflow）`, `多Agent系统（Multi-Agent System）`, and `AI记忆（AI Memory）`; `AI工具使用` is the next practical foundation because it explains how AI applications move from natural-language advice into safe, inspectable external actions.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/2026-06-17_AI工具使用（Tool Use）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/2026-06-17_AI工具使用（Tool Use）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/chatgpt_tool_use_overview.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/chatgpt_tool_use_loop.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-17_ToolUse/email_body.txt`
+- Visuals: generated ChatGPT Image 2.0 diagrams under `/Users/mac/.codex/generated_images/019ed2e2-d942-7933-ac07-137a7924dce3/` and copied two selected Chinese infographics into the report directory. One unrelated generated logistics scene under `/Users/mac/.codex/generated_images/019ed2e2-d950-7802-9580-307ec7f8c6ee/` was inspected and not used.
+- Verification:
+  - `python3 reports/2026-06-17_ToolUse/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 9 A4 pages and a ~3.7 MB PDF.
+  - `pdftotext` confirmed readable Chinese text and all required section headings.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed required sections and both image references are present.
+  - PDF pages were rendered to `rendered/page-*.png`; cover, figure pages, working-principle cards, and final review page were spot-checked.
+- Delivery: Gmail sent successfully with the PDF attachment to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ed2eaf82cba7e6`.

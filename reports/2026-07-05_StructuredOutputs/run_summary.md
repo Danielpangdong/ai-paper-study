@@ -1,0 +1,29 @@
+# Run Summary
+
+- Run time: 2026-07-05 08:11:53 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: Structured Outputs（结构化输出）
+- Rationale: continue the knowledge path after RAG. RAG explains how AI gets evidence before answering; Structured Outputs explains how an AI answer becomes reliable data that business systems, tools, APIs, and Agent workflows can consume.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-05_StructuredOutputs/2026-07-05_StructuredOutputs（结构化输出）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-05_StructuredOutputs/2026-07-05_StructuredOutputs（结构化输出）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-05_StructuredOutputs/assets/structured_outputs_form.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-05_StructuredOutputs/assets/structured_outputs_pipeline.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-05_StructuredOutputs/html_preview.png`
+- Validation proof:
+  - HTML parsed successfully, required sections present, automatic TOC has 8 links, no `<script>` tags.
+  - PDF is 11 A4 pages, unencrypted, Chromium generated, size 3.99 MB.
+  - `pdftotext` found required headings and terms: `Structured Outputs`, `为什么这个概念重要`, `一个直观类比`, `JSON Schema`, `常见误区`, `复习问题`.
+  - `pdfimages -list` found two embedded 1672x941 generated diagrams.
+  - Six source URLs returned HTTP 200.
+- Delivery proof:
+  - Gmail send id: `19f2f9dabe9ef7df`
+  - Sent search: `in:sent subject:"Structured Outputs" has:attachment newer_than:1d` returned `19f2f9dabe9ef7df`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject, body, and attached PDF `2026-07-05_StructuredOutputs（结构化输出）.pdf`.
+- Sources:
+  - OpenAI Platform Docs: Structured Outputs
+  - OpenAI Platform Docs: Function Calling
+  - JSON Schema: Creating your first schema
+  - JSON Schema: What is JSON Schema
+  - Anthropic: Define tools
+  - Anthropic: Tool use with Claude

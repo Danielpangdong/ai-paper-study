@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI每日论文精选 | Macaron-A2UI：当 Agent 不再只会打字</title>
+  <style>
+    :root {
+      --ink:#101828;
+      --muted:#667085;
+      --line:#d0d5dd;
+      --soft:#f6f8fb;
+      --card:#ffffff;
+      --blue:#1d4ed8;
+      --cyan:#0891b2;
+      --green:#047857;
+      --amber:#b45309;
+      --red:#b42318;
+      --violet:#6d28d9;
+      --slate:#344054;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      color:var(--ink);
+      background:#edf1f6;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      line-height:1.72;
+    }
+    .page { max-width:980px; margin:0 auto; background:#fff; }
+    header {
+      padding:42px 28px 30px;
+      color:#fff;
+      background:
+        linear-gradient(135deg, rgba(16,24,40,.96), rgba(15,76,117,.90)),
+        radial-gradient(circle at 82% 16%, rgba(20,184,166,.42), transparent 36%);
+    }
+    .kicker { margin:0 0 14px; color:#bae6fd; font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(28px,5vw,48px); line-height:1.12; letter-spacing:0; }
+    .subtitle { margin:18px 0 0; max-width:780px; color:#e0f2fe; font-size:18px; }
+    .meta-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:28px; }
+    .meta { border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); border-radius:8px; padding:12px 14px; }
+    .meta b { display:block; color:#bae6fd; font-size:12px; margin-bottom:4px; }
+    .meta span,.meta a { color:#fff; font-size:14px; word-break:break-word; }
+    a { color:var(--blue); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    main { padding:30px 28px 52px; }
+    section { padding:24px 0; border-bottom:1px solid var(--line); }
+    section:last-child { border-bottom:0; }
+    h2 { margin:0 0 16px; font-size:25px; line-height:1.25; letter-spacing:0; }
+    h3 { margin:18px 0 8px; font-size:18px; }
+    p { margin:0 0 14px; }
+    .lead { font-size:18px; color:#263447; }
+    .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:18px 0; }
+    .card { border:1px solid var(--line); border-radius:8px; background:var(--card); padding:16px; }
+    .card b { display:block; margin-bottom:8px; }
+    .card p { color:var(--muted); font-size:14px; margin:0; }
+    .quote { margin:18px 0; border-left:4px solid var(--cyan); background:#ecfeff; padding:16px 18px; font-size:20px; line-height:1.55; font-weight:700; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; border:1px solid var(--line); font-size:14px; }
+    th,td { padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { text-align:left; background:#f2f4f7; color:#243044; }
+    tr:last-child td { border-bottom:0; }
+    .tag { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; background:#e0f2fe; color:#075985; margin:0 6px 6px 0; }
+    .figure { margin:18px 0; border:1px solid var(--line); border-radius:8px; background:#fbfdff; padding:14px; overflow-x:auto; }
+    .caption { color:var(--muted); font-size:13px; margin-top:8px; }
+    svg { max-width:100%; height:auto; display:block; }
+    .note { border:1px solid #fed7aa; border-radius:8px; background:#fff7ed; padding:14px 16px; color:#7c2d12; }
+    .risk { border:1px solid #fecaca; border-radius:8px; background:#fef2f2; padding:14px 16px; color:#7f1d1d; }
+    .source-list li { margin-bottom:8px; }
+    @media (max-width:760px) {
+      header,main { padding-left:18px; padding-right:18px; }
+      .meta-grid,.cards { grid-template-columns:1fr; }
+      table { font-size:13px; }
+      th,td { padding:9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <p class="kicker">AI每日论文精选 · 2026-05-28</p>
+      <h1>Macaron-A2UI：当 Agent 不再只会打字</h1>
+      <p class="subtitle">这篇论文值得读，因为它把个人 Agent 的下一代界面说清楚了：未来的 AI 不是只回一大段文字，而是能在安全协议里生成按钮、卡片、选择器和确认流程。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文标题</b><span>Macaron-A2UI: A Model for Generative UI in Personal Agents</span></div>
+        <div class="meta"><b>中文标题</b><span>Macaron-A2UI：面向个人 Agent 的生成式界面模型</span></div>
+        <div class="meta"><b>作者</b><span>Fancy Kong, Congjie Zheng, Murphy Zhuang, Rio Yang, Sueky Zhang, Hao Fu, Gene Jin, Song Cao, Kaijie Chen, Andrew Chen, Pony Ma</span></div>
+        <div class="meta"><b>机构</b><span>Mind Lab</span></div>
+        <div class="meta"><b>发布时间与平台</b><span>arXiv:2605.24830；2026-05-24 提交；cs.HC；Hugging Face Daily Papers</span></div>
+        <div class="meta"><b>链接</b><a href="https://arxiv.org/abs/2605.24830">arXiv</a><span> · </span><a href="https://macaron.im/mindlab/research/macaron-a2ui-generative-ui-personal-agent">官方博客</a><span> · </span><a href="https://huggingface.co/papers/2605.24830">Hugging Face</a></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>1. 为什么今天选它？</h2>
+        <p class="lead">因为“聊天框”正在成为 Agent 的天花板。很多任务不是需要 AI 继续写字，而是需要 AI 帮你收集信息、比较选项、确认决定、推进下一步。</p>
+        <div class="cards">
+          <div class="card"><b>行业意义</b><p>它把 Agent 的输出从文本扩展到可验证 UI 动作，直接指向下一代个人助理、消费应用和企业工作台。</p></div>
+          <div class="card"><b>技术突破</b><p>论文构建了 A2UI 训练语料、A2UI-Bench，并用 LoRA SFT + GRPO 让模型学会“何时生成 UI、生成什么 UI、如何合法生成”。</p></div>
+          <div class="card"><b>长期价值</b><p>如果 Agent 真要进入生产力软件，界面生成能力可能像工具调用一样成为基础能力，而不是前端彩蛋。</p></div>
+        </div>
+        <p>我没有选择它是因为“最新”，而是因为它回答了一个更底层的问题：当 AI 从聊天机器人变成个人 Agent，交互界面应该如何变化？Macaron-A2UI 给出的答案不是让模型随便写 HTML，而是让模型输出一种受控、可校验、可渲染的界面语言。</p>
+        <p>这也避开了近期已选主题：SkillOpt 的 Agent 技能自进化、Cola DLM 的扩散语言模型、VPO 的测试时搜索强化学习、RTPurbo 的长上下文稀疏推理。</p>
+      </section>
+
+      <section id="one-line">
+        <h2>2. 一句话讲透论文</h2>
+        <div class="quote">Macaron-A2UI 本质上是在训练 AI：别只当“会写字的客服”，要学会在合适的时候变出一张安全、可点、可确认的小界面。</div>
+        <p>最简单的类比：普通聊天机器人像服务员站在你旁边一直问问题；Macaron-A2UI 像服务员递给你一张清楚的点菜单，有价格、口味、人数、地址和确认按钮。你不需要来回打字，它也不需要把所有信息塞进长段落。</p>
+      </section>
+
+      <section id="contribution">
+        <h2>3. 核心贡献拆解</h2>
+        <table>
+          <thead><tr><th>贡献</th><th>论文做了什么</th><th>白话理解</th><th>为什么重要</th></tr></thead>
+          <tbody>
+            <tr><td>问题定义</td><td>把 Generative UI 定义为“自然语言 + 可执行 A2UI 动作”的统一输出。</td><td>AI 回答你，同时告诉 App 该显示什么控件。</td><td>这让 UI 生成从演示效果变成可训练、可评测的问题。</td></tr>
+            <tr><td>数据集</td><td>从 MultiWOZ、SGD、ESConv、AnnoMI 构造 14,245 个 assistant-turn 样本。</td><td>把订餐、服务、心理支持、访谈等对话变成“该不该出现界面”的训练题。</td><td>模型不是只学格式，而是在不同场景里学“什么时候界面比文字更好”。</td></tr>
+            <tr><td>评测</td><td>提出 300 任务的 A2UI-Bench，覆盖 atomic、depth、width 三类任务。</td><td>不仅考会不会生成按钮，还考多轮是否连贯、复杂请求是否组织清楚。</td><td>避免模型只会做单轮表单，却不会处理真实对话。</td></tr>
+            <tr><td>训练方法</td><td>LoRA SFT 先教格式，GRPO 再用奖励提升交互质量。</td><td>先学会写合格菜单，再学会写好用菜单。</td><td>论文显示仅靠长 schema 提示不是唯一道路，能力可以内化到模型里。</td></tr>
+            <tr><td>开源产物</td><td>发布模型、benchmark 和评测协议，Hugging Face 上有 Tall/Grande/Venti 模型条目。</td><td>不是只报数字，也给社区可检查的东西。</td><td>方便后续研究比较、复现和做产品实验。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mechanism">
+        <h2>4. 工作原理：从“说话”到“递表单”</h2>
+        <p>论文里的核心流程可以拆成三层：先把真实对话改造成 UI 训练样本，再训练模型输出统一 JSON，最后用评测器同时检查协议、任务和用户体验。</p>
+        <div class="figure">
+          <svg viewBox="0 0 930 360" role="img" aria-label="Macaron-A2UI 工作流程图">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d4ed8"/>
+              </marker>
+              <style>
+                .box{fill:#fff;stroke:#cbd5e1;stroke-width:2}
+                .blue{fill:#eff6ff;stroke:#60a5fa}
+                .cyan{fill:#ecfeff;stroke:#22d3ee}
+                .green{fill:#ecfdf5;stroke:#34d399}
+                .amber{fill:#fffbeb;stroke:#f59e0b}
+                .violet{fill:#f5f3ff;stroke:#a78bfa}
+                .t{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+                .s{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#475569}
+                .arrow{stroke:#1d4ed8;stroke-width:3;fill:none;marker-end:url(#arrow)}
+              </style>
+            </defs>
+            <rect x="24" y="46" width="168" height="88" rx="12" class="box blue"/>
+            <text x="52" y="80" class="t">原始对话</text>
+            <text x="42" y="108" class="s">订餐/客服/咨询/访谈</text>
+            <rect x="238" y="46" width="168" height="88" rx="12" class="box cyan"/>
+            <text x="270" y="80" class="t">A2UI 标注</text>
+            <text x="256" y="108" class="s">判断该不该出界面</text>
+            <rect x="452" y="46" width="168" height="88" rx="12" class="box amber"/>
+            <text x="494" y="80" class="t">SFT</text>
+            <text x="472" y="108" class="s">学会格式和基本映射</text>
+            <rect x="666" y="46" width="168" height="88" rx="12" class="box green"/>
+            <text x="710" y="80" class="t">GRPO</text>
+            <text x="686" y="108" class="s">奖励好用、合法、少负担</text>
+            <rect x="238" y="224" width="168" height="88" rx="12" class="box violet"/>
+            <text x="278" y="258" class="t">统一输出</text>
+            <text x="256" y="286" class="s">text_response + a2ui</text>
+            <rect x="452" y="224" width="168" height="88" rx="12" class="box blue"/>
+            <text x="488" y="258" class="t">客户端渲染</text>
+            <text x="474" y="286" class="s">只用已批准组件</text>
+            <rect x="666" y="224" width="168" height="88" rx="12" class="box green"/>
+            <text x="706" y="258" class="t">用户操作</text>
+            <text x="688" y="286" class="s">选择/确认/提交状态</text>
+            <path d="M192 90 H238" class="arrow"/>
+            <path d="M406 90 H452" class="arrow"/>
+            <path d="M620 90 H666" class="arrow"/>
+            <path d="M750 134 C750 188 410 178 346 224" class="arrow"/>
+            <path d="M406 268 H452" class="arrow"/>
+            <path d="M620 268 H666" class="arrow"/>
+          </svg>
+          <div class="caption">重构图示：Macaron-A2UI 的关键不是“生成网页”，而是在受控协议里生成可渲染、可验证的小型交互界面。</div>
+        </div>
+        <p>这和让模型直接写网页代码不一样。直接写 HTML/JavaScript 就像让服务员自己改餐厅电路，能力很强但风险也大。A2UI 更像给服务员一套固定积木：卡片、按钮、滑块、列表、图片、确认动作。模型只能选择和填充这些积木，真正的渲染由客户端完成。</p>
+      </section>
+
+      <section id="terms">
+        <h2>5. 关键术语解释</h2>
+        <table>
+          <thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead>
+          <tbody>
+            <tr><td>Generative UI</td><td>由模型根据上下文动态生成用户界面或界面动作。</td><td>AI 不只回文字，还能现场生成一张适合当前任务的小操作面板。</td></tr>
+            <tr><td>A2UI</td><td>Agent-to-User Interface，声明式协议，让 Agent 发送可由客户端安全渲染的组件描述。</td><td>AI 说一种“界面语言”，App 把它翻译成真正按钮和卡片。</td></tr>
+            <tr><td>Schema</td><td>规定 JSON 字段、组件类型、数据结构和引用关系的格式说明。</td><td>菜单印刷规范：菜名、价格、选项必须写在哪。</td></tr>
+            <tr><td>SFT</td><td>Supervised Fine-Tuning，用标注样本监督训练模型。</td><td>先给 AI 看标准答案，教它基本写法。</td></tr>
+            <tr><td>GRPO</td><td>Group Relative Policy Optimization，用一组候选答案的相对奖励来优化策略。</td><td>同一道题写几版菜单，奖励最清楚、最能让用户行动的那版。</td></tr>
+            <tr><td>LoRA</td><td>参数高效微调方法，只训练少量低秩适配参数。</td><td>不重造整台机器，只加一套可替换的小齿轮。</td></tr>
+            <tr><td>Renderability</td><td>模型输出能被客户端正确解析并渲染成界面。</td><td>不是看起来像 JSON，而是真的能显示出来。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="results">
+        <h2>6. 实验结果解读</h2>
+        <p>论文最核心的数字不是“模型参数更大”，而是：在不把完整 A2UI schema 塞进提示词的情况下，训练后的模型依然能接近甚至超过带完整 schema 的强模型基线。</p>
+        <table>
+          <thead><tr><th>结果</th><th>论文数字</th><th>这意味着什么</th></tr></thead>
+          <tbody>
+            <tr><td>训练数据规模</td><td>4,306 个基础对话；14,245 个 assistant-turn 样本；UI-turn 占 71.7%。</td><td>它不是靠几个 demo 硬凑，而是尝试覆盖多种真实对话场景。</td></tr>
+            <tr><td>评测规模</td><td>A2UI-Bench 共 300 个任务，含 atomic、depth、width 三类。</td><td>既考单轮表单，也考多轮状态和复杂任务组织。</td></tr>
+            <tr><td>Qwen3-235B 训练提升</td><td>基础模型 21.6；SFT 后 63.6；SFT+RL 后 74.2。</td><td>SFT 教会基本语法，RL 进一步改善“好不好用”。</td></tr>
+            <tr><td>最强模型</td><td>Macaron-A2UI-Venti 达到 75.6 overall。</td><td>说明 UI 生成能力可以通过训练内化，而不完全依赖超长协议提示。</td></tr>
+            <tr><td>对比完整 schema 提示</td><td>GPT-5.4 带完整 schema 为 74.1；Gemini-3.1 Pro 为 71.0；DeepSeek-V3.1 为 63.8。</td><td>把规范长期塞进提示词有效但昂贵；训练专门模型可能更快、更省上下文。</td></tr>
+            <tr><td>官方博客补充</td><td>Macaron-A2UI 在其设置中使用的提示约短于完整 schema baseline 的 27 倍。</td><td>产品上这很关键：提示词越短，延迟、成本和维护复杂度越低。</td></tr>
+          </tbody>
+        </table>
+        <div class="figure">
+          <svg viewBox="0 0 920 360" role="img" aria-label="A2UI-Bench 结果对比图">
+            <style>
+              .axis{stroke:#98a2b3;stroke-width:2}
+              .label{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#344054}
+              .value{font:700 15px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#101828}
+              .bar1{fill:#94a3b8}
+              .bar2{fill:#38bdf8}
+              .bar3{fill:#34d399}
+              .bar4{fill:#f59e0b}
+            </style>
+            <line x1="190" y1="300" x2="850" y2="300" class="axis"/>
+            <line x1="190" y1="60" x2="190" y2="300" class="axis"/>
+            <text x="80" y="105" class="label">Qwen3-235B Base</text>
+            <rect x="190" y="84" width="166" height="26" rx="6" class="bar1"/><text x="366" y="104" class="value">21.6</text>
+            <text x="96" y="165" class="label">+ SFT</text>
+            <rect x="190" y="144" width="489" height="26" rx="6" class="bar2"/><text x="689" y="164" class="value">63.6</text>
+            <text x="74" y="225" class="label">+ SFT + RL</text>
+            <rect x="190" y="204" width="570" height="26" rx="6" class="bar3"/><text x="770" y="224" class="value">74.2</text>
+            <text x="54" y="285" class="label">Venti 最佳模型</text>
+            <rect x="190" y="264" width="582" height="26" rx="6" class="bar4"/><text x="782" y="284" class="value">75.6</text>
+            <text x="190" y="330" class="label">A2UI-Bench overall score，越高越好</text>
+          </svg>
+          <div class="caption">重构图示：论文结果显示，SFT 先大幅提升格式与协议能力，RL 再把交互质量往上推。</div>
+        </div>
+      </section>
+
+      <section id="limitations">
+        <h2>7. 局限性与问题</h2>
+        <div class="risk">
+          <p><b>不要把这篇论文解读成“AI 已经能随便生成产品界面”。</b>它更像证明了一条路线：在受控协议和验证器里，模型可以学习生成有用 UI。但真实产品仍有很多硬约束。</p>
+        </div>
+        <table>
+          <thead><tr><th>风险点</th><th>具体问题</th><th>产品落地时要怎么防</th></tr></thead>
+          <tbody>
+            <tr><td>协议演进</td><td>论文与模型卡主要面向 A2UI v0.8，而 A2UI 生态已在继续演进。</td><td>模型输出必须绑定协议版本，升级时要重新验证或微调。</td></tr>
+            <tr><td>语义正确不等于好用</td><td>有效 JSON 仍可能生成语义弱、信息过多、按钮不合适的界面。</td><td>需要用户体验评测、人工设计审查和线上反馈闭环。</td></tr>
+            <tr><td>动作幻觉</td><td>模型卡明确提醒：动作空间不清楚时，模型可能生成不存在或不该出现的动作。</td><td>客户端只允许白名单动作；危险动作必须二次确认。</td></tr>
+            <tr><td>延迟</td><td>实时生成、校验、渲染 UI 会增加交互延迟。</td><td>常见流程缓存组件，高风险或复杂流程才调用重模型。</td></tr>
+            <tr><td>跨 App 泛化</td><td>不同 App 的组件目录、设计规范、权限策略差异很大。</td><td>需要 app-conditioned component catalog 和更强的跨应用压力测试。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="industry">
+        <h2>8. 产业影响分析</h2>
+        <p>如果这条路线成立，Agent 产品的竞争点会从“谁的聊天框更聪明”转向“谁能在正确时刻生成正确操作面”。</p>
+        <div class="cards">
+          <div class="card"><b>受益者</b><p>个人助理、消费应用、企业 Copilot、客服系统、低代码平台、移动 App 和操作型 SaaS。</p></div>
+          <div class="card"><b>被冲击者</b><p>只靠固定表单和静态流程的传统软件，会被“按任务临时组织界面”的产品体验挑战。</p></div>
+          <div class="card"><b>新门槛</b><p>设计系统、组件目录、权限模型、验证器、交互评测，将变成 Agent 产品的基础设施。</p></div>
+        </div>
+        <p>对产品经理来说，这篇论文的启发是：不要只问“这个功能能不能接 LLM”，而要问“这个任务到底应该用文字、按钮、卡片、地图、表格，还是几者组合？”未来的 AI 产品设计，很可能是对话设计、前端设计和安全策略的混合体。</p>
+        <p>对投资人来说，值得关注的不是单个 Macaron-A2UI 模型，而是它背后的趋势：Agent 需要“会说话”之外的交互层。A2UI、AG-UI、MCP Apps、动态工作台、端侧组件渲染，可能共同形成新的应用层栈。</p>
+      </section>
+
+      <section id="comparison">
+        <h2>9. 与旧方法对比</h2>
+        <table>
+          <thead><tr><th>路线</th><th>优点</th><th>缺点</th><th>适合场景</th></tr></thead>
+          <tbody>
+            <tr><td>纯文字聊天</td><td>简单、通用、部署快。</td><td>选择、比较、确认、结构化输入都很费劲。</td><td>解释、问答、轻量咨询。</td></tr>
+            <tr><td>模型生成 HTML/代码</td><td>表达力强，几乎什么界面都能写。</td><td>安全风险高，样式与逻辑难控，跨端成本大。</td><td>原型、低风险内部工具。</td></tr>
+            <tr><td>Agent 操作已有 GUI</td><td>不用改现有软件，能利用成熟界面。</td><td>慢、脆弱、依赖屏幕状态，难以保证体验。</td><td>遗留系统自动化。</td></tr>
+            <tr><td>A2UI 式生成界面</td><td>受控、安全、跨端、可验证，能贴合任务动态生成。</td><td>需要组件目录、协议适配、验证器和专门训练。</td><td>个人 Agent、企业工作台、移动交互、客服和交易确认。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="reading">
+        <h2>10. 延伸阅读</h2>
+        <ul class="source-list">
+          <li><a href="https://arxiv.org/abs/2605.24830">原论文：Macaron-A2UI: A Model for Generative UI in Personal Agents</a></li>
+          <li><a href="https://macaron.im/mindlab/research/macaron-a2ui-generative-ui-personal-agent">Mind Lab 官方博客：Macaron-A2UI 研究解读</a></li>
+          <li><a href="https://huggingface.co/papers/2605.24830">Hugging Face Papers 页面与社区讨论</a></li>
+          <li><a href="https://huggingface.co/mindlab-research/Macaron-A2UI-Tall">Hugging Face 模型卡：Macaron-A2UI-Tall</a></li>
+          <li><a href="https://a2ui.org/">A2UI 官方协议文档</a></li>
+          <li><a href="https://developers.googleblog.com/en/a2ui-v0-9-generative-ui/">Google Developers Blog：A2UI v0.9</a></li>
+        </ul>
+      </section>
+
+      <section id="sources">
+        <h2>11. 引用来源</h2>
+        <ul class="source-list">
+          <li>arXiv 页面记录论文题名、作者、提交时间、摘要、arXiv ID、PDF 与 HTML 链接：<a href="https://arxiv.org/abs/2605.24830">https://arxiv.org/abs/2605.24830</a></li>
+          <li>论文 PDF 用于核对训练数据、A2UI-Bench、SFT/GRPO 方法、实验数字和局限性：<a href="https://arxiv.org/pdf/2605.24830">https://arxiv.org/pdf/2605.24830</a></li>
+          <li>Mind Lab 官方博客用于核对产品动机、14,245 样本、300 任务、Qwen3-235B 从 21.6 到 63.6 到 74.2、以及 27 倍短提示等部署信息：<a href="https://macaron.im/mindlab/research/macaron-a2ui-generative-ui-personal-agent">https://macaron.im/mindlab/research/macaron-a2ui-generative-ui-personal-agent</a></li>
+          <li>Hugging Face Papers 用于核对社区热度、Paper of the day 排名、模型条目和作者讨论：<a href="https://huggingface.co/papers/2605.24830">https://huggingface.co/papers/2605.24830</a></li>
+          <li>Macaron-A2UI-Tall 模型卡用于核对输出契约、LoRA 适配器、A2UI v0.8 目标、MIT 许可和已知限制：<a href="https://huggingface.co/mindlab-research/Macaron-A2UI-Tall">https://huggingface.co/mindlab-research/Macaron-A2UI-Tall</a></li>
+          <li>A2UI 官方文档与 Google Developers Blog 用于核对协议背景：A2UI 使用声明式组件描述，由客户端用本地组件渲染，目标是跨 Web、移动和桌面安全呈现界面：<a href="https://a2ui.org/">https://a2ui.org/</a>；<a href="https://developers.googleblog.com/en/a2ui-v0-9-generative-ui/">Google A2UI v0.9 blog</a></li>
+        </ul>
+        <p class="note">本文图示为中文重构图，不是原论文截图；目的在于帮助非技术读者建立直觉。</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

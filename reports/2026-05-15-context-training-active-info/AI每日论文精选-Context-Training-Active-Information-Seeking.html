@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选｜Context Training with Active Information Seeking</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #111827;
+      --muted: #5b6473;
+      --line: #d9e0ea;
+      --blue: #1769e0;
+      --green: #1b7f5a;
+      --red: #bc2f38;
+      --amber: #a76513;
+      --slate: #243447;
+      --chip: #edf3ff;
+      --soft: #f0f4f8;
+      --shadow: 0 18px 50px rgba(22, 32, 50, .10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1116;
+        --paper: #151a21;
+        --ink: #eef2f7;
+        --muted: #a8b2c1;
+        --line: #2a3443;
+        --chip: #10213b;
+        --soft: #111a24;
+        --shadow: 0 20px 60px rgba(0, 0, 0, .32);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      background:
+        linear-gradient(180deg, rgba(23, 105, 224, .08), transparent 340px),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 26px 18px 60px; }
+    header {
+      padding: 34px 0 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(255,255,255,.55);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      max-width: 900px;
+      font-size: clamp(30px, 5vw, 58px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 840px;
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 22px;
+    }
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    @media (max-width: 820px) {
+      .grid { grid-template-columns: 1fr; }
+      .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: 1; }
+    }
+    section { margin-top: 34px; }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 25px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      letter-spacing: 0;
+    }
+    p { margin: 0 0 12px; }
+    .meta {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 10px 14px;
+      font-size: 14px;
+    }
+    .meta b { color: var(--muted); font-weight: 650; }
+    .pillrow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      background: var(--chip);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .lede {
+      font-size: 20px;
+      font-weight: 750;
+      line-height: 1.55;
+      padding: 18px;
+      border-left: 5px solid var(--blue);
+      background: var(--soft);
+      border-radius: 8px;
+    }
+    .signal {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .signal div {
+      border-left: 4px solid var(--blue);
+      padding: 10px 12px;
+      background: var(--soft);
+      border-radius: 8px;
+    }
+    .signal .green { border-left-color: var(--green); }
+    .signal .amber { border-left-color: var(--amber); }
+    .signal .red { border-left-color: var(--red); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: var(--soft);
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .viz {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(240,244,248,.70));
+      margin-top: 12px;
+    }
+    svg { display: block; width: 100%; height: auto; }
+    .small { font-size: 13px; color: var(--muted); }
+    .quote {
+      padding: 18px;
+      border-radius: 8px;
+      background: var(--slate);
+      color: white;
+      font-size: 22px;
+      line-height: 1.48;
+      font-weight: 760;
+    }
+    .two-col {
+      columns: 2 330px;
+      column-gap: 22px;
+    }
+    .term {
+      break-inside: avoid;
+      display: inline-block;
+      width: 100%;
+      margin: 0 0 12px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    ol, ul { padding-left: 20px; }
+    li { margin-bottom: 8px; }
+    .footer {
+      margin-top: 40px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="kicker">AI每日论文精选 · 2026-05-15</div>
+      <h1>让 AI 不只靠记忆，而是学会主动查资料</h1>
+      <p class="subtitle">今日论文：<strong>Context Training with Active Information Seeking</strong>。它把“给模型塞更多提示词”升级为“让模型自己找资料、筛资料、组织资料，再回答问题”。</p>
+      <div class="pillrow">
+        <span class="pill">上下文工程</span>
+        <span class="pill">主动信息搜索</span>
+        <span class="pill">测试时计算</span>
+        <span class="pill">Agent 产品形态</span>
+      </div>
+    </header>
+
+    <section id="title">
+      <div class="grid">
+        <div class="card span-7">
+          <h2>1. 标题区</h2>
+          <div class="meta">
+            <b>中文标题</b><span>带主动信息搜索的上下文训练</span>
+            <b>英文标题</b><span>Context Training with Active Information Seeking</span>
+            <b>作者</b><span>Zeyu Huang, Marc'Aurelio Ranzato, Wenhao Zhan, Amirkeivan Mohtashami, Nikola Momchev, Gergely Szilvasy, Armand Joulin, Andrew Kyle Lampinen, Adam Fisch</span>
+            <b>机构</b><span>Google DeepMind 相关研究者（Hugging Face Papers 页面标注 DeepMind；具体作者单位以论文原文为准）</span>
+            <b>发布时间</b><span>arXiv: 2026-05-13</span>
+            <b>平台</b><span>arXiv · cs.CL / cs.AI；Hugging Face Papers；SciRate</span>
+            <b>论文链接</b><span><a href="https://arxiv.org/abs/2605.13050">https://arxiv.org/abs/2605.13050</a></span>
+          </div>
+        </div>
+        <div class="card span-5">
+          <h3>论文信息卡</h3>
+          <p><strong>核心问题：</strong>当模型不知道答案时，能不能先主动找到最有用的资料，再把资料变成更好的上下文？</p>
+          <p><strong>一句判断：</strong>这篇论文的重要性，不在于又刷了某个榜，而在于它把“上下文”从静态提示词变成了可训练、可搜索、可改进的工作流。</p>
+          <p class="small">注：本报告基于英文原始论文索引、arXiv 摘要、Hugging Face Papers 论文页与相关英文资料交叉整理。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <div class="grid">
+        <div class="card span-8">
+          <p class="lede">因为未来很多 AI 产品的瓶颈，可能不是“模型本身会不会”，而是“它在回答前有没有拿到对的资料、有没有用对的方式组织资料”。</p>
+          <p>过去一年，行业一直在谈 RAG、Agent、工具调用、长上下文、测试时计算。它们背后有一个共同问题：模型要回答复杂问题，不能只靠脑子里的旧知识。它需要像一个认真工作的人：先弄清任务，去查资料，判断哪些资料可信，再把资料整理成自己能用的笔记。</p>
+          <p>这篇论文的价值在于，它不是简单说“多检索一点文档”。它提出的 <strong>Context Training</strong> 更像训练一个“资料助理”：这个助理的工作不是直接回答，而是在模型回答前，主动构建一份更有用的上下文。</p>
+        </div>
+        <div class="card span-4">
+          <h3>入选理由</h3>
+          <div class="signal">
+            <div><strong>技术突破：</strong>把上下文优化器训练成会主动搜索的系统。</div>
+            <div class="green"><strong>长期价值：</strong>可能成为 RAG 与 Agent 工程的底层范式。</div>
+            <div class="amber"><strong>产业意义：</strong>让模型少靠参数记忆，多靠可审计资料流。</div>
+            <div class="red"><strong>现实风险：</strong>检索质量、成本、来源可信度会成为新瓶颈。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文本质上是在训练一个“考前资料员”：它不替你考试，但会在考试前主动翻书、查资料、做笔记，把最有用的信息放到答题模型面前。</div>
+    </section>
+
+    <section id="contributions">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>它提出了什么？</h3>
+          <p>论文提出一种“上下文训练”思路：训练一个上下文优化器，让它在目标模型回答前，主动收集与任务有关的信息，并把这些信息改写成更适合目标模型使用的上下文。</p>
+          <p>这和普通提示词工程不同。普通提示词工程像“人手写一张答题说明”。Context Training 更像“训练一个会做考前资料准备的人”。</p>
+        </div>
+        <div class="card span-6">
+          <h3>它解决什么问题？</h3>
+          <p>长上下文不等于好上下文。把一大堆网页、文档、日志塞给模型，常常会让模型迷路。真正关键的是：哪些资料该找、哪些该丢、以什么顺序放、怎么压缩成模型能用的信息。</p>
+          <p>论文关注的正是这个问题：让系统主动寻找信息，而不是被动吃下固定检索结果。</p>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>方法</th>
+            <th>像什么</th>
+            <th>主要优点</th>
+            <th>主要短板</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>普通提示词</td>
+            <td>老师提前写好的答题模板</td>
+            <td>简单、便宜、可控</td>
+            <td>遇到新问题容易不够用</td>
+          </tr>
+          <tr>
+            <td>传统 RAG</td>
+            <td>从图书馆按关键词拿几本书</td>
+            <td>能接入外部知识</td>
+            <td>检索词错了，拿到的书也错</td>
+          </tr>
+          <tr>
+            <td>长上下文</td>
+            <td>把整摞资料放到桌上</td>
+            <td>信息容量大</td>
+            <td>模型未必知道重点在哪里</td>
+          </tr>
+          <tr>
+            <td>Context Training</td>
+            <td>训练一个会查资料、做摘要、排重点的助理</td>
+            <td>上下文可以被主动优化</td>
+            <td>需要额外搜索、训练与质量控制</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="mechanism">
+      <h2>5. 工作原理：深入浅出</h2>
+      <p>可以把它想成一次“开卷考试”。普通模型像学生，题目来了就直接作答。Context Training 则在学生旁边放了一个资料员，资料员可以先去图书馆、网页和参考资料里找线索，再把线索整理成一页重点笔记。</p>
+      <div class="viz" aria-label="Context Training 工作流程图">
+        <svg viewBox="0 0 1080 430" role="img">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#1769e0"/>
+              <stop offset="1" stop-color="#1b7f5a"/>
+            </linearGradient>
+            <filter id="s" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#172033" flood-opacity=".14"/>
+            </filter>
+          </defs>
+          <rect x="0" y="0" width="1080" height="430" fill="#f7fafc"/>
+          <text x="44" y="48" font-size="28" font-weight="800" fill="#111827">从“直接回答”到“先准备上下文”</text>
+          <g filter="url(#s)">
+            <rect x="48" y="105" width="190" height="94" rx="8" fill="#ffffff" stroke="#d9e0ea"/>
+            <text x="72" y="145" font-size="21" font-weight="760" fill="#111827">用户问题</text>
+            <text x="72" y="176" font-size="15" fill="#5b6473">复杂、开放、可能缺资料</text>
+          </g>
+          <path d="M245 152 L330 152" stroke="#1769e0" stroke-width="5" marker-end="url(#arrow)"/>
+          <g filter="url(#s)">
+            <rect x="342" y="84" width="230" height="136" rx="8" fill="#ffffff" stroke="#d9e0ea"/>
+            <text x="370" y="126" font-size="21" font-weight="760" fill="#111827">上下文优化器</text>
+            <text x="370" y="158" font-size="15" fill="#5b6473">判断缺什么信息</text>
+            <text x="370" y="184" font-size="15" fill="#5b6473">决定搜什么、看什么</text>
+          </g>
+          <path d="M578 152 L662 152" stroke="#1769e0" stroke-width="5" marker-end="url(#arrow)"/>
+          <g filter="url(#s)">
+            <rect x="676" y="72" width="170" height="64" rx="8" fill="#edf3ff" stroke="#9fc0ff"/>
+            <text x="704" y="112" font-size="18" font-weight="760" fill="#1769e0">搜索 / 浏览</text>
+            <rect x="676" y="154" width="170" height="64" rx="8" fill="#ecf8f3" stroke="#9ed8c3"/>
+            <text x="704" y="194" font-size="18" font-weight="760" fill="#1b7f5a">筛选 / 摘要</text>
+            <rect x="676" y="236" width="170" height="64" rx="8" fill="#fff5e5" stroke="#ffd38a"/>
+            <text x="704" y="276" font-size="18" font-weight="760" fill="#a76513">组织成笔记</text>
+          </g>
+          <path d="M850 194 L918 194" stroke="#1b7f5a" stroke-width="5" marker-end="url(#arrow2)"/>
+          <g filter="url(#s)">
+            <rect x="930" y="134" width="110" height="120" rx="8" fill="url(#g1)"/>
+            <text x="958" y="180" font-size="19" font-weight="800" fill="#ffffff">目标模型</text>
+            <text x="956" y="212" font-size="15" fill="#ffffff">基于好上下文回答</text>
+          </g>
+          <path d="M458 225 C458 330 760 350 760 306" fill="none" stroke="#a76513" stroke-width="4" stroke-dasharray="8 8"/>
+          <text x="488" y="348" font-size="16" fill="#a76513" font-weight="700">训练信号：什么上下文能让最终答案更好？</text>
+          <defs>
+            <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10" fill="#1769e0"/>
+            </marker>
+            <marker id="arrow2" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10" fill="#1b7f5a"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <ol>
+        <li><strong>先看问题：</strong>系统判断这个问题缺少哪些外部信息。</li>
+        <li><strong>主动找资料：</strong>不是等人塞资料，而是自己生成搜索方向、浏览候选信息。</li>
+        <li><strong>压缩和重排：</strong>把杂乱资料整理成目标模型容易读懂的上下文。</li>
+        <li><strong>让目标模型回答：</strong>目标模型拿着这份“考前笔记”完成任务。</li>
+        <li><strong>用结果反推：</strong>如果最终答案更好，就说明这个上下文准备方式更有效。</li>
+      </ol>
+    </section>
+
+    <section id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="two-col">
+        <div class="term">
+          <h3>Context（上下文）</h3>
+          <p><strong>专业解释：</strong>模型在生成答案时能看到的输入信息，包括用户问题、系统指令、检索内容、历史对话等。</p>
+          <p><strong>白话解释：</strong>就像考试时桌上允许带的一页资料。资料好不好，直接影响答题质量。</p>
+        </div>
+        <div class="term">
+          <h3>Context Optimizer（上下文优化器）</h3>
+          <p><strong>专业解释：</strong>负责构造、选择、压缩或重写上下文的模型或策略。</p>
+          <p><strong>白话解释：</strong>不是答题的人，而是帮答题者准备资料的人。</p>
+        </div>
+        <div class="term">
+          <h3>Active Information Seeking（主动信息搜索）</h3>
+          <p><strong>专业解释：</strong>系统根据任务需求主动发起搜索、浏览、查询等动作来补充信息。</p>
+          <p><strong>白话解释：</strong>不是等别人喂资料，而是自己知道“我还缺什么”，然后去找。</p>
+        </div>
+        <div class="term">
+          <h3>RAG（检索增强生成）</h3>
+          <p><strong>专业解释：</strong>先从外部知识库检索相关文档，再把文档交给模型生成答案。</p>
+          <p><strong>白话解释：</strong>模型回答前先去资料库翻几页书。</p>
+        </div>
+        <div class="term">
+          <h3>Test-Time Compute（测试时计算）</h3>
+          <p><strong>专业解释：</strong>模型在推理阶段额外花计算资源进行搜索、推理、验证或自我修正。</p>
+          <p><strong>白话解释：</strong>不是平时多训练，而是考试时多打草稿、多查资料。</p>
+        </div>
+        <div class="term">
+          <h3>Grounding（事实落地）</h3>
+          <p><strong>专业解释：</strong>让模型输出与可验证来源、外部事实或实际环境保持一致。</p>
+          <p><strong>白话解释：</strong>别只凭感觉回答，要能指出资料从哪来。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="experiments">
+      <h2>7. 实验结果解读</h2>
+      <p>论文摘要显示，作者在多类任务上验证了这种思路，包括代码、知识密集问答、健康、安全、翻译与高难度综合评测等场景。这里最该关注的不是某一个榜单数字，而是它覆盖了不同类型的“缺信息任务”。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>评测方向</th>
+            <th>它在测什么</th>
+            <th>对普通读者意味着什么</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>代码任务</td>
+            <td>模型能否找到与题目、库函数、约束相关的信息</td>
+            <td>未来编程助手不只是补全代码，而是会先查文档、看上下文、再写代码。</td>
+          </tr>
+          <tr>
+            <td>知识密集问答</td>
+            <td>模型是否能补足自己不知道或不确定的事实</td>
+            <td>这能降低“张口就来”的风险，但前提是资料源可靠。</td>
+          </tr>
+          <tr>
+            <td>健康与安全评测</td>
+            <td>在敏感领域里，信息搜索是否能带来更稳妥的回答</td>
+            <td>AI 医疗、法务、合规产品会更需要可追溯的资料准备链路。</td>
+          </tr>
+          <tr>
+            <td>翻译与跨语言任务</td>
+            <td>是否能根据上下文补充专有名词、语境和领域知识</td>
+            <td>翻译不只是字面转换，而是理解背景后再表达。</td>
+          </tr>
+          <tr>
+            <td>高难综合评测</td>
+            <td>复杂题目下，搜索与上下文组织能否提升最终表现</td>
+            <td>越复杂的问题，越像真实工作；真实工作需要先做资料准备。</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="viz" aria-label="实验覆盖任务图">
+        <svg viewBox="0 0 1080 360" role="img">
+          <rect width="1080" height="360" fill="#f7fafc"/>
+          <text x="44" y="48" font-size="27" font-weight="800" fill="#111827">论文实验真正想证明什么？</text>
+          <text x="44" y="82" font-size="16" fill="#5b6473">不是“多塞一点资料一定好”，而是“会主动准备资料的系统，在多类任务中更接近真实工作”。</text>
+          <g>
+            <rect x="55" y="128" width="155" height="120" rx="8" fill="#edf3ff" stroke="#9fc0ff"/>
+            <text x="91" y="174" font-size="21" font-weight="800" fill="#1769e0">代码</text>
+            <text x="78" y="207" font-size="14" fill="#243447">查文档与约束</text>
+            <rect x="247" y="128" width="155" height="120" rx="8" fill="#ecf8f3" stroke="#9ed8c3"/>
+            <text x="284" y="174" font-size="21" font-weight="800" fill="#1b7f5a">问答</text>
+            <text x="270" y="207" font-size="14" fill="#243447">补足外部事实</text>
+            <rect x="439" y="128" width="155" height="120" rx="8" fill="#fff5e5" stroke="#ffd38a"/>
+            <text x="476" y="174" font-size="21" font-weight="800" fill="#a76513">健康</text>
+            <text x="462" y="207" font-size="14" fill="#243447">来源与谨慎回答</text>
+            <rect x="631" y="128" width="155" height="120" rx="8" fill="#fff0f1" stroke="#f5a5ab"/>
+            <text x="668" y="174" font-size="21" font-weight="800" fill="#bc2f38">安全</text>
+            <text x="655" y="207" font-size="14" fill="#243447">风险边界控制</text>
+            <rect x="823" y="128" width="155" height="120" rx="8" fill="#eef2f7" stroke="#b8c4d4"/>
+            <text x="860" y="174" font-size="21" font-weight="800" fill="#243447">翻译</text>
+            <text x="846" y="207" font-size="14" fill="#243447">理解语境再表达</text>
+          </g>
+          <path d="M132 270 C280 318 756 318 900 270" fill="none" stroke="#1769e0" stroke-width="5"/>
+          <text x="382" y="328" font-size="18" font-weight="800" fill="#1769e0">共同变量：主动找信息 + 组织好上下文</text>
+        </svg>
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid">
+        <div class="card span-4">
+          <h3>资料源可能错</h3>
+          <p>主动搜索不等于搜索到真相。如果系统从低质量网页、过时文档或带偏见的资料中学习，最终上下文也会带偏。</p>
+        </div>
+        <div class="card span-4">
+          <h3>成本会上升</h3>
+          <p>每次回答前都要搜索、浏览、筛选、压缩，延迟和计算成本都会增加。商业产品必须决定哪些问题值得这样做。</p>
+        </div>
+        <div class="card span-4">
+          <h3>可控性更复杂</h3>
+          <p>一旦模型能主动搜索，就要管理它能看什么、不能看什么、引用是否合规、隐私数据是否被带入上下文。</p>
+        </div>
+      </div>
+      <p>所以，这篇论文不是说“主动搜索可以解决所有幻觉”。更准确的理解是：它把问题从“模型记不记得”转移到“系统能否可靠地找资料、验资料、组织资料”。这是一种进步，也是一组新的工程挑战。</p>
+    </section>
+
+    <section id="industry">
+      <h2>9. 产业影响分析</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>受益者</th>
+            <th>为什么受益</th>
+            <th>可能出现的新产品形态</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>企业知识库与搜索厂商</td>
+            <td>上下文质量会成为模型效果的关键变量</td>
+            <td>从“搜索结果列表”升级为“任务级资料准备引擎”</td>
+          </tr>
+          <tr>
+            <td>AI Agent 平台</td>
+            <td>Agent 的第一步往往不是执行，而是理解任务和收集信息</td>
+            <td>带有资料计划、来源评分、引用审计的 Agent 工作台</td>
+          </tr>
+          <tr>
+            <td>垂直行业 AI 应用</td>
+            <td>医疗、法务、金融、供应链等场景更依赖实时、可信、领域化资料</td>
+            <td>带合规检索和专家审核链路的行业助手</td>
+          </tr>
+          <tr>
+            <td>小团队与创业公司</td>
+            <td>不一定要训练最大模型，也能通过更好的上下文工程提高效果</td>
+            <td>围绕数据源、流程、评测构建差异化产品</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="viz" aria-label="产业影响路径图">
+        <svg viewBox="0 0 1080 390" role="img">
+          <rect width="1080" height="390" fill="#f7fafc"/>
+          <text x="44" y="48" font-size="27" font-weight="800" fill="#111827">产业变化：竞争点从“模型有多大”扩展到“上下文链路有多强”</text>
+          <g>
+            <rect x="70" y="115" width="220" height="90" rx="8" fill="#ffffff" stroke="#d9e0ea"/>
+            <text x="105" y="151" font-size="20" font-weight="800" fill="#111827">过去</text>
+            <text x="105" y="181" font-size="15" fill="#5b6473">比模型参数、训练数据、榜单</text>
+            <path d="M305 160 L410 160" stroke="#1769e0" stroke-width="5" marker-end="url(#a3)"/>
+            <rect x="430" y="95" width="240" height="130" rx="8" fill="#edf3ff" stroke="#9fc0ff"/>
+            <text x="466" y="136" font-size="20" font-weight="800" fill="#1769e0">现在开始</text>
+            <text x="466" y="168" font-size="15" fill="#243447">比谁能找到好资料</text>
+            <text x="466" y="193" font-size="15" fill="#243447">比谁能组织好上下文</text>
+            <path d="M688 160 L793 160" stroke="#1b7f5a" stroke-width="5" marker-end="url(#a4)"/>
+            <rect x="812" y="115" width="220" height="90" rx="8" fill="#ecf8f3" stroke="#9ed8c3"/>
+            <text x="847" y="151" font-size="20" font-weight="800" fill="#1b7f5a">未来</text>
+            <text x="847" y="181" font-size="15" fill="#243447">资料流、工具流、审计流成为护城河</text>
+          </g>
+          <g>
+            <rect x="130" y="276" width="820" height="48" rx="8" fill="#243447"/>
+            <text x="190" y="307" font-size="18" font-weight="800" fill="#ffffff">一句话：模型公司、搜索公司、企业数据平台和 Agent 平台会在“上下文工程”上重新分工。</text>
+          </g>
+          <defs>
+            <marker id="a3" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10" fill="#1769e0"/>
+            </marker>
+            <marker id="a4" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+              <path d="M2,2 L10,6 L2,10" fill="#1b7f5a"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+    </section>
+
+    <section id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.13050">原论文：Context Training with Active Information Seeking</a></li>
+        <li><a href="https://huggingface.co/papers/2605.13050">Hugging Face Papers 页面：论文摘要、作者与社区讨论入口</a></li>
+        <li><a href="https://scirate.com/arxiv/2605.13050">SciRate 页面：论文索引与学术讨论入口</a></li>
+        <li><a href="https://arxiv.org/abs/2505.08129">相关论文：Learning, Fast and Slow: Agents for Continual Learning in Humans and Machines</a></li>
+        <li><a href="https://arxiv.org/abs/2211.01910">相关论文：Large Language Models Are Human-Level Prompt Engineers</a></li>
+      </ul>
+    </section>
+
+    <section id="sources">
+      <h2>11. 引用来源</h2>
+      <ol>
+        <li>arXiv: <a href="https://arxiv.org/abs/2605.13050">Context Training with Active Information Seeking</a>，用于确认标题、作者、发布时间、摘要与研究方向。</li>
+        <li>Hugging Face Papers: <a href="https://huggingface.co/papers/2605.13050">2605.13050</a>，用于交叉确认机构标注、摘要、任务覆盖与社区索引。</li>
+        <li>SciRate: <a href="https://scirate.com/arxiv/2605.13050">arXiv:2605.13050</a>，用于交叉确认论文索引、日期与学术讨论入口。</li>
+        <li>arXiv: <a href="https://arxiv.org/abs/2505.08129">Learning, Fast and Slow</a>，作为持续学习与 Agent 资料准备方向的背景阅读。</li>
+        <li>arXiv: <a href="https://arxiv.org/abs/2211.01910">Large Language Models Are Human-Level Prompt Engineers</a>，作为自动提示词优化与上下文优化的早期相关脉络。</li>
+      </ol>
+    </section>
+
+    <div class="footer">
+      本报告由“AI每日论文精选”自动化生成。写作目标：面向非技术读者，用中文、类比、图解解释 AI 前沿论文的长期价值。生成时间：2026-05-15 07:07 Asia/Shanghai。
+    </div>
+  </div>
+</body>
+</html>

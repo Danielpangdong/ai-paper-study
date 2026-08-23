@@ -1,0 +1,29 @@
+# Run Summary
+
+- Run time: 2026-07-03 08:13:31 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: Embedding（向量表示）
+- Rationale: continue the learning path after KV Cache by explaining the semantic-representation layer that underpins RAG, vector databases, AI search, recommendations, and multimodal retrieval.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-03_Embedding/2026-07-03_Embedding（向量表示）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-03_Embedding/2026-07-03_Embedding（向量表示）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-03_Embedding/assets/embedding_meaning_map_labeled.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-03_Embedding/assets/embedding_rag_flow_labeled.png`
+- Validation proof:
+  - HTML parsed successfully, required sections present, no `<script>` tags.
+  - PDF is 9 A4 pages, unencrypted, Chromium generated.
+  - `pdftotext` found required headings and quiz.
+  - `pdfimages -list` found the two large generated diagrams embedded.
+  - Browser proof screenshot saved as `/Users/mac/Desktop/AI论文解读/reports/2026-07-03_Embedding/browser-proof.png`.
+  - Six source URLs returned HTTP 200.
+- Delivery proof:
+  - Gmail send id: `19f25524fd0f7b0b`
+  - Sent search: `in:sent subject:"Embedding" has:attachment newer_than:1d` returned `19f25524fd0f7b0b`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject, body, and attached PDF `2026-07-03_Embedding（向量表示）.pdf`.
+- Sources:
+  - OpenAI Vector embeddings docs
+  - Google ML Crash Course Embeddings
+  - Mikolov et al. Word2Vec paper
+  - Reimers & Gurevych Sentence-BERT
+  - Lewis et al. RAG paper
+  - OpenAI Cookbook embeddings-based question answering

@@ -1,0 +1,545 @@
+from __future__ import annotations
+
+from html import escape
+from pathlib import Path
+from string import Template
+
+from playwright.sync_api import sync_playwright
+
+
+ROOT = Path(__file__).resolve().parent
+DATE = "2026-06-17"
+CONCEPT_CN = "AI工具使用"
+CONCEPT_EN = "Tool Use"
+CONCEPT_FULL = f"{CONCEPT_CN}（{CONCEPT_EN}）"
+HTML_NAME = f"{DATE}_{CONCEPT_FULL}.html"
+PDF_NAME = f"{DATE}_{CONCEPT_FULL}.pdf"
+FIG_OVERVIEW = "chatgpt_tool_use_overview.png"
+FIG_LOOP = "chatgpt_tool_use_loop.png"
+
+
+WHY = [
+    "只会聊天的 AI，像一个很会解释问题的人；会使用工具的 AI，才开始像一个能帮你办事的助手。它可以查资料、算表格、读文件、调用系统、发送请求，把语言理解变成现实动作。",
+    "这个概念重要，是因为大模型本身并不天然知道最新库存、你的日历、企业订单状态，也不能凭空完成转账、订票、生成报表。工具使用给 AI 接上外部世界，让它能在需要时访问正确的数据和能力。",
+    "今天的 Agent、企业 Copilot、AI 客服、数据分析助手、自动化办公系统，都离不开工具使用。没有工具，AI 容易停留在“给建议”；有了可靠的工具调用闭环，AI 才能从“回答问题”走向“完成任务”。",
+]
+
+ANALOGY = [
+    "想象你让一位新来的项目助理安排一次出差。你说：请帮我查下周上海天气、估算预算、订会议室、把行程发给团队。如果这位助理只是坐在座位上凭记忆回答，他很可能说得像真的，却不一定准确。",
+    "靠谱的助理会做另一件事：先判断任务需要哪些工具，然后分别打开天气网站、日历系统、表格软件和邮件客户端。每一步都把你的自然语言要求，翻译成具体动作：查哪一天、算哪些费用、订哪个时间段、发给哪些人。",
+    "AI工具使用也是这个逻辑。模型不是把所有能力都塞进脑子里，而是学会在合适的时候借助外部工具。它像一个会读任务说明的调度员：先理解目标，再选择工具，填好参数，执行动作，最后检查结果是否真的满足目标。",
+]
+
+MECHANISM = [
+    ("理解用户目标", "AI 先把一句自然语言请求拆成目标、约束和成功标准。例如“帮我做销售分析”并不只是写几句话，而是可能需要读取数据、计算指标、生成图表。"),
+    ("判断是否需要工具", "有些问题可以直接回答，有些必须查资料、算数字或操作系统。可靠的 AI 要知道什么时候该靠知识，什么时候必须借工具。"),
+    ("选择合适工具", "系统会从可用工具列表里选择一个或多个工具，例如搜索、数据库、表格计算、代码执行、邮件发送、日历查询。选错工具，就像拿锤子修表。"),
+    ("生成结构化参数", "AI 把人的话翻译成工具能理解的参数。比如把“查最近七天订单”变成开始日期、结束日期、订单状态、输出字段。"),
+    ("权限与风险检查", "读取公开资料和发送邮件的风险不同。涉及付款、删除、外发、隐私数据时，系统通常需要权限边界、人类确认或沙箱环境。"),
+    ("执行工具调用", "工具真正开始工作：查询数据库、运行代码、创建工单、发送请求。模型本身不等于工具，模型只是发出合规的调用指令。"),
+    ("读取并理解结果", "工具返回的可能是表格、错误码、网页、文件或执行日志。AI 要把这些结果重新翻译成人能理解的答案。"),
+    ("核对后再回答", "最后一步不是立刻输出漂亮文字，而是检查工具结果是否完整、是否和目标一致、是否需要重试或说明不确定性。"),
+]
+
+TERMS = [
+    ("Tool 工具", "专业解释：供模型调用的外部能力接口，可以是搜索、数据库、代码执行器、业务系统或设备控制。", "白话解释：AI 可以借用的“外部器械”，像计算器、地图、邮箱和企业系统。"),
+    ("Tool Schema 工具说明书", "专业解释：描述工具名称、用途、输入参数、输出格式和限制条件的结构化说明。", "白话解释：工具的使用说明，告诉 AI 这个工具能干什么、要填哪些信息。"),
+    ("Function Calling 函数调用", "专业解释：模型生成符合函数参数格式的调用请求，由外部程序执行并返回结果。", "白话解释：AI 写好一张标准工单，让程序去办事。"),
+    ("API 接口", "专业解释：软件系统之间交换数据、触发能力的一组规则和入口。", "白话解释：不同软件之间的服务窗口，按格式递交请求就能办业务。"),
+    ("Parameters 参数", "专业解释：调用工具时必须提供的结构化输入，例如日期、地点、收件人、查询条件。", "白话解释：填表格时的具体栏目，填错了工具就可能办错事。"),
+    ("Tool Result 工具返回结果", "专业解释：外部工具执行后的结构化或非结构化输出，包括数据、状态、错误和日志。", "白话解释：工具办完事交回来的回执，AI 要读懂它。"),
+    ("Human-in-the-loop 人类在环", "专业解释：在高风险步骤中加入人工确认、审批或复核。", "白话解释：危险按钮按下前，先让真人看一眼。"),
+    ("Sandbox 沙箱", "专业解释：把工具执行限制在隔离环境中，减少对真实系统和数据的影响。", "白话解释：先在练习场试跑，别一上来就改真实系统。"),
+    ("Idempotency 幂等性", "专业解释：同一次操作即使重复执行，也不会造成重复扣款、重复发送等副作用。", "白话解释：手滑点两次，也不应该办成两遍。"),
+    ("Audit Log 审计日志", "专业解释：记录谁在何时调用了什么工具、输入输出是什么、是否成功。", "白话解释：办事留痕，出问题能回头查。"),
+]
+
+CASE = [
+    "一个真实应用是企业里的 AI 数据分析助手。经理问：“帮我看一下上周华东区退货率为什么上升，并给我一段可发给团队的总结。”如果 AI 只靠语言能力，它最多能说一些泛泛原因；如果会用工具，它可以真的读取订单表、按地区和品类计算退货率、找出异常 SKU，再生成结论。",
+    "在这个过程中，AI 可能会先调用数据库查询工具，拿到上周和前一周的数据；再调用代码或表格工具计算同比、环比和分组占比；如果发现数据缺失，它还要说明缺口，而不是编一个原因；最后才把分析结果整理成经理能读懂的中文摘要。",
+    "物流客服也是类似逻辑。用户问“我的包裹为什么还没到？”工具使用让 AI 可以查询运单状态、读取路由节点、检查异常原因、创建工单，并在需要时提醒人工客服介入。它不是靠猜，而是把真实系统结果转化成可理解、可执行的服务动作。",
+]
+
+MISTAKES = [
+    ("误区一：工具使用等于 AI 已经拥有真正行动能力。", "不是。AI 只是被授权调用某些外部能力，能做什么取决于工具范围、权限设计和执行环境。"),
+    ("误区二：Function Calling 就等于工具已经执行成功。", "不是。Function Calling 通常只是生成调用请求，真正执行、失败重试、权限控制都在外部系统里。"),
+    ("误区三：工具越多，AI 越强。", "工具太多会增加选择错误、权限混乱和维护成本。好的工具集合应该少而清晰，像一套分工明确的工具箱。"),
+    ("误区四：有工具就不会幻觉。", "工具能减少凭空编造，但 AI 仍可能选错工具、填错参数、误读结果，或者在工具失败时继续自信回答。"),
+    ("误区五：所有问题都应该调用工具。", "不需要。简单概念解释、写作润色、头脑风暴常常可以直接完成。过度调用工具会变慢、变贵，也会增加隐私暴露。"),
+    ("误区六：AI 可以直接拿到所有系统权限。", "危险。真实业务中应该遵循最小权限原则，只给完成任务所需的最小访问范围，并记录调用日志。"),
+    ("误区七：工具结果一定是事实。", "工具也可能返回过期数据、权限不足结果或错误码。AI 需要检查来源、时间、完整性和异常状态。"),
+    ("误区八：工具使用就是 RAG。", "RAG 主要是检索资料来辅助回答；工具使用范围更广，还包括计算、写入、发送、创建、修改和控制外部系统。"),
+]
+
+SUMMARY = [
+    "AI工具使用的本质，是让模型把自然语言目标翻译成可执行、可检查的外部工具调用。",
+    "它让 AI 从“只会给建议”走向“能完成任务”，但前提是工具说明、权限边界、结果核对和日志记录都可靠。",
+    "判断一个 AI Agent 是否靠谱，不要只看它能调用多少工具，而要看它是否会选择、会填参、会确认、会纠错、会留下证据。",
+]
+
+QUIZ = [
+    "为什么一个会使用搜索工具的 AI，仍然可能给出错误答案？请从“选工具、填参数、读结果”三个环节解释。",
+    "如果让 AI 自动发送客户邮件，哪些步骤必须加入权限确认或人工复核？为什么？",
+    "请用“项目助理安排出差”的类比，解释 Tool Use 和单纯聊天回答之间的区别。",
+]
+
+
+def paras(items: list[str]) -> str:
+    return "\n".join(f"<p>{escape(item)}</p>" for item in items)
+
+
+def mechanism_cards() -> str:
+    cards: list[str] = []
+    for idx, (title, body) in enumerate(MECHANISM, 1):
+        cards.append(
+            f"""
+            <article class="step-card">
+              <div class="step-num">{idx:02d}</div>
+              <div>
+                <h3>{escape(title)}</h3>
+                <p>{escape(body)}</p>
+              </div>
+            </article>
+            """
+        )
+    return "\n".join(cards)
+
+
+def term_rows() -> str:
+    return "\n".join(
+        f"<tr><th>{escape(term)}</th><td>{escape(pro)}</td><td>{escape(plain)}</td></tr>"
+        for term, pro, plain in TERMS
+    )
+
+
+def mistake_items() -> str:
+    return "\n".join(
+        f"<li><strong>{escape(title)}</strong><span>{escape(body)}</span></li>"
+        for title, body in MISTAKES
+    )
+
+
+def numbered(items: list[str]) -> str:
+    return "\n".join(f"<li>{escape(item)}</li>" for item in items)
+
+
+def build_html() -> str:
+    toc = [
+        ("why", "为什么重要"),
+        ("analogy", "直观类比"),
+        ("mechanism", "工作原理"),
+        ("terms", "关键术语"),
+        ("case", "真实案例"),
+        ("mistakes", "常见误区"),
+        ("summary", "3句话总结"),
+        ("quiz", "复习问题"),
+    ]
+    toc_html = "\n".join(f'<a href="#{slug}">{label}</a>' for slug, label in toc)
+    template = Template(
+        """<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${date}_${concept_full}</title>
+  <style>
+    :root {
+      --ink: #101827;
+      --muted: #475569;
+      --quiet: #64748b;
+      --line: #d7e0ea;
+      --paper: #ffffff;
+      --soft: #f7fafc;
+      --blue: #123872;
+      --teal: #0f8b8d;
+      --green: #23845c;
+      --amber: #b7791f;
+      --red: #c2410c;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #eef3f8;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.75;
+    }
+    .cover {
+      background:
+        linear-gradient(90deg, rgba(15,139,141,.10), transparent 35%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 62px 26px 42px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .eyebrow {
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    h1 {
+      max-width: 980px;
+      margin: 18px 0 14px;
+      color: var(--ink);
+      font-size: clamp(42px, 6.2vw, 76px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+    h1 span { color: var(--blue); }
+    .subtitle {
+      max-width: 920px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.35;
+      font-weight: 650;
+    }
+    .core {
+      max-width: 960px;
+      margin-top: 28px;
+      padding: 18px 22px;
+      border: 1px solid #99f6e4;
+      border-left: 8px solid var(--teal);
+      border-radius: 8px;
+      background: #f0fdfa;
+      color: #0f766e;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 34px;
+    }
+    .cover-card {
+      min-height: 148px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.88);
+      padding: 18px;
+    }
+    .cover-card b { display: block; color: var(--blue); font-size: 20px; margin-bottom: 8px; }
+    .cover-card p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+    }
+    nav a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--blue);
+      font-weight: 750;
+      text-decoration: none;
+    }
+    main { padding: 34px 26px 80px; }
+    section {
+      max-width: 1080px;
+      margin: 0 auto 28px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    h2 {
+      margin: 0 0 16px;
+      color: var(--ink);
+      font-size: 32px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h3 { margin: 0 0 6px; color: var(--blue); font-size: 21px; line-height: 1.3; }
+    p { margin: 12px 0; font-size: 18px; }
+    .lead { color: var(--muted); font-size: 20px; font-weight: 680; }
+    figure { margin: 20px 0 8px; break-inside: avoid; }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    figcaption { margin-top: 8px; color: var(--quiet); font-size: 14px; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .step-card {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 14px;
+      min-height: 134px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      break-inside: avoid;
+    }
+    .step-num {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 900;
+    }
+    .step-card p { margin: 0; color: var(--muted); font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15.5px; }
+    th, td { border: 1px solid var(--line); padding: 12px; vertical-align: top; }
+    th { width: 22%; background: #f8fafc; color: var(--blue); text-align: left; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 10px 0; font-size: 18px; }
+    .mistakes { list-style: none; padding: 0; margin: 8px 0 0; }
+    .mistakes li {
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--amber);
+      border-radius: 8px;
+      padding: 13px 16px;
+      background: #fffaf0;
+      break-inside: avoid;
+    }
+    .mistakes strong { display: block; color: #92400e; margin-bottom: 4px; }
+    .mistakes span { color: var(--muted); }
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 750;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .summary-card {
+      min-height: 178px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 8px 30px 34px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+    @page { size: A4; margin: 15mm 13mm 17mm; }
+    @media print {
+      body { background: #fff; }
+      .cover {
+        min-height: 238mm;
+        padding: 0;
+        border-bottom: 0;
+        break-after: page;
+      }
+      .cover .wrap { padding-top: 8mm; }
+      main { padding: 0; }
+      section {
+        max-width: none;
+        margin: 0 0 10mm;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        break-inside: avoid;
+      }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .step-card { min-height: 116px; }
+      p, li { font-size: 14.5px; line-height: 1.65; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 17px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+      .summary-card { min-height: 130px; font-size: 13px; }
+      .cover-card p { font-size: 13px; }
+      .core { font-size: 17px; }
+      nav a { font-size: 13px; padding: 7px 10px; }
+      footer { display: none; }
+    }
+    @media (max-width: 760px) {
+      .cover-grid, .steps, .summary-grid { grid-template-columns: 1fr; }
+      section { padding: 22px; }
+      main { padding: 24px 16px 56px; }
+      .cover { padding: 44px 18px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-17</div>
+      <h1>AI工具使用<br><span>Tool Use</span></h1>
+      <p class="subtitle">为什么 AI 不只是会聊天，而是开始会查、会算、会操作、会核对？</p>
+      <div class="core">核心一句话：AI工具使用的本质，是把人的自然语言目标，翻译成可执行、可检查的外部工具调用。</div>
+      <div class="cover-grid">
+        <div class="cover-card"><b>它解决什么？</b><p>让 AI 不再只凭记忆回答，而能访问真实数据、调用系统并完成动作。</p></div>
+        <div class="cover-card"><b>它改变什么？</b><p>AI 从“给建议的聊天框”，走向“能办事的协作系统”。</p></div>
+        <div class="cover-card"><b>今天怎么学？</b><p>用“项目助理借工具办出差”的故事，理解工具选择、参数、权限和核对。</p></div>
+      </div>
+      <nav aria-label="目录">
+        $toc
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="why">
+      <h2>1. 为什么这个概念重要？</h2>
+      <p class="lead">真正的 AI 应用，不只是把话说漂亮，而是能在真实世界里可靠地完成一部分工作。</p>
+      $why
+    </section>
+
+    <section id="analogy">
+      <h2>2. 一个直观类比：项目助理不会凭空安排出差</h2>
+      $analogy
+      <figure>
+        <img src="$fig_overview" alt="AI工具使用像项目助理借助搜索、表格、邮件和系统完成任务">
+        <figcaption>图解：AI工具使用把“用户目标”拆成选择工具、填写参数、执行动作和检查结果，而不是靠模型凭空完成任务。</figcaption>
+      </figure>
+      <div class="note">一句话判断：只回答“应该怎么做”的 AI 是顾问；能安全调用工具并核对结果的 AI，才像真正的执行助手。</div>
+    </section>
+
+    <section id="mechanism">
+      <h2>3. 工作原理：一次可靠的工具调用闭环</h2>
+      <p class="lead">工具使用不是“AI 想做什么就做什么”，而是一套从理解、选择、执行到复核的受控流程。</p>
+      <div class="steps">
+        $mechanism
+      </div>
+      <figure>
+        <img src="$fig_loop" alt="AI工具调用从理解任务到核对后回答的六步闭环">
+        <figcaption>图解：可靠的工具调用不是直接猜，而是调用工具、读取回执、核对结果，再把结果转成用户能理解的回答。</figcaption>
+      </figure>
+    </section>
+
+    <section id="terms">
+      <h2>4. 关键术语解释</h2>
+      <table>
+        <thead>
+          <tr><th>术语</th><th>一句专业解释</th><th>一句白话解释</th></tr>
+        </thead>
+        <tbody>
+          $terms
+        </tbody>
+      </table>
+    </section>
+
+    <section id="case">
+      <h2>5. 一个真实应用案例：企业数据分析助手与物流客服</h2>
+      $case
+    </section>
+
+    <section id="mistakes">
+      <h2>6. 常见误区</h2>
+      <ul class="mistakes">
+        $mistakes
+      </ul>
+    </section>
+
+    <section id="summary">
+      <h2>7. 3句话总结</h2>
+      <div class="summary-grid">
+        <div class="summary-card">1. $summary_1</div>
+        <div class="summary-card">2. $summary_2</div>
+        <div class="summary-card">3. $summary_3</div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>8. 复习问题</h2>
+      <ol>
+        $quiz
+      </ol>
+    </section>
+  </main>
+
+  <footer>© 2026 AI每日深度科普 · 本文面向非技术读者，用生活化方式解释 AI 核心概念。</footer>
+</body>
+</html>
+"""
+    )
+    return template.substitute(
+        date=DATE,
+        concept_full=escape(CONCEPT_FULL),
+        toc=toc_html,
+        why=paras(WHY),
+        analogy=paras(ANALOGY),
+        mechanism=mechanism_cards(),
+        terms=term_rows(),
+        case=paras(CASE),
+        mistakes=mistake_items(),
+        summary_1=escape(SUMMARY[0]),
+        summary_2=escape(SUMMARY[1]),
+        summary_3=escape(SUMMARY[2]),
+        quiz=numbered(QUIZ),
+        fig_overview=FIG_OVERVIEW,
+        fig_loop=FIG_LOOP,
+    )
+
+
+def write_email_files() -> None:
+    (ROOT / "email_subject.txt").write_text(
+        "【AI每日深度科普】AI工具使用：为什么AI开始会做事？",
+        encoding="utf-8",
+    )
+    (ROOT / "email_body.txt").write_text(
+        "\n".join(
+            [
+                "今天的主题是 AI工具使用（Tool Use）。",
+                "",
+                "它解释的是：为什么 AI 不只是会聊天，而是能开始查资料、算表格、调用系统、发送请求，并把结果核对后交给人。",
+                "",
+                "附件用“项目助理安排出差”的生活化类比，讲清楚工具选择、参数填写、权限控制、结果核对，以及为什么工具使用是 Agent 和企业 Copilot 的关键基础。",
+                "",
+                "适合：非技术读者、AI初学者、产品经理、投资研究者和正在思考 AI Agent 落地的人阅读。",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def render_pdf() -> None:
+    html_path = ROOT / HTML_NAME
+    pdf_path = ROOT / PDF_NAME
+    html_path.write_text(build_html(), encoding="utf-8")
+    write_email_files()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 1600}, device_scale_factor=1)
+        page.goto(html_path.as_uri(), wait_until="networkidle")
+        page.screenshot(path=str(ROOT / "html_preview.png"), full_page=False)
+        scroll_height = page.evaluate("document.documentElement.scrollHeight")
+        y = max(0, min(int(scroll_height * 0.42), max(0, int(scroll_height) - 1600)))
+        page.evaluate("(scrollY) => window.scrollTo(0, scrollY)", y)
+        page.wait_for_timeout(250)
+        page.screenshot(path=str(ROOT / "html_midpage_preview.png"), full_page=False)
+        page.pdf(
+            path=str(pdf_path),
+            format="A4",
+            print_background=True,
+            prefer_css_page_size=True,
+        )
+        browser.close()
+
+
+if __name__ == "__main__":
+    render_pdf()

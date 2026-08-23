@@ -1,0 +1,10 @@
+今天精选的论文来自 Nature 与 Anthropic 相关研究团队：
+
+Language models transmit behavioural traits through hidden signals in data
+
+一句话推荐理由：
+它揭示了一个被低估的 AI 工程风险：模型生成的数据即使看起来干净，也可能把老师模型的隐藏行为特征传给学生模型。
+
+这对合成数据训练、模型蒸馏、Agent 轨迹训练和企业 AI 数据治理都很重要。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者、产品经理、投资研究和技术团队阅读。

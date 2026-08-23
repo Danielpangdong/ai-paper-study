@@ -1,0 +1,26 @@
+# 2026-06-25 AI Concept Run Summary
+
+- Run time: 2026-06-25 08:11:01 CST / 2026-06-25T08:11:01+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `端云协同（Edge-cloud Collaboration）`.
+- Rationale: continued the inference/deployment infrastructure learning path after `边缘AI`, `批处理与吞吐量`, `推理路由`, and `AI芯片`; differentiated from `边缘AI` by focusing on system-level task placement across device, edge node, and cloud rather than only near-device execution.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/2026-06-25_端云协同（Edge-cloud Collaboration）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/2026-06-25_端云协同（Edge-cloud Collaboration）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/chatgpt_edge_cloud_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/chatgpt_edge_cloud_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-25_EdgeCloudCollaboration/email_body.txt`
+- Visuals: generated text-free base visuals with ChatGPT Image 2.0 under `/Users/mac/.codex/generated_images/019efc15-1922-73b2-a55e-cc51ba34b38d/`, copied them into the report directory, and overlaid final Chinese labels locally for text accuracy.
+- Sources checked: Apple Private Cloud Compute blog and security guide, Google AI Edge, NVIDIA Edge Computing, Microsoft Azure Edge Computing, and Azure IoT Edge.
+- Verification:
+  - `python3 reports/2026-06-25_EdgeCloudCollaboration/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 10 A4 pages and a 4,246,023 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 image assets.
+  - HTML checks confirmed two inline base64 image data URIs, two image tags, eight table-of-contents links, and all required sections.
+  - PDF pages rendered to `rendered/page-*.png`; a contact sheet was generated at `rendered/contact_sheet.png` and spot-checked for layout issues.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19efc1d8011aecea`.
+- Continuity note: avoid repeating `端云协同`, `边缘AI`, `AI芯片`, `推理路由`, `批处理与吞吐量`, `模型压缩`, `推测解码`, and `模型量化` soon. Strong next candidates for the learning path: `模型服务监控（Model Serving Observability）`, `负载均衡（Load Balancing）`, `服务等级目标（SLO）`, or return to a core model-principle topic such as `注意力机制（Attention）` if the series should rebalance from infrastructure back to model fundamentals.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

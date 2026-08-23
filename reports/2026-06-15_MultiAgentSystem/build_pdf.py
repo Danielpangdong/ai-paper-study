@@ -1,0 +1,539 @@
+from __future__ import annotations
+
+from html import escape
+from pathlib import Path
+from string import Template
+
+from playwright.sync_api import sync_playwright
+
+
+ROOT = Path(__file__).resolve().parent
+DATE = "2026-06-15"
+CONCEPT_CN = "多Agent系统"
+CONCEPT_EN = "Multi-Agent System"
+CONCEPT_FULL = f"{CONCEPT_CN}（{CONCEPT_EN}）"
+HTML_NAME = f"{DATE}_{CONCEPT_FULL}.html"
+PDF_NAME = f"{DATE}_{CONCEPT_FULL}.pdf"
+FIG_TEAM = "chatgpt_multi_agent_team.png"
+FIG_FLOW = "chatgpt_multi_agent_flow.png"
+
+
+WHY = [
+    "如果只让一个 AI 从头到尾完成复杂任务，它就像让一个人同时当产品经理、资料员、工程师、编辑和质检员。它可能很快，但也容易漏步骤、忘背景、把未经核实的内容直接写进结果里。",
+    "多Agent系统要解决的，是复杂任务里的“分工与协作”问题：谁负责规划，谁负责查资料，谁负责写作，谁负责调用工具，谁负责检查事实，谁负责最后交付。它让 AI 从“单个聪明助手”，变成“有角色、有流程、有检查机制的 AI 项目组”。",
+    "这件事对 AI 行业很重要，因为未来很多 AI 应用都不是一次聊天，而是跨工具、跨资料、跨步骤的持续工作：写代码、做研究、处理客服、生成报告、分析数据、运营业务系统，都需要多种能力互相配合。",
+]
+
+ANALOGY = [
+    "想象老师布置了一个小组作业：做一份关于城市交通的研究报告。如果只有一个同学包办，他要找资料、画图、写正文、检查错别字、准备展示。只要中间某一步赶时间，整份报告就会出问题。",
+    "更靠谱的方式是组成项目组：组长先拆任务；资料同学去找可靠来源；数据同学整理表格；写作同学把内容讲清楚；审校同学检查逻辑和事实；最后组长统一风格并交作业。",
+    "多Agent系统也是这个道理。每个 Agent 不一定都“更聪明”，但它们可以各自专注一个角色。真正的关键不是人多，而是分工清楚、信息同步、互相检查，并且有人负责最后收口。",
+]
+
+MECHANISM = [
+    ("确定目标", "先说清楚最终要交付什么、给谁看、成功标准是什么。没有清楚目标，后面的分工都会跑偏。"),
+    ("任务拆解", "协调器把大任务拆成可执行的小任务，例如“查资料”“写提纲”“生成代码”“核对引用”。"),
+    ("角色分派", "不同 Agent 拿到不同职责。有的负责计划，有的负责检索，有的负责写作，有的负责审查。"),
+    ("共享上下文", "所有 Agent 必须看到关键事实、约束、进度和中间结果。否则它们会像没开过会的同事，各说各话。"),
+    ("调用工具", "Agent 可以使用搜索、数据库、代码执行、表格、邮件、文件系统等工具，把想法变成可验证的行动。"),
+    ("交叉检查", "一个 Agent 的输出可以交给另一个 Agent 检查，例如事实核查、边界测试、格式校对和风险识别。"),
+    ("统一交付", "协调器把多个结果合并，解决冲突，统一口径，避免用户收到一堆互相矛盾的片段。"),
+    ("记录复盘", "系统保存过程、证据、错误和人工修改意见，用来评估质量，也方便下一次改进。"),
+]
+
+TERMS = [
+    ("Agent 智能体", "专业解释：能够基于目标进行规划、调用工具并输出结果的软件实体。", "白话解释：不是只会回答问题的聊天框，而是会接任务、办步骤的 AI 助手。"),
+    ("Coordinator 协调器", "专业解释：负责拆解任务、分配角色、跟踪进度和汇总输出的控制模块或主 Agent。", "白话解释：像项目经理，不能什么都亲自做，但要保证团队不跑偏。"),
+    ("Role 角色", "专业解释：为 Agent 设定的职责边界、能力范围和输出要求。", "白话解释：告诉某个 AI“你今天只负责查资料，不要顺手写结论”。"),
+    ("Task Decomposition 任务拆解", "专业解释：把复杂目标拆成多个较小、可执行、可检查的子任务。", "白话解释：把“写一份报告”拆成找资料、列提纲、写正文、查事实。"),
+    ("Shared Memory 共享记忆", "专业解释：多个 Agent 可读写的上下文、事实、中间结果和状态记录。", "白话解释：团队共用的白板，大家都在上面看进度和关键资料。"),
+    ("Handoff 交接", "专业解释：一个 Agent 将任务结果、上下文和下一步要求传递给另一个 Agent。", "白话解释：像交接班，不能只说“我做完了”，还要说清楚做了什么、还缺什么。"),
+    ("Verifier 校验者", "专业解释：专门检查输出质量、事实可靠性、格式合规和风险问题的 Agent 或规则。", "白话解释：团队里的审稿人，专门挑错和补漏洞。"),
+    ("Orchestration 编排", "专业解释：设计多个 Agent 的执行顺序、并行关系、工具调用和异常处理方式。", "白话解释：像排练一场演出，谁先上、谁接话、谁负责救场，都要安排好。"),
+]
+
+CASE = [
+    "一个真实应用是“AI 研究报告助理”。用户只说一句：“帮我分析一家公司的 AI 战略。”如果让一个 Agent 直接写，很可能会把旧新闻、新观点、猜测和事实混在一起。",
+    "多Agent系统会更像研究团队：规划 Agent 先列出研究问题；检索 Agent 找公司公告、财报、访谈和可信新闻；数据 Agent 整理收入、投入和产品线；写作 Agent 组织成可读报告；校验 Agent 检查引用是否真实、结论是否过度；协调器最后统一结构并生成可交付文件。",
+    "这样做的价值，不只是“多几个 AI 同时干活”。真正的价值是把复杂工作变得可追踪：每个结论来自哪里、哪个步骤检查过、哪里还需要人工判断，都能被看见。",
+]
+
+MISTAKES = [
+    ("误区一：Agent 越多，系统就越聪明。", "不一定。Agent 太多会增加沟通成本，还可能重复劳动、互相误导。好的系统看分工质量，不看数量。"),
+    ("误区二：多Agent系统就是 AGI。", "不是。它仍然是工程系统，只是把多个有限能力的 AI 组织起来。它可以更会做事，但不等于拥有通用智能。"),
+    ("误区三：让几个 Agent 互相投票，答案就一定可靠。", "投票只能降低部分偶然错误。如果所有 Agent 都用了同一份错误资料，它们可能一起错。关键仍然是证据、工具和检查标准。"),
+    ("误区四：共享记忆等于无限记忆。", "共享记忆需要设计：什么能写入、谁能修改、过期信息如何处理、冲突事实如何标记。否则记忆会变成混乱仓库。"),
+    ("误区五：协调器只负责转发消息。", "协调器要理解目标、控制范围、处理冲突、决定返工和最终收口。只会转发的协调器，很容易制造一堆碎片。"),
+    ("误区六：所有 AI 任务都适合多Agent。", "简单问答、一次性改写、低风险小任务，用一个模型更快更省。多Agent适合复杂、重复、高价值、需要检查的任务。"),
+]
+
+SUMMARY = [
+    "多Agent系统的本质，是把多个 AI 助手组织成有分工、有共享事实、有质量检查的项目组。",
+    "它的核心难点不是“让更多 Agent 说话”，而是任务拆解、上下文同步、工具调用、冲突处理和最终负责。",
+    "理解多Agent系统，可以帮助普通人判断：哪些 AI 应用只是热闹的自动对话，哪些真正具备稳定完成复杂工作的工程结构。",
+]
+
+QUIZ = [
+    "如果把多Agent系统比作小组作业，为什么“组长”或“协调器”比普通转发消息更重要？",
+    "为什么 Agent 数量增加后，系统可能反而更容易出错？请用“上下文同步”或“交接”解释。",
+    "如果你要设计一个“自动生成行业研究报告”的多Agent系统，你会设置哪些角色？每个角色应该负责什么？",
+]
+
+
+def paras(items: list[str]) -> str:
+    return "\n".join(f"<p>{escape(item)}</p>" for item in items)
+
+
+def mechanism_cards() -> str:
+    cards: list[str] = []
+    for idx, (title, body) in enumerate(MECHANISM, 1):
+        cards.append(
+            f"""
+            <article class="step-card">
+              <div class="step-num">{idx:02d}</div>
+              <div>
+                <h3>{escape(title)}</h3>
+                <p>{escape(body)}</p>
+              </div>
+            </article>
+            """
+        )
+    return "\n".join(cards)
+
+
+def term_rows() -> str:
+    return "\n".join(
+        f"<tr><th>{escape(term)}</th><td>{escape(pro)}</td><td>{escape(plain)}</td></tr>"
+        for term, pro, plain in TERMS
+    )
+
+
+def mistake_items() -> str:
+    return "\n".join(
+        f"<li><strong>{escape(title)}</strong><span>{escape(body)}</span></li>"
+        for title, body in MISTAKES
+    )
+
+
+def numbered(items: list[str]) -> str:
+    return "\n".join(f"<li>{escape(item)}</li>" for item in items)
+
+
+def build_html() -> str:
+    toc = [
+        ("why", "为什么重要"),
+        ("analogy", "直观类比"),
+        ("mechanism", "工作原理"),
+        ("terms", "关键术语"),
+        ("case", "真实案例"),
+        ("mistakes", "常见误区"),
+        ("summary", "3句话总结"),
+        ("quiz", "复习问题"),
+    ]
+    toc_html = "\n".join(f'<a href="#{slug}">{label}</a>' for slug, label in toc)
+    template = Template(
+        """<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${date}_${concept_full}</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #4b5563;
+      --quiet: #64748b;
+      --line: #d7e0ea;
+      --paper: #ffffff;
+      --soft: #f7fafc;
+      --blue: #0f3b7a;
+      --teal: #0f8b8d;
+      --green: #23845c;
+      --amber: #d97706;
+      --red: #c2410c;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: #edf2f7;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.75;
+    }
+    .cover {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 64px 26px 44px;
+    }
+    .wrap { max-width: 1080px; margin: 0 auto; }
+    .eyebrow {
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    h1 {
+      max-width: 980px;
+      margin: 18px 0 14px;
+      color: var(--ink);
+      font-size: clamp(42px, 6.6vw, 82px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    h1 span { color: var(--blue); }
+    .subtitle {
+      max-width: 900px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(22px, 3.2vw, 34px);
+      line-height: 1.35;
+      font-weight: 650;
+    }
+    .core {
+      max-width: 940px;
+      margin-top: 28px;
+      padding: 18px 22px;
+      border: 1px solid #99f6e4;
+      border-left: 8px solid var(--teal);
+      border-radius: 8px;
+      background: #f0fdfa;
+      color: #0f766e;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 34px;
+    }
+    .cover-card {
+      min-height: 146px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      padding: 18px;
+    }
+    .cover-card b { display: block; color: var(--blue); font-size: 20px; margin-bottom: 8px; }
+    .cover-card p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+    nav {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+    }
+    nav a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--blue);
+      font-weight: 750;
+      text-decoration: none;
+    }
+    main { padding: 34px 26px 80px; }
+    section {
+      max-width: 1080px;
+      margin: 0 auto 28px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    h2 {
+      margin: 0 0 16px;
+      color: var(--ink);
+      font-size: 32px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h3 { margin: 0 0 6px; color: var(--blue); font-size: 21px; line-height: 1.3; }
+    p { margin: 12px 0; font-size: 18px; }
+    .lead { color: var(--muted); font-size: 20px; font-weight: 680; }
+    figure { margin: 20px 0 8px; break-inside: avoid; }
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+    figcaption { margin-top: 8px; color: var(--quiet); font-size: 14px; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .step-card {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 14px;
+      min-height: 132px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      break-inside: avoid;
+    }
+    .step-num {
+      display: grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 900;
+    }
+    .step-card p { margin: 0; color: var(--muted); font-size: 16px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15.5px; }
+    th, td { border: 1px solid var(--line); padding: 12px; vertical-align: top; }
+    th { width: 22%; background: #f8fafc; color: var(--blue); text-align: left; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 10px 0; font-size: 18px; }
+    .mistakes { list-style: none; padding: 0; margin: 8px 0 0; }
+    .mistakes li {
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--amber);
+      border-radius: 8px;
+      padding: 13px 16px;
+      background: #fffaf0;
+      break-inside: avoid;
+    }
+    .mistakes strong { display: block; color: #9a3412; margin-bottom: 4px; }
+    .mistakes span { color: var(--muted); }
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 750;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .summary-card {
+      min-height: 178px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 17px;
+      font-weight: 700;
+    }
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 8px 30px 34px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+    @page { size: A4; margin: 15mm 13mm 17mm; }
+    @media print {
+      body { background: #fff; }
+      .cover {
+        min-height: 238mm;
+        padding: 0;
+        border-bottom: 0;
+        break-after: page;
+      }
+      .cover .wrap { padding-top: 8mm; }
+      main { padding: 0; }
+      section {
+        max-width: none;
+        margin: 0 0 10mm;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        break-inside: avoid;
+      }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .step-card { min-height: 116px; }
+      p, li { font-size: 14.5px; line-height: 1.65; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 17px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+      .summary-card { min-height: 130px; font-size: 13px; }
+      .cover-card p { font-size: 13px; }
+      .core { font-size: 17px; }
+      nav a { font-size: 13px; padding: 7px 10px; }
+      footer { display: none; }
+    }
+    @media (max-width: 760px) {
+      .cover-grid, .steps, .summary-grid { grid-template-columns: 1fr; }
+      section { padding: 22px; }
+      main { padding: 24px 16px 56px; }
+      .cover { padding: 44px 18px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-15</div>
+      <h1>多Agent系统<br><span>Multi-Agent System</span></h1>
+      <p class="subtitle">为什么未来的 AI 不只是一个助手，而像一支会分工的项目组？</p>
+      <div class="core">核心一句话：多Agent系统的本质，是把多个AI助手组织起来，让它们分工、共享信息、互相检查，并由一个机制负责最终收口。</div>
+      <div class="cover-grid">
+        <div class="cover-card"><b>它解决什么？</b><p>复杂任务不能只靠一次回答，需要拆步骤、分角色、查资料和做质检。</p></div>
+        <div class="cover-card"><b>它改变什么？</b><p>AI 从聊天工具升级成能参与业务流程的协作系统。</p></div>
+        <div class="cover-card"><b>今天怎么学？</b><p>用“小组作业”和“项目经理”理解多Agent的直觉与边界。</p></div>
+      </div>
+      <nav aria-label="目录">
+        $toc
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="why">
+      <h2>1. 为什么这个概念重要？</h2>
+      <p class="lead">AI 正在从“回答问题”走向“完成复杂工作”。多Agent系统解释了这一步为什么需要组织设计。</p>
+      $why
+    </section>
+
+    <section id="analogy">
+      <h2>2. 一个直观类比：小组作业不是人越多越好</h2>
+      $analogy
+      <figure>
+        <img src="$fig_team" alt="多Agent系统像一支会分工的AI项目组">
+        <figcaption>图解：多Agent系统的直觉不是“堆更多AI”，而是像项目组一样设定角色、同步上下文、互相检查并统一交付。</figcaption>
+      </figure>
+      <div class="note">判断一个多Agent系统是否靠谱，可以先问四个问题：谁拆任务？信息放在哪里？谁检查事实？最后谁负责交付？</div>
+    </section>
+
+    <section id="mechanism">
+      <h2>3. 工作原理：从一个目标到可交付结果</h2>
+      <p class="lead">多Agent系统通常不是让一群 AI 随便聊天，而是把目标、角色、工具、记忆和检查点编排起来。</p>
+      <div class="steps">
+        $mechanism
+      </div>
+      <figure>
+        <img src="$fig_flow" alt="多Agent系统从目标输入到统一交付的工作流">
+        <figcaption>图解：好的多Agent系统需要明确分工、共享事实、质量检查和最终负责人；风险主要来自上下文丢失、重复劳动、互相误导和无人收口。</figcaption>
+      </figure>
+    </section>
+
+    <section id="terms">
+      <h2>4. 关键术语解释</h2>
+      <table>
+        <thead>
+          <tr><th>术语</th><th>一句专业解释</th><th>一句白话解释</th></tr>
+        </thead>
+        <tbody>
+          $terms
+        </tbody>
+      </table>
+    </section>
+
+    <section id="case">
+      <h2>5. 一个真实应用案例：AI 研究报告助理</h2>
+      $case
+    </section>
+
+    <section id="mistakes">
+      <h2>6. 常见误区</h2>
+      <ul class="mistakes">
+        $mistakes
+      </ul>
+    </section>
+
+    <section id="summary">
+      <h2>7. 3句话总结</h2>
+      <div class="summary-grid">
+        <div class="summary-card">1. $summary_1</div>
+        <div class="summary-card">2. $summary_2</div>
+        <div class="summary-card">3. $summary_3</div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>8. 复习问题</h2>
+      <ol>
+        $quiz
+      </ol>
+    </section>
+  </main>
+
+  <footer>© 2026 AI每日深度科普 · 本文面向非技术读者，用生活化方式解释 AI 核心概念。</footer>
+</body>
+</html>
+"""
+    )
+    return template.substitute(
+        date=DATE,
+        concept_full=escape(CONCEPT_FULL),
+        toc=toc_html,
+        why=paras(WHY),
+        analogy=paras(ANALOGY),
+        mechanism=mechanism_cards(),
+        terms=term_rows(),
+        case=paras(CASE),
+        mistakes=mistake_items(),
+        summary_1=escape(SUMMARY[0]),
+        summary_2=escape(SUMMARY[1]),
+        summary_3=escape(SUMMARY[2]),
+        quiz=numbered(QUIZ),
+        fig_team=FIG_TEAM,
+        fig_flow=FIG_FLOW,
+    )
+
+
+def write_email_files() -> None:
+    (ROOT / "email_subject.txt").write_text(
+        "【AI每日深度科普】多Agent系统：为什么AI团队比一个AI更难也更强？",
+        encoding="utf-8",
+    )
+    (ROOT / "email_body.txt").write_text(
+        "\n".join(
+            [
+                "今天的主题是多Agent系统（Multi-Agent System）。",
+                "",
+                "它解释的是：当AI从一个聊天助手变成一支会分工的项目组时，为什么分工、共享上下文、质量检查和最终负责人比“Agent数量”更重要。",
+                "",
+                "附件用小组作业和AI研究报告助理两个类比，讲清楚多Agent系统如何工作、常见误区在哪里，以及普通人应该如何判断一个AI协作系统是否可靠。",
+                "",
+                "适合：非技术读者、AI初学者、产品经理、投资研究者和正在思考AI自动化落地的人阅读。",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
+def render_pdf() -> None:
+    html_path = ROOT / HTML_NAME
+    pdf_path = ROOT / PDF_NAME
+    html_path.write_text(build_html(), encoding="utf-8")
+    write_email_files()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1440, "height": 1600}, device_scale_factor=1)
+        page.goto(html_path.as_uri(), wait_until="networkidle")
+        page.screenshot(path=str(ROOT / "html_preview.png"), full_page=False)
+        scroll_height = page.evaluate("document.documentElement.scrollHeight")
+        y = max(0, min(int(scroll_height * 0.42), max(0, int(scroll_height) - 1600)))
+        page.evaluate("(scrollY) => window.scrollTo(0, scrollY)", y)
+        page.wait_for_timeout(250)
+        page.screenshot(path=str(ROOT / "html_midpage_preview.png"), full_page=False)
+        page.pdf(
+            path=str(pdf_path),
+            format="A4",
+            print_background=True,
+            prefer_css_page_size=True,
+        )
+        browser.close()
+
+
+if __name__ == "__main__":
+    render_pdf()

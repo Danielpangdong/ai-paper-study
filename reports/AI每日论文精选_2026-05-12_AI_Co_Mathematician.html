@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选｜AI Co-Mathematician</title>
+  <style>
+    :root {
+      --ink: #111318;
+      --muted: #5b6270;
+      --line: #dfe3ea;
+      --paper: #f7f8fa;
+      --card: #ffffff;
+      --accent: #1f6feb;
+      --accent-2: #c83b3b;
+      --green: #177245;
+      --gold: #a56a00;
+      --soft-blue: #eaf2ff;
+      --soft-red: #fff0f0;
+      --soft-green: #edf8f1;
+      --soft-gold: #fff7e6;
+      --shadow: 0 18px 48px rgba(17, 19, 24, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.65;
+      letter-spacing: 0;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 18px 56px;
+    }
+
+    .hero {
+      background: #10141c;
+      color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      min-height: 430px;
+    }
+
+    .hero-copy {
+      padding: 42px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 32px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: 8px;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      color: #dce7ff;
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    h1 {
+      margin: 18px 0 14px;
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.03;
+      letter-spacing: 0;
+      max-width: 760px;
+    }
+
+    .subtitle {
+      font-size: 19px;
+      color: #d7dce5;
+      max-width: 720px;
+      margin: 0;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      color: #d8deea;
+      font-size: 13px;
+    }
+
+    .hero-meta div {
+      border-top: 1px solid rgba(255,255,255,0.16);
+      padding-top: 10px;
+    }
+
+    .hero-art {
+      background:
+        radial-gradient(circle at 20% 18%, rgba(31,111,235,0.38), transparent 26%),
+        radial-gradient(circle at 92% 18%, rgba(200,59,59,0.28), transparent 28%),
+        linear-gradient(135deg, #151c29 0%, #0c0f15 100%);
+      padding: 34px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .section {
+      margin-top: 28px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 26px rgba(17, 19, 24, 0.04);
+      padding: 28px;
+    }
+
+    .section h2 {
+      margin: 0 0 16px;
+      font-size: 26px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .section h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      font-size: 18px;
+      color: #2a303a;
+      margin: 0 0 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .card.blue { background: var(--soft-blue); border-color: #cfe0ff; }
+    .card.red { background: var(--soft-red); border-color: #ffd0d0; }
+    .card.green { background: var(--soft-green); border-color: #ccebd7; }
+    .card.gold { background: var(--soft-gold); border-color: #ffe4ad; }
+
+    .card .label {
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 750;
+      letter-spacing: 0;
+      margin-bottom: 4px;
+    }
+
+    .card .big {
+      font-size: 28px;
+      font-weight: 780;
+      line-height: 1.15;
+      letter-spacing: 0;
+      margin-bottom: 8px;
+    }
+
+    .quote {
+      border-left: 4px solid var(--accent);
+      background: #f2f6ff;
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 19px;
+      font-weight: 720;
+      margin: 18px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #303744;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+      background: #f5f7fa;
+    }
+
+    .term {
+      display: grid;
+      grid-template-columns: 190px 1fr 1fr;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 14px 0;
+    }
+
+    .term:last-child { border-bottom: 0; }
+    .term strong { font-size: 16px; }
+    .muted { color: var(--muted); }
+
+    .bullets {
+      padding-left: 20px;
+      margin: 10px 0 0;
+    }
+
+    .bullets li { margin: 8px 0; }
+
+    .source-list li { margin: 9px 0; }
+
+    .svg-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      margin: 18px 0;
+      overflow: hidden;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      padding: 0 14px 14px;
+      margin-top: -4px;
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+      margin-top: 18px;
+      padding-top: 14px;
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-copy { padding: 30px 22px; }
+      .hero-art { border-left: 0; border-top: 1px solid rgba(255,255,255,0.12); }
+      .hero-meta, .grid, .grid.two { grid-template-columns: 1fr; }
+      .section { padding: 22px 18px; }
+      .term { grid-template-columns: 1fr; gap: 6px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="hero-copy">
+        <div>
+          <div class="kicker">AI每日论文精选 · 2026-05-12</div>
+          <h1>AI Co-Mathematician：AI 不再只回答问题，而是开始参与研究</h1>
+          <p class="subtitle">Google DeepMind 的这篇论文把数学研究变成一个“有项目经理、有分工、有审稿、有失败记录”的多智能体工作室。</p>
+        </div>
+        <div class="hero-meta">
+          <div><strong>论文</strong><br>AI Co-Mathematician: Accelerating Mathematicians with Agentic AI</div>
+          <div><strong>作者</strong><br>Daniel Zheng, Ingrid von Glehn, Yori Zwols, Pushmeet Kohli 等 18 人</div>
+          <div><strong>机构</strong><br>Google DeepMind / Google</div>
+          <div><strong>平台</strong><br>arXiv:2605.06651 · 2026-05-07</div>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="AI Co-Mathematician visual">
+        <svg width="100%" viewBox="0 0 520 420" role="img" aria-label="多智能体数学研究工作室示意图">
+          <defs>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#000" flood-opacity="0.25"/>
+            </filter>
+          </defs>
+          <rect x="42" y="34" width="436" height="352" rx="18" fill="#f7f8fa" filter="url(#softShadow)"/>
+          <rect x="70" y="64" width="380" height="48" rx="10" fill="#111318"/>
+          <text x="260" y="94" text-anchor="middle" fill="#fff" font-size="20" font-weight="700">项目协调者 Agent</text>
+          <path d="M260 112 L260 152" stroke="#1f6feb" stroke-width="4"/>
+          <rect x="72" y="152" width="112" height="68" rx="12" fill="#eaf2ff" stroke="#9fc0ff"/>
+          <rect x="204" y="152" width="112" height="68" rx="12" fill="#fff7e6" stroke="#ffd17a"/>
+          <rect x="336" y="152" width="112" height="68" rx="12" fill="#edf8f1" stroke="#9fd8b3"/>
+          <text x="128" y="181" text-anchor="middle" fill="#111318" font-size="15" font-weight="700">文献搜索</text>
+          <text x="128" y="202" text-anchor="middle" fill="#5b6270" font-size="12">找已有定理</text>
+          <text x="260" y="181" text-anchor="middle" fill="#111318" font-size="15" font-weight="700">计算探索</text>
+          <text x="260" y="202" text-anchor="middle" fill="#5b6270" font-size="12">试例子找规律</text>
+          <text x="392" y="181" text-anchor="middle" fill="#111318" font-size="15" font-weight="700">证明尝试</text>
+          <text x="392" y="202" text-anchor="middle" fill="#5b6270" font-size="12">构造推理链</text>
+          <path d="M128 220 L128 264 M260 220 L260 264 M392 220 L392 264" stroke="#9aa4b2" stroke-width="3"/>
+          <rect x="72" y="264" width="376" height="52" rx="12" fill="#fff0f0" stroke="#ffb8b8"/>
+          <text x="260" y="296" text-anchor="middle" fill="#111318" font-size="17" font-weight="700">审稿 Agent：挑错、追问、要求补证</text>
+          <path d="M260 316 L260 348" stroke="#c83b3b" stroke-width="4"/>
+          <rect x="120" y="348" width="280" height="34" rx="17" fill="#111318"/>
+          <text x="260" y="371" text-anchor="middle" fill="#fff" font-size="15" font-weight="700">人类数学家做最后判断与创造性补洞</text>
+        </svg>
+      </div>
+    </header>
+
+    <section class="section" id="paper-card">
+      <h2>1. 标题区</h2>
+      <div class="grid two">
+        <div class="card blue">
+          <div class="label">论文信息卡</div>
+          <p><strong>英文标题：</strong>AI Co-Mathematician: Accelerating Mathematicians with Agentic AI</p>
+          <p><strong>中文标题：</strong>AI 协同数学家：用智能体 AI 加速数学家的研究工作</p>
+          <p><strong>发布时间：</strong>2026 年 5 月 7 日提交 arXiv</p>
+          <p><strong>链接：</strong><a href="https://arxiv.org/abs/2605.06651">https://arxiv.org/abs/2605.06651</a></p>
+        </div>
+        <div class="card">
+          <div class="label">一句背景</div>
+          <p>过去的 AI 数学系统像“考试选手”：给它一道题，它尽量一次性答对。AI Co-Mathematician 更像“研究组”：它会和人讨论目标，分配多条研究线，保留失败尝试，再把结果整理成数学家能继续使用的材料。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">因为它把 AI Agent 的核心问题讲到了一个很清楚的位置：真正重要的不是“模型会不会说聪明话”，而是“它能不能在长期、复杂、不确定的工作里组织协作”。</p>
+      <div class="grid">
+        <div class="card blue">
+          <div class="label">行业意义</div>
+          <div class="big">从聊天框到工作室</div>
+          <p>它不是一个更会做题的聊天机器人，而是一个有状态的研究空间。未来法律、药物、芯片、咨询、投研工具也可能走这条路。</p>
+        </div>
+        <div class="card green">
+          <div class="label">技术突破</div>
+          <div class="big">48%</div>
+          <p>论文报告它在 FrontierMath Tier 4 上达到 48%，这是研究级数学难题上的强信号。更关键的是，提升来自系统编排，而不只是基座模型。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">长期价值</div>
+          <div class="big">协作范式</div>
+          <p>它把“失败的假设”“未完成的路线”“审稿反馈”保存下来。研究的真实价值往往不只在答案，也在知道哪些路走不通。</p>
+        </div>
+      </div>
+      <p>这篇论文值得普通读者关注，是因为它回答了一个更大的问题：当 AI 进入知识工作深水区，它应该只是一个超级搜索框，还是一个能帮人持续推进项目的协作者？AI Co-Mathematician 给出的答案是后者。</p>
+    </section>
+
+    <section class="section" id="one-line">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文本质上是在把 AI 变成一个会分工、会试错、会记录失败、会接受审稿的“数学研究小组”。</div>
+      <p>如果用生活类比：以前的 AI 像你临时问一个学霸“这题怎么做”；这篇论文里的系统像你请来一个研究团队，有人查资料，有人写代码，有人想证明，有人专门挑错，最后你作为负责人判断哪条路值得继续。</p>
+    </section>
+
+    <section class="section" id="contribution">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid two">
+        <div class="card">
+          <div class="label">提出了什么</div>
+          <p>一个面向数学研究的多智能体工作台。它有项目协调者、工作流协调者、文献搜索、代码探索、证明生成、审稿检查等角色。</p>
+        </div>
+        <div class="card">
+          <div class="label">解决了什么问题</div>
+          <p>开放式研究不是“单题单答”。人类研究会反复修正目标、保留失败路径、从半成品里获得灵感。传统聊天式 AI 很难承载这种长期过程。</p>
+        </div>
+        <div class="card">
+          <div class="label">与旧方法区别</div>
+          <p>旧方法常追求一次性生成答案；它追求持续推进研究。重点不只是输出最终证明，而是形成可检查、可复用、可接力的研究资产。</p>
+        </div>
+        <div class="card">
+          <div class="label">为什么更好</div>
+          <p>复杂问题通常需要并行探索。就像创业公司不会只让一个人同时做产品、销售、财务和法务，AI 研究系统也需要分工和审查。</p>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>维度</th>
+            <th>传统聊天式 AI</th>
+            <th>AI Co-Mathematician</th>
+            <th>为什么重要</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>工作形态</td>
+            <td>一次问答</td>
+            <td>有状态项目空间</td>
+            <td>研究需要跨天、跨步骤、跨材料积累</td>
+          </tr>
+          <tr>
+            <td>任务处理</td>
+            <td>单线程生成</td>
+            <td>多条工作流并行推进</td>
+            <td>复杂问题常靠同时探索多条路线</td>
+          </tr>
+          <tr>
+            <td>错误处理</td>
+            <td>用户自己发现</td>
+            <td>审稿 Agent 主动质疑</td>
+            <td>数学、法律、医疗等场景不能只靠“看起来合理”</td>
+          </tr>
+          <tr>
+            <td>失败记录</td>
+            <td>容易被上下文挤掉</td>
+            <td>失败假设被保存</td>
+            <td>失败路径本身能避免重复劳动，也可能启发新路线</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="how">
+      <h2>5. 工作原理：像真实研究组一样运转</h2>
+      <p class="lead">这套系统的关键，不是“让一个模型更努力想”，而是把研究过程拆成一套可以管理的协作机制。</p>
+
+      <div class="svg-wrap">
+        <svg width="100%" viewBox="0 0 980 380" role="img" aria-label="AI Co-Mathematician 工作流">
+          <rect width="980" height="380" fill="#ffffff"/>
+          <text x="40" y="44" font-size="24" font-weight="780" fill="#111318">从模糊想法到可审查研究资产</text>
+          <g transform="translate(40,80)">
+            <rect x="0" y="0" width="150" height="76" rx="12" fill="#eaf2ff" stroke="#9fc0ff"/>
+            <text x="75" y="32" text-anchor="middle" font-size="17" font-weight="700">1. 澄清目标</text>
+            <text x="75" y="56" text-anchor="middle" font-size="12" fill="#5b6270">先问清楚要证明什么</text>
+            <path d="M160 38 H218" stroke="#9aa4b2" stroke-width="3" marker-end="url(#arrow)"/>
+          </g>
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L8,3 z" fill="#9aa4b2"/>
+            </marker>
+          </defs>
+          <g transform="translate(260,80)">
+            <rect x="0" y="0" width="150" height="76" rx="12" fill="#111318"/>
+            <text x="75" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#fff">2. 拆分任务</text>
+            <text x="75" y="56" text-anchor="middle" font-size="12" fill="#d7dce5">项目协调者分派路线</text>
+            <path d="M160 38 H218" stroke="#9aa4b2" stroke-width="3" marker-end="url(#arrow)"/>
+          </g>
+          <g transform="translate(480,38)">
+            <rect x="0" y="0" width="170" height="68" rx="12" fill="#fff7e6" stroke="#ffd17a"/>
+            <text x="85" y="30" text-anchor="middle" font-size="16" font-weight="700">文献线</text>
+            <text x="85" y="51" text-anchor="middle" font-size="12" fill="#5b6270">已有结果在哪里</text>
+          </g>
+          <g transform="translate(480,126)">
+            <rect x="0" y="0" width="170" height="68" rx="12" fill="#edf8f1" stroke="#9fd8b3"/>
+            <text x="85" y="30" text-anchor="middle" font-size="16" font-weight="700">计算线</text>
+            <text x="85" y="51" text-anchor="middle" font-size="12" fill="#5b6270">跑例子、找反例</text>
+          </g>
+          <g transform="translate(480,214)">
+            <rect x="0" y="0" width="170" height="68" rx="12" fill="#eaf2ff" stroke="#9fc0ff"/>
+            <text x="85" y="30" text-anchor="middle" font-size="16" font-weight="700">证明线</text>
+            <text x="85" y="51" text-anchor="middle" font-size="12" fill="#5b6270">构造严密推理</text>
+          </g>
+          <path d="M650 72 C705 72 705 170 760 170" stroke="#9aa4b2" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M650 160 H760" stroke="#9aa4b2" stroke-width="3" marker-end="url(#arrow)"/>
+          <path d="M650 248 C705 248 705 170 760 170" stroke="#9aa4b2" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <g transform="translate(760,126)">
+            <rect x="0" y="0" width="170" height="88" rx="12" fill="#fff0f0" stroke="#ffb8b8"/>
+            <text x="85" y="32" text-anchor="middle" font-size="17" font-weight="700">3. 审稿检查</text>
+            <text x="85" y="57" text-anchor="middle" font-size="12" fill="#5b6270">挑错、补证、标注不确定</text>
+          </g>
+          <g transform="translate(252,304)">
+            <rect x="0" y="0" width="476" height="44" rx="22" fill="#f5f7fa" stroke="#dfe3ea"/>
+            <text x="238" y="29" text-anchor="middle" font-size="15" fill="#303744" font-weight="700">所有成功与失败路线进入持久化项目记录，供人类继续判断</text>
+          </g>
+          <path d="M845 214 C845 330 734 326 728 326" stroke="#c83b3b" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        </svg>
+        <div class="caption">图 1：把研究流程拆成澄清、分工、并行探索、审稿、归档五个环节。重点是“组织能力”，不是单次回答。</div>
+      </div>
+
+      <h3>用一个高中生也能懂的比喻</h3>
+      <p>想象你要参加科学竞赛，题目很难。你不会只找一个人闭门写答案。更合理的做法是：班长先和老师确认题意；A 同学查资料；B 同学做实验；C 同学写证明；D 同学专门找漏洞；最后老师和你决定哪条思路能提交。AI Co-Mathematician 做的就是把这种协作方式搬到 AI 里。</p>
+
+      <h3>最重要的设计点</h3>
+      <ul class="bullets">
+        <li><strong>异步：</strong>用户不用一直等在聊天框前，多个工作流可以在后台推进。</li>
+        <li><strong>有状态：</strong>系统会保存目标、假设、代码、失败路线和审稿意见。</li>
+        <li><strong>多角色：</strong>不同 Agent 负责不同类型的思考，减少一个模型“又当运动员又当裁判”的问题。</li>
+        <li><strong>人类在环：</strong>系统可以提出策略，但最终的数学判断和创造性补洞仍由人类专家负责。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term">
+        <strong>Agent</strong>
+        <span>专业解释：能基于目标调用工具、维护状态、执行多步行动的模型系统。</span>
+        <span>白话解释：不是只会聊天的 AI，而是会“接任务、做步骤、看结果、再调整”的数字员工。</span>
+      </div>
+      <div class="term">
+        <strong>Multi-Agent</strong>
+        <span>专业解释：多个智能体按照角色或任务协同工作，通常包含通信、委派和汇总机制。</span>
+        <span>白话解释：像一个项目组，不是一个人包办所有事。</span>
+      </div>
+      <div class="term">
+        <strong>Stateful Workspace</strong>
+        <span>专业解释：系统持续保存项目状态、历史记录、文件和中间产物。</span>
+        <span>白话解释：像一个不会丢资料的共享文件夹，而不是聊完就散的临时对话。</span>
+      </div>
+      <div class="term">
+        <strong>FrontierMath Tier 4</strong>
+        <span>专业解释：Epoch AI 构建的研究级数学基准，Tier 4 包含 50 道极高难度问题。</span>
+        <span>白话解释：不是普通考试题，而是专业数学家也可能要花几天甚至更久啃的难题。</span>
+      </div>
+      <div class="term">
+        <strong>Proof Verifier / Reviewer</strong>
+        <span>专业解释：对证明过程进行检查、指出漏洞和不完整推理的评审环节。</span>
+        <span>白话解释：专门挑错的人。它不负责说好听话，而是问“这里真的成立吗？”</span>
+      </div>
+      <div class="term">
+        <strong>Test-Time Compute</strong>
+        <span>专业解释：模型在回答阶段投入的额外推理、搜索、调用工具和验证成本。</span>
+        <span>白话解释：不是平时训练更久，而是做题时多花时间打草稿、查资料、验算。</span>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p class="lead">报告中最吸引眼球的结果，是 AI Co-Mathematician 在 FrontierMath Tier 4 上达到 48%。但真正值得看的是：它说明“系统层面的组织方式”可以显著放大模型能力。</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>结果</th>
+            <th>数字</th>
+            <th>普通人应该怎么理解</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>FrontierMath Tier 4 表现</td>
+            <td>48%</td>
+            <td>在非常困难的研究级数学题上，系统能解决接近一半的私有题。这不是“会背题”，因为这些题主要用于评测且难度极高。</td>
+          </tr>
+          <tr>
+            <td>论文定位</td>
+            <td>交互式研究工作台</td>
+            <td>目标不是取代数学家，而是把数学家从低效搜索、重复试错和文档整理中解放出来。</td>
+          </tr>
+          <tr>
+            <td>早期测试</td>
+            <td>开放问题、研究方向、文献线索</td>
+            <td>系统不一定一次给出完美答案，但能产生让专家继续推进的“有价值半成品”。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="svg-wrap">
+        <svg width="100%" viewBox="0 0 980 300" role="img" aria-label="结果解读图">
+          <rect width="980" height="300" fill="#ffffff"/>
+          <text x="40" y="44" font-size="24" font-weight="780" fill="#111318">结果不是只说明“更会做数学”，而是说明“组织方式会放大能力”</text>
+          <line x1="120" y1="230" x2="860" y2="230" stroke="#dfe3ea" stroke-width="2"/>
+          <g>
+            <rect x="160" y="150" width="120" height="80" fill="#dfe8f7"/>
+            <text x="220" y="252" text-anchor="middle" font-size="13" fill="#5b6270">单模型</text>
+            <text x="220" y="136" text-anchor="middle" font-size="18" font-weight="750" fill="#303744">会思考</text>
+          </g>
+          <g>
+            <rect x="430" y="96" width="120" height="134" fill="#9fc0ff"/>
+            <text x="490" y="252" text-anchor="middle" font-size="13" fill="#5b6270">多智能体</text>
+            <text x="490" y="82" text-anchor="middle" font-size="18" font-weight="750" fill="#1f6feb">会分工</text>
+          </g>
+          <g>
+            <rect x="700" y="62" width="120" height="168" fill="#c83b3b"/>
+            <text x="760" y="252" text-anchor="middle" font-size="13" fill="#5b6270">研究工作室</text>
+            <text x="760" y="48" text-anchor="middle" font-size="18" font-weight="750" fill="#c83b3b">会推进项目</text>
+          </g>
+          <path d="M285 172 C350 122 360 122 423 120" fill="none" stroke="#9aa4b2" stroke-width="3" marker-end="url(#arrow2)"/>
+          <path d="M555 110 C620 74 630 74 693 78" fill="none" stroke="#9aa4b2" stroke-width="3" marker-end="url(#arrow2)"/>
+          <defs>
+            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L8,3 z" fill="#9aa4b2"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="caption">图 2：论文的价值不只是分数，而是把“推理能力”扩展成“项目执行能力”。</div>
+      </div>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid two">
+        <div class="card red">
+          <div class="label">现实瓶颈</div>
+          <p><strong>成本高。</strong>多智能体并行、长时间推理、代码执行和审稿都会消耗大量算力。它更像高端研究工具，而不是马上人人可用的免费助手。</p>
+        </div>
+        <div class="card red">
+          <div class="label">可靠性</div>
+          <p><strong>错误仍会发生。</strong>数学证明特别怕“看似合理但中间断裂”。审稿 Agent 能降低风险，但不能保证完全正确。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">评测外推</div>
+          <p><strong>数学不等于所有科学。</strong>数学答案相对可验证；生物、材料、医学等领域往往需要实验，验证周期更长。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">使用门槛</div>
+          <p><strong>需要专家驾驶。</strong>系统能给出好线索，但普通人很难判断证明漏洞。短期内最强用户仍是专业研究者。</p>
+        </div>
+      </div>
+      <p>最应该警惕的是“把半成品当结论”。这篇论文真正健康的地方，恰恰是承认研究需要审稿、失败和人类判断。它不是神谕机器，而是更强的研究基础设施。</p>
+    </section>
+
+    <section class="section" id="industry">
+      <h2>9. 产业影响分析</h2>
+      <p class="lead">如果这条路线成立，AI Agent 的竞争将从“谁的模型回答更聪明”转向“谁能把复杂工作组织得更可靠”。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>受益方</th>
+            <th>可能变化</th>
+            <th>原因</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>科研机构</td>
+            <td>更快完成文献梳理、计算探索和证明草案</td>
+            <td>研究中大量时间花在“找路”和“排除错路”上</td>
+          </tr>
+          <tr>
+            <td>AI Agent 平台</td>
+            <td>从聊天产品升级为项目工作台</td>
+            <td>持久化状态、角色分工、审查机制会成为差异化能力</td>
+          </tr>
+          <tr>
+            <td>企业知识工作</td>
+            <td>法务、咨询、投研、工程分析可能采用同类架构</td>
+            <td>这些场景都需要长流程、多证据、可追溯判断</td>
+          </tr>
+          <tr>
+            <td>投资研究者</td>
+            <td>应关注“Agent 操作系统”和工作流层公司</td>
+            <td>模型能力之外，组织、权限、审计、记忆和工具链会创造价值</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="svg-wrap">
+        <svg width="100%" viewBox="0 0 980 330" role="img" aria-label="产业影响地图">
+          <rect width="980" height="330" fill="#ffffff"/>
+          <text x="40" y="44" font-size="24" font-weight="780" fill="#111318">从数学工作室扩展到知识工作操作系统</text>
+          <circle cx="490" cy="166" r="72" fill="#111318"/>
+          <text x="490" y="158" text-anchor="middle" font-size="18" fill="#fff" font-weight="750">Agent</text>
+          <text x="490" y="184" text-anchor="middle" font-size="15" fill="#d7dce5">协作工作台</text>
+          <g>
+            <rect x="88" y="72" width="190" height="70" rx="12" fill="#eaf2ff" stroke="#9fc0ff"/>
+            <text x="183" y="103" text-anchor="middle" font-size="16" font-weight="700">科研发现</text>
+            <text x="183" y="125" text-anchor="middle" font-size="12" fill="#5b6270">文献 + 实验 + 审稿</text>
+          </g>
+          <g>
+            <rect x="702" y="72" width="190" height="70" rx="12" fill="#fff7e6" stroke="#ffd17a"/>
+            <text x="797" y="103" text-anchor="middle" font-size="16" font-weight="700">企业投研</text>
+            <text x="797" y="125" text-anchor="middle" font-size="12" fill="#5b6270">资料 + 假设 + 风险</text>
+          </g>
+          <g>
+            <rect x="88" y="214" width="190" height="70" rx="12" fill="#edf8f1" stroke="#9fd8b3"/>
+            <text x="183" y="245" text-anchor="middle" font-size="16" font-weight="700">软件工程</text>
+            <text x="183" y="267" text-anchor="middle" font-size="12" fill="#5b6270">计划 + 代码 + 测试</text>
+          </g>
+          <g>
+            <rect x="702" y="214" width="190" height="70" rx="12" fill="#fff0f0" stroke="#ffb8b8"/>
+            <text x="797" y="245" text-anchor="middle" font-size="16" font-weight="700">法律与合规</text>
+            <text x="797" y="267" text-anchor="middle" font-size="12" fill="#5b6270">证据 + 条款 + 审核</text>
+          </g>
+          <path d="M278 106 C348 110 380 135 418 154" stroke="#9aa4b2" stroke-width="3" fill="none"/>
+          <path d="M702 106 C632 110 600 135 562 154" stroke="#9aa4b2" stroke-width="3" fill="none"/>
+          <path d="M278 248 C348 242 380 205 418 178" stroke="#9aa4b2" stroke-width="3" fill="none"/>
+          <path d="M702 248 C632 242 600 205 562 178" stroke="#9aa4b2" stroke-width="3" fill="none"/>
+        </svg>
+        <div class="caption">图 3：同一套“有状态、多角色、可审查”的方法，可能迁移到多种知识工作场景。</div>
+      </div>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul class="source-list">
+        <li><a href="https://arxiv.org/abs/2605.06651">原论文：AI Co-Mathematician: Accelerating Mathematicians with Agentic AI</a></li>
+        <li><a href="https://huggingface.co/papers/2605.06651">Hugging Face Papers 页面：社区论文卡片与摘要</a></li>
+        <li><a href="https://epoch.ai/benchmarks/frontiermath">Epoch AI：FrontierMath Tier 4 基准页面</a></li>
+        <li><a href="https://epoch.ai/frontiermath/tiers-1-4/about">Epoch AI：FrontierMath 背景、分层与方法说明</a></li>
+        <li><a href="https://www.emergentmind.com/papers/2605.06651">Emergent Mind：论文结构化解读与图示说明</a></li>
+        <li><a href="https://di.gg/ai/hkz74u86?rank=13">Pushmeet Kohli 公开讨论转载：AI 与数学家协作的未来</a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <ol class="source-list">
+        <li>arXiv 页面确认论文标题、作者、提交日期、摘要与 arXiv 编号：<a href="https://arxiv.org/abs/2605.06651">arxiv.org/abs/2605.06651</a></li>
+        <li>Hugging Face Papers 页面用于交叉确认论文发布日期、作者列表与摘要：<a href="https://huggingface.co/papers/2605.06651">huggingface.co/papers/2605.06651</a></li>
+        <li>Epoch AI FrontierMath 页面用于解释 Tier 4 基准的构成、私有题数量与评测设置：<a href="https://epoch.ai/benchmarks/frontiermath">epoch.ai/benchmarks/frontiermath</a></li>
+        <li>Epoch AI About FrontierMath 页面用于解释题目难度、数学家参与、验证方式与利益冲突说明：<a href="https://epoch.ai/frontiermath/tiers-1-4/about">epoch.ai/frontiermath/tiers-1-4/about</a></li>
+        <li>Emergent Mind 页面用于辅助核对系统架构描述，包括项目协调者、并行工作流、审稿与失败记录：<a href="https://www.emergentmind.com/papers/2605.06651">emergentmind.com/papers/2605.06651</a></li>
+        <li>公开讨论转载页面用于确认 Pushmeet Kohli 对“数学家与 AI Agent 协作”的定位，以及外部关注度：<a href="https://di.gg/ai/hkz74u86?rank=13">di.gg/ai/hkz74u86</a></li>
+      </ol>
+      <p class="footnote">说明：本文没有直接复制论文图，而是根据论文公开摘要、结构化资料和基准说明，重新设计了中文化解释图。报告中的产业判断属于基于公开信息的分析，不等同于论文作者结论。</p>
+    </section>
+  </main>
+</body>
+</html>

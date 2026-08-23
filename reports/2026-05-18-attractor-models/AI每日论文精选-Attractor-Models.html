@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI每日论文精选｜Attractor Models</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #10141b;
+      --muted: #5d6675;
+      --line: #dbe2ec;
+      --blue: #1769e0;
+      --green: #08785f;
+      --red: #b53a3a;
+      --amber: #9a6a12;
+      --cyan: #087ea4;
+      --soft: #f0f4f8;
+      --chip: #eaf2ff;
+      --shadow: 0 18px 48px rgba(16, 20, 27, .09);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --paper: #151b23;
+        --ink: #eef3f8;
+        --muted: #a9b5c4;
+        --line: #2c3746;
+        --soft: #101923;
+        --chip: #10233d;
+        --shadow: 0 20px 52px rgba(0,0,0,.3);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(23,105,224,.08), transparent 360px), var(--bg);
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 28px 18px 58px; }
+    header {
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 24px;
+      align-items: stretch;
+      padding: 28px 0 18px;
+    }
+    .hero-copy, .hero-art, .section, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { padding: 30px; }
+    .hero-art { padding: 18px; display: grid; place-items: center; background: #10141b; color: #fff; }
+    .kicker {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h1 { margin: 18px 0 14px; font-size: clamp(32px, 5vw, 56px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 0 0 16px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0 0 13px; }
+    .subtitle { color: var(--muted); font-size: 18px; max-width: 820px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 22px; }
+    .meta-grid div { border-top: 1px solid var(--line); padding-top: 10px; font-size: 14px; color: var(--muted); }
+    .meta-grid strong { color: var(--ink); }
+    .section { margin-top: 24px; padding: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-12 { grid-column: span 12; }
+    .card { padding: 16px; box-shadow: none; }
+    .blue { background: #eef5ff; border-color: #c9ddff; }
+    .green { background: #eaf8f3; border-color: #c8eadf; }
+    .amber { background: #fff7df; border-color: #efdca4; }
+    .red { background: #fff0ee; border-color: #ffd0cc; }
+    .cyan { background: #eaf8fb; border-color: #c8e7ef; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0; margin-bottom: 6px; }
+    .big { font-size: 24px; line-height: 1.25; font-weight: 820; margin-bottom: 8px; }
+    .lead { font-size: 18px; color: var(--ink); }
+    .muted { color: var(--muted); }
+    .quote {
+      border-left: 5px solid var(--blue);
+      background: var(--soft);
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 22px;
+      line-height: 1.48;
+      font-weight: 780;
+    }
+    .pill { display: inline-flex; padding: 4px 9px; border-radius: 8px; background: var(--chip); color: var(--blue); font-size: 13px; font-weight: 750; margin: 0 6px 8px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: var(--muted); font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .figure { border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 16px 0; background: #fbfcfe; overflow-x: auto; }
+    .caption { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    svg { display: block; max-width: 100%; height: auto; }
+    .term { display: grid; grid-template-columns: 160px 1fr 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .term:last-child { border-bottom: 0; }
+    li { margin-bottom: 8px; }
+    .footer { margin-top: 26px; text-align: center; color: var(--muted); font-size: 13px; }
+    @media (max-width: 860px) {
+      header, .meta-grid, .grid { grid-template-columns: 1fr; }
+      .span-4, .span-5, .span-6, .span-7, .span-12 { grid-column: 1; }
+      .hero-copy, .section { padding: 21px; }
+      .term { grid-template-columns: 1fr; gap: 5px; }
+      table { font-size: 13px; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="hero-copy">
+        <div class="kicker">AI DAILY PAPER PICK · 2026-05-18</div>
+        <h1>AI每日论文精选：让模型在“脑子里”反复打磨答案</h1>
+        <p class="subtitle">今日论文：<strong>Solve the Loop: Attractor Models for Language and Reasoning</strong><br />中文标题：<strong>解开循环：用吸引子模型改造语言与推理</strong></p>
+        <div class="meta-grid">
+          <div><strong>作者</strong><br />Michael Poli, Albert Gu, Luca Daniel, Jacob Faulkner, Tri Dao, Stefano Ermon, Christopher Ré 等</div>
+          <div><strong>机构</strong><br />University of Southern California；Together AI；Liquid AI；Stanford University；MIT；UC Berkeley</div>
+          <div><strong>发布时间</strong><br />2026-05-18 · arXiv:2605.12466</div>
+          <div><strong>平台</strong><br />arXiv · 项目页 · GitHub · Hugging Face</div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg width="470" height="380" viewBox="0 0 470 380" role="img" aria-label="Attractor Models 核心思想图">
+          <defs>
+            <linearGradient id="heroG" x1="0" x2="1"><stop stop-color="#4f8cff"/><stop offset="1" stop-color="#18b7a4"/></linearGradient>
+            <filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".32"/></filter>
+          </defs>
+          <rect x="18" y="20" width="434" height="340" rx="18" fill="#111827" stroke="#334155"/>
+          <text x="235" y="58" fill="#fff" font-size="23" font-weight="800" text-anchor="middle">同一个模型，多想几轮</text>
+          <text x="235" y="84" fill="#b8c4d8" font-size="13" text-anchor="middle">不是外部写长链条，而是在内部状态里收敛到答案</text>
+          <rect x="48" y="124" width="112" height="68" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="104" y="153" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">问题</text>
+          <text x="104" y="176" fill="#9fb0c8" font-size="12" text-anchor="middle">语言 / 数学</text>
+          <rect x="310" y="124" width="112" height="68" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="366" y="153" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">稳定答案</text>
+          <text x="366" y="176" fill="#9fb0c8" font-size="12" text-anchor="middle">更少参数</text>
+          <circle cx="235" cy="158" r="54" fill="#0f172a" stroke="url(#heroG)" stroke-width="3" filter="url(#s)"/>
+          <path d="M235 118 C286 123 289 196 235 201 C181 196 184 123 235 118" fill="none" stroke="#74d4c7" stroke-width="4"/>
+          <path d="M254 124 l16 8 l-16 8" fill="none" stroke="#74d4c7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="235" y="152" fill="#fff" font-size="16" font-weight="800" text-anchor="middle">Attractor</text>
+          <text x="235" y="176" fill="#b7c6da" font-size="11" text-anchor="middle">内部反复修正</text>
+          <path d="M160 158 H181" stroke="url(#heroG)" stroke-width="4"/>
+          <path d="M289 158 H310" stroke="url(#heroG)" stroke-width="4"/>
+          <rect x="70" y="250" width="330" height="58" rx="10" fill="#eef5ff"/>
+          <text x="235" y="274" fill="#1769e0" font-size="15" font-weight="800" text-anchor="middle">核心：把“多步思考”变成模型结构</text>
+          <text x="235" y="296" fill="#1769e0" font-size="12" text-anchor="middle">小模型也能通过循环计算，换来更强推理表现</text>
+        </svg>
+      </div>
+    </header>
+
+    <section class="section" id="title">
+      <h2>1. 标题区</h2>
+      <div class="grid">
+        <div class="card span-7">
+          <div class="label">Paper Card</div>
+          <p><strong>英文标题：</strong>Solve the Loop: Attractor Models for Language and Reasoning</p>
+          <p><strong>中文标题：</strong>解开循环：用吸引子模型改造语言与推理</p>
+          <p><strong>作者：</strong>Michael Poli, Albert Gu, Luca Daniel, Jacob Faulkner, Tri Dao, Stefano Ermon, Christopher Ré 等</p>
+          <p><strong>机构：</strong>University of Southern California；Together AI；Liquid AI；Stanford University；MIT；UC Berkeley</p>
+          <p><strong>发布时间：</strong>2026-05-18</p>
+          <p><strong>论文链接：</strong><a href="https://arxiv.org/abs/2605.12466">https://arxiv.org/abs/2605.12466</a></p>
+          <p><strong>项目页：</strong><a href="https://attractor-models.github.io/">https://attractor-models.github.io/</a></p>
+          <p><strong>代码：</strong><a href="https://github.com/jacob-falken/attractor-models">https://github.com/jacob-falken/attractor-models</a></p>
+          <p><strong>模型：</strong><a href="https://huggingface.co/jacobfa1/attractor-770m">Hugging Face · attractor-770m</a></p>
+          <p><strong>会议/平台：</strong>arXiv · Hugging Face Papers</p>
+        </div>
+        <div class="card blue span-5">
+          <div class="label">今天的关键词</div>
+          <div class="big">不是让模型说更多话，而是让模型内部多想几轮。</div>
+          <p class="muted">传统 Transformer 像流水线：每层处理一次就往下传。Attractor Model 更像一个人在草稿纸上反复改答案：同一套计算可以循环多次，直到内部状态接近稳定。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">今天选它，不是因为它一定已经胜过所有大模型，而是因为它打到了一个长期问题：AI 的推理能力到底只能靠“堆更多层、更多参数”，还是可以靠“同一块大脑多转几圈”？</p>
+      <div class="grid">
+        <div class="card green span-4">
+          <div class="label">行业意义</div>
+          <p><strong>它把 test-time compute 结构化。</strong>现在很多产品靠长 chain-of-thought、反思提示词、Agent 循环来提高答案质量。论文提出的方向是：把这种循环内化到模型架构里。</p>
+        </div>
+        <div class="card blue span-4">
+          <div class="label">技术突破</div>
+          <p><strong>它把循环 Transformer 和深度均衡模型结合。</strong>模型不是简单堆层，而是在隐藏状态里寻找一个稳定点：继续算下去，答案不会乱飘，而是逐渐收敛。</p>
+        </div>
+        <div class="card amber span-4">
+          <div class="label">长期价值</div>
+          <p><strong>它挑战“参数越多越聪明”的单一路径。</strong>如果小模型能通过更多内部迭代获得推理增益，未来端侧 AI、低成本 Agent、专用推理模型都会受益。</p>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>今天的候选方向</th><th>为什么没选它</th><th>为什么 Attractor Models 更值得今天讲</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>只刷新 benchmark 的新模型</td><td>容易过期，读者很难建立长期框架</td><td>Attractor 讨论的是“推理计算方式”本身</td></tr>
+          <tr><td>又一个 Agent 工作流论文</td><td>近期已经覆盖过 Agent 治理与主动检索</td><td>这篇更靠近模型内部机制，而不是外部流程编排</td></tr>
+          <tr><td>多模态/图像生成新方法</td><td>近期已经选过 Asymmetric Flow</td><td>今天换到语言与推理基础架构</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文本质上是在让 AI 像做数学题的人一样：不是看一眼就交卷，而是在脑子里反复修改中间思路，直到答案变稳。</div>
+    </section>
+
+    <section class="section" id="contrib">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid">
+        <div class="card span-6">
+          <div class="label">提出了什么</div>
+          <p><strong>Attractor Models。</strong>它是一类循环序列模型：给定输入后，模型会多次更新内部表示，目标不是每次都生成一段外部文字，而是让内部状态逐步靠近一个“吸引子”。</p>
+        </div>
+        <div class="card span-6">
+          <div class="label">解决什么问题</div>
+          <p><strong>传统模型计算深度固定。</strong>普通 Transformer 像固定层数的生产线：每个 token 走完 24 层就是 24 层。难题和简单题花的内部思考预算差不多。</p>
+        </div>
+        <div class="card span-6">
+          <div class="label">与旧方法区别</div>
+          <p><strong>不是只在提示词里写“请一步步思考”。</strong>Chain-of-thought 把思考写在输出文本里；Attractor 把部分思考藏在模型隐藏状态里，让模型自己迭代。</p>
+        </div>
+        <div class="card span-6">
+          <div class="label">为什么更好</div>
+          <p><strong>计算可以换能力。</strong>论文报告称，在语言建模和推理任务上，Attractor 模型形成了更好的参数/计算权衡：小模型通过增加迭代次数，可以接近或超过更大的非循环模型。</p>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>方法</th><th>像什么</th><th>优点</th><th>代价</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>普通 Transformer</td><td>固定流水线</td><td>训练和部署成熟，速度稳定</td><td>每题内部计算深度大致固定</td></tr>
+          <tr><td>Chain-of-thought / Agent 循环</td><td>把草稿写出来</td><td>容易接入现有大模型，调试直观</td><td>输出更长，成本高，也可能暴露错误推理</td></tr>
+          <tr><td>Attractor Model</td><td>脑内反复修正</td><td>把迭代变成模型结构，可能更省参数</td><td>训练复杂，推理延迟取决于迭代次数</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2>5. 工作原理：深入浅出</h2>
+      <p class="lead">想象你在解一道题：第一次写下答案时可能很粗糙；你检查一遍，发现哪里不对；再改一遍，答案更稳。Attractor Model 做的就是把这个“检查-修正-再检查”的过程放进模型内部。</p>
+      <div class="figure">
+        <svg width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Attractor Model 工作流">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1"><stop stop-color="#1769e0"/><stop offset="1" stop-color="#0e8f75"/></linearGradient>
+          </defs>
+          <rect x="20" y="30" width="150" height="82" rx="8" fill="#eef5ff" stroke="#c9ddff"/>
+          <text x="95" y="62" text-anchor="middle" fill="#1769e0" font-size="16" font-weight="800">输入问题</text>
+          <text x="95" y="88" text-anchor="middle" fill="#5b6676" font-size="13">文本 / 数学题</text>
+          <rect x="225" y="30" width="150" height="82" rx="8" fill="#eaf8f3" stroke="#c8eadf"/>
+          <text x="300" y="62" text-anchor="middle" fill="#08785f" font-size="16" font-weight="800">初始表示</text>
+          <text x="300" y="88" text-anchor="middle" fill="#5b6676" font-size="13">先形成草稿</text>
+          <rect x="435" y="30" width="200" height="156" rx="8" fill="#fff7df" stroke="#efdca4"/>
+          <text x="535" y="63" text-anchor="middle" fill="#9a6a12" font-size="16" font-weight="800">循环求解器</text>
+          <path d="M535 90 C585 92 585 147 535 149 C485 147 485 92 535 90" fill="none" stroke="#9a6a12" stroke-width="4"/>
+          <path d="M555 92 l16 8 l-16 8" fill="none" stroke="#9a6a12" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="535" y="126" text-anchor="middle" fill="#5b6676" font-size="13">反复更新隐藏状态</text>
+          <text x="535" y="166" text-anchor="middle" fill="#5b6676" font-size="13">直到接近稳定点</text>
+          <rect x="715" y="30" width="150" height="82" rx="8" fill="#eaf8fb" stroke="#c8e7ef"/>
+          <text x="790" y="62" text-anchor="middle" fill="#087ea4" font-size="16" font-weight="800">输出答案</text>
+          <text x="790" y="88" text-anchor="middle" fill="#5b6676" font-size="13">语言 / 选择 / 推理</text>
+          <path d="M170 71 H225" stroke="url(#g1)" stroke-width="4"/>
+          <path d="M375 71 H435" stroke="url(#g1)" stroke-width="4"/>
+          <path d="M635 71 H715" stroke="url(#g1)" stroke-width="4"/>
+          <rect x="104" y="228" width="700" height="42" rx="8" fill="#f0f4f8" stroke="#dbe2ec"/>
+          <text x="454" y="254" text-anchor="middle" fill="#10141b" font-size="15" font-weight="800">关键直觉：同一个参数模块被多次使用，参数不变，计算次数增加</text>
+        </svg>
+        <p class="caption">图 1：Attractor Model 把“多想几轮”放在隐藏状态里，而不是要求模型把每一步都写出来。</p>
+      </div>
+      <h3>用生活类比理解</h3>
+      <p>普通 Transformer 像一次性拍照：按下快门，照片就定了。Attractor Model 更像自动对焦相机：镜头会来回微调几次，直到画面清晰。这里的“画面清晰”，就是内部表示到达稳定点。</p>
+      <div class="figure">
+        <svg width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="稳定点和吸引子类比">
+          <rect x="40" y="34" width="820" height="252" rx="12" fill="#fbfcfe" stroke="#dbe2ec"/>
+          <circle cx="190" cy="166" r="78" fill="#eef5ff" stroke="#c9ddff"/>
+          <circle cx="190" cy="166" r="16" fill="#1769e0"/>
+          <text x="190" y="74" text-anchor="middle" fill="#1769e0" font-size="16" font-weight="800">吸引子</text>
+          <text x="190" y="250" text-anchor="middle" fill="#5b6676" font-size="13">像坡底：周围的小球都会滚向这里</text>
+          <path d="M350 240 C405 160 468 204 520 126 C565 58 654 76 716 128 C748 155 774 190 800 225" fill="none" stroke="#c7d2e0" stroke-width="6"/>
+          <circle cx="382" cy="202" r="11" fill="#9a6a12"/>
+          <circle cx="464" cy="181" r="11" fill="#9a6a12"/>
+          <circle cx="552" cy="106" r="11" fill="#08785f"/>
+          <circle cx="650" cy="94" r="11" fill="#08785f"/>
+          <path d="M382 202 C410 185 435 183 464 181" fill="none" stroke="#9a6a12" stroke-width="3"/>
+          <path d="M552 106 C582 92 614 90 650 94" fill="none" stroke="#08785f" stroke-width="3"/>
+          <text x="586" y="256" fill="#10141b" font-size="15" font-weight="800" text-anchor="middle">每次迭代都是一次“滚动”</text>
+          <text x="586" y="280" fill="#5b6676" font-size="13" text-anchor="middle">模型寻找的不是任意状态，而是更稳定、更自洽的状态</text>
+        </svg>
+        <p class="caption">图 2：吸引子不是一个实体，而是一种稳定结果：靠近它的状态会被“拉”过去。</p>
+      </div>
+      <h3>论文里的关键做法</h3>
+      <ol>
+        <li><strong>循环使用模型模块：</strong>让同一类变换多次作用在隐藏状态上。</li>
+        <li><strong>用均衡求解思想训练：</strong>模型要学会找到稳定状态，而不是只走固定层数。</li>
+        <li><strong>做 equilibrium internalization：</strong>让模型把“达到稳定点的计算习惯”学进参数里，推理时更自然地收敛。</li>
+        <li><strong>调节推理时迭代次数：</strong>简单题少算几步，难题多算几步，形成参数和计算之间的新权衡。</li>
+      </ol>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term">
+        <div><strong>Attractor</strong></div>
+        <div>专业解释：动力系统中会吸引附近状态逐步靠近的稳定状态或集合。</div>
+        <div>白话解释：像盆地最低点，小球从附近滚下来，最后都会停在那里。</div>
+      </div>
+      <div class="term">
+        <div><strong>Fixed Point</strong></div>
+        <div>专业解释：经过函数变换后仍保持不变的状态，常用于描述收敛解。</div>
+        <div>白话解释：你再检查一遍，答案已经不怎么变了。</div>
+      </div>
+      <div class="term">
+        <div><strong>Looped Transformer</strong></div>
+        <div>专业解释：让 Transformer 层或模块重复作用于表示，以增加有效计算深度。</div>
+        <div>白话解释：同一个老师不是只批改一次作业，而是连续批改多轮。</div>
+      </div>
+      <div class="term">
+        <div><strong>Test-Time Compute</strong></div>
+        <div>专业解释：模型在推理阶段额外使用的计算预算，例如更多采样、搜索、反思或内部迭代。</div>
+        <div>白话解释：考试时多花几分钟验算，可能比平时多背几本书更划算。</div>
+      </div>
+      <div class="term">
+        <div><strong>Pareto Frontier</strong></div>
+        <div>专业解释：在多个目标之间无法同时继续改进的最优边界。</div>
+        <div>白话解释：同样预算下，要么更快，要么更准；边界上的点代表“没有明显浪费”。</div>
+      </div>
+      <div class="term">
+        <div><strong>Perplexity</strong></div>
+        <div>专业解释：语言模型预测下一个 token 的不确定性指标，越低通常表示建模越好。</div>
+        <div>白话解释：模型猜下一句话时有多迷糊；数字越低，越不迷糊。</div>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p class="lead">论文最值得关注的结果不是某一个单点分数，而是它展示了一条新的成本曲线：参数少一点，但推理时多循环几次，也许能得到更好的能力/成本组合。</p>
+      <table>
+        <thead>
+          <tr><th>实验观察</th><th>论文想证明什么</th><th>普通读者该怎么理解</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Attractor 模型在语言建模上形成更好的参数-计算权衡</td><td>循环结构能把额外计算转化为质量提升</td><td>不是只靠买更大模型，也可以让较小模型多思考几轮</td></tr>
+          <tr><td>推理任务上小模型出现明显提升</td><td>内部迭代对需要多步判断的问题更有价值</td><td>难题更像需要验算的数学题，而不是只靠第一直觉</td></tr>
+          <tr><td>作者发布 770M 模型权重</td><td>方便外部复现与二次研究</td><td>这不是只停留在概念图上的架构想法</td></tr>
+          <tr><td>部分结果接近或超过更大普通模型</td><td>有效深度可能比静态参数量更关键</td><td>未来模型规格表里，除了参数量，还要看推理迭代预算</td></tr>
+        </tbody>
+      </table>
+      <div class="figure">
+        <svg width="900" height="310" viewBox="0 0 900 310" role="img" aria-label="参数和推理计算权衡图">
+          <rect x="60" y="40" width="750" height="210" rx="8" fill="#fbfcfe" stroke="#dbe2ec"/>
+          <line x1="110" y1="220" x2="760" y2="220" stroke="#5d6675" stroke-width="2"/>
+          <line x1="110" y1="220" x2="110" y2="70" stroke="#5d6675" stroke-width="2"/>
+          <text x="435" y="274" text-anchor="middle" fill="#5d6675" font-size="13">参数量 / 训练规模</text>
+          <text x="42" y="148" text-anchor="middle" transform="rotate(-90 42 148)" fill="#5d6675" font-size="13">错误率 / 困惑度</text>
+          <path d="M145 196 C245 176 350 150 488 118 C590 94 674 84 742 80" fill="none" stroke="#9a6a12" stroke-width="4"/>
+          <path d="M145 182 C248 144 340 116 470 94 C560 80 650 72 742 68" fill="none" stroke="#1769e0" stroke-width="4"/>
+          <circle cx="302" cy="134" r="7" fill="#1769e0"/>
+          <circle cx="505" cy="90" r="7" fill="#1769e0"/>
+          <circle cx="302" cy="164" r="7" fill="#9a6a12"/>
+          <circle cx="505" cy="116" r="7" fill="#9a6a12"/>
+          <rect x="555" y="176" width="210" height="48" rx="8" fill="#eef5ff" stroke="#c9ddff"/>
+          <text x="660" y="196" text-anchor="middle" fill="#1769e0" font-size="13" font-weight="800">蓝线：循环计算换来质量</text>
+          <text x="660" y="216" text-anchor="middle" fill="#5d6675" font-size="12">同等参数下，答案可能更稳</text>
+          <text x="156" y="102" fill="#1769e0" font-size="13" font-weight="800">Attractor</text>
+          <text x="156" y="124" fill="#9a6a12" font-size="13" font-weight="800">普通模型</text>
+        </svg>
+        <p class="caption">图 3：示意图，不是论文原图截图。它表达的是论文的核心经济学：参数量和推理计算可以互相替代一部分。</p>
+      </div>
+      <p>对产品经理来说，这意味着模型选型不能只看参数量和一次调用价格。一个更小但允许多轮内部迭代的模型，可能在复杂问题上更划算；但在简单问答上，它也可能因为多算几轮而显得慢。</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid">
+        <div class="card red span-6">
+          <div class="label">现实瓶颈</div>
+          <p><strong>推理延迟可能上升。</strong>内部循环不是免费的。每多迭代一次，都要多算一次。它适合需要质量的难题，不一定适合所有低延迟场景。</p>
+        </div>
+        <div class="card amber span-6">
+          <div class="label">训练复杂度</div>
+          <p><strong>稳定训练很难。</strong>循环模型要避免发散、震荡或陷入坏的稳定点。相比普通 Transformer，工程调参门槛更高。</p>
+        </div>
+        <div class="card span-6">
+          <div class="label">验证范围</div>
+          <p><strong>仍需更大规模外部复现。</strong>论文和项目页展示了强结果，但这类架构是否能稳定扩展到更大模型、更多数据、真实产品流量，还需要行业验证。</p>
+        </div>
+        <div class="card span-6">
+          <div class="label">安全风险</div>
+          <p><strong>内部推理更不透明。</strong>如果思考过程更多发生在隐藏状态里，安全审计不能只看输出文本。未来需要新的可解释性和监控方法。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="industry">
+      <h2>9. 产业影响分析</h2>
+      <p class="lead">如果这个方向被证明可扩展，它会影响的不只是研究论文，而是 AI 产品的成本结构和模型规格表。</p>
+      <table>
+        <thead>
+          <tr><th>对象</th><th>可能受益</th><th>可能被冲击</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>AI 应用公司</td><td>复杂任务可用更小模型加内部计算完成，降低对最大闭源模型的依赖</td><td>需要重新设计延迟、计费和质量控制策略</td></tr>
+          <tr><td>端侧 AI / 私有部署</td><td>参数较小但更会“多想”的模型，有利于本地设备或企业内网部署</td><td>设备侧算力和电池仍是约束</td></tr>
+          <tr><td>模型厂商</td><td>可以销售“可调思考预算”的模型，而不只是不同参数大小的模型</td><td>推理平台要支持动态迭代和更细的调度</td></tr>
+          <tr><td>Agent 产品</td><td>部分外部反思循环可被模型内部吸收，降低 prompt 工程复杂度</td><td>外部可观察的推理轨迹减少，审计方式要升级</td></tr>
+        </tbody>
+      </table>
+      <div class="figure">
+        <svg width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="产业影响图">
+          <rect x="38" y="30" width="824" height="260" rx="12" fill="#fbfcfe" stroke="#dbe2ec"/>
+          <circle cx="450" cy="160" r="70" fill="#eef5ff" stroke="#c9ddff"/>
+          <text x="450" y="152" fill="#1769e0" font-size="18" font-weight="800" text-anchor="middle">Attractor</text>
+          <text x="450" y="176" fill="#5b6676" font-size="13" text-anchor="middle">内部循环推理</text>
+          <rect x="92" y="62" width="180" height="62" rx="8" fill="#eaf8f3" stroke="#c8eadf"/>
+          <text x="182" y="88" fill="#08785f" font-size="15" font-weight="800" text-anchor="middle">低成本 Agent</text>
+          <text x="182" y="109" fill="#5b6676" font-size="12" text-anchor="middle">更小模型处理复杂任务</text>
+          <rect x="92" y="202" width="180" height="62" rx="8" fill="#fff7df" stroke="#efdca4"/>
+          <text x="182" y="228" fill="#9a6a12" font-size="15" font-weight="800" text-anchor="middle">端侧 AI</text>
+          <text x="182" y="249" fill="#5b6676" font-size="12" text-anchor="middle">参数少，按需多算</text>
+          <rect x="628" y="62" width="180" height="62" rx="8" fill="#eaf8fb" stroke="#c8e7ef"/>
+          <text x="718" y="88" fill="#087ea4" font-size="15" font-weight="800" text-anchor="middle">推理云平台</text>
+          <text x="718" y="109" fill="#5b6676" font-size="12" text-anchor="middle">按思考步数计费</text>
+          <rect x="628" y="202" width="180" height="62" rx="8" fill="#fff0ee" stroke="#ffd0cc"/>
+          <text x="718" y="228" fill="#b53a3a" font-size="15" font-weight="800" text-anchor="middle">安全审计</text>
+          <text x="718" y="249" fill="#5b6676" font-size="12" text-anchor="middle">隐藏推理更难看见</text>
+          <path d="M272 93 C330 105 358 126 386 145" stroke="#9aa7b8" stroke-width="3" fill="none"/>
+          <path d="M272 233 C330 214 358 193 386 175" stroke="#9aa7b8" stroke-width="3" fill="none"/>
+          <path d="M514 145 C559 121 590 105 628 93" stroke="#9aa7b8" stroke-width="3" fill="none"/>
+          <path d="M514 175 C559 199 590 216 628 233" stroke="#9aa7b8" stroke-width="3" fill="none"/>
+        </svg>
+        <p class="caption">图 4：产业影响不是“所有模型马上被替代”，而是规格表从“参数量中心”转向“参数量 + 推理迭代预算”。</p>
+      </div>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.12466">原论文：Solve the Loop: Attractor Models for Language and Reasoning</a></li>
+        <li><a href="https://attractor-models.github.io/">官方项目页：Attractor Models</a></li>
+        <li><a href="https://github.com/jacob-falken/attractor-models">官方 GitHub：jacob-falken/attractor-models</a></li>
+        <li><a href="https://huggingface.co/papers/2605.12466">Hugging Face Papers 论文页</a></li>
+        <li><a href="https://huggingface.co/jacobfa1/attractor-770m">Hugging Face 模型卡：attractor-770m</a></li>
+        <li><a href="https://arxiv.org/abs/1909.01377">背景论文：Deep Equilibrium Models</a></li>
+        <li><a href="https://arxiv.org/abs/1807.03819">背景论文：Universal Transformers</a></li>
+        <li><a href="https://arxiv.org/abs/2502.17416">背景论文：Reasoning with Latent Thoughts: On the Power of Looped Transformers</a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <p>本报告优先使用英文原始来源，并将论文内容重构为中文解释与图示。所有图示为重新设计的中文可视化，不是论文截图。</p>
+      <table>
+        <thead>
+          <tr><th>来源</th><th>用途</th><th>链接</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>arXiv</td><td>论文标题、作者、摘要、方法与实验结论核对</td><td><a href="https://arxiv.org/abs/2605.12466">arxiv.org/abs/2605.12466</a></td></tr>
+          <tr><td>官方项目页</td><td>架构图、结果摘要、发布信息核对</td><td><a href="https://attractor-models.github.io/">attractor-models.github.io</a></td></tr>
+          <tr><td>GitHub</td><td>代码公开状态与实现入口核对</td><td><a href="https://github.com/jacob-falken/attractor-models">github.com/jacob-falken/attractor-models</a></td></tr>
+          <tr><td>Hugging Face Papers</td><td>论文传播页面与社区入口核对</td><td><a href="https://huggingface.co/papers/2605.12466">huggingface.co/papers/2605.12466</a></td></tr>
+          <tr><td>Hugging Face Model Card</td><td>公开模型权重状态核对</td><td><a href="https://huggingface.co/jacobfa1/attractor-770m">huggingface.co/jacobfa1/attractor-770m</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <p class="footer">AI每日论文精选 · 2026-05-18 · 面向非技术读者的 AI 前沿研究解释</p>
+  </main>
+</body>
+</html>

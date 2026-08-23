@@ -1,0 +1,23 @@
+# 2026-06-13 AI Concept Run Summary
+
+- Run time: 2026-06-13 08:10:49 CST / 2026-06-13T00:10:49Z.
+- Automation ID: `ai-pdf`.
+- Selected concept: `提示词工程（Prompt Engineering）`.
+- Rationale: existing concept reports had already covered Transformer, Attention, Token, Embedding, Context Window, Position Encoding, MoE, KV Cache, Inference, Scaling Law, RAG, Agent, Function Calling, MCP, Vector DB, Pre-training, Fine-tuning, RLHF, Distillation, Reinforcement Learning, Alignment, Benchmark, Diffusion, Multimodal Model, World Model, Hallucination, Reward Hacking, Red Teaming, Guardrails, AI Safety Evaluation, and Interpretability. Prompt Engineering is the next practical foundation for ordinary users and connects prior Context Window, Agent, RAG, and Alignment concepts.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/2026-06-13_提示词工程（Prompt Engineering）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/2026-06-13_提示词工程（Prompt Engineering）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/chatgpt_prompt_task_brief.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/chatgpt_prompt_iteration_flow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-13_PromptEngineering/email_body.txt`
+- Visuals: generated two ChatGPT image diagrams under `/Users/mac/.codex/generated_images/019ebe48-28e7-7f72-a6dd-075d28e7bd7e/`, copied them into the report directory, and cropped the first copied image to remove a stale footer year while preserving the original generated file.
+- Verification:
+  - `python3 reports/2026-06-13_PromptEngineering/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 7 A4 pages and a 3.6 MB PDF.
+  - `pdftotext` confirmed readable Chinese text and no blank page after the cover.
+  - `pdfimages -list` confirmed two embedded images.
+  - HTML checks confirmed all required sections and both image references are present.
+  - Playwright screenshot previews were written to `html_preview.png` and `html_midpage_preview.png`.
+- Delivery: Gmail sent successfully with the PDF attachment to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ebe50f9aae87bb`.
+- Connector note: the Gmail tool schema still displays `attachment_files` as a string, but the connector requires an array of absolute paths.

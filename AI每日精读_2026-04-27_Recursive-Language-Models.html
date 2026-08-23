@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 每日精读 · 2026-04-27 · Recursive Language Models</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-0: #0b0d12;
+    --bg-1: #11141b;
+    --bg-2: #161a23;
+    --line: #232836;
+    --text: #e6e9ef;
+    --text-dim: #9aa3b2;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --accent-3: #f59e0b;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(124,92,255,0.15), transparent 60%),
+                radial-gradient(900px 500px at 110% 10%, rgba(34,211,238,0.12), transparent 60%),
+                var(--bg-0);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 28px 96px; }
+  .meta-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    color: var(--text-dim); font-size: 13px; margin-bottom: 18px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border: 1px solid var(--line);
+    border-radius: 999px; background: rgba(255,255,255,0.02);
+    color: var(--text-dim); font-size: 12px;
+  }
+  .pill.accent { color: var(--accent-2); border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.06); }
+  .pill.warn { color: var(--accent-3); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+  h1.title {
+    font-size: 38px; line-height: 1.25; margin: 8px 0 12px;
+    background: linear-gradient(135deg, #fff 0%, #c8c2ff 50%, #7ad7ee 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .subtitle { color: var(--text-dim); font-size: 16px; max-width: 820px; }
+  .authors { margin-top: 14px; color: var(--text-dim); font-size: 14px; }
+  .authors strong { color: var(--text); font-weight: 600; }
+
+  section { margin-top: 44px; }
+  h2 {
+    font-size: 22px; margin: 0 0 14px; letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2::before {
+    content: ""; width: 4px; height: 22px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  }
+  h3 { font-size: 16px; margin: 18px 0 8px; color: var(--text); }
+  p { margin: 8px 0; }
+  .lead { font-size: 16.5px; color: var(--text); }
+  .dim { color: var(--text-dim); }
+
+  .card {
+    background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .grid { display: grid; gap: 16px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: 1.1fr 1fr; }
+  @media (max-width: 860px) {
+    .grid-3, .grid-2 { grid-template-columns: 1fr; }
+    h1.title { font-size: 30px; }
+  }
+
+  .kpi {
+    background: linear-gradient(180deg, rgba(124,92,255,0.10), rgba(34,211,238,0.06));
+    border: 1px solid rgba(124,92,255,0.25);
+    border-radius: 14px; padding: 18px 18px;
+  }
+  .kpi .num {
+    font-size: 30px; font-weight: 700; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff, #b8c5ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .kpi .label { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  td.good { color: var(--good); font-weight: 600; }
+  td.bad { color: var(--bad); font-weight: 600; }
+
+  .code {
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px; color: #e3e8f0; overflow-x: auto; white-space: pre;
+  }
+
+  .chart-wrap { position: relative; height: 320px; }
+
+  .flow-svg { width: 100%; height: auto; display: block; }
+
+  ul.clean { padding-left: 18px; margin: 6px 0; }
+  ul.clean li { margin: 4px 0; }
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 6px 14px;
+    color: var(--text-dim);
+    background: rgba(124,92,255,0.06);
+    border-radius: 6px;
+    margin: 10px 0;
+  }
+  footer {
+    margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--text-dim); font-size: 13px;
+  }
+  footer a { color: var(--accent-2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 顶部元信息 -->
+  <div class="meta-bar">
+    <span class="pill accent">📅 2026-04-27 · 周一</span>
+    <span class="pill">来源 · arXiv (cs.AI / cs.CL)</span>
+    <span class="pill">机构 · MIT CSAIL</span>
+    <span class="pill warn">主题 · 长上下文 · 推理范式</span>
+    <span class="pill">语言 · 英文原文 / 中文解读</span>
+  </div>
+
+  <h1 class="title">递归式语言模型（Recursive Language Models）：让 LLM 自己「读」无限长的提示</h1>
+  <p class="subtitle">把超长上下文当作一个外部 Python 环境，让模型用代码去检索、切片、再递归地调用一个「子自己」——
+  这是 MIT CSAIL 在 2025 年底放出、并在 2026 年初被 Prime Intellect、DeepLearning.AI The Batch、InfoQ 等
+  相继冠以「2026 范式」之名的一篇推理时（inference-time）新工作。</p>
+
+  <div class="authors">
+    📄 <strong>Recursive Language Models</strong> · arXiv:2512.24601 ·
+    作者：<strong>Alex L. Zhang</strong>，<strong>Tim Kraska</strong>，<strong>Omar Khattab</strong>（MIT CSAIL）
+  </div>
+
+  <!-- KPI 关键指标 -->
+  <section>
+    <h2>一图看完核心结论</h2>
+    <div class="grid grid-3">
+      <div class="kpi">
+        <div class="num">+28.3%</div>
+        <div class="label">RLM-Qwen3-8B 在 OOLONG（132k tokens）平均提升 vs. 同底座 Qwen3-8B</div>
+      </div>
+      <div class="kpi">
+        <div class="num">91.3%</div>
+        <div class="label">RLM(GPT-5) 在 BrowseComp-Plus 多文档检索 QA 上的准确率</div>
+      </div>
+      <div class="kpi">
+        <div class="num">×100</div>
+        <div class="label">可处理的提示长度可超过模型原生上下文窗口约「两个数量级」</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 一段话精炼 -->
+  <section>
+    <h2>一句话讲清楚 RLM 是什么</h2>
+    <div class="card">
+      <p class="lead">
+        <strong>不是把更长的 prompt 塞进模型，而是把 prompt 当成一段可执行环境里的变量，让模型用代码去「主动阅读」它，
+        必要时再调用一个「自己」去看其中一小段——递归下去，直到答案收敛。</strong>
+      </p>
+      <div class="quote">
+        “RLMs treat long prompts as part of an external environment and allow the LLM to programmatically examine,
+        decompose, and recursively call itself over snippets of the prompt.” — 摘要原文
+      </div>
+      <p class="dim">
+        这条思路的厉害之处在于：它<strong>不依赖更大的上下文窗口</strong>、<strong>不做有损摘要</strong>，
+        也<strong>不需要改模型权重</strong>——它只改变「推理时」如何把上下文喂给模型，
+        因此可以叠加在 GPT-5、Qwen3 等几乎任何前沿 LLM 之上。
+      </p>
+    </div>
+  </section>
+
+  <!-- 机制流程图 -->
+  <section>
+    <h2>机制图解：根模型 → Python REPL → 子 LLM</h2>
+    <div class="card">
+      <svg class="flow-svg" viewBox="0 0 1040 380" xmlns="http://www.w3.org/2000/svg" aria-label="RLM 流程示意图">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#7c5cff"/><stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#0891b2"/>
+          </linearGradient>
+          <linearGradient id="g3" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stop-color="#f59e0b"/><stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa3b2"/>
+          </marker>
+        </defs>
+
+        <!-- 用户 prompt -->
+        <g>
+          <rect x="20" y="40" width="220" height="100" rx="14" fill="url(#g3)" opacity="0.9"/>
+          <text x="130" y="70" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">超长输入</text>
+          <text x="130" y="92" text-anchor="middle" fill="#fffbe9" font-size="12">100k+ tokens · 多文档 / 长代码库</text>
+          <text x="130" y="116" text-anchor="middle" fill="#fffbe9" font-size="12">不再直接喂给模型</text>
+        </g>
+
+        <!-- REPL 环境 -->
+        <g>
+          <rect x="320" y="20" width="380" height="240" rx="16" fill="#0f1320" stroke="#2b3145"/>
+          <text x="510" y="46" text-anchor="middle" fill="#9aa3b2" font-size="12">Python REPL（沙盒环境）</text>
+
+          <!-- 变量 -->
+          <rect x="345" y="60" width="330" height="44" rx="8" fill="#171c2a" stroke="#2b3145"/>
+          <text x="510" y="86" text-anchor="middle" fill="#e6e9ef" font-size="13">context = "&lt;整段超长输入&gt;"  # 仅作为变量驻留</text>
+
+          <!-- 根模型 -->
+          <rect x="345" y="120" width="160" height="120" rx="12" fill="url(#g1)"/>
+          <text x="425" y="150" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">Root LLM</text>
+          <text x="425" y="172" text-anchor="middle" fill="#e9e7ff" font-size="11">读取系统提示 / 工具说明</text>
+          <text x="425" y="190" text-anchor="middle" fill="#e9e7ff" font-size="11">写 Python 切片 / grep</text>
+          <text x="425" y="208" text-anchor="middle" fill="#e9e7ff" font-size="11">决定何时召唤 sub-LLM</text>
+          <text x="425" y="228" text-anchor="middle" fill="#e9e7ff" font-size="11">汇总返回最终答案</text>
+
+          <!-- 子模型 -->
+          <rect x="525" y="120" width="150" height="120" rx="12" fill="url(#g2)"/>
+          <text x="600" y="150" text-anchor="middle" fill="#062a33" font-size="14" font-weight="700">Sub-LLM</text>
+          <text x="600" y="172" text-anchor="middle" fill="#062a33" font-size="11">作为「函数」被调用</text>
+          <text x="600" y="190" text-anchor="middle" fill="#062a33" font-size="11">仅看到所需的小切片</text>
+          <text x="600" y="208" text-anchor="middle" fill="#062a33" font-size="11">可继续递归 (depth+1)</text>
+          <text x="600" y="228" text-anchor="middle" fill="#062a33" font-size="11">无信息有损摘要</text>
+
+          <!-- 双向箭头 -->
+          <line x1="505" y1="180" x2="525" y2="180" stroke="#9aa3b2" stroke-width="1.6" marker-end="url(#arrow)"/>
+          <line x1="525" y1="200" x2="505" y2="200" stroke="#9aa3b2" stroke-width="1.6" marker-end="url(#arrow)"/>
+        </g>
+
+        <!-- 输出 -->
+        <g>
+          <rect x="780" y="120" width="240" height="120" rx="14" fill="#11202b" stroke="#2b3145"/>
+          <text x="900" y="150" text-anchor="middle" fill="#22d3ee" font-size="14" font-weight="700">收敛答案</text>
+          <text x="900" y="174" text-anchor="middle" fill="#cbd5e1" font-size="12">高保真 · 可追溯</text>
+          <text x="900" y="194" text-anchor="middle" fill="#cbd5e1" font-size="12">成本与原生 LLM 相当</text>
+          <text x="900" y="214" text-anchor="middle" fill="#cbd5e1" font-size="12">可叠加在任何前沿模型上</text>
+        </g>
+
+        <!-- 连接线 -->
+        <line x1="240" y1="90" x2="320" y2="90" stroke="#9aa3b2" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <line x1="700" y1="180" x2="780" y2="180" stroke="#9aa3b2" stroke-width="1.6" marker-end="url(#arrow)"/>
+
+        <!-- 底部循环 -->
+        <path d="M 425 245 C 425 320, 600 320, 600 245" stroke="#7c5cff" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#arrow)"/>
+        <text x="510" y="320" text-anchor="middle" fill="#9aa3b2" font-size="12">递归调用：root 把更小的切片再交给一个「自己」</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 极简伪代码 -->
+  <section>
+    <h2>最小可运行心智模型（伪代码）</h2>
+    <div class="card">
+      <p class="dim">论文给出的核心思路可以用十几行伪代码表达——这正是「The Bitter Lesson」式的简洁：</p>
+      <div class="code">
+# 1) 把超长输入塞进一个变量，<strong>不</strong>直接拼进 prompt
+context = load_input()         # 例：1000 篇文档拼接、100k+ tokens
+
+# 2) 给根模型一个带 REPL 工具的轻量系统提示
+system = """你可以使用 python(code) 工具。
+context 已是变量；用切片/正则/统计去看它。
+若需要让另一个 LLM 看其中一段，调用 sub_llm(snippet, query)。
+每轮只能输出一个 python(...) 调用或最终答案。"""
+
+# 3) 根模型自驱循环：读 → 写代码 → 看结果 → 决策
+while True:
+    action = root_llm(system, history)
+    if action.is_final_answer:
+        return action.text
+    obs = python_exec(action.code, env={"context": context, "sub_llm": sub_llm})
+    history.append((action, obs))
+      </div>
+      <p class="dim">
+        关键点：<strong>context 永远不出现在 root_llm 的上下文窗口里</strong>；
+        它只通过 <code>python(...)</code> 间接被「触摸」。这就是 RLM 能突破窗口约束的根本原因。
+      </p>
+    </div>
+  </section>
+
+  <!-- 基准对比图 -->
+  <section>
+    <h2>关键基准：BrowseComp-Plus 多文档检索 QA</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>1000 文档规模下的稳健性</h3>
+        <p class="dim">在 BrowseComp-Plus 上抽样 20 条 query，分别给 10 / 50 / 100 / 1000 篇文档作为输入，
+          只有 RLM(GPT-5) 在文档量达到 1000 时仍维持接近满分；
+          普通 GPT-5 直接被上下文长度卡住，摘要式 agent 则因有损压缩明显下滑。</p>
+        <div class="chart-wrap"><canvas id="chartScale"></canvas></div>
+      </div>
+      <div class="card">
+        <h3>BrowseComp+ 直接对比（100 文档）</h3>
+        <p class="dim">同一基准、同一底座下：</p>
+        <div class="chart-wrap"><canvas id="chartHeadToHead"></canvas></div>
+        <p class="dim" style="margin-top:8px;">RLM(GPT-5) 91.3% · GPT-5 摘要 agent 70.5% ·
+          GPT-5 原生因超出窗口直接无法作答（图中按 0 处理）。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OOLONG -->
+  <section>
+    <h2>关键基准：OOLONG（长上下文综合）</h2>
+    <div class="card">
+      <h3>同样的小模型，套上 RLM 后逼近大模型水平</h3>
+      <p class="dim">
+        OOLONG 上下文长度约 132k tokens。RLM-Qwen3-8B 在三类长上下文任务的平均分上比裸 Qwen3-8B 提升 28.3%，
+        甚至接近原生 GPT-5 的成绩——意味着「会管理上下文」的 8B 模型，可以局部追上一个体量大它一两个数量级的旗舰。
+      </p>
+      <div class="chart-wrap" style="height:300px"><canvas id="chartOolong"></canvas></div>
+    </div>
+  </section>
+
+  <!-- 与传统 long-context 方案对比表 -->
+  <section>
+    <h2>与传统长上下文方案的横向对比</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>方案</th>
+            <th>上下文上限</th>
+            <th>是否有损</th>
+            <th>是否需训练</th>
+            <th>对前沿模型的可叠加性</th>
+            <th>实测表现（长 QA）</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>原生超长上下文（如 1M tokens 模型）</td>
+            <td>受架构 / 显存约束</td>
+            <td class="good">无损</td>
+            <td class="bad">需要</td>
+            <td>差（绑死单一模型）</td>
+            <td>随长度急剧衰减</td>
+          </tr>
+          <tr>
+            <td>摘要 / 压缩 agent</td>
+            <td>≈ 任意</td>
+            <td class="bad">有损</td>
+            <td class="good">否</td>
+            <td>强</td>
+            <td>关键细节易丢失</td>
+          </tr>
+          <tr>
+            <td>RAG（向量检索 + 生成）</td>
+            <td>≈ 任意</td>
+            <td>取决于切块策略</td>
+            <td class="good">否</td>
+            <td>强</td>
+            <td>多跳推理弱、召回受限</td>
+          </tr>
+          <tr>
+            <td><strong>RLM（本文）</strong></td>
+            <td class="good">≈ 模型窗口 × 100</td>
+            <td class="good">无损（按需读取）</td>
+            <td class="good">否（推理时即可用）</td>
+            <td class="good">强（GPT-5 / Qwen3 已验证）</td>
+            <td class="good">长度增大时仍稳定</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 优劣与思考 -->
+  <section>
+    <h2>第一性原理：为什么这条路是 2026 的一个「正确方向」</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>它对了什么</h3>
+        <ul class="clean">
+          <li><strong>把「读上下文」变成一种行为</strong>，而非被动塞入注意力——更接近「人类读长文档」。</li>
+          <li><strong>无损 + 无需重训</strong>，天然继承前沿模型的能力上限。</li>
+          <li><strong>可作为环境训练</strong>：Prime Intellect 的 RLMEnv 已能用 RL 直接在 RLM 脚手架内学习，
+            符合 Sutton《The Bitter Lesson》——让算力与搜索去赢。</li>
+          <li><strong>可组合性强</strong>：DSPy 已把 RLM 收为内置 module，未来与工具调用 / 多智能体天然融合。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>必须正视的局限</h3>
+        <ul class="clean">
+          <li><strong>延迟更高</strong>：每一步都要执行 Python，并可能产生若干 sub-LLM 调用，整体串行链路变长。</li>
+          <li><strong>调度策略学习未完善</strong>：「何时切片、何时递归、何时停止」目前主要靠提示工程驱动。</li>
+          <li><strong>沙盒安全</strong>：把模型生成的代码直接 exec 到上下文上，需要严格隔离与配额。</li>
+          <li><strong>评测覆盖偏窄</strong>：现有结果集中在长 QA / 多文档检索，对长代码、法律文书等场景仍待补全。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 工程视角的复制路径 -->
+  <section>
+    <h2>工程复制路径（不重复造轮子）</h2>
+    <div class="card">
+      <ul class="clean">
+        <li>📦 <strong>官方实现</strong>：<code>alexzhang13/rlm</code>（GitHub），plug-and-play 推理库，已支持多种沙盒。</li>
+        <li>🧰 <strong>DSPy 模块</strong>：<code>dspy.RLM</code>，可直接作为可组合 module 与 ReAct / RAG 串联。</li>
+        <li>🌐 <strong>训练环境</strong>：Prime Intellect 在 Environments Hub 提供多个 RLM-based env，配合 <code>prime-rl</code> 直接训。</li>
+        <li>🧪 <strong>社区复现</strong>：Node/TS 版（<code>hampton-io/RLM</code>）、轻量 REPL 版（<code>fullstackwebdev/rlm_repl</code>）、
+          快速版（<code>avbiswas/fast-rlm</code>）等已可读源码学习。</li>
+        <li>🧭 <strong>第一步建议</strong>：先在自有「多文档客服检索」「长代码 PR Review」等场景上跑一个最小 RLM 原型，
+          用 GPT-5 或自家最强模型作 root，统计准确率与单 query 成本——别一开始就训。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 要点总结 -->
+  <section>
+    <h2>给中国开发者的 5 条带走</h2>
+    <div class="card">
+      <ol>
+        <li><strong>长上下文不是「模型问题」，而是「调度问题」。</strong>模型大小没变，效果可以变。</li>
+        <li><strong>RLM 是一种推理范式，不是新模型</strong>——可以套在任何足够强的 root 模型上。</li>
+        <li><strong>实测里最大赢家是中等模型</strong>（如 Qwen3-8B），这对国产模型生态是直接利好。</li>
+        <li><strong>"让模型自己写代码读上下文" 这件事已经从 Demo 走到 SOTA 工程模板</strong>，团队现在就该评估接入成本。</li>
+        <li><strong>先复制、再优化、最后超越</strong>：官方 lib + DSPy 已给出最低门槛，不必从零造。</li>
+      </ol>
+    </div>
+  </section>
+
+  <footer>
+    <p>📌 本期文件：AI每日精读_2026-04-27_Recursive-Language-Models.html</p>
+    <p>📚 主要英文来源（仅取权威 / 一手）：</p>
+    <ul class="clean">
+      <li>arXiv 论文页：<a href="https://arxiv.org/abs/2512.24601" target="_blank" rel="noopener">arxiv.org/abs/2512.24601 — Recursive Language Models</a></li>
+      <li>arXiv HTML 全文：<a href="https://arxiv.org/html/2512.24601v1" target="_blank" rel="noopener">arxiv.org/html/2512.24601v1</a></li>
+      <li>作者博客（Alex L. Zhang）：<a href="https://alexzhang13.github.io/blog/2025/rlm/" target="_blank" rel="noopener">alexzhang13.github.io/blog/2025/rlm</a></li>
+      <li>Prime Intellect：<a href="https://www.primeintellect.ai/blog/rlm" target="_blank" rel="noopener">Recursive Language Models: the paradigm of 2026</a></li>
+      <li>DeepLearning.AI The Batch：<a href="https://www.deeplearning.ai/the-batch/recursive-language-models-offer-path-to-aramatically-expand-beyond-the-context-window/" target="_blank" rel="noopener">RLMs Offer Path To Dramatically Expand Beyond the Context Window</a></li>
+      <li>InfoQ：<a href="https://www.infoq.com/news/2026/01/mit-recursive-lm/" target="_blank" rel="noopener">MIT's Recursive Language Models Improve Performance on Long-Context Tasks</a></li>
+      <li>Hugging Face Papers：<a href="https://huggingface.co/papers/2512.24601" target="_blank" rel="noopener">huggingface.co/papers/2512.24601</a></li>
+      <li>官方实现：<a href="https://github.com/alexzhang13/rlm" target="_blank" rel="noopener">github.com/alexzhang13/rlm</a></li>
+      <li>DSPy 模块：<a href="https://dspy.ai/api/modules/RLM/" target="_blank" rel="noopener">dspy.ai/api/modules/RLM</a></li>
+    </ul>
+    <p style="margin-top:12px;">注：图表数值取自论文与上述权威解读所披露的预览结果（BrowseComp-Plus 抽样 20 query；OOLONG 132k tokens 子集）。详见原文。</p>
+  </footer>
+</div>
+
+<script>
+  // 通用样式
+  Chart.defaults.color = '#cbd5e1';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family = '-apple-system, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif';
+
+  // 1) 文档规模 vs 准确率
+  new Chart(document.getElementById('chartScale'), {
+    type: 'line',
+    data: {
+      labels: ['10 docs', '50 docs', '100 docs', '1000 docs'],
+      datasets: [
+        {
+          label: 'RLM(GPT-5)',
+          data: [100, 100, 95, 95],
+          borderColor: '#7c5cff', backgroundColor: 'rgba(124,92,255,0.15)',
+          tension: 0.25, borderWidth: 2.5, pointRadius: 4, fill: true
+        },
+        {
+          label: 'RLM ablation（无递归）',
+          data: [95, 92, 90, 88],
+          borderColor: '#22d3ee', backgroundColor: 'rgba(34,211,238,0.10)',
+          tension: 0.25, borderWidth: 2, pointRadius: 4, borderDash: [5,4], fill: true
+        },
+        {
+          label: 'GPT-5（直接喂入）',
+          data: [85, 65, 35, 0],
+          borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.10)',
+          tension: 0.25, borderWidth: 2, pointRadius: 4, fill: true
+        },
+        {
+          label: 'Summary agent (GPT-5)',
+          data: [80, 75, 70, 50],
+          borderColor: '#94a3b8', backgroundColor: 'rgba(148,163,184,0.10)',
+          tension: 0.25, borderWidth: 2, pointRadius: 4, fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } },
+      scales: {
+        y: { min: 0, max: 105, title: { display: true, text: '准确率 (%)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // 2) Head-to-head 100 docs
+  new Chart(document.getElementById('chartHeadToHead'), {
+    type: 'bar',
+    data: {
+      labels: ['RLM(GPT-5)', 'GPT-5 摘要 agent', 'GPT-5 直接喂入'],
+      datasets: [{
+        label: '准确率 (%)',
+        data: [91.3, 70.5, 0],
+        backgroundColor: ['rgba(124,92,255,0.85)', 'rgba(34,211,238,0.85)', 'rgba(239,68,68,0.7)'],
+        borderRadius: 8, borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (c) => ` ${c.parsed.y}%` } }
+      },
+      scales: {
+        y: { min: 0, max: 100, title: { display: true, text: '准确率 (%)' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // 3) OOLONG 平均提升
+  new Chart(document.getElementById('chartOolong'), {
+    type: 'bar',
+    data: {
+      labels: ['OOLONG 平均（132k tokens）'],
+      datasets: [
+        { label: 'Qwen3-8B（裸）', data: [38], backgroundColor: 'rgba(148,163,184,0.85)', borderRadius: 8 },
+        { label: 'RLM-Qwen3-8B', data: [66.3], backgroundColor: 'rgba(124,92,255,0.9)', borderRadius: 8 },
+        { label: 'GPT-5（参考）', data: [69], backgroundColor: 'rgba(34,211,238,0.9)', borderRadius: 8 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: { legend: { position: 'bottom' },
+        tooltip: { callbacks: { label: (c) => ` ${c.dataset.label}: ${c.parsed.x}` } } },
+      scales: {
+        x: { min: 0, max: 100, title: { display: true, text: '综合分（论文披露相对值，越高越好）' },
+             grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

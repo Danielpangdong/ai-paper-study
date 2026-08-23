@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AI 每日精读 · 2026-08-06 · OpenAI 十大数学突破</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#12151d; --panel-2:#171b25; --line:#242a37;
+    --text:#e7ecf3; --dim:#9aa4b2; --muted:#6b7280;
+    --accent:#7cf3c8; --accent-2:#8ab4ff; --gold:#f4c76a; --pink:#f47cc1;
+    --danger:#ff7a7a; --good:#8ee38e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent-2);text-decoration:none;border-bottom:1px dashed rgba(138,180,255,.4)}
+  a:hover{color:#c8daff}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 96px}
+  /* Header */
+  .kicker{display:inline-flex;gap:10px;align-items:center;font-size:12px;color:var(--dim);
+    letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--panel)}
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  h1{font-size:38px;line-height:1.25;margin:18px 0 10px;font-weight:800;letter-spacing:-.01em}
+  h1 .grad{background:linear-gradient(90deg,#7cf3c8,#8ab4ff 55%,#f47cc1);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--dim);font-size:16px;max-width:820px}
+  .meta{display:flex;flex-wrap:wrap;gap:16px 24px;margin-top:18px;font-size:13px;color:var(--dim)}
+  .meta b{color:var(--text);font-weight:600}
+  /* Stat strip */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:28px 0 8px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 16px 14px}
+  .stat .n{font-size:26px;font-weight:800;color:var(--accent);letter-spacing:-.02em}
+  .stat .l{font-size:12px;color:var(--dim);margin-top:4px}
+  /* Section */
+  section{margin-top:44px}
+  h2{font-size:22px;margin:0 0 6px;letter-spacing:-.01em}
+  h2 .tag{font-size:11px;color:var(--bg);background:var(--accent);padding:3px 8px;border-radius:6px;margin-right:10px;vertical-align:middle;font-weight:700;letter-spacing:.06em}
+  .lead{color:var(--dim);margin:0 0 18px;font-size:15px}
+  /* Card grid */
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),var(--accent-2))}
+  .card h3{margin:0 0 6px;font-size:15px;font-weight:700}
+  .card .num{display:inline-block;font-size:11px;font-weight:700;color:var(--bg);background:var(--gold);padding:2px 7px;border-radius:5px;margin-right:8px;vertical-align:middle}
+  .card .field{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin:8px 0 2px}
+  .card p{margin:6px 0;font-size:13.5px;color:#cfd6e0}
+  .card .bound{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--accent);background:rgba(124,243,200,.06);padding:6px 10px;border-radius:8px;border:1px solid rgba(124,243,200,.15);display:block;margin-top:6px;overflow-x:auto}
+  .card .prior{font-size:12px;color:var(--dim);margin-top:8px;font-style:italic}
+  /* Timeline / process */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+  .flow .step{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px;position:relative}
+  .flow .step .idx{font-size:11px;color:var(--muted);letter-spacing:.14em}
+  .flow .step h4{margin:6px 0 4px;font-size:14px}
+  .flow .step p{margin:0;font-size:12.5px;color:#cfd6e0}
+  .arrow{color:var(--muted);text-align:center;align-self:center;font-size:16px}
+  /* Callout */
+  .call{background:linear-gradient(180deg,rgba(124,243,200,.08),rgba(138,180,255,.05));
+    border:1px solid rgba(124,243,200,.25);border-radius:14px;padding:18px 20px;margin-top:14px}
+  .call h4{margin:0 0 6px;color:var(--accent);font-size:14px;letter-spacing:.02em}
+  .call p{margin:0;font-size:14px;color:#dde3ec}
+  /* Two-col */
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .box h4{margin:0 0 8px;font-size:14px;color:var(--gold);letter-spacing:.02em}
+  .box.warn h4{color:var(--danger)}
+  .box.good h4{color:var(--good)}
+  .box ul{margin:6px 0 0 0;padding-left:18px}
+  .box li{margin:6px 0;font-size:13.5px;color:#cfd6e0}
+  /* Bar chart */
+  .bars{display:flex;flex-direction:column;gap:10px;margin-top:8px}
+  .bar-row{display:grid;grid-template-columns:190px 1fr 80px;align-items:center;gap:12px;font-size:12.5px}
+  .bar-row .lbl{color:var(--dim)}
+  .bar-track{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;height:16px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+  .bar-val{color:var(--accent);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}
+  /* Field list */
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+  .chip .k{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .chip .v{font-size:14px;color:var(--text);margin-top:3px;font-weight:600}
+  /* Footer */
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:12.5px}
+  footer .src{margin-top:8px}
+  footer .src a{margin-right:12px}
+  .conf{display:inline-flex;gap:6px;align-items:center;background:rgba(244,199,106,.1);color:var(--gold);
+    border:1px solid rgba(244,199,106,.3);border-radius:999px;padding:3px 10px;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+  .conf.hi{background:rgba(142,227,142,.1);color:var(--good);border-color:rgba(142,227,142,.3)}
+  .conf.mid{background:rgba(244,199,106,.1);color:var(--gold);border-color:rgba(244,199,106,.3)}
+  /* Responsive */
+  @media (max-width:820px){
+    h1{font-size:28px}
+    .stats,.cards,.flow,.two,.grid-3{grid-template-columns:1fr!important}
+    .bar-row{grid-template-columns:140px 1fr 60px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <span class="kicker"><span class="dot"></span> AI 每日精读 · 2026-08-06 · 周四</span>
+  <h1>当 AI 开始<span class="grad">做数学研究</span>——<br>OpenAI 用约 2000 美元算力，攻下 10 个几十年悬案</h1>
+  <p class="sub">OpenAI 于 2026 年 8 月 1 日发布《Ten advances in mathematics and theoretical computer science》，宣布其下一代模型 Astra 的内部版本，在高维几何、编码理论、群论、算子代数、量子复杂性、格密码、极值组合学等领域，解决或实质性推进了 10 个长期悬而未决的开放问题；所有证明均以 Lean 形式化验证并开源。</p>
+
+  <div class="meta">
+    <span>来源：<b>OpenAI 官方 Publication</b></span>
+    <span>发布：<b>2026-08-01</b></span>
+    <span>模型：<b>Astra（下一代主力模型，内部版本）</b></span>
+    <span>验证：<b>Lean 4 形式化证明（GitHub 开源）</b></span>
+    <span class="conf hi">整体置信度：高</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat"><div class="n">10</div><div class="l">被攻克 / 推进的开放问题</div></div>
+    <div class="stat"><div class="n">≈ $2,000</div><div class="l">全部 10 题总算力成本（Sol API 计价）</div></div>
+    <div class="stat"><div class="n">1977 / 1978</div><div class="l">被打破的编码 / 球堆积经典界限自此未被突破</div></div>
+    <div class="stat"><div class="n">100%</div><div class="l">Lean 形式化验证覆盖率</div></div>
+  </div>
+
+  <!-- Why it matters -->
+  <section>
+    <h2><span class="tag">TL;DR</span>这为什么值得被记住</h2>
+    <div class="call">
+      <h4>从"做题"到"做研究"的跨越</h4>
+      <p>过去几年，评测 AI 数学能力的方式是 IMO、Putnam 之类的"有标准答案的题目"——本质是能力测试。这次不同：<b>10 个问题都是数学界公开未解的研究问题，没有已知答案</b>。Astra 给出的证明可被 Lean 编译器机械式地验证正误——不存在"看起来合理但错了"的模糊地带。这将 AI 在数学中的角色从"答题工具"推进到"可信的科研协作者"。</p>
+    </div>
+  </section>
+
+  <!-- Methodology flow -->
+  <section>
+    <h2><span class="tag">流程</span>OpenAI 是怎么做的？</h2>
+    <p class="lead">论文原文只用一句话交代方法："由 OpenAI 内部模型生成"。以下四步流程综合博客与论文提取，为便于理解已简化。</p>
+    <div class="flow">
+      <div class="step"><div class="idx">STEP 01</div><h4>选题 · 人</h4><p>研究者从数学界公认的开放问题清单中，挑出 10 个跨领域的硬骨头</p></div>
+      <div class="step"><div class="idx">STEP 02</div><h4>生成论证 · 模型</h4><p>Astra 内部版自主搜索、推理、写出完整数学论证；总 token 成本按 Sol API 计约 2000 美元</p></div>
+      <div class="step"><div class="idx">STEP 03</div><h4>整理成稿 · 人 + 模型</h4><p>研究者与模型合作，将论证转写为可发表的数学手稿</p></div>
+      <div class="step"><div class="idx">STEP 04</div><h4>形式化验证 · 模型</h4><p>Astra 把每份证明翻译成 <a href="https://github.com/openai/ten-proofs">Lean 4 证书</a>，由编译器机械验真</p></div>
+    </div>
+    <div class="call" style="margin-top:14px">
+      <h4>关键设计：可验证性 (Verifiability)</h4>
+      <p>数学证明的独特性在于"要么成立、要么不成立"。Lean 是一个交互式定理证明器——它不理会"看起来对"，只认公理和推理规则。所以只要 Lean 编译通过，无论作者是人还是 AI，结论就是可信的。这一步把"AI 幻觉"的风险从数学结果中彻底切开。</p>
+    </div>
+  </section>
+
+  <!-- Ten results -->
+  <section>
+    <h2><span class="tag">10 大成果</span>逐条精读</h2>
+    <p class="lead">按论文顺序排列。每条给出：问题是什么、Astra 做到什么、旧的最好结果是什么。</p>
+
+    <div class="cards">
+
+      <div class="card">
+        <h3><span class="num">01</span>高维球堆积</h3>
+        <div class="field">问题</div>
+        <p>在 d 维空间里最多能塞多密的等大球？密度上界是几？</p>
+        <div class="field">Astra 结果</div>
+        <p>把 Cohn–Elkies 线性规划方法的强度<b>精确定死</b>到极限值</p>
+        <span class="bound">Δ_d ≤ 2^(−(0.6044…+o(1))·d)</span>
+        <p class="prior">上一次改进是 1978 年 Kabatianskii–Levenshtein，指数为 0.5991。<b>时隔 48 年的首次提升。</b></p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">02</span>二进制与球面码</h3>
+        <div class="field">问题</div>
+        <p>给定最小距离 δ，最大能构造多大的码本？</p>
+        <div class="field">Astra 结果</div>
+        <p>对<b>所有参数区间</b>，把经典 MRRW 上界指数<b>再降一个指数因子</b>；球面码同理</p>
+        <p class="prior">距离上一次一般性改进——MRRW（1977）与 KL（1978）——已 48 年。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">03</span>非-Sofic 群</h3>
+        <div class="field">问题</div>
+        <p>是否每一个可数群都能被有限置换群"近似"？（Sofic 猜想）</p>
+        <div class="field">Astra 结果</div>
+        <p><b>显式构造出一个非-Sofic 群</b>，回答了群论的核心开放问题</p>
+        <span class="bound">工具：property-(T) 扩张图 + 二元 Leavitt 代数</span>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">04</span>Connes 刚性猜想</h3>
+        <div class="field">问题</div>
+        <p>某类群是否被其冯·诺依曼代数唯一决定？</p>
+        <div class="field">Astra 结果</div>
+        <p><b>证否</b>该猜想：构造出<b>无穷多个两两不同构</b>的 property-(T) 群，它们对应<b>同一个</b>群冯·诺依曼代数</p>
+        <p class="prior">同时回答了 Popa 的一个有限对一相关问题。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">05</span>算术电路复杂度</h3>
+        <div class="field">问题</div>
+        <p>计算矩阵 permanent 至少需要多少门 / 多少叶子？</p>
+        <div class="field">Astra 结果</div>
+        <p>无除法电路：<b>Ω(n² log log n)</b> 门；公式复杂度：<b>Ω(n⁴ / log n)</b> 叶子</p>
+        <span class="bound">arithmetic-formula lower bound ~ n⁴/log n</span>
+        <p class="prior">对复杂性理论 P vs. NP 家族问题有方法论价值。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">06</span>量子平行重复</h3>
+        <div class="field">问题</div>
+        <p>把一个二人量子博弈平行玩 k 次，作弊成功率是否指数衰减？（经典情形已知，量子未定）</p>
+        <div class="field">Astra 结果</div>
+        <p>对<b>所有</b>有限二人纠缠博弈，证明<b>指数级平行重复定理</b>成立</p>
+        <p class="prior">经典的复杂性基石首次完整推广到量子设定。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">07</span>最近向量问题 (CVP)</h3>
+        <div class="field">问题</div>
+        <p>近似求解格上最近向量有多难？（关系到后量子密码的安全根基）</p>
+        <div class="field">Astra 结果</div>
+        <p>用 <b>3SAT 直接归约</b>，证明 Euclidean CVP 在近似因子 n^(1/400) 之内仍<b>NP-难</b></p>
+        <span class="bound">n^(1/400)-factor hardness for Euclidean CVP</span>
+        <p class="prior">对基于格的密码算法（含 NIST 后量子标准 Kyber、Dilithium 家族）安全参数有直接意义。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">08</span>Ehrhart 体积猜想</h3>
+        <div class="field">问题</div>
+        <p>一个凸体其重心为唯一的内部整点时，体积最大能到多少？</p>
+        <div class="field">Astra 结果</div>
+        <p>在<b>任意维度 n</b> 下证明尖锐上界</p>
+        <span class="bound">Vol ≤ (n+1)ⁿ / n!</span>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">09</span>多色 Ramsey 数</h3>
+        <div class="field">问题</div>
+        <p>用 k 种颜色染 K_N 的边，要多大的 N 才能保证有单色三角形？（Erdős 问题 183）</p>
+        <div class="field">Astra 结果</div>
+        <p>给出<b>超指数下界</b>：R_k(3) = k^Θ(k)</p>
+        <p class="prior">Erdős 生前公开悬赏的问题清单中的一条被清账。</p>
+      </div>
+
+      <div class="card">
+        <h3><span class="num">10</span>极值图论紧致性 / 退化度猜想</h3>
+        <div class="field">问题</div>
+        <p>Erdős–Simonovits 紧致性猜想；Erdős 退化度猜想（Erdős 问题 146、180）</p>
+        <div class="field">Astra 结果</div>
+        <p>分别用两个二部图构造<b>同时证否</b>两条猜想</p>
+        <p class="prior">再度清掉 Erdős 悬案清单上两条。</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Historic context bars -->
+  <section>
+    <h2><span class="tag">对比</span>被打破的老纪录</h2>
+    <p class="lead">这些改进并非"锦上添花"，而是把几十年未动的基线往前推。下图展示三项典型指标上一次被改进的年份到 2026 年的间隔。</p>
+    <div class="bars">
+      <div class="bar-row"><span class="lbl">高维球堆积指数</span>
+        <div class="bar-track"><div class="bar-fill" style="width:96%"></div></div>
+        <span class="bar-val">48 年</span></div>
+      <div class="bar-row"><span class="lbl">MRRW 二进制码上界</span>
+        <div class="bar-track"><div class="bar-fill" style="width:98%"></div></div>
+        <span class="bar-val">49 年</span></div>
+      <div class="bar-row"><span class="lbl">KL 球面码上界</span>
+        <div class="bar-track"><div class="bar-fill" style="width:96%"></div></div>
+        <span class="bar-val">48 年</span></div>
+      <div class="bar-row"><span class="lbl">Ehrhart 尖锐界（各维统一）</span>
+        <div class="bar-track"><div class="bar-fill" style="width:70%"></div></div>
+        <span class="bar-val">首次给出</span></div>
+      <div class="bar-row"><span class="lbl">Erdős 问题 146 / 180 / 183</span>
+        <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+        <span class="bar-val">跨越数十年</span></div>
+    </div>
+  </section>
+
+  <!-- Interpretation -->
+  <section>
+    <h2><span class="tag">解读</span>三个必须冷静看的问题</h2>
+    <div class="two">
+      <div class="box good">
+        <h4>✓ 真正的进步在哪</h4>
+        <ul>
+          <li><b>验证闭环。</b>Lean 让"AI 数学"从声称走向可复核，把"幻觉风险"从证明本体中隔离。</li>
+          <li><b>成本-产出比。</b>约 2000 美元换 10 个专业悬案的结果，成本已进入个人研究者可承受的量级。</li>
+          <li><b>跨领域。</b>10 个问题分布在几何、编码、群论、算子代数、量子复杂性、格密码、极值组合——不是靠某一个子领域的模板技巧堆出来的。</li>
+        </ul>
+      </div>
+      <div class="box warn">
+        <h4>× 不要过度外推</h4>
+        <ul>
+          <li><b>选题偏差不透明。</b>OpenAI 只公布了"成功的 10 例"。总共尝试了多少题、成功率如何，未披露。<span class="conf mid">置信度：中</span></li>
+          <li><b>人类介入被淡化。</b>手稿整理、Lean 形式化辅助、题目选择都由人完成；模型"独立做研究"的说法需要打折扣。</li>
+          <li><b>"Astra 内部版" ≠ 公开产品。</b>ChatGPT 用户当前并不能调这个模型。可复现性受限于 OpenAI 一家。</li>
+          <li><b>它没解决 P=NP。</b>成果本身重要，但仍在既有数学范式内推进，不构成"AGI 已到"。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact -->
+  <section>
+    <h2><span class="tag">影响</span>对不同人群意味着什么</h2>
+    <div class="grid-3">
+      <div class="chip"><div class="k">对数学家</div><div class="v">协作者，而非替代者</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">Leiden 声明的关切仍然有效：署名、贡献归属、评审流程都要重构。OpenAI 明确表态"若证明由 AI 生成，不应署名人类为作者"。</p></div>
+      <div class="chip"><div class="k">对密码工程师</div><div class="v">重看后量子格参数</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">CVP 硬度结果与 NIST 后量子标准（Kyber/Dilithium）的安全参数选取直接相关，值得跟进。</p></div>
+      <div class="chip"><div class="k">对 AI 从业者</div><div class="v">RL + 形式化的可行性</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">Lean 提供"可微+可验证"的训练信号，等于给强推理模型一个免费的奖励函数。这一范式将快速被复制。</p></div>
+      <div class="chip"><div class="k">对科研机构</div><div class="v">科研生产函数改写</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">当"提出问题"和"评审"变成瓶颈、而不是"证明"时，学术激励与经费结构必须调整。</p></div>
+      <div class="chip"><div class="k">对学生 / 教育者</div><div class="v">先学问题，再学技巧</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">纯计算与套模板能力会被机器抹平；对问题的洞察、判断力、跨领域直觉重要度上升。</p></div>
+      <div class="chip"><div class="k">对投资者</div><div class="v">"科研 Copilot"赛道成立</div><p style="margin:6px 0 0;font-size:12.5px;color:var(--dim)">2000 美元/10 题的成本曲线，会催生一批面向学界的推理产品与工具链（Lean/Mathlib、benchmark、协作平台）。</p></div>
+    </div>
+  </section>
+
+  <!-- Watchlist -->
+  <section>
+    <h2><span class="tag">追踪</span>接下来 30–90 天值得盯的</h2>
+    <div class="box">
+      <ul>
+        <li><b>Lean 证明的独立验证。</b>数学社区（Terence Tao、Kevin Buzzard 圈子）复核结果、并给出评论。</li>
+        <li><b>成功率披露。</b>OpenAI 是否公开"尝试题数 / 成功数"，以及能否复现在<b>没有被人为筛选</b>的题目集上。</li>
+        <li><b>Astra 何时发布 API。</b>决定这轮范式转移是"OpenAI 单点烟花"还是"公共基础设施"。</li>
+        <li><b>竞品跟进。</b>Anthropic（Claude）、Google DeepMind（AlphaProof 后继）、Meta 是否在 90 天内给出对标结果。</li>
+        <li><b>期刊态度。</b>Annals of Mathematics、JAMS 等顶刊的审稿与署名规则更新。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div>本报告为"AI 每日精读"自动化任务的产出：每日巡览大厂官方研究页、AI 领军人物博客与权威论文站点，从英文原文中精选一篇进行中文精读并生成可视化。<br>今日选题依据：新鲜度（发布 5 天内）、来源权威（OpenAI 官方 Publication）、结果可验证（Lean 形式化 + GitHub 开源）、影响面（跨 8 个数学子领域）。</div>
+    <div class="src">
+      来源：
+      <a href="https://openai.com/index/ten-advances-in-mathematics/">OpenAI · Ten advances in mathematics and theoretical computer science (2026-08-01)</a>
+      <a href="https://cdn.openai.com/pdf/ten-proofs-oai.pdf">论文 PDF</a>
+      <a href="https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf">推理过程说明</a>
+      <a href="https://github.com/openai/ten-proofs">Lean 形式化证明仓库</a>
+      <a href="https://leidendeclaration.ai/">Leiden Declaration on AI and Mathematics</a>
+    </div>
+    <div style="margin-top:10px;color:var(--muted)">生成时间：2026-08-06 · 内容基于当日官方原文，无编造事实；概念性判断已标注置信度。</div>
+  </footer>
+
+</div>
+</body>
+</html>

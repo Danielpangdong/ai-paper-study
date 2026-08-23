@@ -1,0 +1,24 @@
+# 2026-06-19 AI Concept Run Summary
+
+- Run time: 2026-06-19 08:12:40 CST / 2026-06-19T08:12:40+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `推测解码（Speculative Decoding）`.
+- Rationale: yesterday covered `模型量化（Quantization）`; today's concept continues the inference-acceleration learning path by explaining how systems reduce the "one token, one wait" bottleneck without teaching the model new knowledge.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/2026-06-19_推测解码（Speculative Decoding）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/2026-06-19_推测解码（Speculative Decoding）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/chatgpt_speculative_decoding_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/chatgpt_speculative_decoding_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-19_SpeculativeDecoding/email_body.txt`
+- Visuals: generated two ChatGPT Image 2.0 Chinese infographics under `/Users/mac/.codex/generated_images/019edd2f-56bf-76e0-9dff-461451deb5d0/`, then copied selected assets into the report directory.
+- Verification:
+  - `python3 reports/2026-06-19_SpeculativeDecoding/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 9 A4 pages and a 4,136,549 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed required section headings and two inline base64 image data URIs.
+  - PDF pages rendered to `rendered/page-*.png`; cover, analogy figure, mechanism figure, terminology table, misconception/summary page, and quiz page were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19edd38d163b3889`.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

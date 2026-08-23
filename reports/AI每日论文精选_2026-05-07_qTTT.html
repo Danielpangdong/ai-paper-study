@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | 推理时学习：长上下文不是越长越好</title>
+  <style>
+    :root {
+      --ink: #111318;
+      --muted: #5d6675;
+      --line: #d9dee8;
+      --panel: #ffffff;
+      --soft: #f5f7fb;
+      --blue: #2358d0;
+      --cyan: #0a7a8f;
+      --green: #0f7a4e;
+      --red: #b23b45;
+      --gold: #9b6a12;
+      --violet: #6447b8;
+      --shadow: 0 16px 46px rgba(17, 19, 24, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: #eef2f7;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1120px; margin: 0 auto; background: #fff; box-shadow: var(--shadow); }
+    .hero {
+      padding: 48px 28px 26px;
+      background:
+        linear-gradient(130deg, rgba(35, 88, 208, .13), rgba(10, 122, 143, .10) 42%, rgba(15, 122, 78, .08)),
+        #f8fafc;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0b4f63;
+      letter-spacing: 0;
+      padding: 5px 10px;
+      border: 1px solid rgba(10, 122, 143, .24);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+    }
+    h1 {
+      margin: 18px 0 12px;
+      max-width: 940px;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.06;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 900px;
+      margin: 0;
+      color: #333b49;
+      font-size: 19px;
+    }
+    .meta-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .meta {
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .meta b { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .meta span { font-size: 14px; font-weight: 650; }
+    main { padding: 24px 28px 44px; }
+    section { margin: 34px 0; }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+    .lead {
+      font-size: 18px;
+      color: #283241;
+      margin: 0 0 14px;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: var(--panel);
+    }
+    .card.accent-blue { border-top: 4px solid var(--blue); }
+    .card.accent-cyan { border-top: 4px solid var(--cyan); }
+    .card.accent-green { border-top: 4px solid var(--green); }
+    .card.accent-red { border-top: 4px solid var(--red); }
+    .card.accent-gold { border-top: 4px solid var(--gold); }
+    .card.accent-violet { border-top: 4px solid var(--violet); }
+    .card h3 { margin-top: 0; }
+    .metric {
+      display: block;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.05;
+      margin: 6px 0 8px;
+    }
+    .note { color: var(--muted); font-size: 14px; }
+    .quote {
+      padding: 18px 20px;
+      border-left: 5px solid var(--blue);
+      background: #f3f6fc;
+      border-radius: 0 8px 8px 0;
+      font-size: 21px;
+      font-weight: 760;
+      line-height: 1.45;
+      margin: 16px 0;
+    }
+    .diagram {
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .diagram-title {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 750;
+      color: #2b3442;
+      background: var(--soft);
+      border-bottom: 1px solid var(--line);
+    }
+    svg { width: 100%; height: auto; display: block; }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 14px;
+      background: #fff;
+    }
+    th, td { padding: 12px 13px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: #f3f6fb; text-align: left; color: #2b3442; font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #edf3ff;
+      color: #1d4fb2;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 2px 4px 2px 0;
+    }
+    .warn { background: #fff7ed; border-color: #f1d2aa; }
+    .source-list li { margin: 8px 0; }
+    .footer {
+      padding: 20px 28px 34px;
+      background: #111827;
+      color: #d6dbe6;
+      font-size: 13px;
+    }
+    .footer a { color: #9cc5ff; }
+    @media (max-width: 760px) {
+      .hero { padding: 34px 18px 20px; }
+      main { padding: 20px 18px 34px; }
+      .meta-grid, .cards, .two-col { grid-template-columns: 1fr; }
+      h1 { font-size: 34px; }
+      .subtitle, .lead { font-size: 16px; }
+      .quote { font-size: 18px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="hero">
+      <div class="eyebrow">AI每日论文精选 · 2026-05-07</div>
+      <h1>长上下文不是越长越好：让 AI 在推理时“临时学习”当前材料</h1>
+      <p class="subtitle">今日论文：<strong>Let’s (not) just put things in Context: Test-Time Training for Long-Context LLMs</strong>。它提出 qTTT：不要只让模型多读、多想，而是在回答前对当前长文本做几步很小的定向更新。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文平台</b><span>arXiv 2512.13898</span></div>
+        <div class="meta"><b>会议</b><span>ICLR 2026 Poster</span></div>
+        <div class="meta"><b>发布时间</b><span>2025-12-15；OpenReview 2026-01-26</span></div>
+        <div class="meta"><b>主题</b><span>长上下文、推理时计算、Test-Time Training</span></div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2>1. 标题区</h2>
+        <table>
+          <tr><th>项目</th><th>信息</th></tr>
+          <tr><td>英文标题</td><td>Let’s (not) just put things in Context: Test-Time Training for Long-Context LLMs</td></tr>
+          <tr><td>中文译名</td><td>别只是把东西塞进上下文：面向长上下文大模型的测试时训练</td></tr>
+          <tr><td>作者</td><td>Rachit Bansal, Aston Zhang, Rishabh Tiwari, Lovish Madaan, Sai Surya Duvvuri, Devvrit Khatri, David Brandfonbrener, David Alvarez-Melis, Prajjwal Bhargava, Mihir Kale, Samy Jelassi</td></tr>
+          <tr><td>机构</td><td>Meta, Harvard University, Kempner Institute at Harvard, OpenAI, UC Berkeley, UT Austin</td></tr>
+          <tr><td>链接</td><td><a href="https://arxiv.org/abs/2512.13898">arXiv</a> · <a href="https://openreview.net/forum?id=H0bcEdPCoc">OpenReview</a> · <a href="https://iclr.cc/virtual/2026/poster/10010442">ICLR Poster</a></td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>2. 为什么今天选它？</h2>
+        <p class="lead">因为它击中了 2026 年大模型产品的一个真实痛点：模型窗口越来越长，但“能塞进去”不等于“真的会用”。</p>
+        <div class="cards">
+          <div class="card accent-blue">
+            <h3>行业意义</h3>
+            <p>法律合同、企业知识库、代码仓库、长聊天记录都依赖长上下文。很多产品正在把“百万 token 窗口”当卖点，但这篇论文提醒我们：窗口大，只是把材料放进了考场；模型未必真的读懂重点。</p>
+          </div>
+          <div class="card accent-cyan">
+            <h3>技术突破</h3>
+            <p>它把推理时计算从“多生成一些思考文字”转向“对当前材料做几步定向学习”。这像考试前不是继续喃喃自语，而是把题干里的关键词重新划出来，让注意力对准证据。</p>
+          </div>
+          <div class="card accent-green">
+            <h3>长期价值</h3>
+            <p>如果成立，这会改变长上下文系统的默认设计：未来的 AI 不只是带着更大的记事本，而是能在每个任务现场临时调整自己如何看资料。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>3. 一句话讲透论文</h2>
+        <div class="quote">这篇论文的核心是：当 AI 面对很长资料时，与其让它多“想”几千字，不如让它先根据这份资料微调一下“看重点的方式”。</div>
+      </section>
+
+      <section>
+        <h2>4. 核心贡献拆解</h2>
+        <div class="cards">
+          <div class="card accent-red">
+            <h3>发现问题：分数稀释</h3>
+            <p>长文本里有太多相似但无关的信息。真正关键的一句话就像在人群里举手的人，周围也有很多人挥手，模型的注意力会被平均分散。</p>
+          </div>
+          <div class="card accent-violet">
+            <h3>否定直觉：多想不一定有用</h3>
+            <p>Chain-of-thought 或 thinking tokens 仍然使用同一套固定注意力。如果模型一开始没看见证据，继续生成更多文字不一定能把证据找回来。</p>
+          </div>
+          <div class="card accent-green">
+            <h3>提出方法：qTTT</h3>
+            <p>qTTT 只更新 attention 里的 Query 投影，不改 Key/Value 缓存。白话说：资料本身不重读、不重存，只调整“我该拿什么问题去匹配资料”。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>5. 工作原理：像给学生临时换一副“找重点眼镜”</h2>
+        <p>想象一个学生要在 300 页资料里找答案。普通长上下文模型像是把 300 页都放到桌上；thinking tokens 像是学生坐在那里多念几遍“我要仔细找”；qTTT 更像老师递给他一支荧光笔：先快速扫一遍资料，再根据当前问题把搜索方式调准。</p>
+        <div class="diagram">
+          <div class="diagram-title">图解 1：普通长上下文 vs. thinking tokens vs. qTTT</div>
+          <svg viewBox="0 0 1060 430" role="img" aria-label="qTTT 工作流图">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#415166"></path>
+              </marker>
+            </defs>
+            <rect x="28" y="36" width="300" height="330" rx="8" fill="#f8fafc" stroke="#d9dee8"></rect>
+            <text x="48" y="70" font-size="20" font-weight="700" fill="#111318">传统长上下文</text>
+            <rect x="55" y="105" width="246" height="58" rx="7" fill="#e8eef9" stroke="#9db3e8"></rect>
+            <text x="83" y="139" font-size="16" fill="#1d335c">把全部资料塞进去</text>
+            <line x1="178" y1="165" x2="178" y2="218" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <rect x="55" y="222" width="246" height="58" rx="7" fill="#fff" stroke="#d9dee8"></rect>
+            <text x="92" y="256" font-size="16" fill="#1d335c">固定注意力检索</text>
+            <line x1="178" y1="282" x2="178" y2="321" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <text x="72" y="345" font-size="15" fill="#b23b45">问题：资料越长，关键证据越容易被淹没</text>
+
+            <rect x="380" y="36" width="300" height="330" rx="8" fill="#f8fafc" stroke="#d9dee8"></rect>
+            <text x="400" y="70" font-size="20" font-weight="700" fill="#111318">多生成 thinking tokens</text>
+            <rect x="407" y="105" width="246" height="58" rx="7" fill="#fff4df" stroke="#e5c16a"></rect>
+            <text x="462" y="139" font-size="16" fill="#5c4314">继续写思考过程</text>
+            <line x1="530" y1="165" x2="530" y2="218" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <rect x="407" y="222" width="246" height="58" rx="7" fill="#fff" stroke="#d9dee8"></rect>
+            <text x="455" y="256" font-size="16" fill="#5c4314">注意力仍然固定</text>
+            <line x1="530" y1="282" x2="530" y2="321" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <text x="420" y="345" font-size="15" fill="#9b6a12">短上下文可能有效，长上下文边际收益下降</text>
+
+            <rect x="732" y="36" width="300" height="330" rx="8" fill="#f8fafc" stroke="#d9dee8"></rect>
+            <text x="752" y="70" font-size="20" font-weight="700" fill="#111318">qTTT：查询侧测试时训练</text>
+            <rect x="759" y="98" width="246" height="48" rx="7" fill="#e7f5f1" stroke="#8ecdb7"></rect>
+            <text x="812" y="128" font-size="15" fill="#0f5b3d">一次预填充：缓存 K/V</text>
+            <line x1="882" y1="148" x2="882" y2="188" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <rect x="759" y="192" width="246" height="48" rx="7" fill="#eaf0ff" stroke="#9db3e8"></rect>
+            <text x="799" y="222" font-size="15" fill="#1d4fb2">只更新 Query 投影</text>
+            <line x1="882" y1="242" x2="882" y2="282" stroke="#415166" stroke-width="2" marker-end="url(#arrow)"></line>
+            <rect x="759" y="286" width="246" height="48" rx="7" fill="#fff" stroke="#d9dee8"></rect>
+            <text x="811" y="316" font-size="15" fill="#0f5b3d">让注意力对准证据</text>
+            <text x="758" y="356" font-size="15" fill="#0f7a4e">目标：用同等计算量，找回长文本里的关键线索</text>
+          </svg>
+        </div>
+
+        <div class="two-col">
+          <div class="card accent-blue">
+            <h3>步骤化解释</h3>
+            <p><strong>第一步：</strong>模型先读完整个长上下文，并把 Key/Value 缓存下来，相当于把资料库建好索引。</p>
+            <p><strong>第二步：</strong>从上下文里抽取短片段，用普通的 next-token prediction loss 做几步梯度更新。</p>
+            <p><strong>第三步：</strong>只更新 Query projection。也就是不改资料本身，只改“提问方式”和“匹配角度”。</p>
+            <p><strong>第四步：</strong>再让模型回答问题。此时它更容易把注意力集中到真正相关的证据上。</p>
+          </div>
+          <div class="card accent-gold">
+            <h3>为什么不是全模型微调？</h3>
+            <p>全模型测试时训练太贵：一更新 Key/Value，原来的缓存就失效，需要重新跑很长的上下文。qTTT 的聪明点是只动 Query，让 K/V 缓存继续可用，因此更像“微调检索角度”，不是重新训练整个人。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>6. 关键术语解释</h2>
+        <table>
+          <tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr>
+          <tr><td>Long Context</td><td>模型一次输入中可处理的大量 token，例如长文档、代码仓库、多轮对话。</td><td>一次把很多材料都发给 AI。</td></tr>
+          <tr><td>Inference-Time Compute</td><td>模型在推理/回答阶段额外使用的计算量。</td><td>AI 临场答题时多花的脑力。</td></tr>
+          <tr><td>Thinking Tokens</td><td>模型在最终答案前生成的中间推理文本。</td><td>AI 先写草稿、列推理过程。</td></tr>
+          <tr><td>Test-Time Training</td><td>在测试/推理时针对当前样本做参数更新。</td><td>考试时根据这道题临时补课。</td></tr>
+          <tr><td>Query / Key / Value</td><td>Attention 机制中用于匹配与读取信息的三类投影。</td><td>Query 是问题，Key 是目录标签，Value 是目录背后的内容。</td></tr>
+          <tr><td>KV Cache</td><td>推理时缓存历史 token 的 Key 和 Value，避免重复计算。</td><td>已经做好的资料索引，不想每次都重建。</td></tr>
+          <tr><td>Score Dilution</td><td>长上下文中大量干扰 token 让目标 token 的 attention mass 被稀释。</td><td>真正举手的人被一群差不多的人挡住了。</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>7. 实验结果解读</h2>
+        <div class="cards">
+          <div class="card accent-blue">
+            <span class="metric">+12.6</span>
+            <p>论文报告：Qwen3-4B 在 LongBench-v2 部分任务上，qTTT 平均提升约 12.6 个百分点。</p>
+          </div>
+          <div class="card accent-cyan">
+            <span class="metric">+14.1</span>
+            <p>在 ZeroScrolls 部分任务上，Qwen3-4B 平均提升约 14.1 个百分点。</p>
+          </div>
+          <div class="card accent-green">
+            <span class="metric">15+</span>
+            <p>评估覆盖 LongBench-v2 与 ZeroScrolls 中 15 个以上长上下文数据集/子任务。</p>
+          </div>
+        </div>
+
+        <h3>结果意味着什么？</h3>
+        <table>
+          <tr><th>观察</th><th>论文信号</th><th>普通读者该怎么理解</th></tr>
+          <tr>
+            <td>长上下文越长，普通 in-context 表现下降</td>
+            <td>代码查错、交易日志异常等沙盒任务中，haystack 变大后准确率单调下降。</td>
+            <td>不是把资料都塞进去就安全了。关键内容可能仍然被忽略。</td>
+          </tr>
+          <tr>
+            <td>thinking tokens 在长上下文中收益递减</td>
+            <td>论文认为它仍使用同一套静态注意力，无法可靠修复证据访问失败。</td>
+            <td>如果一开始没看到证据，多写草稿也可能只是绕圈。</td>
+          </tr>
+          <tr>
+            <td>qTTT 对检索、多跳推理更有效</td>
+            <td>LongBench-v2、ZeroScrolls 的 retrieval/multi-hop 任务收益更明显。</td>
+            <td>它特别适合“答案藏在长资料某处，需要找出来再组合”的任务。</td>
+          </tr>
+          <tr>
+            <td>摘要类任务收益较小</td>
+            <td>论文指出当瓶颈是生成质量而不是找证据时，qTTT 帮助有限。</td>
+            <td>它不是万能增强器，更像长资料找证据的专用工具。</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>8. 局限性与问题</h2>
+        <div class="cards">
+          <div class="card accent-red warn">
+            <h3>算力与工程复杂度</h3>
+            <p>qTTT 需要在推理时做反向传播和参数更新，这比普通 API 调用复杂。生产系统要处理延迟、显存、并发和缓存隔离。</p>
+          </div>
+          <div class="card accent-red warn">
+            <h3>安全与隐私</h3>
+            <p>如果模型会根据用户上下文临时更新参数，必须确保不同用户之间完全隔离，避免敏感信息以某种形式泄漏。</p>
+          </div>
+          <div class="card accent-red warn">
+            <h3>任务适用边界</h3>
+            <p>它主要改善长上下文检索与多跳证据组合。对开放创作、摘要、纯推理题，收益可能不稳定。</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>9. 产业影响分析</h2>
+        <div class="diagram">
+          <div class="diagram-title">图解 2：谁会受益，谁会被冲击</div>
+          <svg viewBox="0 0 1060 370" role="img" aria-label="产业影响图">
+            <rect x="30" y="40" width="220" height="250" rx="8" fill="#eef5ff" stroke="#9db3e8"></rect>
+            <text x="65" y="80" font-size="20" font-weight="700" fill="#1d4fb2">企业知识库</text>
+            <text x="58" y="126" font-size="15" fill="#243044">更少漏读历史文档</text>
+            <text x="58" y="156" font-size="15" fill="#243044">更适合长合同/制度问答</text>
+            <text x="58" y="186" font-size="15" fill="#243044">从“检索更多”转向“用得更准”</text>
+
+            <rect x="290" y="40" width="220" height="250" rx="8" fill="#effaf5" stroke="#8ecdb7"></rect>
+            <text x="325" y="80" font-size="20" font-weight="700" fill="#0f7a4e">代码 Agent</text>
+            <text x="318" y="126" font-size="15" fill="#243044">大型仓库定位 bug</text>
+            <text x="318" y="156" font-size="15" fill="#243044">跨文件依赖更可用</text>
+            <text x="318" y="186" font-size="15" fill="#243044">减少“看过但没用上”</text>
+
+            <rect x="550" y="40" width="220" height="250" rx="8" fill="#fff7ed" stroke="#e5c16a"></rect>
+            <text x="585" y="80" font-size="20" font-weight="700" fill="#8a5b10">模型服务商</text>
+            <text x="578" y="126" font-size="15" fill="#243044">推理栈更复杂</text>
+            <text x="578" y="156" font-size="15" fill="#243044">需要支持轻量反向传播</text>
+            <text x="578" y="186" font-size="15" fill="#243044">成本模型会改变</text>
+
+            <rect x="810" y="40" width="220" height="250" rx="8" fill="#f7f1ff" stroke="#b8a7e8"></rect>
+            <text x="845" y="80" font-size="20" font-weight="700" fill="#6447b8">RAG 产品</text>
+            <text x="838" y="126" font-size="15" fill="#243044">仍然重要，但角色改变</text>
+            <text x="838" y="156" font-size="15" fill="#243044">RAG 像笔记本</text>
+            <text x="838" y="186" font-size="15" fill="#243044">qTTT 像临场理解能力</text>
+            <line x1="250" y1="165" x2="290" y2="165" stroke="#415166" stroke-width="2"></line>
+            <line x1="510" y1="165" x2="550" y2="165" stroke="#415166" stroke-width="2"></line>
+            <line x1="770" y1="165" x2="810" y2="165" stroke="#415166" stroke-width="2"></line>
+          </svg>
+        </div>
+        <table>
+          <tr><th>对象</th><th>可能变化</th></tr>
+          <tr><td>AI 产品经理</td><td>不能只问“上下文窗口多大”，还要问“模型是否能可靠利用深处证据”。</td></tr>
+          <tr><td>创业公司</td><td>可围绕长文档、代码仓库、合规审查做更可靠的垂直应用，但需要掌握推理时适配工程。</td></tr>
+          <tr><td>投资研究者</td><td>长上下文竞争可能从“窗口长度”转向“上下文利用率、推理时学习、缓存与训练融合”。</td></tr>
+          <tr><td>基础模型公司</td><td>未来推理服务可能需要支持更动态的模型状态，而不只是静态 forward。</td></tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>10. 延伸阅读</h2>
+        <ul class="source-list">
+          <li><a href="https://arxiv.org/abs/2512.13898">原论文：Let’s (not) just put things in Context</a></li>
+          <li><a href="https://openreview.net/forum?id=H0bcEdPCoc">OpenReview：ICLR 2026 Poster 页面</a></li>
+          <li><a href="https://iclr.cc/virtual/2026/poster/10010442">ICLR 2026 Virtual Poster</a></li>
+          <li><a href="https://developer.nvidia.com/blog/reimagining-llm-memory-using-context-as-training-data-unlocks-models-that-learn-at-test-time/">NVIDIA 技术博客：TTT-E2E 与把上下文压入权重</a></li>
+          <li><a href="https://www.deeplearning.ai/the-batch/test-time-training-end-to-end-ttt-e2e-retrains-model-weights-to-handle-long-inputs/">The Batch：TTT-E2E 长上下文解读</a></li>
+          <li><a href="https://research.google/pubs/titans-learning-to-memorize-at-test-time/">Google Research：Titans, Learning to Memorize at Test Time</a></li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>11. 引用来源</h2>
+        <p>本报告基于英文原始资料与权威英文二级解读交叉整理，重点来源如下：</p>
+        <ul class="source-list">
+          <li>arXiv 页面确认标题、作者、提交日期、摘要、核心结果与 DOI：<a href="https://arxiv.org/abs/2512.13898">arXiv:2512.13898</a></li>
+          <li>OpenReview 页面确认 ICLR 2026 Poster、关键词、公开日期和摘要：<a href="https://openreview.net/forum?id=H0bcEdPCoc">OpenReview</a></li>
+          <li>ICLR 官方页面确认海报展示时间与论文摘要：<a href="https://iclr.cc/virtual/2026/poster/10010442">ICLR 2026 Poster</a></li>
+          <li>ar5iv HTML 全文用于方法、贡献、实验、局限与图示重构：<a href="https://ar5iv.labs.arxiv.org/html/2512.13898v1">ar5iv full text</a></li>
+          <li>NVIDIA 与 DeepLearning.AI 的 TTT-E2E 资料用于补充 test-time training 在长上下文方向的产业关注度与相关背景。</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <strong>编辑说明：</strong>本文不是论文逐段翻译，而是面向非技术读者的研究重构。关键图示为重新设计的中文解释图，不是原论文截图。报告生成时间：2026-05-07 07:07 CST。
+    </footer>
+  </article>
+</body>
+</html>

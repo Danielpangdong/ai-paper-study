@@ -1,0 +1,20 @@
+# ===== macOS / 系统 =====
+.DS_Store
+Thumbs.db
+
+# ===== 离线存档与临时文件（不需要发布） =====
+# 本地 PDF 离线存档：网页文章引用的都是外网 PDF，无需入库
+*.pdf
+
+# 生成物 / 测试产物
+output/
+tmp/
+.playwright-cli/
+tools/logs/
+__pycache__/
+*.pyc
+
+# 无关的 agent 运行记录
+run_summary_*.md
+
+# 站点数据由 tools/build.py 自动生成，但需要入库供部署，故不忽略 data/

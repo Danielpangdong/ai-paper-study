@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>令牌撤销 Token Revocation - AI 每日深度科普</title>
+  <style>
+    :root{--ink:#172033;--muted:#5e687b;--paper:#fffdf9;--wash:#f5f7fb;--line:#dfe5ee;--navy:#193a68;--blue:#3973d3;--sky:#e8f1ff;--teal:#167a73;--mint:#e3f6f2;--gold:#b46c15;--sand:#fff3d9;--red:#a53b46;--rose:#fdebed;--radius:18px}*{box-sizing:border-box}html{background:#edf1f6}body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;font-size:16px;line-height:1.78;-webkit-font-smoothing:antialiased}main{max-width:900px;margin:0 auto;padding:32px 34px 72px}.hero{padding:26px 0 34px;border-bottom:1px solid var(--line)}.eyebrow,.kicker{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.kicker{margin-bottom:10px}.hero h1{font-size:44px;line-height:1.13;letter-spacing:-.04em;margin:0 0 10px}.en{color:var(--navy);font-size:18px;font-weight:700;letter-spacing:.02em}.subtitle{font-size:21px;line-height:1.55;margin:22px 0 12px;max-width:760px}.one-line{background:linear-gradient(90deg,var(--sky),#f4f8ff);border-left:4px solid var(--blue);padding:15px 18px;border-radius:0 12px 12px 0;font-weight:700}.map{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:24px;font-size:13px;line-height:1.5}.node{padding:4px 9px;border:1px solid var(--line);border-radius:999px;background:#fff}.node.now{background:var(--navy);border-color:var(--navy);color:#fff;font-weight:800}.arrow{color:#8a94a5;font-weight:800}.section{padding:38px 0;border-bottom:1px solid var(--line)}.section:last-child{border-bottom:0}h2{font-size:28px;line-height:1.28;letter-spacing:-.025em;margin:6px 0 17px}h3{font-size:18px;line-height:1.4;margin:0 0 8px}p{margin:10px 0}a{color:#175ba8;text-underline-offset:2px}.lede{font-size:18px;color:#3c475c}.fact-label,.infer-label,.analogy-label{display:inline-block;border-radius:999px;padding:2px 9px;margin-right:6px;font-size:12px;font-weight:800;line-height:1.5}.fact-label{background:var(--sky);color:#15549d}.infer-label{background:var(--sand);color:#87500d}.analogy-label{background:var(--mint);color:#13665f}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{background:var(--wash);border:1px solid var(--line);border-radius:var(--radius);padding:17px}.card p{font-size:14px;line-height:1.65}.callout{border-radius:14px;padding:15px 17px;margin:17px 0}.callout.fact{background:var(--sky);border:1px solid #cfe0fa}.callout.warning{background:var(--sand);border:1px solid #f0d69f}.callout.risk{background:var(--rose);border:1px solid #f1cbd0}.callout strong{color:var(--navy)}.figure{margin:22px 0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:#fff}.figure-head{padding:14px 17px 0}.figure-title{font-size:15px;font-weight:800}.read-order{color:var(--muted);font-size:12px;margin-top:2px}.figure-scroll{overflow-x:auto;padding:14px 17px 6px}.figure svg{display:block;width:100%;min-width:700px;height:auto}.caption{padding:3px 17px 15px;color:var(--muted);font-size:13px;line-height:1.65}.figure-conclusion{display:block;margin-top:5px;color:var(--navy);font-weight:700}.steps{counter-reset:step;display:grid;gap:11px;margin:18px 0}.step{position:relative;padding:15px 16px 15px 58px;border:1px solid var(--line);border-radius:14px;background:#fff}.step:before{counter-increment:step;content:counter(step);position:absolute;left:16px;top:15px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;font-size:14px}.step h3,.step p{margin-left:28px}.term{padding:15px 0;border-top:1px solid var(--line)}.term:first-child{border-top:0}.term h3{display:flex;gap:8px;align-items:baseline}.term .plain{color:var(--muted);font-size:14px}.compare{width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px}.compare th,.compare td{padding:12px 13px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);border-right:1px solid var(--line);line-height:1.55}.compare th{background:#eef4fd;color:var(--navy);font-size:13px}.compare tr:last-child td{border-bottom:0}.compare th:last-child,.compare td:last-child{border-right:0}.mistakes{display:grid;gap:12px}.mistake{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff}.mistake b{display:block;font-size:13px;color:var(--blue);margin-bottom:4px}.three-lines{padding-left:21px;margin:14px 0}.three-lines li{margin:10px 0}.quiz{display:grid;gap:13px}.question{border:1px solid var(--line);border-radius:14px;padding:16px}.answer{margin-top:9px;padding-top:9px;border-top:1px dashed #bdc6d3;color:#3e4a5c;font-size:14px}.sources{padding-left:21px}.sources li{margin:10px 0}.small{font-size:13px;color:var(--muted)}.footer{padding-top:26px;color:#748094;font-size:12px;text-align:center}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:#f1f3f6;border-radius:5px;padding:1px 5px}.hide-print{display:block}@media (max-width:560px){body{font-size:16px}main{padding:22px 16px 52px}.hero{padding-top:12px}.hero h1{font-size:35px}.subtitle{font-size:18px}.section{padding:29px 0}h2{font-size:25px}.grid,.grid.three{grid-template-columns:1fr}.compare{display:block;overflow-x:auto;white-space:normal}.compare th,.compare td{min-width:142px}.figure-scroll{padding-left:12px;padding-right:12px}.figure svg{min-width:690px}.caption{padding-left:13px;padding-right:13px}.one-line{font-size:15px}.step{padding-left:56px}.step h3,.step p{margin-left:28px}}@page{size:A4;margin:14mm 13mm 15mm}@media print{html,body{background:#fff}body{font-size:10pt;line-height:1.58}main{max-width:none;padding:0}.hero{padding-top:0;break-after:page}.hero h1{font-size:31pt}.subtitle{font-size:15pt}.section{padding:20px 0;break-inside:avoid}h2{font-size:21pt}.figure{break-inside:avoid}.figure svg{min-width:0}.figure-scroll{overflow:visible}.grid{gap:9px}.card,.step,.mistake,.question{padding:11px}.compare th,.compare td{padding:8px;font-size:8.5pt}.footer{padding-top:14px}.hide-print{display:none}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero" id="title-page">
+    <div class="kicker">AI 每日深度科普 · OAuth 安全路径 06</div>
+    <h1>令牌撤销</h1>
+    <div class="en">Token Revocation</div>
+    <p class="subtitle">当你卸载一个能读日历、云盘或邮箱的 AI 助手时，为什么不能只把 App 删掉？这堂课讲清“收回授权”的协议动作，以及它不能替你做到的事。</p>
+    <div class="one-line">核心一句话：令牌撤销是授权服务器收回某个令牌及其相关授权的机制；但旧 Access Token 能否在所有服务上立刻失效，取决于系统怎样验证令牌。</div>
+    <div class="map" aria-label="知识地图位置"><span class="node">最小权限</span><span class="arrow">→</span><span class="node">OAuth Scopes</span><span class="arrow">→</span><span class="node">Access Token</span><span class="arrow">→</span><span class="node">Refresh Token</span><span class="arrow">→</span><span class="node">PKCE</span><span class="arrow">→</span><span class="node now">Token Revocation</span><span class="arrow">→</span><span class="node">DPoP</span></div>
+  </header>
+
+  <section class="section" id="why">
+    <div class="eyebrow">01 · 为什么这个概念重要</div>
+    <h2>“退出”不等于“过去的授权消失了”</h2>
+    <p class="lede">一个 AI 会议助手若曾被允许读取日历，它可能持有短期 <b>Access Token</b>，也可能持有能不断换取新 Access Token 的 <b>Refresh Token</b>。只从本机删除 App，不能自动通知授权服务器“这份许可不再需要”。</p>
+    <div class="grid">
+      <div class="card"><h3>它解决什么</h3><p>给用户、客户端或安全系统一条正式的“收回钥匙”通道：退出登录、切换账号、卸载应用、发现风险时，让服务器不再接受指定令牌，并可按策略连带撤回同一授权下的其他令牌。</p></div>
+      <div class="card"><h3>没有它会怎样</h3><p>被遗忘的长期凭据可能继续换取新短期凭据；用户在授权列表里仍看到不再使用的连接；安全事件发生后，只能等待自然过期，或用更粗粒度的方式切断访问。</p></div>
+    </div>
+    <div class="callout fact"><span class="fact-label">事实</span><strong>RFC 7009</strong> 规定：实现必须支持撤销 Refresh Token，应该支持撤销 Access Token；撤销端点以 HTTPS 上的 HTTP POST 接收要撤销的令牌。</div>
+  </section>
+
+  <section class="section" id="analogy">
+    <div class="eyebrow">02 · 一个直观类比</div>
+    <h2>把授权想成“物业档案 + 管理员钥匙 + 当日门禁卡”</h2>
+    <p>为什么需要三层？因为现实系统既要方便，也要能止损。物业不会让你拿一张十年有效的总门卡到处刷；它会把“你被允许进入哪栋楼”的档案、可领取新门卡的管理员钥匙、今天能开的门禁卡分开管理。</p>
+    <figure class="figure" aria-labelledby="fig-analogy-title">
+      <div class="figure-head"><div class="figure-title" id="fig-analogy-title">图 1｜生活类比：收回“管理员钥匙”与当日门卡</div><div class="read-order">阅读顺序：从左到右，先看三种凭据，再看撤销后的变化。</div></div>
+      <div class="figure-scroll"><svg viewBox="0 0 840 300" role="img" aria-label="物业档案、管理员钥匙、当日门禁卡以及撤销动作的示意图" xmlns="http://www.w3.org/2000/svg">
+        <rect width="840" height="300" rx="16" fill="#fbfcfe"/>
+        <text x="36" y="42" fill="#193a68" font-size="18" font-weight="700">小林授权 AI 日程助手读取日历</text>
+        <rect x="38" y="75" width="205" height="142" rx="14" fill="#e8f1ff" stroke="#9bbde9"/>
+        <text x="58" y="108" fill="#193a68" font-size="17" font-weight="700">① 物业档案</text><text x="58" y="136" fill="#40506a" font-size="14">授权总记录（grant）</text><text x="58" y="160" fill="#40506a" font-size="14">“可读日历”</text><text x="58" y="187" fill="#167a73" font-size="13" font-weight="700">不是可直接开门的卡</text>
+        <path d="M254 146h56" stroke="#7c91ad" stroke-width="3"/><path d="M302 138l12 8-12 8" fill="none" stroke="#7c91ad" stroke-width="3"/>
+        <rect x="326" y="75" width="205" height="142" rx="14" fill="#e3f6f2" stroke="#8dcfc5"/>
+        <text x="346" y="108" fill="#13665f" font-size="17" font-weight="700">② 管理员钥匙</text><text x="346" y="136" fill="#40506a" font-size="14">Refresh Token</text><text x="346" y="160" fill="#40506a" font-size="14">可领取新的当日门卡</text><text x="346" y="187" fill="#167a73" font-size="13" font-weight="700">风险更高，应优先收回</text>
+        <path d="M542 146h56" stroke="#7c91ad" stroke-width="3"/><path d="M590 138l12 8-12 8" fill="none" stroke="#7c91ad" stroke-width="3"/>
+        <rect x="614" y="75" width="188" height="142" rx="14" fill="#fff3d9" stroke="#e6c681"/>
+        <text x="634" y="108" fill="#8a5210" font-size="17" font-weight="700">③ 当日门禁卡</text><text x="634" y="136" fill="#40506a" font-size="14">Access Token</text><text x="634" y="160" fill="#40506a" font-size="14">调用日历 API</text><text x="634" y="187" fill="#8a5210" font-size="13" font-weight="700">通常短命，可能仍在路上</text>
+        <path d="M430 234v33" stroke="#a53b46" stroke-width="3"/><path d="M422 258l8 12 8-12" fill="none" stroke="#a53b46" stroke-width="3"/>
+        <rect x="270" y="270" width="320" height="1" fill="#a53b46"/>
+        <text x="274" y="294" fill="#a53b46" font-size="14" font-weight="700">撤销：授权服务器标记失效；是否连带收回其他卡，按其策略</text>
+      </svg></div>
+      <figcaption class="caption">图注：这是一张教学类比图；“物业”对应授权服务器，“保安/闸机”对应资源服务器。<span class="figure-conclusion">看图结论：最有价值的不是删掉手机里的卡，而是让发卡机构把未来发卡能力与授权记录一起处理。</span></figcaption>
+    </figure>
+    <div class="callout warning"><span class="analogy-label">类比边界</span>现实令牌不是实体门卡：有的 Access Token 可由资源服务器离线验证，有的会在线查询授权服务器；撤销一个 Refresh Token 是否连带已有 Access Token、授权记录，取决于服务商策略。不能从“物业收钥匙”推导出“所有 API 在同一毫秒拒绝请求”。</div>
+  </section>
+
+  <section class="section" id="one-picture">
+    <div class="eyebrow">03 · 一图看懂</div>
+    <h2>输入一个不再需要的凭据，输出“不能再续、不能再用”的授权状态</h2>
+    <figure class="figure" aria-labelledby="fig-flow-title">
+      <div class="figure-head"><div class="figure-title" id="fig-flow-title">图 2｜令牌撤销的主流程</div><div class="read-order">阅读顺序：① 触发 → ② 认证请求者 → ③ 查验归属 → ④ 标记失效 → ⑤ 各服务执行拒绝。</div></div>
+      <div class="figure-scroll"><svg viewBox="0 0 960 338" role="img" aria-label="令牌撤销从用户触发到资源服务器拒绝访问的流程图" xmlns="http://www.w3.org/2000/svg">
+        <rect width="960" height="338" rx="16" fill="#fbfcfe"/>
+        <g font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif"><text x="37" y="44" fill="#5e687b" font-size="14">输入：Refresh Token 或 Access Token；输出：后续刷新/访问被阻止，必要时重新授权</text>
+        <g><rect x="38" y="91" width="145" height="116" rx="14" fill="#e8f1ff" stroke="#9bbde9"/><circle cx="63" cy="117" r="14" fill="#3973d3"/><text x="59" y="122" fill="#fff" font-size="13" font-weight="700">1</text><text x="86" y="121" fill="#193a68" font-size="15" font-weight="700">触发</text><text x="57" y="152" fill="#40506a" font-size="13">退出、卸载、</text><text x="57" y="174" fill="#40506a" font-size="13">安全事件或设置</text></g>
+        <path d="M190 149h38" stroke="#7c91ad" stroke-width="3"/><path d="M218 141l12 8-12 8" fill="none" stroke="#7c91ad" stroke-width="3"/>
+        <g><rect x="240" y="91" width="157" height="116" rx="14" fill="#e3f6f2" stroke="#8dcfc5"/><circle cx="265" cy="117" r="14" fill="#167a73"/><text x="261" y="122" fill="#fff" font-size="13" font-weight="700">2</text><text x="288" y="121" fill="#13665f" font-size="15" font-weight="700">撤销请求</text><text x="259" y="152" fill="#40506a" font-size="13">HTTPS POST + token</text><text x="259" y="174" fill="#40506a" font-size="13">可带类型提示与认证</text></g>
+        <path d="M404 149h38" stroke="#7c91ad" stroke-width="3"/><path d="M432 141l12 8-12 8" fill="none" stroke="#7c91ad" stroke-width="3"/>
+        <g><rect x="454" y="78" width="188" height="142" rx="14" fill="#edf1f6" stroke="#b8c4d4"/><circle cx="479" cy="104" r="14" fill="#193a68"/><text x="475" y="109" fill="#fff" font-size="13" font-weight="700">3</text><text x="502" y="108" fill="#193a68" font-size="15" font-weight="700">授权服务器</text><text x="473" y="139" fill="#40506a" font-size="13">验证客户端与令牌归属</text><text x="473" y="161" fill="#40506a" font-size="13">令牌失效；按策略级联</text><text x="473" y="183" fill="#40506a" font-size="13">HTTP 200 后客户端别再用它</text></g>
+        <path d="M649 149h38" stroke="#7c91ad" stroke-width="3"/><path d="M677 141l12 8-12 8" fill="none" stroke="#7c91ad" stroke-width="3"/>
+        <g><rect x="699" y="91" width="223" height="116" rx="14" fill="#fff3d9" stroke="#e6c681"/><circle cx="724" cy="117" r="14" fill="#b46c15"/><text x="720" y="122" fill="#fff" font-size="13" font-weight="700">4</text><text x="747" y="121" fill="#8a5210" font-size="15" font-weight="700">资源服务器</text><text x="718" y="152" fill="#40506a" font-size="13">在线校验：可较快拒绝</text><text x="718" y="174" fill="#40506a" font-size="13">离线校验：等短期令牌过期或同步</text></g>
+        <path d="M551 226v45" stroke="#a53b46" stroke-width="2.5" stroke-dasharray="6 5"/><text x="431" y="299" fill="#a53b46" font-size="13" font-weight="700">传播窗口：不同节点知道“已撤销”的时间可能不同</text></g>
+      </svg></div>
+      <figcaption class="caption">图注：HTTP 200 的含义是撤销端点已完成协议上的处理；它不是“所有分布式节点已经同步”的数学证明。<span class="figure-conclusion">看图结论：撤销先改变授权服务器的状态，系统设计再决定这份变化怎样、多久传到真正做访问判断的地方。</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="section" id="how-it-works">
+    <div class="eyebrow">04 · 工作原理</div>
+    <h2>六步看令牌怎样从“还能用”变成“不能再用”</h2>
+    <div class="steps">
+      <div class="step"><h3>决定收回授权</h3><p>用户点击“移除某应用访问权限”，客户端退出登录，或安全系统发现风险。先分清目标：只是结束本机会话，还是让服务器收回授权？只有后者才是令牌撤销问题。</p></div>
+      <div class="step"><h3>向可信端点提交撤销请求</h3><p>客户端把待撤销的 <span class="mono">token</span> 放入 HTTPS 的 POST 请求体；<span class="mono">token_type_hint</span> 是可选的查找提示，不是令牌类型的唯一真相。端点地址本身必须来自可信配置或发现信息。</p></div>
+      <div class="step"><h3>验证“谁在请求、令牌是谁的”</h3><p>授权服务器验证客户端身份（或公共客户端所需信息），并核对该令牌是否发给这个客户端。这样不能任意拿一串猜测的令牌去撤销别人的授权。</p></div>
+      <div class="step"><h3>使令牌失效，并执行级联策略</h3><p>服务器使目标令牌不能再用。撤销 Refresh Token 时，若服务器支持 Access Token 撤销，应同时使同一授权下的 Access Token 失效；具体还可能处理授权总记录，取决于服务商策略。</p></div>
+      <div class="step"><h3>客户端停止使用，服务端逐步一致</h3><p>RFC 7009 规定收到 HTTP 200 后客户端不应继续用该令牌。分布式环境可能有传播延迟：有些资源服务器已经知道失效，有些尚未同步。</p></div>
+      <div class="step"><h3>后续访问被拒绝或要求重新授权</h3><p>在线校验令牌的资源服务器可立刻向授权服务器询问状态；离线校验的自包含 Access Token 可能依赖短有效期、黑名单/后端同步等设计。要恢复访问，用户通常需重新完成授权。</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="terms">
+    <div class="eyebrow">05 · 关键术语</div>
+    <h2>把“撤销什么、谁来判断”说准确</h2>
+    <div class="term"><h3>Token Revocation <span class="plain">令牌撤销</span></h3><p><b>专业解释：</b>授权服务器的端点与状态改变机制，用于使一个令牌失效，并可按策略影响相关令牌或授权许可。<br><b>白话解释：</b>去发卡处登记“这张钥匙以后作废”。<br><b>容易混淆：</b>它不是把 App 图标删掉，也不必然删除第三方已经复制走的数据。</p></div>
+    <div class="term"><h3>Authorization Grant <span class="plain">授权许可 / 授权总记录</span></h3><p><b>专业解释：</b>资源所有者给客户端的一次授权基础；令牌是由它派生的凭据。<br><b>白话解释：</b>物业档案里那条“这个助手可读你的日历”的总许可。<br><b>容易混淆：</b>它不等于某一张 Access Token；一份许可可关联多张令牌。</p></div>
+    <div class="term"><h3>Refresh Token <span class="plain">刷新令牌</span></h3><p><b>专业解释：</b>客户端向授权服务器换取新 Access Token 的凭据，通常不能直接访问资源 API。<br><b>白话解释：</b>能领新门卡的管理员钥匙。<br><b>容易混淆：</b>撤销它不必然意味着每一张旧 Access Token 同时被所有资源服务器拒绝。</p></div>
+    <div class="term"><h3>Propagation Delay <span class="plain">传播延迟</span></h3><p><b>专业解释：</b>授权状态变化从授权服务器传递到所有做访问判断的节点所需的时间窗口。<br><b>白话解释：</b>总部已把卡作废，但某个远端闸机还没收到名单更新。<br><b>容易混淆：</b>协议端点返回成功，与系统每个节点已经同步，是两件事。</p></div>
+  </section>
+
+  <section class="section" id="real-case">
+    <div class="eyebrow">06 · 一个真实应用案例</div>
+    <h2>Google 账户里的“移除访问权限”：用户看到的是控制面板，背后是收回授权</h2>
+    <p><span class="fact-label">事实</span>Google Account 的官方帮助说明，用户可以随时查看并移除第三方应用对 Google Account 的访问；移除后，该应用不能再访问该账户，某些依赖该连接的功能会不可用。它还特别提醒：第三方之前已经取得的数据，用户可能仍需另行要求第三方删除。</p>
+    <div class="grid">
+      <div class="card"><h3>产品层：用户的动作</h3><p>在 Google Account 的第三方连接管理中选中一个应用，查看它能访问的服务和权限，再选择“Remove access”。这回答的是：<b>我还想不想让它继续拿新数据？</b></p></div>
+      <div class="card"><h3>协议层：系统的职责</h3><p>身份提供方需让该连接对应的授权与令牌失效，阻止未来访问或换取新令牌；具体采用撤销端点、授权记录清理、会话策略还是其他内部机制，取决于产品实现。</p></div>
+    </div>
+    <div class="callout warning"><span class="infer-label">教学推断</span>这个真实产品场景说明“移除访问”对用户的重要性；本文<b>不主张</b> Google 的每一种连接都等同于 RFC 7009 的某一条 HTTP 调用。协议规范提供通用语义，产品可在其上组合自己的账户、会话和权限管理机制。</div>
+  </section>
+
+  <section class="section" id="comparison">
+    <div class="eyebrow">07 · 相近概念对比</div>
+    <h2>四件看似相近的事，回答的是不同问题</h2>
+    <figure class="figure" aria-labelledby="fig-compare-title">
+      <div class="figure-head"><div class="figure-title" id="fig-compare-title">图 3｜令牌生命周期里的“停止访问”工具箱</div><div class="read-order">阅读顺序：看每一行的触发者，再看它解决的核心问题与不能保证的事。</div></div>
+      <div class="figure-scroll"><svg viewBox="0 0 930 315" role="img" aria-label="令牌撤销、过期、登出和 DPoP 的差异对比图" xmlns="http://www.w3.org/2000/svg">
+        <rect width="930" height="315" rx="16" fill="#fbfcfe"/>
+        <text x="34" y="42" fill="#193a68" font-size="18" font-weight="700">它们处在同一条安全链路，但职责不同</text>
+        <g font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif"><text x="44" y="81" fill="#5e687b" font-size="13">概念</text><text x="234" y="81" fill="#5e687b" font-size="13">谁触发</text><text x="420" y="81" fill="#5e687b" font-size="13">解决的问题</text><text x="706" y="81" fill="#5e687b" font-size="13">不能保证</text>
+        <g><rect x="32" y="96" width="866" height="43" rx="9" fill="#e8f1ff"/><text x="44" y="122" fill="#193a68" font-size="15" font-weight="700">令牌撤销</text><text x="234" y="122" fill="#40506a" font-size="13">用户 / 客户端 / 安全系统</text><text x="420" y="122" fill="#40506a" font-size="13">提前收回某个授权或凭据</text><text x="706" y="122" fill="#40506a" font-size="13">所有节点瞬时同步</text></g>
+        <g><rect x="32" y="151" width="866" height="43" rx="9" fill="#e3f6f2"/><text x="44" y="177" fill="#13665f" font-size="15" font-weight="700">令牌过期</text><text x="234" y="177" fill="#40506a" font-size="13">预设时钟</text><text x="420" y="177" fill="#40506a" font-size="13">限制凭据最长存活时间</text><text x="706" y="177" fill="#40506a" font-size="13">风险发生时立即止损</text></g>
+        <g><rect x="32" y="206" width="866" height="43" rx="9" fill="#fff3d9"/><text x="44" y="232" fill="#8a5210" font-size="15" font-weight="700">应用登出</text><text x="234" y="232" fill="#40506a" font-size="13">某个产品界面</text><text x="420" y="232" fill="#40506a" font-size="13">结束该设备 / 网站的会话</text><text x="706" y="232" fill="#40506a" font-size="13">已授予第三方的令牌都失效</text></g>
+        <g><rect x="32" y="261" width="866" height="43" rx="9" fill="#fdebed"/><text x="44" y="287" fill="#a53b46" font-size="15" font-weight="700">DPoP</text><text x="234" y="287" fill="#40506a" font-size="13">协议客户端与资源服务器</text><text x="420" y="287" fill="#40506a" font-size="13">降低复制令牌后的重放风险</text><text x="706" y="287" fill="#40506a" font-size="13">替代撤销或修复密钥泄露</text></g></g>
+      </svg></div>
+      <figcaption class="caption">图注：这是概念职责图，不代表某一产品的完整实现。<span class="figure-conclusion">看图结论：撤销负责“提前收回”；过期负责“自动到点失效”；登出负责“本地/产品会话”；DPoP负责“偷到令牌也不一定能重放”。</span></figcaption>
+    </figure>
+    <table class="compare"><thead><tr><th>相近概念</th><th>专业定义</th><th>最容易误解的边界</th></tr></thead><tbody><tr><td><b>令牌撤销</b></td><td>授权服务器主动使令牌失效，可按政策处理相关许可。</td><td>不是第三方数据删除；并非所有 Access Token 都立即处处不可用。</td></tr><tr><td><b>令牌过期</b></td><td>令牌到预设时间后自然不再有效。</td><td>它是时间上限，不是用户在此刻“反悔”的通道。</td></tr><tr><td><b>登出</b></td><td>应用或身份系统结束一个会话的产品动作。</td><td>可能会调用撤销，也可能只清除本机 Cookie / 会话状态。</td></tr><tr><td><b>DPoP</b></td><td>将令牌使用与持有证明绑定，减少 Bearer Token 被复制后的重放。</td><td>它让偷来的令牌更难用，不负责表达“我不再授权”。</td></tr></tbody></table>
+  </section>
+
+  <section class="section" id="misconceptions">
+    <div class="eyebrow">08 · 常见误区</div>
+    <h2>别把“协议成功”误读成“所有风险归零”</h2>
+    <div class="mistakes">
+      <div class="mistake"><b>常见说法：我删除了 App，所以授权一定没了。</b><p><strong>实际情况：</strong>删除本地 App 未必通知授权服务器，也未必使已发令牌失效。<br><strong>为什么：</strong>授权记录和令牌通常保存在服务端；需要产品提供移除访问的动作，或客户端主动调用撤销机制。</p></div>
+      <div class="mistake"><b>常见说法：收到 HTTP 200，就表示每台服务器在同一刻拒绝旧令牌。</b><p><strong>实际情况：</strong>客户端应停止使用令牌，但分布式系统可能存在传播延迟。<br><strong>为什么：</strong>不同资源服务器可能缓存状态，或离线验证自包含 Access Token。</p></div>
+      <div class="mistake"><b>常见说法：撤销 Refresh Token 必然立即杀死每一张 Access Token。</b><p><strong>实际情况：</strong>RFC 7009 说明这取决于撤销策略与是否支持 Access Token 撤销。<br><strong>为什么：</strong>Access Token 可以是在线可查询的句柄，也可以是资源服务器能离线验签的自包含令牌。</p></div>
+      <div class="mistake"><b>常见说法：撤销后，第三方手里的历史数据也会自动被删除。</b><p><strong>实际情况：</strong>撤销主要阻断未来按授权访问；已经导出或复制的数据需要单独的数据删除与合规流程。<br><strong>为什么：</strong>访问控制与数据留存是两套不同的责任和技术机制。</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="limits">
+    <div class="eyebrow">09 · 现实限制与风险</div>
+    <h2>撤销是止损层，不是万能橡皮擦</h2>
+    <div class="grid three">
+      <div class="card"><h3>性能与成本</h3><p>若每次 API 调用都在线问授权服务器，撤销更及时，但会增加网络依赖、延迟与可用性成本。离线验证更快，却需要短寿命令牌或额外同步来缩短风险窗口。</p></div>
+      <div class="card"><h3>安全边界</h3><p>撤销端点本身接收敏感凭据，必须使用 HTTPS、认证与抗滥用措施。攻击者也可能尝试用错误提示或大量请求探测、拖垮系统。</p></div>
+      <div class="card"><h3>数据边界</h3><p>令牌撤销只影响未来授权访问；无法让已下载的文件、已写入第三方数据库的数据“自动消失”。用户需要知道访问撤销和数据删除的区别。</p></div>
+    </div>
+    <div class="callout risk"><span class="fact-label">风险提示</span>对高价值数据，合理的组合通常不是单靠撤销：最小权限、短期 Access Token、Refresh Token 轮换或发送者绑定、异常检测、可审计的授权管理与明确的数据删除流程，要一起设计。</div>
+  </section>
+
+  <section class="section" id="summary">
+    <div class="eyebrow">10 · 三句话总结</div>
+    <h2>记住这三句就抓住了核心</h2>
+    <ol class="three-lines"><li><b>令牌撤销</b>是让授权服务器收回不再需要或有风险的凭据，尤其是能续发新令牌的 Refresh Token。</li><li>它能让客户端停止使用令牌、阻止未来续发，并可能连带处理相关令牌或授权记录；<b>级联范围由服务端策略决定</b>。</li><li>撤销不是数据删除，也不保证每个分布式节点同一毫秒完成同步；这正是短寿命令牌和在线/离线校验取舍存在的原因。</li></ol>
+  </section>
+
+  <section class="section" id="quiz">
+    <div class="eyebrow">11 · 三道理解题</div>
+    <h2>用自己的话检查是否真正理解</h2>
+    <div class="quiz">
+      <div class="question"><h3>1. 一句话题</h3><p>为什么卸载一个已连接云盘的 AI 助手，不等于撤销它的云盘访问？</p><div class="answer"><b>参考答案：</b>卸载只改变本地设备；服务器仍可能保存授权记录和令牌。需要在账号连接管理中移除访问，或由客户端向授权服务器发起撤销。</div></div>
+      <div class="question"><h3>2. 边界题</h3><p>某系统撤销 Refresh Token 后，用户在几秒内仍用旧 Access Token 读到一次数据。这一定说明撤销失败吗？</p><div class="answer"><b>参考答案：</b>不一定。可能是资源服务器尚未收到失效状态，或它离线验证短期 Access Token。应检查令牌寿命、校验模式、传播与撤销策略，而不是只看一次请求。</div></div>
+      <div class="question"><h3>3. 迁移题</h3><p>你在做一个“AI 自动整理客户邮件”的产品。用户点击“断开邮箱”时，除清除本地缓存外，至少还应设计哪两件事？</p><div class="answer"><b>参考答案：</b>向身份提供方收回或撤销与该连接相关的凭据/许可，并阻止后台任务继续用旧令牌刷新；同时向用户说明已复制的数据如何保留、删除或导出。高敏场景还应记录审计事件并尽量缩短旧 Access Token 的可用窗口。</div></div>
+    </div>
+  </section>
+
+  <section class="section" id="next">
+    <div class="eyebrow">12 · 下一步学习</div>
+    <h2>它在知识地图的前后位置</h2>
+    <div class="grid"><div class="card"><h3>你已经具备的前置知识</h3><p><b>OAuth Scopes</b> 解释允许做什么；<b>Access Token</b> 解释拿什么调用 API；<b>Refresh Token</b> 解释如何续发短期凭据；<b>PKCE</b> 解释第一张 Token 前的授权码如何安全兑换。本讲补上“何时收回”。</p></div><div class="card"><h3>建议继续学习</h3><p><b>DPoP</b>：令牌已经发出后，怎样让“只偷到字符串的人”也无法简单重放。<br><b>OAuth Authorization Server Metadata</b>：客户端怎样可靠发现撤销端点、支持能力和服务器配置。</p></div></div>
+  </section>
+
+  <section class="section" id="sources">
+    <div class="eyebrow">13 · 来源与说明</div>
+    <h2>关键事实来自标准与官方产品说明</h2>
+    <ol class="sources">
+      <li><a href="https://www.rfc-editor.org/info/rfc7009/">RFC 7009 — OAuth 2.0 Token Revocation</a>：撤销 Refresh / Access Token 的要求、HTTPS POST 请求、<span class="mono">token_type_hint</span>、HTTP 200 语义、传播延迟、级联策略与自包含令牌的实现取舍。</li>
+      <li><a href="https://www.rfc-editor.org/rfc/rfc9700.html">RFC 9700 — Best Current Practice for OAuth 2.0 Security</a>：2025 年 OAuth 安全最佳实践；Refresh Token 的风险、轮换/发送者绑定、密码变更或注销等安全事件可能触发自动撤销。</li>
+      <li><a href="https://www.rfc-editor.org/info/rfc6749/">RFC 6749 — The OAuth 2.0 Authorization Framework</a>：Access Token、Refresh Token、授权服务器、客户端与受保护资源的基础定义。</li>
+      <li><a href="https://support.google.com/accounts/answer/14012355?hl=en-EN">Google Account Help — Share some access to your Google Account data with third-party apps</a>：用户可随时移除第三方访问；移除后应用不能继续访问，但历史数据可能要另行请求删除。</li>
+      <li><a href="https://support.google.com/accounts/answer/13533235?hl=en">Google Account Help — Manage links between your Google Account and apps</a>：账户连接管理中的移除访问动作及其产品影响。</li>
+    </ol>
+    <div class="callout fact"><span class="fact-label">说明</span>本文把标准中的协议角色翻译为教学语言；“物业/门卡”图均为类比，不是任何厂商的架构图。不同身份提供方对端点、认证、级联范围、令牌寿命和数据删除的实现不同，集成时应以该服务商当前官方文档为准。</div>
+  </section>
+
+  <footer class="footer">AI 每日深度科普 · 2026-07-20 · 事实、类比与教学推断已分别标注</footer>
+</main>
+</body>
+</html>

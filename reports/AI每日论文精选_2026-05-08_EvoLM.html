@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | EvoLM：让模型学会给自己出评分标准</title>
+  <style>
+    :root {
+      --ink: #15202b;
+      --muted: #5c6672;
+      --line: #d8dde3;
+      --paper: #f6f4ef;
+      --panel: #ffffff;
+      --soft: #edf2f7;
+      --blue: #2152a3;
+      --cyan: #1f8a9e;
+      --green: #2f7d52;
+      --gold: #9a6a12;
+      --red: #a4413f;
+      --shadow: 0 18px 45px rgba(21, 32, 43, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 18px 48px; }
+    .eyebrow {
+      color: var(--cyan);
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f9fbfd 58%, #edf5f7 100%);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      border-radius: 8px;
+    }
+    h1 {
+      margin: 10px 0 12px;
+      font-size: clamp(30px, 6vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 34px 0 14px;
+      font-size: 24px;
+      line-height: 1.2;
+      border-left: 5px solid var(--blue);
+      padding-left: 12px;
+    }
+    h3 { margin: 18px 0 8px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+    .subtitle {
+      max-width: 820px;
+      color: #334155;
+      font-size: 18px;
+    }
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .meta div, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .two {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+    }
+    .card h3 { margin-top: 0; }
+    .score {
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--blue);
+    }
+    .tag {
+      display: inline-block;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 999px;
+      padding: 4px 9px;
+      margin: 3px 4px 3px 0;
+      font-size: 12px;
+      color: #334155;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      display: table;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #e9eef5;
+      font-size: 13px;
+      color: #263445;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .callout {
+      border-left: 5px solid var(--green);
+      background: #eef7f1;
+      padding: 16px 18px;
+      border-radius: 8px;
+      margin: 16px 0;
+    }
+    .risk { border-left-color: var(--red); background: #fbefee; }
+    .note { border-left-color: var(--gold); background: #fbf5e8; }
+    .diagram {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+    svg { max-width: 100%; height: auto; display: block; }
+    .term {
+      display: grid;
+      grid-template-columns: 180px minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .term div { padding: 12px; border-bottom: 1px solid var(--line); }
+    .term div:nth-child(3n+1) { font-weight: 800; background: #f3f6fa; }
+    .term div:nth-last-child(-n+3) { border-bottom: 0; }
+    .small { color: var(--muted); font-size: 13px; }
+    .sources li { margin-bottom: 8px; }
+    @media (max-width: 780px) {
+      .wrap { padding: 14px 10px 36px; }
+      .hero { padding: 22px; }
+      .meta, .grid, .two { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; }
+      .term div { border-bottom: 1px solid var(--line); }
+      table { display: block; overflow-x: auto; white-space: normal; }
+      th, td { min-width: 150px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="eyebrow">AI Daily Paper Selection · 2026-05-08</div>
+      <h1>让 AI 学会给自己出“评分标准”</h1>
+      <p class="subtitle">今日精选论文：<strong>EvoLM: Self-Evolving Language Models through Co-Evolved Discriminative Rubrics</strong>。它关心的不是“让模型多做题”，而是一个更根本的问题：如果没有人类老师、没有 GPT-4.1 这样的外部裁判，模型能不能自己学会判断什么答案更好，并据此继续进步？</p>
+      <div class="meta">
+        <div><span class="label">论文</span>EvoLM：通过共同进化的判别标准实现自我进化语言模型</div>
+        <div><span class="label">作者</span>Shuyue Stella Li, Rui Xin, Teng Xiao, Yike Wang, Rulin Shao, Zoey Hao, Melanie Sclar, Sewoong Oh, Faeze Brahman, Pang Wei Koh, Yulia Tsvetkov</div>
+        <div><span class="label">机构</span>University of Washington, Allen Institute for AI, University of Pennsylvania</div>
+        <div><span class="label">平台</span>arXiv:2605.03871；ICLR 2026 Workshop RSI Spotlight</div>
+      </div>
+    </section>
+
+    <h2>为什么今天选它？</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>1. 它触碰后训练的核心瓶颈</h3>
+        <p>现在训练强模型，常常离不开人类打分、闭源大模型当裁判，或只适用于数学代码题的标准答案。EvoLM 尝试把这三种外部依赖都拿掉。</p>
+      </article>
+      <article class="card">
+        <h3>2. 它把“自我改进”变成可执行流程</h3>
+        <p>不是让模型空喊“我要变强”，而是让它生成一套具体评分标准，再用这些标准训练回答能力。像学生先学会批改作文，再用批改标准改自己的作文。</p>
+      </article>
+      <article class="card">
+        <h3>3. 它有长期产业价值</h3>
+        <p>如果被复现，这条路会降低 RLHF 与奖励模型训练成本，让更多团队不必长期依赖昂贵的闭源评审 API。</p>
+      </article>
+    </div>
+
+    <div class="callout">
+      <strong>一句话讲透论文：</strong> EvoLM 让一个语言模型同时练两件事：一边学会“怎样才算好答案”，一边按这个标准把自己的答案改得更好。
+    </div>
+
+    <h2>核心贡献拆解</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>问题</th>
+          <th>过去常见做法</th>
+          <th>EvoLM 的做法</th>
+          <th>为什么值得关注</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>谁来判断答案好坏？</td>
+          <td>人类标注员、GPT-4.1/Claude 这类强模型、单独训练的 reward model。</td>
+          <td>模型自己生成“判别性评分标准”，再交给小型冻结 judge 打分。</td>
+          <td>把评价质量从“裁判有多聪明”转向“评分标准写得多清楚”。</td>
+        </tr>
+        <tr>
+          <td>没有人工标签怎么办？</td>
+          <td>收集偏好数据，或找有标准答案的题目。</td>
+          <td>用时间对比：当前模型答案通常比旧 checkpoint 更好，于是构造偏好对。</td>
+          <td>让模型的训练历史变成监督信号，减少外部数据依赖。</td>
+        </tr>
+        <tr>
+          <td>如何避免评分太玄学？</td>
+          <td>直接让 judge 给一个整体分数。</td>
+          <td>要求 rubric 写成具体、可检查的条目。</td>
+          <td>类似把“这篇作文不错”拆成“论点是否清晰、证据是否充分、结论是否回应题目”。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>工作原理：像训练一个会自批改的学生</h2>
+    <p>可以把 EvoLM 想象成一个学生每天写作文。传统方式是老师一直批改；EvoLM 的想法是：先让学生学会列出评分细则，再让一个小助教按细则检查，最后学生根据检查结果继续改进。</p>
+
+    <div class="diagram" aria-label="EvoLM training loop diagram">
+      <svg width="980" height="420" viewBox="0 0 980 420" role="img">
+        <defs>
+          <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+            <path d="M2,2 L10,6 L2,10 Z" fill="#2152a3"></path>
+          </marker>
+          <style>
+            .box{fill:#fff;stroke:#d8dde3;stroke-width:2;rx:10}
+            .blue{fill:#eaf1ff;stroke:#2152a3}
+            .green{fill:#eaf7ef;stroke:#2f7d52}
+            .gold{fill:#fff6df;stroke:#9a6a12}
+            .red{fill:#fff0ef;stroke:#a4413f}
+            .t{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#15202b}
+            .s{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#46515f}
+            .line{stroke:#2152a3;stroke-width:3;fill:none;marker-end:url(#arrow)}
+          </style>
+        </defs>
+        <rect x="38" y="56" width="190" height="96" class="box blue"></rect>
+        <text x="60" y="92" class="t">当前模型</text>
+        <text x="60" y="120" class="s">回答问题</text>
+        <text x="60" y="142" class="s">生成候选答案</text>
+        <rect x="38" y="254" width="190" height="96" class="box red"></rect>
+        <text x="60" y="290" class="t">旧 checkpoint</text>
+        <text x="60" y="318" class="s">产生较早答案</text>
+        <text x="60" y="340" class="s">作为对比样本</text>
+        <rect x="310" y="150" width="210" height="126" class="box gold"></rect>
+        <text x="334" y="188" class="t">时间对比</text>
+        <text x="334" y="218" class="s">把新旧答案组成</text>
+        <text x="334" y="240" class="s">偏好对：较好 / 较差</text>
+        <rect x="600" y="46" width="250" height="112" class="box green"></rect>
+        <text x="626" y="84" class="t">Rubric 生成器</text>
+        <text x="626" y="114" class="s">写出本题专用评分细则</text>
+        <text x="626" y="136" class="s">例如事实、推理、格式</text>
+        <rect x="600" y="252" width="250" height="112" class="box blue"></rect>
+        <text x="626" y="290" class="t">小型冻结 Judge</text>
+        <text x="626" y="320" class="s">按 rubric 给答案打分</text>
+        <text x="626" y="342" class="s">分数变成训练奖励</text>
+        <path d="M228 104 C260 104 275 166 310 190" class="line"></path>
+        <path d="M228 302 C268 302 278 252 310 238" class="line"></path>
+        <path d="M520 192 C558 170 565 126 600 106" class="line"></path>
+        <path d="M725 158 C725 194 725 214 725 252" class="line"></path>
+        <path d="M600 310 C505 360 315 360 200 152" class="line"></path>
+        <text x="332" y="382" class="s">循环含义：更好的评分标准带来更好的回答，更好的回答又提供新的对比样本。</text>
+      </svg>
+    </div>
+
+    <h3>步骤化解释</h3>
+    <ol>
+      <li><strong>先拿到一道题。</strong>模型生成当前版本的答案，同时拿旧版本模型的答案作对照。</li>
+      <li><strong>构造偏好对。</strong>如果当前版本整体更成熟，就把当前答案视为更优样本，旧答案视为较差样本。</li>
+      <li><strong>生成 rubric。</strong>Rubric 不是泛泛说“答案要好”，而是给出本题该检查什么，例如是否覆盖约束、是否有逻辑跳步、是否给出可验证结论。</li>
+      <li><strong>冻结 judge 打分。</strong>Judge 不参与训练，只按 rubric 看哪个答案更符合标准。</li>
+      <li><strong>交替更新。</strong>一会儿训练回答模型，一会儿训练 rubric 生成器，让“答题能力”和“评分标准”一起进化。</li>
+    </ol>
+
+    <h2>关键术语解释</h2>
+    <div class="term">
+      <div>Rubric</div><div>专业解释：针对任务实例生成的自然语言评价准则。</div><div>白话解释：批改作文前列出的评分细则。</div>
+      <div>Discriminative Rubric</div><div>专业解释：能帮助 judge 区分优劣答案的判别性准则。</div><div>白话解释：不是空泛标准，而是真能把好答案和差答案分开的检查清单。</div>
+      <div>Policy Model</div><div>专业解释：负责生成答案、并通过奖励更新的模型。</div><div>白话解释：真正答题的学生。</div>
+      <div>Frozen Judge</div><div>专业解释：参数固定、只负责评分的评审模型。</div><div>白话解释：不再学习的小助教，只按标准打分。</div>
+      <div>Temporal Contrast</div><div>专业解释：用当前 checkpoint 与旧 checkpoint 的输出差异构造偏好信号。</div><div>白话解释：拿今天的作业和上个月的作业对比，看哪里进步了。</div>
+      <div>GRPO</div><div>专业解释：Group-Relative Policy Optimization，一种相对奖励强化学习优化方法。</div><div>白话解释：不是只看绝对分，而是在一组答案里比较谁更好。</div>
+    </div>
+
+    <h2>实验结果怎么读</h2>
+    <div class="two">
+      <article class="card">
+        <span class="label">RewardBench-2</span>
+        <div class="score">+25.7%</div>
+        <p>论文称，EvoLM 训练出的 Qwen3-8B rubric 生成器在 RewardBench-2 上超过 GPT-4.1。关键含义不是“8B 全面强过 GPT-4.1”，而是：在“写评分标准”这个特定角色上，小模型可能通过专门训练做得更好。</p>
+      </article>
+      <article class="card">
+        <span class="label">OLMo3-Adapt</span>
+        <div class="score">69.3%</div>
+        <p>共同训练后的 policy 在 OLMo3-Adapt 上达到 69.3% 平均表现，并超过 GPT-4.1 提示生成 rubric 的训练方案 3.9%。这说明“自生成标准”不只是能评分，还能实际推动回答模型进步。</p>
+      </article>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>方案</th>
+          <th>监督来源</th>
+          <th>成本与依赖</th>
+          <th>报告中的结果信号</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>人工偏好标注</td>
+          <td>人类评审</td>
+          <td>贵、慢，且人类未必能评超高难度任务。</td>
+          <td>作为传统 RLHF 背景瓶颈。</td>
+        </tr>
+        <tr>
+          <td>闭源强模型当裁判</td>
+          <td>GPT-4.1 等外部模型</td>
+          <td>依赖 API、成本高，评审逻辑不透明。</td>
+          <td>EvoLM rubric 在 RewardBench-2 上超过 GPT-4.1 25.7%。</td>
+        </tr>
+        <tr>
+          <td>SkyWork-RM 等标量奖励模型</td>
+          <td>单独训练的 reward model</td>
+          <td>需要额外模型与训练流程。</td>
+          <td>论文称 EvoLM policy 超过 SkyWork-RM 训练方案 16%。</td>
+        </tr>
+        <tr>
+          <td>EvoLM</td>
+          <td>模型自己的历史输出 + 共同进化 rubric</td>
+          <td>减少人工与闭源依赖，但需要防止自我强化偏差。</td>
+          <td>在多项评测中显示后训练效果提升。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>局限性与问题</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>奖励黑客仍是核心风险</h3>
+        <p>如果模型学会写“看起来合理但会放水”的 rubric，它可能不是变聪明，而是学会钻自己规则的空子。</p>
+      </article>
+      <article class="card">
+        <h3>主观任务仍难处理</h3>
+        <p>代码、数学、事实问答较容易比较；但创意写作、审美、伦理判断这类任务，标准本身就有争议。</p>
+      </article>
+      <article class="card">
+        <h3>独立复现还很重要</h3>
+        <p>论文结果很强，但真正进入产业，需要不同模型、不同数据、不同 judge 下的稳定复现。</p>
+      </article>
+    </div>
+    <div class="callout risk">
+      <strong>不要过度解读：</strong> EvoLM 不是证明 AI 已经能无限自我进化。它更准确的意义是：在后训练中，模型自身的评价能力可以被结构化利用，成为一种新的训练信号来源。
+    </div>
+
+    <h2>产业影响分析</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>受益方</th>
+          <th>可能变化</th>
+          <th>商业含义</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>开源模型团队</td>
+          <td>减少对闭源评审 API 的依赖。</td>
+          <td>后训练成本下降，模型迭代速度提高。</td>
+        </tr>
+        <tr>
+          <td>企业私有化部署</td>
+          <td>可以在内部数据上生成本域评分标准。</td>
+          <td>金融、医疗、客服、法务等场景更容易做闭环优化。</td>
+        </tr>
+        <tr>
+          <td>Agent 产品</td>
+          <td>Agent 不只执行任务，还能学习“什么才是好执行”。</td>
+          <td>长期看可能提升自动化工作流的自适应能力。</td>
+        </tr>
+        <tr>
+          <td>闭源评测与标注服务</td>
+          <td>一部分通用偏好标注需求可能被替代。</td>
+          <td>服务价值会向高难度审计、安全红队、领域专家评审迁移。</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>技术路线可视化重构</h2>
+    <div class="diagram" aria-label="Old methods versus EvoLM comparison">
+      <svg width="980" height="390" viewBox="0 0 980 390" role="img">
+        <defs>
+          <style>
+            .box2{fill:#fff;stroke:#d8dde3;stroke-width:2;rx:10}
+            .head{font:800 20px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#15202b}
+            .body{font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#46515f}
+            .pill{font:700 13px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#fff}
+            .a{stroke:#2f7d52;stroke-width:3;marker-end:url(#arrow)}
+            .b{stroke:#9a6a12;stroke-width:3;marker-end:url(#arrow)}
+          </style>
+        </defs>
+        <rect x="34" y="44" width="390" height="286" class="box2"></rect>
+        <text x="62" y="84" class="head">传统后训练</text>
+        <rect x="62" y="112" width="128" height="40" fill="#a4413f" rx="20"></rect>
+        <text x="90" y="138" class="pill">人类标注</text>
+        <rect x="62" y="174" width="160" height="40" fill="#2152a3" rx="20"></rect>
+        <text x="86" y="200" class="pill">闭源强模型裁判</text>
+        <rect x="62" y="236" width="142" height="40" fill="#9a6a12" rx="20"></rect>
+        <text x="88" y="262" class="pill">奖励模型</text>
+        <line x1="225" y1="132" x2="332" y2="132" class="b"></line>
+        <line x1="250" y1="194" x2="332" y2="194" class="b"></line>
+        <line x1="230" y1="256" x2="332" y2="256" class="b"></line>
+        <text x="338" y="138" class="body">训练模型</text>
+        <text x="338" y="200" class="body">训练模型</text>
+        <text x="338" y="262" class="body">训练模型</text>
+        <text x="62" y="306" class="body">瓶颈：贵、慢、依赖外部、难扩展到无标准答案任务。</text>
+        <rect x="556" y="44" width="390" height="286" class="box2"></rect>
+        <text x="584" y="84" class="head">EvoLM 后训练</text>
+        <rect x="584" y="116" width="170" height="44" fill="#2f7d52" rx="22"></rect>
+        <text x="618" y="144" class="pill">生成评分标准</text>
+        <rect x="760" y="174" width="150" height="44" fill="#2152a3" rx="22"></rect>
+        <text x="794" y="202" class="pill">小 judge 验证</text>
+        <rect x="584" y="236" width="170" height="44" fill="#1f8a9e" rx="22"></rect>
+        <text x="616" y="264" class="pill">更新回答模型</text>
+        <line x1="754" y1="138" x2="810" y2="172" class="a"></line>
+        <line x1="810" y1="220" x2="754" y2="248" class="a"></line>
+        <path d="M584 258 C512 258 512 136 584 136" fill="none" class="a"></path>
+        <text x="584" y="306" class="body">关键：把“评价能力”写成清晰 rubric，让回答和评价一起进化。</text>
+      </svg>
+    </div>
+
+    <h2>延伸阅读</h2>
+    <ul>
+      <li><a href="https://arxiv.org/abs/2605.03871">原论文 arXiv：EvoLM: Self-Evolving Language Models through Co-Evolved Discriminative Rubrics</a></li>
+      <li><a href="https://openreview.net/forum?id=aA2PXFH2Cp">OpenReview：ICLR 2026 Workshop RSI Spotlight 页面</a></li>
+      <li><a href="https://24-ai.news/en/news/2026-05-06/arxiv-2605-03871-evolm-self-improving-llms/">24 AI：英文行业简报，对自监督后训练意义做了概述</a></li>
+      <li><a href="https://awesomeagents.ai/science/agent-memory-circuits-tiers-evolution/">Awesome Agents：把 EvoLM 放在 Agent 记忆与自我进化趋势中解读</a></li>
+      <li><a href="https://scirate.com/?date=2026-05-06&page=9&range=7">SciRate：arXiv 当日条目与引用信息</a></li>
+    </ul>
+
+    <h2>引用来源</h2>
+    <ol class="sources">
+      <li>arXiv, <a href="https://arxiv.org/abs/2605.03871">arXiv:2605.03871</a>, submitted 2026-05-05. 用于论文标题、作者、提交时间、摘要、实验数字与论文链接。</li>
+      <li>OpenReview, <a href="https://openreview.net/forum?id=aA2PXFH2Cp">Self-Evolving Language Models through Co-evolved Discriminative Rubrics</a>. 用于会议/Workshop Spotlight 状态、关键词与早期版本实验说明。</li>
+      <li>ChatPaper paper metadata, <a href="https://chatpaper.com/es/chatpaper/paper/275672">EvoLM paper page</a>. 用于机构信息交叉核对。</li>
+      <li>24 AI, <a href="https://24-ai.news/en/news/2026-05-06/arxiv-2605-03871-evolm-self-improving-llms/">EvoLM: language models that improve themselves without external supervision</a>. 用于英文行业关注信号。</li>
+      <li>Awesome Agents, <a href="https://awesomeagents.ai/science/agent-memory-circuits-tiers-evolution/">Agent Memory in 2026: Circuits, Tiers, Evolution</a>. 用于将 EvoLM 放入 Agent 自我改进趋势的外部讨论信号。</li>
+      <li>SciRate, <a href="https://scirate.com/?date=2026-05-06&page=9&range=7">Top arXiv papers entry for 2605.03871</a>. 用于 arXiv 社区索引与条目信息交叉验证。</li>
+    </ol>
+
+    <div class="callout note">
+      <strong>今日结论：</strong> EvoLM 的真正价值，不是某个分数超过了谁，而是它提示了一个更长期的方向：未来 AI 系统可能不只靠外部老师变强，而是逐步学会把自己的经验转化为可检查、可训练、可迭代的标准。
+    </div>
+  </main>
+</body>
+</html>

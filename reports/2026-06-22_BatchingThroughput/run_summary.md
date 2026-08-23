@@ -1,0 +1,25 @@
+# 2026-06-22 AI Concept Run Summary
+
+- Run time: 2026-06-22 08:09:37 CST / 2026-06-22T08:09:37+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `批处理与吞吐量（Batching and Throughput）`.
+- Rationale: the previous concept runs covered `模型量化（Quantization）`, `推测解码（Speculative Decoding）`, `模型压缩（Model Compression）`, and `边缘AI（Edge AI）`; today's concept continues the inference/deployment learning path by explaining how model services use queues, micro-batches, GPU parallelism, and latency/throughput tradeoffs to serve many users at reasonable cost.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/2026-06-22_批处理与吞吐量（Batching and Throughput）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/2026-06-22_批处理与吞吐量（Batching and Throughput）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/chatgpt_batching_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/chatgpt_batching_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-22_BatchingThroughput/email_body.txt`
+- Visuals: generated with ChatGPT Image 2.0 under `/Users/mac/.codex/generated_images/019eeca1-401e-70f2-945c-d90b39158d3e/`; selected the restaurant batching analogy and AI service batching workflow variants and copied them into the report directory.
+- Verification:
+  - `python3 reports/2026-06-22_BatchingThroughput/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 9 A4 pages and a 4,183,876 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed two inline base64 image data URIs and two image tags.
+  - PDF pages rendered to `rendered/page-*.png`; cover, analogy figure, workflow figure, terminology table, misconceptions, summary, and quiz pages were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19eeca908e03511b`.
+- Continuity note: avoid repeating `批处理与吞吐量`, `边缘AI`, `模型压缩`, `推测解码`, and `模型量化` soon. Strong next candidates for the learning path: `推理路由（Inference Routing）`, `AI芯片（AI Chips）`, `端云协同（Edge-cloud Collaboration）`, or `负载均衡（Load Balancing）`.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

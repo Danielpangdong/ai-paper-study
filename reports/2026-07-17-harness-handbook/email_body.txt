@@ -1,0 +1,10 @@
+今天精选：Harness Handbook（2026-07-14）。
+
+一句判断：对大型 AI agent 而言，最容易出错的往往不是“不会写代码”，而是“没有找全需要改的代码位置”。这篇论文把 agent harness 组织成从系统行为到源码证据的可验证地图，再用 BGPD 逐级缩小范围。
+
+论文在 Codex 与 Terminus-2 两套开源 harness、各 30 个改动请求的受控对比中报告：Handbook 组总体计划偏好率由 28.3% 升至 38.3%（Codex）、26.7% 升至 45.6%（Terminus-2），平均规划 token 分别下降 12.7% 与 8.6%。它测的是“定位与计划”，不是最终 patch 测试通过率，更不能直接等同生产可靠性或总研发成本下降。
+
+完整中文证据化报告见附件：含方法重构图、忠实重绘的结果图、适用边界、可复现性和产品/投资启示。
+
+论文： https://arxiv.org/abs/2607.13285
+官方代码： https://github.com/Ruhan-Wang/Harness_Handbook

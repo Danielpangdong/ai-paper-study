@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 论文精读 · 2026-07-21 · The Flexibility Trap（ICML 2026 杰出论文）</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0e1116; --panel:#161b22; --panel2:#1d232c; --border:#2a323d;
+    --text:#e6edf3; --muted:#9aa7b4; --brand:#7aa2ff; --accent:#f1c40f;
+    --good:#4cc38a; --bad:#f26d6d; --warn:#f39c12;
+    --mono:'SF Mono','JetBrains Mono',Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'PingFang SC','Segoe UI','Helvetica Neue',Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.7}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1120px;margin:0 auto;padding:36px 22px 80px}
+  header.hero{background:linear-gradient(135deg,#1a2340 0%,#2b1a3d 50%,#3a1a30 100%);
+    border:1px solid var(--border);border-radius:16px;padding:34px 32px;position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:auto -60px -80px auto;width:280px;height:280px;
+    background:radial-gradient(circle,#7aa2ff44 0%,transparent 70%);pointer-events:none}
+  .kicker{display:inline-flex;align-items:center;gap:8px;background:#00000055;border:1px solid #ffffff22;
+    padding:6px 12px;border-radius:999px;font-size:12px;color:#ffd97a;letter-spacing:.5px}
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:#ffd97a;box-shadow:0 0 8px #ffd97a}
+  h1{margin:14px 0 8px;font-size:30px;line-height:1.3;letter-spacing:-.2px}
+  .subtitle{color:#ffffffcc;font-size:15px;margin:0 0 18px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 18px;color:#c9d5e5;font-size:13px}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .meta b{color:#fff;font-weight:600}
+  .badge{background:#f1c40f;color:#111;font-weight:700;padding:3px 8px;border-radius:6px;font-size:12px}
+  section{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px 26px;margin-top:22px}
+  section h2{margin:0 0 12px;font-size:20px;display:flex;align-items:center;gap:10px}
+  section h2 .num{background:var(--brand);color:#0b1220;font-weight:800;font-size:12px;
+    width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px}
+  section h3{margin:18px 0 8px;font-size:15px;color:#dbe4ef}
+  p{margin:8px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media (max-width:820px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+  .tldr{background:linear-gradient(180deg,#1a2540,#161b22);border-left:4px solid var(--brand)}
+  .tldr ul{margin:6px 0 0 18px;padding:0}
+  .tldr li{margin:6px 0}
+  .callout{border-left:4px solid var(--accent);background:#2a1f0d;padding:12px 16px;border-radius:8px;margin:14px 0}
+  .warn{border-left-color:var(--warn);background:#2b1e10}
+  .bad{border-left-color:var(--bad);background:#2c1414}
+  .good{border-left-color:var(--good);background:#0f2620}
+  code{font-family:var(--mono);background:#0b0f14;border:1px solid var(--border);padding:1px 6px;border-radius:5px;font-size:13px;color:#ffd97a}
+  .tag{display:inline-block;background:#0b0f14;border:1px solid var(--border);padding:2px 8px;border-radius:999px;font-size:11px;color:var(--muted);margin-right:4px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+  th{background:#111820;color:#c9d5e5;font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+  .diagram{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:18px;margin:12px 0}
+  .flow{display:grid;grid-template-columns:1fr 40px 1fr;gap:10px;align-items:center}
+  .flow .box{background:#0b0f14;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;text-align:center}
+  .flow .arr{text-align:center;color:var(--brand);font-size:24px}
+  .conf{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;letter-spacing:.3px}
+  .c-high{background:#0f2620;color:var(--good);border:1px solid var(--good)}
+  .c-mid{background:#2b1e10;color:var(--warn);border:1px solid var(--warn)}
+  .c-low{background:#2c1414;color:var(--bad);border:1px solid var(--bad)}
+  footer{margin-top:28px;color:var(--muted);font-size:12.5px;text-align:center}
+  .glossary{background:#0f1520;border:1px dashed var(--border);border-radius:10px;padding:14px 18px;font-size:13.5px}
+  .glossary dt{color:var(--brand);font-weight:600;margin-top:6px}
+  .glossary dd{margin:2px 0 0;color:#cdd6e0}
+  .chart-wrap{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;height:340px}
+  .row3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:10px}
+  @media (max-width:820px){.row3{grid-template-columns:1fr}}
+  .stat{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+  .stat .n{font-size:28px;font-weight:800;color:var(--accent)}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .qa{border-left:3px solid var(--brand);padding:8px 14px;margin:10px 0;background:#0f1520;border-radius:0 8px 8px 0}
+  .qa .q{color:#ffd97a;font-weight:600}
+  .qa .a{color:#dbe4ef;margin-top:4px}
+  ul.plain{list-style:none;padding-left:0}
+  ul.plain li{padding:6px 0;border-bottom:1px dashed var(--border)}
+  ul.plain li:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker"><span class="dot"></span>AI 论文每日精读 · 2026 年 7 月 21 日 · 星期二</span>
+  <h1>The Flexibility Trap：为什么"想怎么写就怎么写"反而让扩散语言模型不会推理？</h1>
+  <p class="subtitle">ICML 2026 <b>Outstanding Paper Award</b> · 挑战扩散大语言模型（dLLM）最引以为傲的"任意顺序生成"</p>
+  <div class="meta">
+    <span>📄 <b>标题：</b>The Flexibility Trap: Rethinking the Value of Arbitrary Order in Diffusion Language Models</span>
+    <span>👥 <b>作者：</b>Zanlin Ni, Shenzhi Wang, Yang Yue, Tianyu Yu, Weilin Zhao, Yeguo Hua, Tianyi Chen, Jun Song, Cheng Yu, Bo Zheng, Gao Huang（机构隶属见 arXiv 原文，报告未做二次断言）</span>
+    <span>🗓️ <b>公开时间：</b>ICML 2026 · 2026-07-06 至 07-11 首尔</span>
+    <span>🔗 <b>arXiv：</b><a href="https://arxiv.org/abs/2601.15165">2601.15165</a></span>
+    <span class="badge">ICML 2026 杰出论文</span>
+  </div>
+</header>
+
+<section class="tldr">
+  <h2><span class="num">0</span>一分钟看懂（TL;DR）</h2>
+  <ul>
+    <li>过去两年，<b>扩散语言模型（dLLM）</b>被视为下一代 LLM 的挑战者。它最大的"卖点"就是可以按<b>任意顺序</b>（例如"哪个 token 最有把握就先写哪个"）逐步去噪出全句，从而并行加速。</li>
+    <li>本论文用扎实的实验证明：<b>正是这个"任意顺序"，让模型在推理任务里学会了"逃避"</b>。它会本能地跳过那些真正决定答案对错的"高不确定性 fork 点"，最后 solution 多样性坍缩、强化学习（RL）也训练不上去。作者把这叫 <b>Flexibility Trap（灵活性陷阱）</b>。</li>
+    <li>解决办法反直觉地朴素——<b>JustGRPO</b>：在 RL rollout 时把 dLLM 强制约束成传统的<b>从左到右</b>顺序，推理时仍然享受并行解码。一个"减法式"的训练配方。</li>
+    <li>评审委员会点评：这是"<i>非显而易见的失效模式</i>"，指出了 dLLM 后训练领域<b>被严重低估</b>的一个问题——"RL rollout 到底该用什么采样策略"。</li>
+    <li>置信度：<span class="conf c-high">高</span> 论文获 ICML 2026 Outstanding Paper Award（2 篇之一），来源为 ICML 官方博客，事实核对无争议。</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">1</span>先补背景：什么是"扩散语言模型"？</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>🧭 传统 LLM（自回归 AR）</h3>
+      <p>GPT、Claude、Llama 等都是<b>自回归</b>：从左到右一个 token 一个 token 地采样。第 t+1 个 token 完全依赖前 t 个 token。</p>
+      <p><b>优点：</b>训练稳定、生成质量高。<br><b>缺点：</b>只能串行生成，延迟受限于序列长度。</p>
+    </div>
+    <div class="card">
+      <h3>🌀 扩散语言模型（dLLM）</h3>
+      <p>灵感来自图像扩散（Stable Diffusion）：把一段被 mask 的句子当成"噪声图"，一次去噪多个位置。位置顺序可以<b>任意</b>——比如按"当前预测置信度"从高到低填。</p>
+      <p><b>代表模型：</b>Google 的 <code>Gemini Diffusion</code>、DeepMind 的 <code>DiffusionGemma</code>（2026-06）、Inception Labs 的 <code>Mercury</code> 等。<br><b>卖点：</b>并行解码 → 显著加速。</p>
+    </div>
+  </div>
+  <div class="callout">
+    <b>关键概念：任意顺序（Arbitrary Order）。</b> dLLM 在每一步可以选<b>任意</b>被 mask 的位置来预测。主流做法是<i>confidence-based</i>：谁的把握大就先写谁，把不确定的位置留到最后。业界一直把这视为 dLLM 相对 AR 模型的核心优势。
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span>论文的核心反直觉发现：Flexibility Trap</h2>
+  <p>作者观察到：<b>在推理类任务（数学、逻辑）上，dLLM 一旦被允许任意顺序生成，就会本能地避开高不确定性的位置。</b>这些位置恰恰是解题路径的"岔路口"（forking tokens）——决定"到底走哪条推理链"的关键选择。</p>
+
+  <div class="diagram">
+    <h3>🔀 forking token 是什么？一个直观例子</h3>
+    <div class="flow">
+      <div class="box">"3 只鸭 + 2 只鹅 = ?"<br><span class="tag">题目 prompt</span></div>
+      <div class="arr">→</div>
+      <div class="box">推理链选择：<br>① "先算总数=5" <br>② "先按物种分组" <br>③ "写方程 3+2=x"<br><span class="tag">forking token · 高熵</span></div>
+    </div>
+    <p style="margin-top:12px;color:var(--muted);font-size:13px">高熵 token = 模型对下一步"该说什么"没把握。这本来是推理的<b>决策点</b>；跳过它去先填后面已经"确定"的 token，等于让模型在<b>还没决定路线</b>之前就把"结论后半段"写完了。</p>
+  </div>
+
+  <div class="callout bad">
+    <b>坍缩机理（作者的核心 claim）：</b>
+    <ol>
+      <li>confidence-based 采样每次都先填"高置信"位置——即模型已经会说的、模板化的、承接性的 token；</li>
+      <li>"高熵"的 forking token 被反复推后到最后才决定，此时上下文已经被绕死，模型只剩一条"路径"可选；</li>
+      <li>本来应该在这些 fork 点探索出的<b>多条不同解</b>，被系统性地压缩成同一条；</li>
+      <li>在 RL 阶段（GRPO 等 policy gradient）——<b>没有多样性就没有 advantage 信号</b>——梯度贫瘠，模型学不动。</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">3</span>可视化：两种生成顺序的推理表现差异（示意）</h2>
+  <p style="color:var(--muted);font-size:13px">下图为<b>示意图</b>，用于直观呈现论文核心论点：dLLM 采用任意顺序（confidence-based）在推理任务上落后于 AR，采用左到右 rollout 训练（JustGRPO）后追平/接近。<span class="conf c-mid">中</span> 具体数字请以原论文 Table 为准。</p>
+  <div class="chart-wrap"><canvas id="chartMain"></canvas></div>
+  <div class="row3">
+    <div class="stat"><div class="n">↓ 多样性</div><div class="l">任意顺序 rollout 下 solution diversity 系统性坍缩</div></div>
+    <div class="stat"><div class="n">≈ 0</div><div class="l">confidence-based 采样在部分推理 benchmark 下 RL 几乎不涨</div></div>
+    <div class="stat"><div class="n">简单</div><div class="l">JustGRPO 是"减法式"改动：仅换 rollout 采样，不改架构</div></div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>解法：JustGRPO —— 训推分离的极简配方</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3>🎯 训练阶段（RL rollout）</h3>
+      <p>把 dLLM 强制约束为<b>严格左到右</b>的自回归轨迹去采样。</p>
+      <p>为什么？——保住"高熵 fork token"必须在自然位置被<b>正面决策</b>，从而保住多样性，让 GRPO 的 advantage 有信号。</p>
+      <span class="tag">left-to-right</span><span class="tag">Structured Scaffold</span>
+    </div>
+    <div class="card">
+      <h3>⚡ 推理阶段（inference）</h3>
+      <p>完全保留 dLLM 原生的<b>双向 attention + 并行解码</b>能力，速度优势不打折。</p>
+      <p>换句话说：<b>训练像 AR，部署像 diffusion</b>。</p>
+      <span class="tag">parallel decoding</span><span class="tag">bidirectional attention</span>
+    </div>
+  </div>
+  <div class="callout good">
+    <b>为什么它优雅？</b>没有加新损失、没有加新模块、没有改架构，只换了一件事：<b>RL rollout 用什么顺序</b>。这也是评审委员会给出的评价——"这项工作凸显了 dLLM 领域一个仍然被<b>严重低估</b>的问题：RL rollout 应该用哪种采样策略。"
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>为什么这篇论文重要？</h2>
+  <table>
+    <thead><tr><th>受众</th><th>影响</th><th>置信度</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>做 dLLM 的团队<br>（Google Gemini Diffusion、Inception Mercury 等）</td>
+        <td>可能需要重新审视自己的 RL 后训练 pipeline。所有<b>"依赖任意顺序做 RL rollout"</b>的方案都可能存在同类问题。</td>
+        <td><span class="conf c-high">高</span></td>
+      </tr>
+      <tr>
+        <td>做 AR 大模型 RL 后训练的团队</td>
+        <td>反向印证："token 顺序的选择本身就是探索策略的一部分"——多样性是 GRPO/PPO 有效的前提，别再简单认为 rollout 采样是"细节"。</td>
+        <td><span class="conf c-mid">中</span></td>
+      </tr>
+      <tr>
+        <td>研究者 / 学术界</td>
+        <td>提出一个新的开放问题："<b>哪种采样策略最适合 dLLM 的 RL rollout？</b>"。JustGRPO 是首个可行解，但很可能不是最优解。</td>
+        <td><span class="conf c-high">高</span></td>
+      </tr>
+      <tr>
+        <td>企业 / 落地方</td>
+        <td>短期：如果只在意 inference 速度，dLLM 仍然值得关注；但如果要靠 RL 做能力提升，务必先看 rollout 策略。<br>长期：对"扩散是否会取代 AR"的辩论增加了新证据——<i>灵活性不总是免费的午餐</i>。</td>
+        <td><span class="conf c-mid">中</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2><span class="num">6</span>先给出"最强反驳"（Steel-manning）</h2>
+  <p>本着不迎合作者的原则，先列出<b>可能推翻或削弱本论文结论</b>的角度：</p>
+  <ul class="plain">
+    <li><b>① 采样策略只是其中一种消融，模型本身能力才是主因。</b> 有可能"任意顺序 dLLM + 更好的 confidence 估计器"也能维持多样性，本文只对比了<i>朴素</i>的 confidence-based 采样。</li>
+    <li><b>② 强制左到右会不会牺牲一部分 dLLM 的"结构性优势"？</b> 双向注意力在训练时的价值就在于跨位置信息流；只在推理享用、训练走 AR，或许也放弃了 dLLM 本可学到的<i>更强的全局规划</i>能力。作者的论文没有明确否定这一点，只是证明当前方法下 JustGRPO 效果更好。</li>
+    <li><b>③ 是不是只在"数学/代码"类硬推理任务上才成立？</b> 对创意写作、开放式对话等 low-stakes 任务，"任意顺序"未必是坏事——这些任务 forking token 没那么关键。评审委员会强调的是"general reasoning tasks"，并非所有任务。</li>
+    <li><b>④ Test-of-Time 视角的悲观解读：</b>DeepMind 2016 年获 ICML Test-of-Time 的 A3C 论文提醒我们——被今天热捧的"并行/异步/灵活"技巧，十年后可能被反过来质疑。<i>"灵活性陷阱"的命名本身也可能被后来的工作重新框定为"训练目标错配"而非"顺序错配"。</i></li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">7</span>常见问题 FAQ（问答）</h2>
+  <div class="qa"><div class="q">Q：这篇论文说 dLLM 不能任意顺序生成了吗？</div>
+    <div class="a">A：不是。<b>推理时仍然任意顺序 + 并行</b>；只是 <b>RL 后训练的 rollout 用左到右</b>。训推是分离的。</div></div>
+  <div class="qa"><div class="q">Q：那 dLLM 还有意义吗？</div>
+    <div class="a">A：有。dLLM 的推理速度优势（尤其长序列）仍然存在，本论文只是修补了它<b>用 RL 提升推理能力</b>这条路径上的一个坑。</div></div>
+  <div class="qa"><div class="q">Q：GRPO 是什么？</div>
+    <div class="a">A：Group Relative Policy Optimization，DeepSeek 系列使用的 policy-gradient RL 算法，通过一组 rollout 之间的相对优势来更新策略。它对"rollout 多样性"极度敏感——如果所有 rollout 都很像，advantage 接近 0，模型学不动。这就是"Flexibility Trap"直接踩到的坑。</div></div>
+  <div class="qa"><div class="q">Q：这个发现和最近热的"过度思考（Overthinking）"论文有关吗？</div>
+    <div class="a">A：有关联但角度不同。Overthinking 说的是 <b>CoT 序列太长、算力浪费</b>；Flexibility Trap 说的是 <b>生成顺序错乱、探索坍缩</b>。二者都是"训推 pipeline 里被忽视的低垂之果"。</div></div>
+</section>
+
+<section>
+  <h2><span class="num">8</span>术语快查（写给非专业读者）</h2>
+  <div class="glossary">
+    <dl>
+      <dt>Diffusion LLM（dLLM）</dt>
+      <dd>把整段文字先 mask 成"噪声"，再一步步"去噪"填回来的语言模型。位置顺序可自定义。</dd>
+      <dt>Autoregressive（AR）</dt>
+      <dd>传统 LLM 的从左到右一个个 token 生成的方式。</dd>
+      <dt>Forking token（岔路 token）</dt>
+      <dd>在推理链中"决定接下来走哪条路"的关键 token，通常熵值（不确定性）很高。跳过它 = 让路径提前坍缩。</dd>
+      <dt>RL rollout</dt>
+      <dd>在强化学习训练中，让模型自己生成一段回答用于计算奖励和梯度的过程。多样性至关重要。</dd>
+      <dt>GRPO</dt>
+      <dd>一种通过"组内相对优势"来做 policy gradient 的 RL 算法。多样性差 → advantage 趋 0 → 训不动。</dd>
+      <dt>Bidirectional attention</dt>
+      <dd>dLLM 的一个核心特征：每个位置可以同时看前后文，不像 AR 只能看前文。</dd>
+    </dl>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">9</span>行动建议</h2>
+  <ul class="plain">
+    <li><b>研究者：</b>如果你的工作栈里有 dLLM + RL，把 rollout 采样策略作为一个显式变量重跑消融。别默认 confidence-based 是最优的。</li>
+    <li><b>工程师：</b>短期部署 dLLM 时，评估任务性质——推理硬任务需慎重选后训练方案；生成/对话任务受影响较小。</li>
+    <li><b>投资 / 决策者：</b>把"能不能对 dLLM 做有效 RL 微调"列为尽调项之一——这是 dLLM 团队能否追上 AR 生态的关键。</li>
+    <li><b>普通爱好者：</b>看到"扩散语言模型能秒杀 GPT"类营销时保持警惕：<b>吞吐 ≠ 智能</b>；速度快不代表推理强。</li>
+  </ul>
+</section>
+
+<section>
+  <h2><span class="num">10</span>信息来源与置信度</h2>
+  <ul class="plain">
+    <li><span class="conf c-high">高</span> 获奖信息 · 论文标题 · 作者名单 → <a href="https://blog.icml.cc/2026/07/05/announcing-the-icml-2026-awards/">ICML 2026 官方公告（2026-07-05）</a></li>
+    <li><span class="conf c-high">高</span> 论文条目 → <a href="https://arxiv.org/abs/2601.15165">arXiv:2601.15165</a> · <a href="https://icml.cc/virtual/2026/oral/71086">ICML Oral 页面</a></li>
+    <li><span class="conf c-high">高</span> 相关领域论文 · Anthropic J-space 研究（作为背景类比）→ <a href="https://www.anthropic.com/research/global-workspace">Anthropic 官方博客（2026-07-06）</a></li>
+    <li><span class="conf c-mid">中</span> 具体基准数字与图表 → 本报告为示意图，请以论文原文 Table/Figure 为准</li>
+    <li><span class="conf c-low">低 / 未知</span> 各作者具体机构隶属：ICML 官方公告仅列名单未列机构；本报告不做二次断言，请以 arXiv 原文首页为准</li>
+  </ul>
+  <div class="callout warn">
+    <b>透明度声明：</b>本报告基于 ICML 2026 官方公告页面 + arXiv 摘要页 + 评审委员会公开评语综合撰写。若需引用论文的具体实验数字（如 pass@k、benchmark 分数），请直接翻阅原论文 PDF，避免以本二次解读为准。所有可能被时效影响的信息已按上述置信度标注。
+  </div>
+</section>
+
+<footer>
+  由 AI 每日论文精读脚本自动生成 · 2026-07-21<br>
+  今日选题依据：ICML 2026 Outstanding Paper Award（2 篇之一）+ 主题新颖度 + 与近期 J-space、DiffusionGemma 等已解读论文形成互补
+</footer>
+
+</div>
+
+<script>
+(function(){
+  const ctx = document.getElementById('chartMain').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['数学推理 (GSM-style)','代码推理','逻辑推理','开放对话/生成'],
+      datasets: [
+        {label:'AR 基线（示意）', data:[78,72,65,80], backgroundColor:'#7aa2ff'},
+        {label:'dLLM · 任意顺序 rollout（示意）', data:[55,48,44,79], backgroundColor:'#f26d6d'},
+        {label:'dLLM · JustGRPO 左到右 rollout（示意）', data:[76,70,63,80], backgroundColor:'#4cc38a'}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#dbe4ef', font:{size:12}}},
+        title:{display:true, text:'不同 RL rollout 采样策略下的相对准确率（示意，非论文原始数据）',
+               color:'#e6edf3', font:{size:14, weight:'600'}}
+      },
+      scales:{
+        y:{beginAtZero:true, max:100, ticks:{color:'#9aa7b4', callback:v=>v+'%'},
+           grid:{color:'#2a323d'}, title:{display:true, text:'相对准确率（示意）', color:'#9aa7b4'}},
+        x:{ticks:{color:'#c9d5e5'}, grid:{color:'#2a323d'}}
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

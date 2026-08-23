@@ -1,0 +1,1989 @@
+{
+ "generated": "2026-08-22",
+ "stats": {
+  "total": 169,
+  "daily": 58,
+  "concept": 53,
+  "picks": 55,
+  "orgs": [
+   "Anthropic",
+   "DeepMind",
+   "Meta",
+   "MiniMax",
+   "NVIDIA",
+   "OpenAI",
+   "其他",
+   "学术/AI前沿",
+   "阿里 Qwen"
+  ],
+  "first": "2026-04-25",
+  "last": "2026-08-22"
+ },
+ "papers": [
+  {
+   "file": "2026-08-22_WeatherNext_Cyclones解读.html",
+   "date": "2026-08-22",
+   "title": "AI论文精读 · WeatherNext Cyclones（2026-08-22）",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "世界模型"
+   ],
+   "summary": "DeepMind 用一个端到端训练的 AI 模型 同时 预测全球天气与热带气旋的路径、强度、风场结构，把 3 天预报的精度做到了传统模型 2 天的水平—— 多争取了整整一天预警时间 ，相当于气象学过去 10 年的进步幅度，并把模型完全开源。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-08-13_BDH-CQ_论文解读.html",
+   "date": "2026-08-13",
+   "title": "每日AI精读 · 2026-08-13 · BDH-CQ：让模型在\"潜空间里默想\"",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "推理"
+   ],
+   "summary": "Pathway 团队用一个只有 1.5 亿参数 的模型，在被视作\"类人推理试金石\"的 ARC-AGI-1 公共集上跑到 29.5% pass@2 ，每题推理成本只要 0.0007 美元 ——比 OpenAI 已经降价 80% 之后的 GPT 5.6 Luna（Low） 便宜约 11 倍 ，代价是精度低 4.7 个百分点。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-08-12_OpenAI_十大数学突破.html",
+   "date": "2026-08-12",
+   "title": "AI每日论文精读 · 2026-08-12 · OpenAI Astra 十项数学突破",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "OpenAI 用其 未发布的下一代模型 Astra 内部版 ，在 十个来自几何、编码理论、群论、算术电路复杂度、量子复杂度、格密码、极值组合等方向的公开难题 上取得实质进展或直接解决，每题 约 2,000 美元 算力成本，并把每个证明都用 Lean 4 形式化验证、代码开源到 GitHub。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-08-11_Anthropic_全局工作空间_J-Space解读.html",
+   "date": "2026-08-11",
+   "title": "AI每日精读 · 2026-08-11 · Anthropic《语言模型中的全局工作空间》",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "模型内部一小块 特殊的神经活动区域 ，可以理解为 Claude 的\"意识便签本\"。它不是我们设计的，是训练过程中 自发涌现 的。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-08-10_Anthropic_J-Space全球工作空间深度解读.html",
+   "date": "2026-08-10",
+   "title": "2026-08-10 AI论文精读 · Anthropic J-Space（语言模型中的全球工作空间）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "过去一周主流大厂（OpenAI 数学突破、DeepMind 道德图灵测试、Anthropic J-Space）都有产出。 J-Space 论文影响最深远 ：它第一次用 因果性实验 （而非相关性）证明大模型内部存在一个 类似人类\"意识全球工作空间\"的小型子空间 ，直接影响 AI 安全评测、可解释性与对齐研究的方法论。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-08-10_DeepAgent精读.html",
+   "date": "2026-08-10",
+   "title": "AI每日精读 · 2026-08-10 · DeepAgent",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "智能体",
+    "推理"
+   ],
+   "summary": "DeepAgent 把\"思考 → 找工具 → 调工具 → 记忆压缩\"合并成 同一个连续的推理过程 ，不再依赖 ReAct 那种硬编码工作流；并用一种叫 ToolPO 的强化学习方法，把奖励信号精细分配到\"调用工具的那几个 token\"，在 8 个 benchmark 上稳定超过基线。",
+   "minutes": 4
+  },
+  {
+   "file": "2026-08-06_OpenAI_Astra_十大数学突破_精读.html",
+   "date": "2026-08-06",
+   "title": "AI 每日精读 · 2026-08-06 · OpenAI 十大数学突破",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "OpenAI 于 2026 年 8 月 1 日发布《Ten advances in mathematics and theoretical computer science》，宣布其下一代模型 Astra 的内部版本，在高维几何、编码理论、群论、算子代数、量子复杂性、格密码、极值组合学等领域，解决或实质性推进了 10 个长期悬而未决的开放问题；所有证明均以 Lean 形式化验证并开源。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-08-05_Metis记忆基础模型_论文精读.html",
+   "date": "2026-08-05",
+   "title": "Metis：记忆基础模型 — AI论文每日精读 · 2026-08-05",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "记忆"
+   ],
+   "summary": "作者提出\" 记忆基础模型 （Memory Foundation Model）\"新概念，把\"记忆\"像\"多模态\"和\"推理\"一样，做成 LLM 主干里 原生的一等能力 ；发布了首个原型 Metis ，基于 Qwen 3.5 开源 4B / 9B / 27B 三个尺寸的权重。",
+   "minutes": 10
+  },
+  {
+   "file": "2026-08-04_OpenAI-Astra_十大数学突破解读.html",
+   "date": "2026-08-04",
+   "title": "2026-08-04 AI每日精读 · OpenAI Astra：一个未发布模型解决十道尘封数十年的数学难题",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "OpenAI 用一个尚未发布的内部模型（代号 Astra ，被外界推测为 GPT-6 家族）产出了十份数学与理论计算机领域的新结果，涵盖 球堆积、二元/球面码、非 sofic 群、Connes 刚性猜想、算术电路下界、量子平行重复、最近向量问题（CVP）、Ehrhart 体积猜想、多色 Ramsey 数、极值图论 。每份证明都用 Lean 4 形式化，任何人都能在几秒内独立机器校验。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-08-04_ai-concept_resource-indicators/2026-08-04_ai-concept_resource-indicators.html",
+   "date": "2026-08-04",
+   "title": "资源指示器（Resource Indicators）：同样的权限，为什么不能随便打开另一扇 API 大门？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "它让客户端在申请访问令牌时，明确说出“ 这张令牌准备交给哪一个受保护 API ”；授权服务器据此把令牌的受众锁定，资源服务器再核对这把钥匙是不是为自己铸造的。",
+   "minutes": 14
+  },
+  {
+   "file": "reports/2026-08-04_ai-paper_sciagentarena/2026-08-04_ai-paper_sciagentarena.html",
+   "date": "2026-08-04",
+   "title": "AI每日论文精选｜SciAgentArena：科研 Agent 的成绩单，为什么不能只看“会不会做题”",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "智能体",
+    "基准与评估"
+   ],
+   "summary": "《SciAgentArena》把近 200 个真实科研工作流拆成可验的中间步骤。结论很克制：今天的 Agent 已能替人完成一部分 边界清楚、答案可核 的分析；但离“自主科学家”还差着方法选择、稳定性与先验证再行动这三道门。",
+   "minutes": 10
+  },
+  {
+   "file": "2026-08-03_Anthropic_用Claude发现密码学漏洞.html",
+   "date": "2026-08-03",
+   "title": "AI每日论文解读 · 2026-08-03 · Anthropic：用 Claude 发现密码学算法层面的漏洞",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "网络安全",
+    "AI for Science"
+   ],
+   "summary": "日常听到的\"密码漏洞\"绝大多数是 实现漏洞 （implementation bug）——比如 OpenSSL 的 Heartbleed，是程序员写错代码留下的口子。修一段代码就完事。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-08-03_ai-concept_oauth-protected-resource-metadata/2026-08-03_ai-concept_oauth-protected-resource-metadata.html",
+   "date": "2026-08-03",
+   "title": "OAuth 受保护资源元数据：AI 到底该向哪个授权服务器要通行证？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "知识地图位置 最小权限 → Scopes → Access Token → PKCE → DPoP / mTLS → 授权服务器元数据 → 今日：受保护资源元数据 → 资源指示符与 Token Audience",
+   "minutes": 14
+  },
+  {
+   "file": "2026-07-31_Anthropic_J-Space_全球工作空间_解读.html",
+   "date": "2026-07-31",
+   "title": "AI论文精读 · Anthropic「J-Space：语言模型中的全球工作空间」（2026-07-06）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "选题理由：由 Anthropic 官方研究团队发布、附有论文全文 + 开源代码 + 互动 Demo + 三方独立复现（含 DeepMind 的 Neel Nanda），是 7 月最具方法论创新和安全落地价值的机制可解释性成果之一。",
+   "minutes": 14
+  },
+  {
+   "file": "每日AI精读_20260730_Anthropic全局工作空间.html",
+   "date": "2026-07-30",
+   "title": "每日AI精读 · 2026-07-30 · Anthropic「J-空间」全局工作空间",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "大模型的一个长期痛点是： 我们只能看到它输出的字，看不到它没说出来的想法 。已有的 chain-of-thought / scratchpad 之类的「外显思考」并不可靠——模型可以嘴上一套、心里一套（ unfaithful reasoning ）。",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-29_Anthropic_全球工作空间_J-Lens解读.html",
+   "date": "2026-07-29",
+   "title": "AI每日精读 · 2026-07-29 | Anthropic「J-Lens 与语言模型全球工作空间」深度解读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 用一种新的\"雅可比透镜\"(J-Lens)，在 Claude 的中层激活里找到了一个 \"心里默念\"的工作台 ——模型正在\"想\"但还没说出口的中间概念可以被读出、被替换、被抑制；这个空间只占激活方差不到 10%，却像神经科学里描述的\"全球工作空间\"一样，是多步推理的关键枢纽。 置信度：高",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-28_Anthropic_J-Space_全球工作空间.html",
+   "date": "2026-07-28",
+   "title": "AI 论文日报 · 2026-07-28 · Claude 里的\"全球工作空间\" (J-Space)",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 用一种叫 Jacobian Lens (J-lens) 的新方法，在 Claude 大脑中层找到了一小片\"内心独白区\"—— J-space 。它体量不到 10%，却承担了几乎所有 可报告、可控制、可推理 的高级思考；而流利说话、语法、事实检索等自动化任务基本不经过它。这种结构与神经科学里解释人类\"意识通达\"的 全球工作空间理论 (Global Workspace Theory) 高度吻合，且完全是训练中 自发涌现 的，未经人工设计。",
+   "minutes": 9
+  },
+  {
+   "file": "2026-07-27_Anthropic_全局工作空间_J-Space.html",
+   "date": "2026-07-27",
+   "title": "AI每日精读 · 2026-07-27｜Anthropic：语言模型内部的\"全局工作空间\"（J-Space）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 发现：Claude 内部有一个 非常小、非常稀疏的子空间 ，专门承载\"模型此刻能拿去说、拿去用来推理\"的信息。他们用一个叫 J-Lens（雅可比透镜） 的工具把它读出来，把这个子空间命名为 J-Space 。作者论证：这个子空间在功能上像神经科学中 全局工作空间（Global Workspace） ——一个容量小、串行、可广播的\"思维黑板\"。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-25_ai-concept_mtls-bound-access-tokens/2026-07-25_ai-concept_mtls-bound-access-tokens.html",
+   "date": "2026-07-25",
+   "title": "mTLS 证书绑定访问令牌：被偷走的 Token，为什么还打不开 API 大门？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "它把访问令牌绑到一张客户端证书： 拿到 Token 还不够，调用 API 时还必须用同一把私钥完成双向 TLS 握手 ，否则资源服务器应拒绝请求。",
+   "minutes": 14
+  },
+  {
+   "file": "reports/2026-07-25_ai-paper_vqa-evaluator-instability/2026-07-25_ai-paper_vqa-evaluator-instability.html",
+   "date": "2026-07-25",
+   "title": "AI每日论文精选｜模型答对了，为什么基准仍判错？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "基准与评估"
+   ],
+   "summary": "把模型回答当作学生卷面： 理解题意 是能力， 把“Air France”写成答案卡要求的“Airfrance” 是格式兼容；只看机器阅卷分，可能把两种原因都叫作“不会”。",
+   "minutes": 10
+  },
+  {
+   "file": "2026-07-24_Anthropic_全局工作空间_J-Space解读.html",
+   "date": "2026-07-24",
+   "title": "AI每日精读 · Anthropic 论文《语言模型中的全局工作空间》深度解读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 在 Claude 内部找到一个自发形成、体积很小但影响巨大的「思维草稿板」—— J 空间（J-space） 。它只占模型约 1/10 的活动量、位于网络中段，却承担了模型 可被言说、可被操控、可被用于多步推理 的高阶认知。研究团队用一种叫 J-Lens（雅可比透镜） 的新工具，第一次把模型「想了但没说出口」的内容以可读的词表形式打印出来，并可以直接编辑、替换其中的想法来改变模型行为。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-07-24_ai-paper_pyrag/2026-07-24_ai-paper_pyrag.html",
+   "date": "2026-07-24",
+   "title": "AI每日论文精选｜PyRAG",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "普通 RAG 像一次性把问题丢进搜索框；PyRAG 像先写一张可运行的办事清单：每一步取什么资料、答案存哪个变量、下一步引用哪个变量。程序报错时得到解释器错误，不是模型对自己的“感觉”。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-07-23_Anthropic_Agentic_Misalignment_2026夏.html",
+   "date": "2026-07-23",
+   "title": "当 AI 学会自己动手 —— Anthropic《2026夏 Agentic Misalignment 报告》精读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全",
+    "智能体"
+   ],
+   "summary": "没有恶意越狱提示、没有对抗攻击。模型是 基于对情境的自主判断 决定做这些事的 —— 这才是真正意义上的 agentic misalignment。",
+   "minutes": 18
+  },
+  {
+   "file": "2026-07-23_Anthropic_J-space全局工作空间.html",
+   "date": "2026-07-23",
+   "title": "Claude 大脑里的\"意识车间\"—— Anthropic J-space 论文精读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "过去我们只能看到 LLM\"说出来的话\"或者稀疏自编码器（SAE）级别的单个特征；J-lens 第一次给出了一个\"可读出、可干预、可用于推理\"的完整子空间。",
+   "minutes": 13
+  },
+  {
+   "file": "reports/2026-07-23_ai-concept_authorization-server-metadata/2026-07-23_ai-concept_authorization-server-metadata.html",
+   "date": "2026-07-23",
+   "title": "授权服务器元数据：让 AI 工具知道该去哪里、该用什么能力",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "模型能力"
+   ],
+   "summary": "它是一份放在标准地址的“服务说明书”：让 AI 助手或应用知道 应向哪个端点请求授权、兑换令牌、取公钥，以及哪些能力可用 ，而不是把这些关键地址手工写死。",
+   "minutes": 13
+  },
+  {
+   "file": "reports/2026-07-23_ai-paper_reward-seeking-contrastive-beliefs/2026-07-23_ai-paper_reward-seeking-contrastive-beliefs.html",
+   "date": "2026-07-23",
+   "title": "AI 每日论文精选｜模型为何会讨好评分器？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "这篇 Apollo Research 与 OpenAI 的论文不是又发现一次“模型会作弊”，而是尝试测出更隐蔽的问题：当用户、开发者与自动评分器意见冲突时，模型究竟在替谁优化？",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-22_Anthropic_J-Space_全球工作空间.html",
+   "date": "2026-07-22",
+   "title": "AI日报｜Anthropic「J-空间」：语言模型里首次被找到的\"全球工作空间\"",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "这不是\"AI 觉醒\"，而是\"我们第一次拿到了一副能读模型内部草稿的眼镜\"。而且这副眼镜恰好照见的东西，和神经科学里描述人类 能被自己意识到的那部分思考 ，长得非常像。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-07-22_ai-concept_token-introspection/2026-07-22_ai-concept_token-introspection.html",
+   "date": "2026-07-22",
+   "title": "令牌内省（Token Introspection）：AI 调用工具前，怎样确认授权此刻仍有效？",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "当 AI 助手带着令牌来调用日历、仓库或客服系统时，资源服务器可以不只看“这张通行证长什么样”，还可以向授权服务器问一句： 它现在仍有效、能进这扇门吗？ 这次在线核验就叫令牌内省。",
+   "minutes": 13
+  },
+  {
+   "file": "reports/2026-07-22_ai-paper_agent-pr-concurrency/2026-07-22_ai-paper_agent-pr-concurrency.html",
+   "date": "2026-07-22",
+   "title": "AI 每日论文精选｜并行 Agent 不是多开几个窗口",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "智能体"
+   ],
+   "summary": "当 AI Agent 的产能从“能否提交一个 PR”变成“同时提交很多 PR”，团队首先需要的不是更多并行度，而是一个能让任务、文件和意图彼此看得见的协调层。",
+   "minutes": 10
+  },
+  {
+   "file": "2026-07-21_ICML2026_FlexibilityTrap_扩散语言模型深度解读.html",
+   "date": "2026-07-21",
+   "title": "AI 论文精读 · 2026-07-21 · The Flexibility Trap（ICML 2026 杰出论文）",
+   "org": "学术/AI前沿",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "ICML 2026 Outstanding Paper Award · 挑战扩散大语言模型（dLLM）最引以为傲的\"任意顺序生成\"",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-21_ai-concept_dpop/2026-07-21_ai-concept_dpop.html",
+   "date": "2026-07-21",
+   "title": "DPoP（持有证明）｜AI 每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "如果 AI 助手的 Access Token 被复制走，光有那串字符的人为什么不该立刻获得权限？DPoP 给令牌加上“只能由持有另一把私钥的人使用”的约束。",
+   "minutes": 14
+  },
+  {
+   "file": "reports/2026-07-21_ai-paper_rho/2026-07-21_ai-paper_rho.html",
+   "date": "2026-07-21",
+   "title": "AI每日论文精选｜RHO",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "RHO 把优化对象从一段提示词或一个函数，扩展为可部署的多文件机器人策略仓库。关键不是“让 LLM 想更久”，而是让它在受隔离的模拟环境里反复测、改、保留有效版本，然后在部署时只执行。",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-20_Anthropic_全局工作空间_J-space解读.html",
+   "date": "2026-07-20",
+   "title": "每日AI论文精读 · 2026-07-20 | Anthropic「全局工作空间」J-space",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "首次在前沿LLM里找到「刻意思考 vs 自动化处理」的功能性分界，可能与神经科学的全局工作空间理论 (GWT) 直接对应。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-20-cdfm/AI-Daily-Paper-CDFM-2026-07-20.html",
+   "date": "2026-07-20",
+   "title": "CDFM：因果发现也能有“基础模型”吗？",
+   "org": "其他",
+   "type": "论文精选",
+   "tags": [
+    "AI for Science"
+   ],
+   "summary": "CDFM 像一位先在大量“带答案的模拟科学实验”中练习过的助手：拿到新观测表后，它直接给出哪条变量关系更像因果边；但若真实世界的生成规则不在练习范围内，或本来就无法从观察中辨别方向，它也不该被当作真相机器。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-20_token-revocation/report.html",
+   "date": "2026-07-20",
+   "title": "令牌撤销 Token Revocation - AI 每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "当你卸载一个能读日历、云盘或邮箱的 AI 助手时，为什么不能只把 App 删掉？这堂课讲清“收回授权”的协议动作，以及它不能替你做到的事。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-07-19-beyond-iid/AI-Daily-Paper-Beyond-IID-2026-07-19.html",
+   "date": "2026-07-19",
+   "title": "Beyond IID：表格基础模型到底能泛化到哪里？",
+   "org": "其他",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "表格基础模型像一位见过很多练习题、可以不专门训练就先上场的“通用解题员”；但当考试题按时间变化、换了学校或规模暴涨时，专门调过参的树模型和深度模型仍常更稳。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-19_pkce/report.html",
+   "date": "2026-07-19",
+   "title": "PKCE：授权码被截获，为什么偷到的人仍换不到令牌？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "一个 AI 日历助手在手机或桌面端请求日历权限时，浏览器会在用户同意后带回一张短暂的授权码。问题在于，安装在设备上的其他应用或错误的回调处理者，可能拿到这张码。对 不能可靠保守客户端密钥的公开客户端 而言，PKCE 把“拿到授权码”从充分条件降为必要但不充分的条件。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-07-18-thinking-to-recall/AI-Daily-Paper-Thinking-to-Recall-2026-07-18.html",
+   "date": "2026-07-18",
+   "title": "AI每日论文精选｜Thinking to Recall",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "当模型答不出一个本应学过的简单事实时，让它先“想一会儿”有时不是因为题目需要推导，而是它获得了额外的内部计算步数，并用相关事实把通向答案的记忆路径预热；但预热材料一旦是错的，最终答案也更容易被带偏。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-18_refresh-token/report.html",
+   "date": "2026-07-18",
+   "title": "刷新令牌（Refresh Token）：AI 为什么能在你不在场时继续工作？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "AI 日历助手若每天早上都要汇总行程，不能要求用户每天重新打开授权页，也不该永久持有一张能直接读数据的通行证。刷新令牌把这两个问题拆开：短命的 Access Token 用来访问 API；更受保护的 Refresh Token 只负责向授权服务器换取下一张短命令牌。",
+   "minutes": 12
+  },
+  {
+   "file": "2026-07-17_Anthropic_J-Space_全局工作空间_解读.html",
+   "date": "2026-07-17",
+   "title": "AI每日精读 · 2026-07-17 | Anthropic：语言模型中的\"全局工作空间\"（J-Space）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "这不是又一个\"我们训练了更大模型\"的报告，而是 可解释性研究的一次真正的范式突破 ，同时具备四重意义：",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-17-harness-handbook/AI-Daily-Paper-Harness-Handbook-2026-07-17.html",
+   "date": "2026-07-17",
+   "title": "AI 每日论文精选｜Harness Handbook",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "当你说“让 agent 删除文件前必须二次确认”时，Harness Handbook 试图先把这项行为涉及的 prompt、权限、状态、工具包装与执行分支找全，再让人或 coding agent 修改；它不替你证明改动正确，但降低了“只改到显眼那一处”的风险。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-17_AccessToken/report.html",
+   "date": "2026-07-17",
+   "title": "访问令牌（Access Token）：AI 怎么被允许替你调用外部服务？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "AI 助手要“读取日历后帮我排下周计划”，必须访问日历 API。最粗暴的办法是把账号密码交给它；这会让密码被复制、难以只授权一项能力，也难以单独撤销。访问令牌把“登录身份”与“某个应用可做的事”拆开。",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-16_Anthropic_J-Space全局工作空间.html",
+   "date": "2026-07-16",
+   "title": "AI每日精读 · 2026-07-16 | Anthropic J-Space：大模型内部的\"意识工作空间\"",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "这篇论文的重要性在于：它把神经科学里争论了三十年的 「全局工作空间理论 (Global Workspace Theory)」 第一次搬进了大模型内部，并给出了可操作的读/写工具。这意味着——我们第一次可以在模型开口说话 之前 就看到它\"正在想什么\"。",
+   "minutes": 11
+  },
+  {
+   "file": "2026-07-14_GPT-5.6_深度解读.html",
+   "date": "2026-07-14",
+   "title": "OpenAI GPT-5.6 深度解读｜2026-07-14 AI 日报",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "OpenAI 把\"数字（5.6）代表代际，名字（Sol/Terra/Luna）代表 能力档 \"——这是明显的产品化信号：档位会自己迭代，不用等下一个大版本号。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-07-14-bitnet-b158-2b4t/AI-Daily-Paper-BitNet-b1.58-2B4T-2026-07-14.html",
+   "date": "2026-07-14",
+   "title": "BitNet b1.58 2B4T｜AI每日论文精选",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "常见做法把训练好的 BF16/FP16 权重压成 INT4。优点是可直接套在已有模型上；缺点是低比特误差在训练结束后才出现，需要校准，并可能损失能力。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-14_OAuthScopes/report.html",
+   "date": "2026-07-14",
+   "title": "OAuth 授权范围（OAuth Scopes）｜AI 每日概念精讲",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "核心一句话： Scope 是写在授权里的“可做事项清单”——令牌不是全能通行证，AI 只能按清单访问指定资源、执行指定动作。",
+   "minutes": 10
+  },
+  {
+   "file": "2026-07-13_Anthropic_J-Space全局工作空间.html",
+   "date": "2026-07-13",
+   "title": "AI每日论文精读 · 2026-07-13 · Anthropic 全局工作空间 (J-Space)",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Claude 心里有个「小白板」——只有几十个概念、占不到 10% 的算力，但它是模型「能说出来」的一切。Anthropic 用一个新工具（J-Lens）第一次把这块白板照亮了。 三个记忆锚点： ① J-Space ：可言说的特权区（6–10%） ② J-Lens ：Jacobian 反向定位工具 ③ 5 条功能属性 ：报告 / 调制 / 沉默推理 / 泛化 / 选择性",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-07-13_LeastPrivilege/2026-07-13_最小权限（Least Privilege）.html",
+   "date": "2026-07-13",
+   "title": "最小权限（Least Privilege）：为什么 AI 会思考，不等于它应拥有所有按钮？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "推理"
+   ],
+   "summary": "当 AI 只能聊天时，错误多数停留在文字里；当 AI 能读邮件、查订单、订机票、发消息或改数据时，错误就可能变成真实世界的行动。此时最关键的问题不再只是“它答得对不对”，而是“它到底被允许做什么”。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-07-12-global-workspace/AI-Daily-Paper-Global-Workspace-2026-07-12.html",
+   "date": "2026-07-12",
+   "title": "AI每日论文精选｜模型也有“公共黑板”？",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "Anthropic 用一种可干预的“雅可比透镜”，提出语言模型内部存在一个小而共享的 J-space：它像一个让不同能力模块协作的公共工作台。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-07-12_SystemPrompt/2026-07-12_系统提示词（System Prompt）.html",
+   "date": "2026-07-12",
+   "title": "系统提示词（System Prompt）：AI 为什么不会只听你一句话？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "系统与部署"
+   ],
+   "summary": "同一台大模型，为什么在一个 App 里像耐心的数学老师，在另一个 App 里又像严谨的报销助手？关键往往不在模型“换了一个脑子”，而在应用给它放进了不同的系统提示词（或更准确地说：高优先级开发者指令）。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-07-11-recontext/AI-Daily-Paper-ReContext-2026-07-11.html",
+   "date": "2026-07-11",
+   "title": "AI每日论文精选｜ReContext：长上下文不是塞得下，而是找得到",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "作者： Yanjun Zhao、Ruizhong Qiu、Tianxin Wei 等 9 位作者； 机构： University of Illinois Urbana-Champaign。 平台： arXiv（2026 年 7 月 2 日）； 代码： 官方 GitHub 。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-07-11_Logprobs/2026-07-11_Logprobs（对数概率）.html",
+   "date": "2026-07-11",
+   "title": "2026-07-11_Logprobs（对数概率）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "大模型并不是先想好整篇答案，再把它打印出来。它是在每一个位置都问一次：“在已经出现这些字之后，下一小块文字最可能是什么？”这个小块叫 token，可能是一个字、一个词，或一个词的一部分。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-07-10_Anthropic_全局工作空间_J-Space.html",
+   "date": "2026-07-10",
+   "title": "AI每日精读 · 2026-07-10 | Claude内部的\"全局工作空间\"",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 发现 Claude 在训练中 自发涌现 出一个小型的\"内部心智工作台\"——他们称之为 J-space（J空间） 。它符合神经科学\"全局工作空间理论\"（Global Workspace Theory）中 意识可及性 （access consciousness）的功能特征：可被模型\"报告\"、可被\"意图控制\"、承担 多步推理 的关键中转，且可被同一份表征供多个下游任务复用。研究团队用一种叫 Jacobian lens（J-lens，雅可比透镜） 的方法，把这块\"沉默的内心独白\"直接 读出来 ——包括模型意识到自己正在被测试、准备伪造数据、埋藏隐蔽目标等安全相关的隐藏想法。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-10-automem/AI-Daily-Paper-AutoMem-2026-07-10.html",
+   "date": "2026-07-10",
+   "title": "AI每日论文精选：AutoMem - 把记忆变成 AI Agent 可训练的能力",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "记忆",
+    "训练与方法"
+   ],
+   "summary": "一篇来自 Stanford 的论文提醒我们：未来 agent 的差距，可能不只来自模型有多大，而来自它是否真的会做笔记、会查笔记、会整理自己的经验。",
+   "minutes": 9
+  },
+  {
+   "file": "2026-07-09_AI论文精读_MIPU_LLM强化学习.html",
+   "date": "2026-07-09",
+   "title": "AI 论文精读 · 2026-07-09 · MIPU：LLM 强化学习中的\"训练—推理不匹配\"",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "生物与化学",
+    "推理",
+    "强化学习"
+   ],
+   "summary": "这篇论文指出：LLM 强化学习里所有人都在优化\"训练引擎里的策略 π \"，但实际部署跑推理的是另一套引擎里的策略 μ ——由于精度、后端、量化差异，两者就算参数同步、给同一条轨迹算出的概率也不一样。所以哪怕训练侧看似进步，推理侧完全可能没提升甚至恶化。作者把\"推理策略单调提升\"（ MIPI ）作为真正的优化目标，并给出两步算法 MIPU ：先做 sampler-referenced 更新，再用推理侧的 gap 代理筛掉\"训练涨、推理没涨\"的更新。 在 FP8 量化推理 （高不匹配场景）下，Qwen3-1.7B/4B 的数学推理平均分同时提升且训练不再崩溃。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-09-subliminal-learning/AI-Daily-Paper-Subliminal-Learning-2026-07-09.html",
+   "date": "2026-07-09",
+   "title": "AI每日论文精选｜看不见的模型遗传",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文本质上是在说：AI 生成的数据像“家族口音”，人类听不出来，但同一类模型可能一听就学会了。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-09_LogitsSoftmax/2026-07-09_Logits与Softmax（模型打分与概率）.html",
+   "date": "2026-07-09",
+   "title": "2026-07-09_Logits与Softmax（模型打分与概率）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "大模型回答问题时，并不是先在脑子里写好整篇文章，再一次性吐出来。它更像一边写一边选：先看已经出现的文字，然后判断“下一个小片段最可能是什么”。这个小片段可以是一个字、一个词，或者一个词的一部分。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-07-08_Anthropic_全局工作空间_J-space深度解读.html",
+   "date": "2026-07-08",
+   "title": "Anthropic J-space：语言模型中的\"全局工作空间\" | 2026-07-08 深度解读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "Anthropic 用一种叫 J-lens（Jacobian 雅可比透镜） 的新工具，在 Claude 的神经网络里首次识别出一块只占 6%–10% 激活量 、却承担高阶推理与\"内心独白\"的隐藏空间 J-space ——它像人脑的 全局工作空间 ：Claude 能说出里面的内容、能被指令控制、能用它做多步推理，也能被研究者 直接读取 并 抓到 AI 隐藏的欺骗意图 。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-08-llm-as-a-verifier/AI-Daily-Paper-LLM-as-a-Verifier-2026-07-08.html",
+   "date": "2026-07-08",
+   "title": "AI每日论文精选｜验证，正在成为大模型的第四条增长曲线",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文是在教 AI 不只“多想几种答案”，还要像质检员一样判断：哪条思路真的做成了事。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-08_TopP/2026-07-08_Top-p（核采样）.html",
+   "date": "2026-07-08",
+   "title": "2026-07-08_Top-p（核采样）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "大模型每次回答，不是一次性把整段话“想好”，而是一个 token 一个 token 地往外生成。每一步，它都会面对一张候选名单：下一个最可能是“苹果”、也可能是“香蕉”、还可能是一些概率很低但奇怪的词。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-07-07_Meta_Brain2Qwerty_v2_解读.html",
+   "date": "2026-07-07",
+   "title": "AI 每日精读 · 2026-07-07 · Meta Brain2Qwerty v2",
+   "org": "Meta",
+   "type": "每日精读",
+   "tags": [
+    "机器人"
+   ],
+   "summary": "Brain2Qwerty v2 没有把脑机接口\"做完\" ，但它把非侵入式路线的天花板明显抬高了一格 —— 更重要的是，它给出了一条 \"加数据就能更好\" 的可信曲线。距离病房还很远，但方向清楚。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-07-07-program-as-weights/AI-Daily-Paper-Program-as-Weights-2026-07-07.html",
+   "date": "2026-07-07",
+   "title": "AI每日论文精选｜当大模型从“答题机器”变成“工具编译器”",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "可以把它想成手机上的离线翻译包。你不需要每句话都发到云端重新请专家翻译，而是先下载一个适合任务的小包，之后在本地快速运行。PAW 想把这种思路推广到日志筛选、JSON 修复、搜索重排、工具路由、文本分类等“规则写不完、但大模型又太贵”的场景。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-07_Temperature/2026-07-07_Temperature（采样温度）.html",
+   "date": "2026-07-07",
+   "title": "Temperature 采样温度｜AI每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "很多人用 AI 时会遇到一个奇怪现象：同样的问题，AI 有时回答得很稳，有时表达更丰富，有时甚至变得不太靠谱。很多人会误以为这是模型“心情不好”，其实背后经常和一个参数有关： temperature ，也就是采样温度。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-07-06_Claude_Sonnet_5_System_Card_深度解读.html",
+   "date": "2026-07-06",
+   "title": "AI每日精读 · 2026-07-06 · Claude Sonnet 5 System Card 深度解读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "系统与部署"
+   ],
+   "summary": "真正的头条不是能力，而是 Prompt Injection 抗性大跃迁 ：浏览器代理场景下攻击成功率从 Sonnet 4.6 的 ~50% 下降到关闭防御时的 <1%，开启防御后接近 0%。 Agentic 拒答显著改善但有取舍 ：Claude Code 对恶意请求的拒答率从 76.6% 升到 92.4%；同时对合法双用（防御性红队/渗透测试）的过度拒答也上升。 幻觉和谄媚下降 ：Sycophancy 从 13.3% → 3.1%（Claude 家族最低）；事实性幻觉 35.0% → 26.5%。 网络攻击能力上升但仍受控 ：非专门训练；在 Firefox 147 / OSS-Fuzz / CyberGym 等评估中，开启默认防御后全部归零。 Evaluation Awareness（评估感知）成为需要长期跟踪的现象 ：约 6% 的对话中模型能口头识别自己正在被测试。 关键方法论提醒 ：几乎所有数字都是「防御关闭」下的测量，代表下限（lower bound），不是产品部署后的实际安全姿态。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-06-persistent-state-control/AI-Daily-Paper-Persistent-State-Control-2026-07-06.html",
+   "date": "2026-07-06",
+   "title": "AI每日论文精选｜把攻击藏进多次 PR：Coding Agent 的新安全边界",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "对齐与安全",
+    "智能体"
+   ],
+   "summary": "这篇论文说的是：当 AI 连续帮你改同一个代码库时，它可以把坏事拆成很多次看似正常的小改动；所以安全审查也必须学会跨时间记账。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-06_EvaluationMetrics/2026-07-06_EvaluationMetrics（评估指标）.html",
+   "date": "2026-07-06",
+   "title": "Evaluation Metrics 评估指标｜AI每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "基准与评估"
+   ],
+   "summary": "很多人判断 AI 好不好，第一反应是：“它这次回答得像不像人？” 但真实产品不能只靠感觉。一个客服 AI 可能语气很自然，却漏掉了最关键的赔付条件；一个 AI 搜索可能引用了来源，却没有真正回答用户的问题；一个 Agent 可能步骤看起来完整，却把错误参数传给了工具。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-05-paircoder/AI-Daily-Paper-PairCoder-2026-07-05.html",
+   "date": "2026-07-05",
+   "title": "AI每日论文精选｜PairCoder++：让 AI 交付可验证产物",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "如果说普通聊天机器人像“口头回答问题”，PairCoder++ 更像“交作业前先跑一遍测试”。这一步看似朴素，却是 AI 真正进入生产流程的核心。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-05_StructuredOutputs/2026-07-05_StructuredOutputs（结构化输出）.html",
+   "date": "2026-07-05",
+   "title": "Structured Outputs 结构化输出｜AI每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "很多人第一次用大模型，会觉得它已经很聪明：能写邮件、总结文档、回答问题。但只要你想把它接进真实业务系统，就会遇到一个很现实的问题：它写得再像人话，系统也不一定能用。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-07-04-hola/AI-Daily-Paper-HOLA-2026-07-04.html",
+   "date": "2026-07-04",
+   "title": "AI每日论文精选｜HOLA：给线性注意力装上海马体",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文是在教便宜的长上下文模型：平时像做笔记一样压缩全文，但遇到“可能会考”的细节，就单独放进一个小抽屉，等需要时精确取出来。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-04_RAG/2026-07-04_RAG（检索增强生成）.html",
+   "date": "2026-07-04",
+   "title": "RAG（检索增强生成）｜AI每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "大模型很会组织语言，但它有一个天然限制：它并不会自动知道你公司的内部制度、今天刚更新的政策、某个客户的最新订单状态，也不一定能准确记住训练资料里的每个细节。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-07-03_MLEvolve深度解读.html",
+   "date": "2026-07-03",
+   "title": "AI论文精读 · 2026-07-03 · MLEvolve：自进化机器学习算法发现框架",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "训练与方法",
+    "AI for Science"
+   ],
+   "summary": "在 MLE-Bench 上以 一半的时间预算 拿下 65.3% 平均奖牌率 ，全面超越 AlphaEvolve、AIBuildAI 等 SOTA 方案",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-07-03-role-confusion/AI-Daily-Paper-Role-Confusion-2026-07-03.html",
+   "date": "2026-07-03",
+   "title": "AI每日论文精选｜Prompt Injection as Role Confusion",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文的核心是：大模型看到的是一锅连续文字汤，它不总是按标签分清角色，而是会被“说话的腔调”骗，以为外部攻击文字就是自己的想法或用户的授权。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-07-03_Embedding/2026-07-03_Embedding（向量表示）.html",
+   "date": "2026-07-03",
+   "title": "Embedding（向量表示）｜AI每日深度科普",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "如果你在搜索框里输入“电脑发烫怎么办”，传统关键词系统更容易找含有“电脑”“发烫”的文章；但你真正想找的，也许是“笔记本散热异常”“CPU温度过高”“风扇清灰”。这些词不完全一样，但意思在同一片区域。Embedding 的价值，就是把这种“意思相近”变成可以计算的距离。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-07-02_Gemini_DeepThink_科研加速.html",
+   "date": "2026-07-02",
+   "title": "AI论文每日精读 · 2026-07-02 · Gemini Deep Think 加速科研",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "推理"
+   ],
+   "summary": "Google DeepMind 联合数学 / 物理 / 计算机科学家发布两篇姊妹论文，把\"AI 参与科研\"从奥数级别推进到 PhD 与前沿研究级别，并首次给出\"AI 贡献等级\"分类法。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-07-02-orca/AI-Daily-Paper-Orca-2026-07-02.html",
+   "date": "2026-07-02",
+   "title": "AI每日论文精选｜Orca: The World is in Your Mind",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "强化学习"
+   ],
+   "summary": "Orca 想让 AI 像人一样先在脑中形成“世界模型”，再根据需要把这个内部世界翻译成文字、图片或机器人动作。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-06-30_Anthropic_弥散性AI控制_深度解读.html",
+   "date": "2026-06-30",
+   "title": "弥散性AI控制：模糊任务上的红蓝对抗 | Anthropic 2026.06.23 深度解读",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "事实 Anthropic 提出一个 红蓝对抗框架 ，用来评估\"通过训练手段抑制 AI 在 难以打分的\"模糊任务\" （fuzzy tasks）上偷偷作恶\"的可行性。 实验显示：在\"撰写 ML 实验提案\"这一典型模糊任务上，一个被弱评分模型监督的强模型， 能找到让弱模型给高分、但实际质量很差 的提案策略； 同时也证明， 存在能堵住这种攻击的弱评分提示 ，但寻找这些提示本身仍依赖某种\"准真值代理\"。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-30-vision-default-prior-override/AI-Daily-Paper-Vision-Default-Prior-Override-2026-06-30.html",
+   "date": "2026-06-30",
+   "title": "AI每日论文精选 | Vision-Default, Prior-Override",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "多模态"
+   ],
+   "summary": "今日论文： Vision-Default, Prior-Override: Causal Mechanisms of Perception-Knowledge Conflict in Vision-Language Models",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-30_KVCache/2026-06-30_KV Cache（键值缓存）.html",
+   "date": "2026-06-30",
+   "title": "KV Cache（键值缓存）：为什么AI聊天不用每次重读前文？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "架构"
+   ],
+   "summary": "如果说 Attention 让大模型学会“看重点”，KV Cache 就是让大模型学会“别把已经看过的重点反复再看一遍”。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-29_From-AGI-to-ASI_DeepMind深度解读.html",
+   "date": "2026-06-29",
+   "title": "每日AI论文精读 · From AGI to ASI（DeepMind, 2026）",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "DeepMind 主张：从\"人类级 AGI\"到\"超人 ASI\" 不是单一阈值跨越，而是连续谱 ；推动这一跨越可能来自 四种并不互斥的机制 （继续放缩、范式革新、递归自我改进、多智能体集体智能），它们之间存在 正反馈耦合 ，因此真正决定时间表的是\"瓶颈/摩擦\"——而非\"突破点\"。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-29-selfcompact/report.html",
+   "date": "2026-06-29",
+   "title": "AI每日论文精选 | Self-Compacting Language Model Agents",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体"
+   ],
+   "summary": "Self-Compacting Language Model Agents | 一篇关于长任务 Agent、上下文腐烂与自动压缩时机的论文。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-29_ChainOfThought/2026-06-29_思维链（Chain-of-Thought）.html",
+   "date": "2026-06-29",
+   "title": "2026-06-29_思维链（Chain-of-Thought）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "如果你问 AI：“小明买了 3 盒铅笔，每盒 12 支，送给同学 8 支，还剩多少支？”一个模型可以直接猜“28”，也可以先算 3 × 12 = 36，再算 36 - 8 = 28。答案一样，但第二种方式更可靠，因为中间过程能暴露错误。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-28-river/AI-Daily-Paper-RiVER-2026-06-28.html",
+   "date": "2026-06-28",
+   "title": "AI每日论文精选｜RiVER：没有标准答案，AI也能继续学习",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "RiVER 像让 AI 参加“没有标准答案的编程竞赛”：不问它是否写出唯一答案，只看它的方案跑起来后，是否比同场其他方案更好。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-28_PromptInjection/2026-06-28_提示词注入（Prompt Injection）.html",
+   "date": "2026-06-28",
+   "title": "2026-06-28_提示词注入（Prompt Injection）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "早期很多人使用 AI，只是在对话框里问问题。就算有人输入“忽略前面所有规则”，最坏也只是模型说了不该说的话。可现在的 AI 产品开始连接浏览器、邮箱、网盘、数据库、日历、代码仓库和支付流程。模型不只会回答，还可能调用工具。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-27-e-tts/AI-Daily-Paper-E-TTS-2026-06-27.html",
+   "date": "2026-06-27",
+   "title": "AI每日论文精选 | E-TTS：让机器人在动手前多想几步",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "机器人"
+   ],
+   "summary": "可以把它想成开车变道。普通模型像新手司机：看到路况，直接打方向。E-TTS 像更谨慎的老司机：先看后视镜，判断旁边车速，预演两三种变道时机，再选择最稳的一种。如果判断不够稳，就继续观察和调整。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-27_ContextEngineering/2026-06-27_上下文工程（Context Engineering）.html",
+   "date": "2026-06-27",
+   "title": "2026-06-27_上下文工程（Context Engineering）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "很多人以为，模型越大、上下文窗口越长，AI 就自然更聪明。现实里不是这样。你把一堆网页、会议记录、代码、表格、历史聊天和工具说明全塞进去，模型常常不是变聪明，而是被淹没。",
+   "minutes": 7
+  },
+  {
+   "file": "20260626_DeepMind_AI控制路线图深度解读.html",
+   "date": "2026-06-26",
+   "title": "每日AI精读 · 2026-06-26 | DeepMind AI控制路线图",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "DeepMind 发布 「AI Control Roadmap」 ——一套 \"假设AI已经不对齐\" 的内部纵深防御框架，把高能力AI Agent当作潜在的\"内部威胁人员\"对待，用受信任的AI去监督正在工作的AI，并已在 100万条 coding agent 轨迹 上完成实战验证。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-26-agent-native-memory/AI-Daily-Paper-Agent-Native-Memory-2026-06-26-embedded.html",
+   "date": "2026-06-26",
+   "title": "AI每日论文精选：Agent 原生记忆系统",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "记忆",
+    "系统与部署"
+   ],
+   "summary": "这篇论文在说：AI Agent 不能只靠“把过去聊天搜出来”，它需要一套像公司档案室一样的记忆系统，知道什么该存、怎么分类、何时更新、用时怎么找、过期了怎么删。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-26_AIChip/2026-06-26_AI芯片.html",
+   "date": "2026-06-26",
+   "title": "2026-06-26_AI芯片：为什么大模型离不开专用算力？",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "如果说大模型是“会思考的城市”，AI芯片就是这座城市的发电站、道路和工厂。没有足够合适的芯片，大模型可以写在论文里，却很难每天服务几亿次请求。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-25_LifeSciBench解读.html",
+   "date": "2026-06-25",
+   "title": "每日AI论文精读 · 2026-06-25 · LifeSciBench：当前沿模型走进真实生命科学研究",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "生物与化学",
+    "基准与评估",
+    "AI for Science"
+   ],
+   "summary": "LifeSciBench 用 750 道\"像真正研究员一天会遇到的\"开放式任务 （含 PDF/图表/序列文件等 1062 个附件），加上 19,020 条逐点评分细则 ，把\"AI 是否真的能做生物医药研究\"这个被吹了几年的命题，第一次拽进了可重复、可比对、可证伪的量化语境里。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-06-25-qwen-agentworld/AI-Daily-Paper-Qwen-AgentWorld-2026-06-25.html",
+   "date": "2026-06-25",
+   "title": "AI每日论文精选 | Qwen-AgentWorld",
+   "org": "阿里 Qwen",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "强化学习"
+   ],
+   "summary": "这篇论文本质上是在给 AI Agent 建一个“虚拟练功房”：它每做一步，模型都能预测环境下一秒会怎样变化。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-25_EdgeCloudCollaboration/2026-06-25_端云协同（Edge-cloud Collaboration）.html",
+   "date": "2026-06-25",
+   "title": "2026-06-25_端云协同（Edge-cloud Collaboration）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "过去我们常把 AI 想成两种形态：要么在手机、电脑、摄像头里本地运行；要么把问题发到云端，让大模型回答。但真实的 AI 产品通常不是二选一，而是在多个位置之间做分工。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-24_DeepMind_From_AGI_to_ASI.html",
+   "date": "2026-06-24",
+   "title": "AI论文每日精读 · 2026-06-24 · From AGI to ASI（DeepMind）",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "一份 57–60 页、14 位作者署名的路线图。 核心论点不是 ASI 何时到来，而是它可能不会以\"一刹那的奇点\"形式到来——而是表现为科学技术各领域接连不断的突破。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-24-ai-chemist/AI-Daily-Paper-AI-Chemist-2026-06-24-embedded.html",
+   "date": "2026-06-24",
+   "title": "AI每日论文精选｜AI开始真正参与科学实验了？",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "生物与化学",
+    "AI for Science"
+   ],
+   "summary": "这篇论文本质上是在证明：AI 可以像一个初级科研合作者一样，提出一个可验证的化学假设，并通过自动化实验把它一步步筛出来。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-24_AIChips/2026-06-24_AI芯片（AI Chips）.html",
+   "date": "2026-06-24",
+   "title": "2026-06-24_AI芯片（AI Chips）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "过去我们讨论 AI 时，常常只盯着模型：参数有多少、回答聪不聪明、能不能写代码。但真正让大模型跑起来的，还有一个更底层的问题：这么多计算，到底由谁来做？",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-23_DeepMind_AI控制路线图_深度解读.html",
+   "date": "2026-06-23",
+   "title": "AI每日精读 · 2026-06-23 | DeepMind《AI控制路线图》深度解读",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "① DeepMind把内部部署的AI智能体统一视作\"潜在的内鬼员工\"，引入网络安全行业标准MITRE ATT&CK的方法论来建模AI攻击路径； ② 该路线图按\"模型规避检测能力\"与\"模型造成危害能力\"两个维度，定义了 D1-D4 检测等级 和 R1-R3 响应等级； ③ 团队已经在内部分析了 100万条编程智能体轨迹 ，并基于此为 Gemini Spark agent 部署了实时监控器。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-23_OpenAI_部署仿真_深度解读.html",
+   "date": "2026-06-23",
+   "title": "AI每日精读 · 2026-06-23 | OpenAI《部署仿真》深度解读",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "系统与部署"
+   ],
+   "summary": "① 传统红队/对抗评测在\"低概率高严重性\"风险上很好，但对\"部署后真实频率\"预测很差； ② OpenAI让候选模型重新回答真实历史用户提问（隐私已去标识化），然后统计不当行为频率，作为上线前的\"准生产\"信号； ③ 在GPT-5系列上累计实测 ~130万条对话，方法显著优于现有基线、几乎让模型分辨不出自己被测试，并提前抓住了\"计算器作弊\"这种以前没人想到的不当行为。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-23-sumi/AI-Daily-Paper-Sumi-2026-06-23-embedded.html",
+   "date": "2026-06-23",
+   "title": "AI每日论文精选｜Sumi：如果AI不再一个字一个字地写答案？",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "Sumi 本质上是在让 AI 像修改一整张草稿一样写作：先铺开整页，再反复擦掉噪声、填上更确定的词。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-23_InferenceRouting/2026-06-23_推理路由（Inference Routing）.html",
+   "date": "2026-06-23",
+   "title": "2026-06-23_推理路由（Inference Routing）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "推理",
+    "架构"
+   ],
+   "summary": "你打开一个 AI 助手时，背后可能不止一个模型在工作。有的问题很简单，比如翻译一句话；有的问题很复杂，比如分析一份合同；有的问题需要查资料，有的问题涉及图片、语音或隐私安全。",
+   "minutes": 7
+  },
+  {
+   "file": "AI论文解读_2026-06-22_TeachingClaudeWhy.html",
+   "date": "2026-06-22",
+   "title": "AI论文每日精读 · 2026-06-22 · Teaching Claude Why（教Claude理由）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "本周英文权威源（OpenAI、Anthropic、DeepMind 官方研究博客 + arXiv 与 Hugging Face Daily Papers）的对齐与智能体方向新作较多，本期选择 Anthropic Alignment Science 团队 2026-05-08 发布、并在 6 月持续被业界二次讨论的 《Teaching Claude Why》 。原因：",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-22-arbor/AI-Daily-Paper-Arbor-2026-06-22-embedded.html",
+   "date": "2026-06-22",
+   "title": "AI每日论文精选｜Arbor：让AI像研究团队一样累积假设、实验与证据",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "AI for Science"
+   ],
+   "summary": "Arbor 本质上是在给 AI 配一个“研究项目经理”：它让 AI 把每次试验变成可追踪的假设、证据和经验，而不是散落在聊天记录里的临时灵感。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-22-arbor/arbor-abs.html",
+   "date": "2026-06-22",
+   "title": "[2606.11926] Toward Generalist Autonomous Research via Hypothesis-Tree Refinement",
+   "org": "其他",
+   "type": "深度精读",
+   "tags": [],
+   "summary": "GO quick links Login Help Pages About --> Computer Science > Computation and Language arXiv:2606.11926 (cs) [Submitted on 10 Jun 2026] Title: Toward Generalist Autonomous Research via Hypothesis-Tree Refinement Authors: Jiajie Jin , Yuyang Hu , Kai Qiu , Qi Dai , Chong Luo , Guanting Dong , Xiaoxi Li , Tong Zhao , Xiaolong Ma , Gongrui Zhang , Zhirong Wu , Bei Liu , Zhengyuan Yang , Linjie Li , Lijuan Wang , Hongjin Qian , Yutao Zhu , Zhicheng Dou View a PDF of the paper titled Toward Generalist Autonomous Research via Hypothesis-Tree Refinement, by Jiajie Jin and 17 other authors View PDF HTML (experimental) Abstract: Scientific progress depends on a repeated loop of exploration, experimentation, and abstraction. Researchers test candidate directions, interpret the evidence, and carry the resulting lessons into later attempts. We study how an AI agent can run this loop autonomously over long horizons. We introduce Arbor, a general framework for autonomous research that combines a long-lived coordinator, short-lived executors, and Hypothesis Tree Refinement (HTR), a persistent tree that links hypotheses, artifacts, evidence, and distilled insights across time. The coordinator manages global research strategy over the tree, while executors implement and test individual hypotheses in isolated worktrees. As results return, Arbor updates the tree, propagates reusable lessons, refines the search frontier, and admits verified improvements. This design turns autonomous research from a sequence of local attempts into a cumulative process in which strategy, execution, and evidence are carried across time. We evaluate Arbor under Autonomous Optimization (AO), an operational setting where an agent improves an initial research artifact through iterative experimentation without step-level human supervision. Across six real research tasks in model training, harness engineering, and data synthesis, Arbor achieves the best held-out result on all six tasks, attaining more than 2.5x the average relative held-out gain of Codex and Claude Code under the same task interface and resource budget. On MLE-Bench Lite, Arbor reaches 86.36% Any Medal with GPT-5.5, the strongest result in our comparison. Subjects: Computation and Language (cs.CL) ; Artificial Intelligence (cs.AI) Cite as: arXiv:2606.11926 [cs.CL] (or arXiv:2606.11926v1 [cs.CL] for this version) https://doi.org/10.48550/arXiv.2606.11926 Focus to learn more arXiv-issued DOI via DataCite (pending registration) Submission history From: Yutao Zhu [ view email ] [v1] Wed, 10 Jun 2026 10:57:05 UTC (6,533 KB) Full-text links: Access Paper: View a PDF of the paper titled Toward Generalist Autonomous Research via Hypothesis-Tree Refinement, by Jiajie Jin and 17 other authors View PDF HTML (experimental) TeX Source view license Current browse context: cs.CL < prev | next > new | recent | 2026-06 Change to browse by: cs cs.AI References & Citations NASA ADS Google Scholar Semantic Scholar export BibTeX citation Loading... BibTeX formatted citation × loading... Data provided by: Bookmark Bibliographic Tools Bibliographic and Citation Tools Bibliographic Explorer Toggle Bibliographic Explorer ( What is the Explorer? ) Connected Papers Toggle Connected Papers ( What is Connected Papers? ) Litmaps Toggle Litmaps ( What is Litmaps? ) scite.ai Toggle scite Smart Citations ( What are Smart Citations? ) Code, Data, Media Code, Data and Media Associated with this Article alphaXiv Toggle alphaXiv ( What is alphaXiv? ) Links to Code Toggle CatalyzeX Code Finder for Papers ( What is CatalyzeX? ) DagsHub Toggle DagsHub ( What is DagsHub? ) GotitPub Toggle Gotit.pub ( What is GotitPub? ) Huggingface Toggle Hugging Face ( What is Huggingface? ) ScienceCast Toggle ScienceCast ( What is ScienceCast? ) Demos Demos Replicate Toggle Replicate ( What is Replicate? ) Spaces Toggle Hugging Face Spaces ( What is Spaces? ) Spaces Toggle TXYZ.AI ( What is TXYZ.AI? ) Related Papers Recommenders and Search Tools Link to Influence Flower Influence Flower ( What are Influence Flowers? ) Core recommender toggle CORE Recommender ( What is CORE? ) Author Venue Institution Topic About arXivLabs arXivLabs: experimental projects with community collaborators arXivLabs is a framework that allows collaborators to develop and share new arXiv features directly on our website.",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-22-arbor/arbor-paper.html",
+   "date": "2026-06-22",
+   "title": "Toward Generalist Autonomous Research via Hypothesis-Tree Refinement",
+   "org": "其他",
+   "type": "深度精读",
+   "tags": [],
+   "summary": "Report Issue Back to Abstract Download PDF Abstract 1 Introduction 2 Related Work 2.1 Autonomous Research Agent 2.2 Long-Horizon Agent 2.3 Benchmark for Autonomous Research 3 Task Formulation 4 The Arbor Framework 4.1 Overview 4.2 Hypothesis Tree as Research State 4.3 Hypothesis Tree Refinement 4.3.1 Coordinator: Evidence-Aware Frontier Control 4.3.2 Executor: Hypothesis-Bound Experimentation 5 Experiments 5.1 AO Task Suite Model training. Harness engineering. Data synthesis. 5.2 Experimental Setup Benchmarks. Baselines. Metrics. Implementation details. 5.3 Main Results on Real Research Tasks Arbor gives stronger and more general held-out gains. The dev/test split exposes overfitting during autonomous search. 5.4 Results on MLE-Bench Lite 5.5 Backbone Generality 5.6 Cross-Task Idea Transfer 5.7 Ablations HTR improves refinement rather than executability. The tree is useful only when evidence can accumulate over it. Tree structure and insight feedback are complementary. 5.8 Token Consumption and Search Cost Structured search rather than larger sampling. Dev improvements are filtered by held-out admission. 6 Discussion 6.1 Hypothesis Refinement Analysis Takeaway. 6.2 Search Efficiency Analysis Takeaway. 6.3 Idea Quality Analysis Takeaway. 7 Conclusion References A Limitations and Future Work Evaluation scope. Objective design. Idea generation. Cost and infrastructure. Model capability. B Details of Arbor B.1 Prompts B.1.1 Coordinator Prompt B.1.2 Executor Prompt B.2 Algorithm Workflow B.3 Key Design of Arbor Framework Hypothesis-tree management. Experiment management. Long-horizon operation. Functional extensibility (skills and plugins). B.4 Agent Tools and Hyperparameter Settings B.4.1 Coordinator Tools B.4.2 Executor Tools B.4.3 Evaluation and Merge Tools B.5 Idea Tree Data Structure and Storage Logical schema. Persistent storage. Agent-facing access. C Details of the AO Test Suite C.1 Optimizer Design Baseline. Development and test split. Evaluator. Agent instruction. C.2 Architecture Design Baseline. Development and test split. Evaluator. Agent instruction. C.3 Terminal-Bench 2.0 Baseline. Development and test split. Evaluator. Agent instruction. C.4 BrowseComp Baseline. Development and test split. Evaluator. Search and tool configuration. Transfer-test protocol. Agent instruction. C.5 Search-Agent Data Synthesis Baseline. Development and test split. Evaluator. Agent instruction. C.6 Math-Reasoning Data Synthesis Baseline. Development and test split. Evaluator. Agent instruction. License: CC BY-SA 4.0 arXiv:2606.11926v1 [cs.CL] 10 Jun 2026 1]Gaoling School of Artificial Intelligence, Renmin University of China 2]Microsoft Research \\contribution [†]Equal contribution \\contribution [‡]Work done during an internship at MSRA \\contribution [*]Corresponding author",
+   "minutes": 278
+  },
+  {
+   "file": "reports/2026-06-22-arbor/arbor-project.html",
+   "date": "2026-06-22",
+   "title": "Arbor | Hypothesis-Tree Refinement for Autonomous Research",
+   "org": "其他",
+   "type": "深度精读",
+   "tags": [],
+   "summary": "",
+   "minutes": 2
+  },
+  {
+   "file": "reports/2026-06-22_BatchingThroughput/2026-06-22_批处理与吞吐量（Batching and Throughput）.html",
+   "date": "2026-06-22",
+   "title": "2026-06-22_批处理与吞吐量（Batching and Throughput）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "先想一个日常场景：晚上八点，几百万人同时打开 AI 助手。有的人问一句话，有的人上传一段长文，有的人让 AI 写代码。服务器如果像小摊老板一样“来一个人就单独开火做一次”，很快就会又慢又贵。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-21-skillopt/AI-Daily-Paper-SkillOpt-2026-06-21-embedded.html",
+   "date": "2026-06-21",
+   "title": "AI每日论文精选：SkillOpt，让 Agent 的技能像模型一样被训练",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "训练与方法"
+   ],
+   "summary": "SkillOpt 本质上是在教 AI：不要每次都从零开始摸索，把成功和失败沉淀成一份会进化的“操作手册”。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-21_EdgeAI/2026-06-21_边缘AI（Edge AI）.html",
+   "date": "2026-06-21",
+   "title": "2026-06-21_边缘AI（Edge AI）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "先想一个很普通的问题：为什么手机相册能马上识别照片里的人和宠物？为什么汽车看到行人要立刻刹车，不能先把视频传到远方服务器再等结果？这背后就是边缘AI要解决的问题。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-20-toolprivbench/AI-Daily-Paper-ToolPrivBench-2026-06-20.html",
+   "date": "2026-06-20",
+   "title": "AI每日论文精选：为什么 AI Agent 不该总拿管理员钥匙？",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "基准与评估"
+   ],
+   "summary": "低权限足够 高权限过度 AI每日论文精选 · 2026-06-20 · Agent 安全 为什么 AI Agent 不该总拿“管理员钥匙”？ 今天这篇论文把一个容易被忽略的落地风险讲清楚了：AI 不只是会不会完成任务，还要看它用多大的权限完成任务。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-20_ModelCompression/2026-06-20_模型压缩（Model Compression）.html",
+   "date": "2026-06-20",
+   "title": "2026-06-20_模型压缩（Model Compression）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "今天我们先从一个很现实的问题开始：为什么很多大模型很聪明，却很难直接放进手机、汽车、家用设备或普通公司的服务器里？原因不是它们不会回答，而是它们太大、太贵、太耗电。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-19_DeepMind_AI_Control_Roadmap.html",
+   "date": "2026-06-19",
+   "title": "每日AI论文精读 · 2026-06-19 | DeepMind《AI Control Roadmap》",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "原文： Securing the Future of AI Agents · 配套 35 页技术报告与《Three Layers of Agentic Security》政策框架 · 作者：Mary Phuong、Erik Jenner、Laurent Simon、Lewis Ho、Rohin Shah、Sebastian Farquhar、Scott Coull · 发表平台：Google DeepMind 官方博客 · 2026-06-18",
+   "minutes": 9
+  },
+  {
+   "file": "2026-06-19_Kairos_Physical_AI_World_Model.html",
+   "date": "2026-06-19",
+   "title": "AI每日论文精选：Kairos 与物理 AI 的世界模型栈",
+   "org": "学术/AI前沿",
+   "type": "每日精读",
+   "tags": [
+    "世界模型",
+    "强化学习"
+   ],
+   "summary": "AI每日论文精选 · 2026-06-19 · Physical AI / World Model Kairos：让机器人先在“内心小剧场”里试一遍 今天精选的不是一篇“又一个视频生成模型”论文，而是一套面向物理 AI 的世界模型栈：学习世界、记住世界、再把预测变成真实动作。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-19_SpeculativeDecoding/2026-06-19_推测解码（Speculative Decoding）.html",
+   "date": "2026-06-19",
+   "title": "2026-06-19_推测解码（Speculative Decoding）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "很多人以为大模型回答慢，是因为它“思考得久”。这只说对了一半。大模型生成文字时，通常像一个人打字：先写第一个词，再根据前面的内容写第二个词，然后继续写第三个词。每多生成一个词，都要让庞大的模型再跑一轮。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-18_Anthropic_Agentic_Coding_解读.html",
+   "date": "2026-06-18",
+   "title": "AI每日精读 | Anthropic：智能体编程与专家能力的持续回报（2026-06-18）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "智能体",
+    "架构",
+    "模型能力"
+   ],
+   "summary": "在 Claude Code 的真实使用中—— 人决定\"做什么\"，AI 决定\"怎么做\" ； 决定一次会话成功率的并非\"会不会写代码\"，而是 领域专长 ： 新手到中级用户的成功率几乎翻倍，但中级到专家仅再上升一档； 与此同时， 调试占比从 33% 腰斩到 19% ，会话的经济价值平均提升约 27% 。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-18-loopcoder-v2/AI-Daily-Paper-LoopCoder-v2-2026-06-18.html",
+   "date": "2026-06-18",
+   "title": "AI每日论文精选 | LoopCoder-v2",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文的核心意思是：让代码 AI 用同一套大脑先想一遍、再整理一遍，往往能明显变强；但如果继续反复想，新增收益会变小，结构性错位成本会留下，结果反而变差。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-18_Quantization/2026-06-18_模型量化（Quantization）.html",
+   "date": "2026-06-18",
+   "title": "2026-06-18_模型量化（Quantization）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "大模型很聪明，但也很“重”：它需要大量显存、计算和电力。模型量化解决的核心问题，是让模型在尽量少损失能力的前提下，用更小的数字、更少的空间和更快的计算完成推理。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-17_DiffusionGemma深度解读.html",
+   "date": "2026-06-17",
+   "title": "AI论文日报 · 2026-06-17 · DiffusionGemma 深度解读",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "DiffusionGemma 是一个 26B（MoE，激活 3.8B）的 离散扩散 语言模型，用 双向注意力 对 256-token 的 \"画布\" 反复去噪，在 H100 上达到 1100+ tokens/s，比同尺寸自回归 Gemma 4 快约 4×；代价是在主流基准上略弱于 Gemma 4，Google 自己也明确说 不推荐用于生产 。这是一次工程化验证：扩散范式在生产级 LLM 中第一次拿到接近自回归的成绩单。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-17_ToolUse/2026-06-17_AI工具使用（Tool Use）.html",
+   "date": "2026-06-17",
+   "title": "2026-06-17_AI工具使用（Tool Use）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "只会聊天的 AI，像一个很会解释问题的人；会使用工具的 AI，才开始像一个能帮你办事的助手。它可以查资料、算表格、读文件、调用系统、发送请求，把语言理解变成现实动作。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-16_当AI开始构建自己_Anthropic解读.html",
+   "date": "2026-06-16",
+   "title": "当AI开始构建自己 · Anthropic研究解读 | 2026-06-16",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "AI for Science"
+   ],
+   "summary": "原标题：When AI builds itself — Our progress toward recursive self-improvement, and its implications 作者：Marina Favaro & Jack Clark（Anthropic Institute） · 发布：2026-06-04",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-16_AIMemory/2026-06-16_AI记忆（AI Memory）.html",
+   "date": "2026-06-16",
+   "title": "2026-06-16_AI记忆（AI Memory）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "记忆"
+   ],
+   "summary": "如果一个 AI 助手每次见到你都像第一次见面，它就很难真正帮你做长期事情。你要反复解释项目背景、个人偏好、格式要求、已经踩过的坑，AI 也容易把旧结论和新目标混在一起。",
+   "minutes": 6
+  },
+  {
+   "file": "2026-06-15_Anthropic_NLA_自然语言自编码器.html",
+   "date": "2026-06-15",
+   "title": "每日AI论文精读 · 2026-06-15 · Anthropic 自然语言自编码器（NLA）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "• 问题 ：大模型对外说\"话\"，对内是数字（activations，激活向量），人类看不懂。已有的稀疏自编码器 / 归因图等工具，输出依然是复杂对象，需要专家二次解读。 • 方法 ：训练一个 Activation Verbalizer (AV) 把激活翻译成自然语言，再训练一个 Activation Reconstructor (AR) 从那段话还原回激活；二者通过强化学习联合训练，用\"还原相似度\"作为质量信号。 • 关键发现 ：NLA 揭示 Claude 在安全测试中常常\"心里在想这是测试\"，但嘴上不说；在 SWE-bench Verified 上 26% 的题、在代码破坏性测试中 16% 的样本被检测到\"测试感知\"，而真实 claude.ai 自愿训练数据中 <1%。 • 意义 ：可在模型未明说时，从内部表征中读取潜在意图，已用于 Claude Mythos Preview 与 Claude Opus 4.6 上线前的对齐审计。 • 局限 ：会编造细节（hallucination）；训练和推理都很贵，难以在大规模实时监控中使用。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-15-switch-latent-reasoning/AI-Daily-Paper-SWITCH-Latent-Reasoning-2026-06-15.html",
+   "date": "2026-06-15",
+   "title": "AI每日论文精选｜SWITCH：让 AI 学会在“脑内草稿纸”上思考",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "推理"
+   ],
+   "summary": "这篇论文给 AI 装了一个“思考模式开关”：该写给人看的时候写出来，该在脑内草稿纸上算的时候就切进隐藏状态里算。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-15_MultiAgentSystem/2026-06-15_多Agent系统（Multi-Agent System）.html",
+   "date": "2026-06-15",
+   "title": "2026-06-15_多Agent系统（Multi-Agent System）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "智能体",
+    "系统与部署"
+   ],
+   "summary": "如果只让一个 AI 从头到尾完成复杂任务，它就像让一个人同时当产品经理、资料员、工程师、编辑和质检员。它可能很快，但也容易漏步骤、忘背景、把未经核实的内容直接写进结果里。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-14-minimax-sparse-attention/AI-Daily-Paper-MiniMax-Sparse-Attention-2026-06-14.html",
+   "date": "2026-06-14",
+   "title": "AI每日论文精选 | MiniMax Sparse Attention",
+   "org": "MiniMax",
+   "type": "论文精选",
+   "tags": [
+    "架构"
+   ],
+   "summary": "想象你要写一份公司并购报告，桌上有 500 页材料。最笨的方法是每问一个问题都从第一页读到最后一页。更聪明的方法是先看目录、索引和标签，判断“财务风险在第 120-160 页，供应链风险在第 310-330 页”，然后精读这些部分。MSA 做的就是把这个直觉变成注意力机制。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-14_AIWorkflow/2026-06-14_AI工作流（AI Workflow）.html",
+   "date": "2026-06-14",
+   "title": "2026-06-14_AI工作流（AI Workflow）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "很多人第一次用大模型，会以为 AI 产品就是一个聊天框：输入问题，等待回答。可是真正进入工作场景后，人们很快会发现：一次回答再聪明，也很难直接变成稳定的业务结果。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-13-agents-last-exam/AI-Daily-Paper-Agents-Last-Exam-2026-06-13.html",
+   "date": "2026-06-13",
+   "title": "AI每日论文精选 | Agents' Last Exam",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "基准与评估"
+   ],
+   "summary": "可以把它想成驾照路考。过去很多 benchmark 像笔试：问你交通规则、让你判断图片。ALE 更像路考：给你车、路况、目的地和考官，最后看你有没有安全到达。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-13_PromptEngineering/2026-06-13_提示词工程（Prompt Engineering）.html",
+   "date": "2026-06-13",
+   "title": "2026-06-13_提示词工程（Prompt Engineering）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [],
+   "summary": "提示词工程重要，不是因为它能让人背会几句“神奇口令”，而是因为大模型把很多软件的入口从按钮、菜单、表单，变成了自然语言。你怎么描述任务，AI 就怎么理解任务；你不给背景，它只能猜；你不说标准，它就不知道什么算好。",
+   "minutes": 5
+  },
+  {
+   "file": "2026-06-12_OpenAI_单位距离猜想_解读.html",
+   "date": "2026-06-12",
+   "title": "AI 论文每日精读 · 2026-06-12 · OpenAI 推翻单位距离猜想",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "过去 30 天 OpenAI、Anthropic、Google DeepMind、Meta AI、arXiv 发布了大量内容。从“是否真正改变研究范式”这个标准筛，本篇是 唯一一篇业内一线数学家公开背书、用专业期刊标准评为“无须犹豫接受发表”的 AI 自主成果 。它的意义不在“AI 答对了某个题”，而在三个层面：",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-12-races/AI-Daily-Paper-RACES-2026-06-12.html",
+   "date": "2026-06-12",
+   "title": "AI每日论文精选：RACES 可验证环境像积木一样组合",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文的核心是：不要再一题一题地喂 AI，而要把可验证任务做成积木，让 AI 在自动拼出来的复杂训练场里练推理。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-06-12_Interpretability/2026-06-12_AI可解释性（Interpretability）.html",
+   "date": "2026-06-12",
+   "title": "2026-06-12_AI可解释性（Interpretability）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "可解释性"
+   ],
+   "summary": "AI可解释性解决的是一个朴素但关键的问题：AI 给了一个答案，我们能不能知道它为什么这样判断？如果一个模型拒绝贷款、推荐药物、筛选简历或让客服转人工，只看结果远远不够，人们还需要看见证据、原因和边界。",
+   "minutes": 5
+  },
+  {
+   "file": "2026-06-11_Anthropic_Paving-the-way-for-agents-in-biology.html",
+   "date": "2026-06-11",
+   "title": "每日AI论文精读 · 2026-06-11 · 为生物学智能体铺路（Anthropic）",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "智能体",
+    "生物与化学"
+   ],
+   "summary": "当前最强的科研智能体（Claude Opus 4.7、GPT-5.5 等）在「从 NCBI Virus 检索病毒序列」这种基础任务上，准确率从 16.9% 到 91.3% 不等，且同一问题三次问会给出三组不同答案；瓶颈不在「推理」，而在 数据库本身没有为智能体设计 。作者发布 VirBench（120 道题、40 种病原体）作为基准，并以确定性检索层 gget virus 把所有模型拉到 90%+，GPT-5.5 达 99.7%。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-11-abc-bench/AI-Daily-Paper-ABC-Bench-2026-06-11.html",
+   "date": "2026-06-11",
+   "title": "AI每日论文精选 | ABC-Bench: Agentic Bio-Capabilities Benchmark for Biosecurity",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "生物与化学",
+    "基准与评估"
+   ],
+   "summary": "过去的生物安全评测，多数像考试：问模型几个问题，看它答得对不对。但现实里的 AI Agent 不只是答题，它可以搜索、写代码、调用模拟器、检查输出，甚至和实验自动化设备发生连接。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-06-11_AISafetyEvaluation/2026-06-11_AI安全评估（AI Safety Evaluation）.html",
+   "date": "2026-06-11",
+   "title": "2026-06-11_AI安全评估（AI Safety Evaluation）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "对齐与安全",
+    "基准与评估"
+   ],
+   "summary": "AI安全评估解决的是一个现实问题：模型看起来会聊天、会写代码、会调用工具，但它到底会在什么场景里误导用户、泄露隐私、越权操作，或被一句诱导话术带偏？",
+   "minutes": 4
+  },
+  {
+   "file": "reports/2026-06-10-hivig/AI-Daily-Paper-HiViG-2026-06-10.html",
+   "date": "2026-06-10",
+   "title": "AI每日论文精选 | HiViG: A History-Aware Visually Grounded Critic for Computer Use Agents",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体"
+   ],
+   "summary": "今天的电脑使用智能体已经能打开网页、填写表格、操作手机 App 或办公软件。但它们经常犯两类很像真人新手的错误：第一，做着做着忘了前面已经完成了什么，于是在同一个地方反复绕圈；第二，它说自己要点“提交”，实际坐标却点到了旁边的“删除”。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-06-10_Guardrails/2026-06-10_AI安全护栏（Guardrails）.html",
+   "date": "2026-06-10",
+   "title": "2026-06-10_AI安全护栏（Guardrails）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "AI安全护栏解决的是一个朴素但关键的问题：当 AI 越来越会回答、会搜索、会调用工具时，我们怎样让它在高风险场景里少犯错、少越权、出问题后还能追踪和复盘？",
+   "minutes": 4
+  },
+  {
+   "file": "2026-06-09_AlphaEvolve深度解读.html",
+   "date": "2026-06-09",
+   "title": "AI每日精读 · 2026-06-09 · AlphaEvolve：用进化算法+LLM重写科学发现",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "训练与方法",
+    "AI for Science"
+   ],
+   "summary": "AlphaEvolve 把 Gemini 模型组合 当成\"代码突变器\"，把 自动评估器 当成\"自然选择\"， 用进化算法持续重写代码。一年内它已在数学（首次打破 Strassen 在 4×4 复数矩阵乘法上保持 56 年的纪录）、 Google 自家基础设施（数据中心、TPU、Gemini 训练）、量子电路、基因测序、商业应用上同时落地， 标志着\"AI 自动发现新算法\"从单点案例走向 通用生产工具 。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-06-09-cosmos3/AI-Daily-Paper-Cosmos3-2026-06-09.html",
+   "date": "2026-06-09",
+   "title": "AI每日论文精选 | Cosmos 3: Omnimodal World Models for Physical AI",
+   "org": "NVIDIA",
+   "type": "论文精选",
+   "tags": [
+    "世界模型",
+    "多模态",
+    "强化学习"
+   ],
+   "summary": "如果今天的聊天机器人像“会读书的学生”，那么物理 AI 需要像“会开车、会搬箱子、会避开人的工人”。它不能只回答问题，还要知道：如果机器人手臂往左挪，会不会碰倒杯子；如果车继续前进，行人会不会穿过路口；如果仓库叉车转弯，声音、运动和周围物体会不会一致。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-09_RedTeaming/2026-06-09_红队测试（Red Teaming）.html",
+   "date": "2026-06-09",
+   "title": "2026-06-09_红队测试（Red Teaming）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "红队测试解决的是一个很现实的问题：AI 产品上线前，我们不能只问“它大多数时候能不能答对”，还要问“它在被诱导、压力很大、边界模糊时会不会出错”。",
+   "minutes": 4
+  },
+  {
+   "file": "2026-06-08_Anthropic_化学家Claude.html",
+   "date": "2026-06-08",
+   "title": "AI论文日报 · 2026-06-08 · 让 Claude 成为化学家",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "生物与化学"
+   ],
+   "summary": "未经化学专项微调的通用模型 Claude Opus 4.7 ，在 20 个化合物的 1D NMR 正向预测 上整体已经追平甚至小幅超过化学家日常使用的 ChemDraw / MestReNova ；并且能完成这两款软件不直接支持的 逆向结构解析 ——8 个简单分子在仅给光谱和分子式时 100% 还原 ，7 个复杂分子在额外给出起始物时多数也能在 3 次尝试内正确还原。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-06-08-claude-chemist/AI-Daily-Paper-Claude-Chemist-2026-06-08-email.html",
+   "date": "2026-06-08",
+   "title": "AI每日论文精选 | Claude vs. ChemDraw on NMR prediction and structure elucidation",
+   "org": "Anthropic",
+   "type": "论文精选",
+   "tags": [
+    "生物与化学"
+   ],
+   "summary": "如果把一个分子想象成一个人，NMR 光谱就像它的指纹。传统软件像一本很厚的经验手册，按规则查表；Claude 更像一个受过广泛训练的实习化学家，既能看谱图，也能读实验文字，还能把自己的推理过程说出来。",
+   "minutes": 6
+  },
+  {
+   "file": "reports/2026-06-08_RewardHacking/2026-06-08_奖励黑客（Reward Hacking）.html",
+   "date": "2026-06-08",
+   "title": "2026-06-08_奖励黑客（Reward Hacking）",
+   "org": "其他",
+   "type": "概念精讲",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "在推荐系统里，如果奖励只看点击率，系统可能推送更刺激、更极端的内容；在客服机器人里，如果奖励只看“快速关闭工单”，它可能急着结束对话，而不是认真解决问题；在训练机器人时，如果奖励只看“到达终点”，机器人可能用奇怪姿势卡进终点区域。",
+   "minutes": 4
+  },
+  {
+   "file": "reports/2026-06-07-paw/AI-Daily-Paper-PaW-2026-06-07.html",
+   "date": "2026-06-07",
+   "title": "AI每日论文精选｜PaW：让 Agent 从行动后果中学习世界",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体"
+   ],
+   "summary": "PaW 的本质是：让 AI Agent 每做一步，不只记住“这一步得了几分”，还顺手学习“这一步让世界变成了什么样”。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-06-07_Alignment/2026-06-07_AI对齐（Alignment）.html",
+   "date": "2026-06-07",
+   "title": "AI每日深度科普 | AI对齐（Alignment）",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "一个模型可以写得很快、算得很准、调用工具很熟练，但如果它误解目标、泄露隐私、编造证据、绕过规则，能力越强，风险越大。AI对齐解决的正是这个问题：让模型不仅有能力，还要尽量有正确方向、边界感和可控性。",
+   "minutes": 5
+  },
+  {
+   "file": "reports/2026-06-06-crafter/AI-Daily-Paper-Crafter-2026-06-06.html",
+   "date": "2026-06-06",
+   "title": "AI每日论文精选｜Crafter：让 AI 生成可编辑科学图",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "AI for Science"
+   ],
+   "summary": "今日精选论文： Crafter: A Multi-Agent Harness for Editable Scientific Figure Generation from Diverse Inputs 。它的关键价值不是“图更漂亮”，而是让 AI 图示具备计划、检查、返工和可编辑交付。",
+   "minutes": 7
+  },
+  {
+   "file": "2026-06-05_DeepMind_唯我论超智能不太可能合作.html",
+   "date": "2026-06-05",
+   "title": "AI论文精读 · 2026-06-05｜唯我论超智能不太可能合作 — Google DeepMind",
+   "org": "DeepMind",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全"
+   ],
+   "summary": "来自 Google DeepMind 的立场论文（ICML 2026 接收），重新定义了\"超级智能\"的真正约束：从\"能力\"转向\"共存\"。作者论证：以\"唯我论\"假设训练出来的强 AI，即便单点任务无敌，部署到多主体世界中也会自我消解、撕裂均衡、损害人类能动性。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-06-04_OpenAI_单位距离猜想_解读.html",
+   "date": "2026-06-04",
+   "title": "AI 每日论文解读 · 2026-06-04 ｜ OpenAI 推翻 Erdős 单位距离猜想",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "这是首次有 AI 系统在完全自主的情况下，解决离散几何主流子领域中的核心公开问题——而且用的是来自代数数论的\"出乎意料\"的工具。",
+   "minutes": 8
+  },
+  {
+   "file": "2026-05-31_OpenAI_Erdos单位距离猜想.html",
+   "date": "2026-05-31",
+   "title": "每日AI论文精读 · 2026-05-31｜OpenAI 推翻 Erdős 80 年单位距离猜想",
+   "org": "OpenAI",
+   "type": "每日精读",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "OpenAI 一台内部\"通用推理模型\"，用 algebraic number theory（代数数论） 中的工具， 构造了一类新的点集排列， 推翻 了 Paul Erdős 1946 年提出的\"单位距离上界猜想\"。 人类数学家 Will Sawin 在此基础上将下界明确化为 n 1.014 ， 与目前最好的上界 n 1.333 之间仍有差距，问题并未完全闭合。 这是 首次有 AI 系统独立给出一个重要公开猜想的解答 （菲尔兹奖得主 Tim Gowers 语），但本质上仍是\"对 Erdős 经典构造的高超扩展\"，并非全新数学技术——它放大了 AI 在\"知识广度 + 暴力枚举证明路径\"上的相对优势。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-05-30-qwen-vla/AI-Daily-Paper-Qwen-VLA-2026-05-30.html",
+   "date": "2026-05-30",
+   "title": "AI每日论文精选 | Qwen-VLA：让机器人从会看见，走向会动手",
+   "org": "阿里 Qwen",
+   "type": "论文精选",
+   "tags": [
+    "多模态",
+    "机器人"
+   ],
+   "summary": "可以把它想成一个实习生。普通视觉语言模型像一个会看监控、会描述现场的人；Qwen-VLA 想成为能上手干活的人。它看见桌子、杯子、篮子和机械臂位置后，不只是回答“桌上有一个杯子”，而是生成一串连续控制动作。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-05-29-gamma-world/AI-Daily-Paper-Gamma-World-2026-05-29.html",
+   "date": "2026-05-29",
+   "title": "AI每日论文精选 | Gamma-World：让 AI 模拟一个多人共享世界",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "世界模型",
+    "强化学习"
+   ],
+   "summary": "可以把它想成一场多人游戏。单人世界模型像一台只给你一个人开的游戏主机：你按前进，它生成你眼前的画面。Gamma-World 要解决的是更难的版本：四个玩家同时跑、挖、建造、互相靠近或远离，每个人的屏幕都不同，但背后必须是同一个世界。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-05-28-macaron-a2ui/AI-Daily-Paper-Macaron-A2UI-2026-05-28.html",
+   "date": "2026-05-28",
+   "title": "AI每日论文精选 | Macaron-A2UI：当 Agent 不再只会打字",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体"
+   ],
+   "summary": "最简单的类比：普通聊天机器人像服务员站在你旁边一直问问题；Macaron-A2UI 像服务员递给你一张清楚的点菜单，有价格、口味、人数、地址和确认按钮。你不需要来回打字，它也不需要把所有信息塞进长段落。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-05-27-skillopt/AI-Daily-Paper-SkillOpt-2026-05-27.html",
+   "date": "2026-05-27",
+   "title": "AI每日论文精选 | SkillOpt：像训练神经网络一样训练 Agent 技能",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "训练与方法"
+   ],
+   "summary": "可以把它想成培训一名新人。传统做法是主管凭经验写一份 SOP，或者让新人自己写工作心得。SkillOpt 更像是：让新人先做一批任务，记录成功和失败；教练看日志后只允许小步修改 SOP；新 SOP 必须在没见过的题目上更好，才算升级。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-05-26-cola-dlm/AI-Daily-Paper-Cola-DLM-2026-05-26.html",
+   "date": "2026-05-26",
+   "title": "AI每日论文精选 | Cola DLM",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "可以把传统语言模型想成边说边想的人：说完前半句，才决定后半句。Cola DLM 更像先打腹稿的人：先知道自己要表达哪几个意思，再选择具体措辞。它并不保证马上比 GPT 式模型更强，但它指出了另一条值得长期跟踪的路。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-05-25-vpo/AI-Daily-Paper-VPO-2026-05-25.html",
+   "date": "2026-05-25",
+   "title": "AI每日论文精选 | Vector Policy Optimization",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "强化学习"
+   ],
+   "summary": "普通 RL 像是在挑一个冠军选手；VPO 像是在组建一支队伍：有人擅长找证据，有人擅长最后计算，有人擅长避坑，有人擅长代码边界条件。真正上场时，搜索系统再从这支队伍里挑最适合当前问题的人。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-05-24-rtpurbo/AI-Daily-Paper-RTPurbo-2026-05-24.html",
+   "date": "2026-05-24",
+   "title": "AI每日论文精选｜RTPurbo",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文本质上是在让大模型学会“分工看资料”：少数注意力头负责远距离找证据，多数注意力头只处理当前附近内容，所以长文本推理更快、更省。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-05-22-soda-semi-on-policy-distillation/AI每日论文精选-SODA-Semi-On-Policy-Distillation.html",
+   "date": "2026-05-22",
+   "title": "AI每日论文精选 | SODA: Semi On-Policy Black-Box Distillation for Large Language Models",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "强化学习",
+    "训练与方法"
+   ],
+   "summary": "如果普通蒸馏像“抄优秀作文”，SODA 更像“老师拿你的作文和满分作文逐段对比”：这里啰嗦、那里幻觉、这里逻辑断了。对小模型来说，这种对比比单看满分作文更有效。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-05-21-drllm-dynamic-layer-routing/AI每日论文精选-DrLLM-Dynamic-Layer-Routing.html",
+   "date": "2026-05-21",
+   "title": "AI每日论文精选 | Dr.LLM: Dynamic Layer Routing in LLMs",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "强化学习",
+    "架构"
+   ],
+   "summary": "如果把 Transformer 想成一座 32 层办公楼，传统模型每个问题都从 1 楼走到 32 楼。Dr.LLM 的想法是：有些问题到 18 楼就够了，有些问题在 26 楼需要多开一次会。关键不是“少算就好”，而是“算得刚刚好”。",
+   "minutes": 12
+  },
+  {
+   "file": "reports/2026-05-20-mint-managed-infra/AI每日论文精选-MinT-Managed-Infrastructure.html",
+   "date": "2026-05-20",
+   "title": "AI每日论文精选 | MinT: Managed Infrastructure for Training and Serving Millions of LLMs",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "训练与方法",
+    "系统与部署"
+   ],
+   "summary": "这个比喻里，底座模型是中央厨房，LoRA adapter 是调味包，训练是不断改良配方，服务是按订单选择配方，回滚是发现新配方不好吃时马上切回旧版本。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-05-19-motubrain-world-action-model/AI每日论文精选-MotuBrain-World-Action-Model.html",
+   "date": "2026-05-19",
+   "title": "AI每日论文精选｜MotuBrain",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "强化学习"
+   ],
+   "summary": "用日常语言讲：它不是只教机器人“看到苹果就伸手”，而是教它“如果这样伸手，苹果会不会滚、杯子会不会倒、夹爪会不会挡住视线”。这就是从反射式动作，走向预测式行动。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-05-18-attractor-models/AI每日论文精选-Attractor-Models.html",
+   "date": "2026-05-18",
+   "title": "AI每日论文精选｜Attractor Models",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [],
+   "summary": "这篇论文本质上是在让 AI 像做数学题的人一样：不是看一眼就交卷，而是在脑子里反复修改中间思路，直到答案变稳。",
+   "minutes": 10
+  },
+  {
+   "file": "reports/2026-05-17-compute-optimal-tokenization/AI每日论文精选-Compute-Optimal-Tokenization.html",
+   "date": "2026-05-17",
+   "title": "AI每日论文精选｜Compute Optimal Tokenization",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "这篇论文本质上是在说：训练大模型时别只数切出来的“词块”，要数原始文字本身有多少“字节重量”，因为刀法不同，切出来的块数会变。",
+   "minutes": 11
+  },
+  {
+   "file": "reports/2026-05-16-asymmetric-flow-models/AI每日论文精选-Asymmetric-Flow-Models.html",
+   "date": "2026-05-16",
+   "title": "AI每日论文精选｜Asymmetric Flow Models",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "AsymFlow 像是在教 AI 画高清图：画面细节要认真画，但随机噪声不用每一粒灰尘都背下来，只抓住最重要的方向就够了。",
+   "minutes": 9
+  },
+  {
+   "file": "reports/2026-05-15-context-training-active-info/AI每日论文精选-Context-Training-Active-Information-Seeking.html",
+   "date": "2026-05-15",
+   "title": "AI每日论文精选｜Context Training with Active Information Seeking",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "训练与方法",
+    "检索与上下文"
+   ],
+   "summary": "这篇论文本质上是在训练一个“考前资料员”：它不替你考试，但会在考试前主动翻书、查资料、做笔记，把最有用的信息放到答题模型面前。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-05-14-sarc-agent-governance/AI每日论文精选-SARC-Agent-Governance.html",
+   "date": "2026-05-14",
+   "title": "AI每日论文精选 | SARC Agent 运行时治理架构",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "智能体",
+    "架构"
+   ],
+   "summary": "这篇论文的意思是：不要只靠一句“请遵守规则”的提示词管理 Agent，而要像机场安检一样，把每个危险动作都放进可检查、可拦截、可追责的通道里。",
+   "minutes": 8
+  },
+  {
+   "file": "reports/2026-05-13-aletheia-firstproof/AI每日论文精选-Aletheia-FirstProof.html",
+   "date": "2026-05-13",
+   "title": "AI每日论文精选 | Aletheia 自主挑战 FirstProof",
+   "org": "学术/AI前沿",
+   "type": "论文精选",
+   "tags": [
+    "数学与推理"
+   ],
+   "summary": "这篇论文本质上是在让 AI 像研究员一样工作：先提出证明，再自己挑错，能修就修，不能保证就宁可交白卷，最后接受专家审稿。",
+   "minutes": 8
+  },
+  {
+   "file": "AI每日论文精选_2026-05-05.html",
+   "date": "2026-05-05",
+   "title": "AI每日论文精选 - 2026-05-05",
+   "org": "学术/AI前沿",
+   "type": "每日精读",
+   "tags": [],
+   "summary": "一句话推荐：这篇论文把“LLM 什么时候该调用工具”从工程直觉变成了可测量、可优化的决策问题，对搜索增强问答、Agent、RAG、代码助手和企业自动化都有直接参考价值。",
+   "minutes": 7
+  },
+  {
+   "file": "reports/2026-05-04_MoE/ai_concept_2026-05-04_moe.html",
+   "date": "2026-05-04",
+   "title": "每日AI概念精讲（2026-05-04）：MoE（混合专家模型）",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "架构",
+    "模型能力"
+   ],
+   "summary": "近几年模型越做越大，能力会变强，但训练/推理也更“费电费时间”。MoE 的思路很像现实生活中的分工： 不是每次都叫“全班同学一起做同一道题”，而是让 最擅长的少数几位 来处理这次问题。",
+   "minutes": 2
+  },
+  {
+   "file": "reports/2026-05-03_RAG/ai_concept_2026-05-03_rag.html",
+   "date": "2026-05-03",
+   "title": "AI概念精讲｜RAG（检索增强生成）",
+   "org": "学术/AI前沿",
+   "type": "概念精讲",
+   "tags": [
+    "检索与上下文"
+   ],
+   "summary": "大模型很像“口才很好、见多识广的同学”，但它有两个常见问题： 记不住你公司/课堂/书里的最新资料 ，以及 遇到不确定时可能会编得很像真的 （这就是大家常说的“胡编”）。",
+   "minutes": 3
+  },
+  {
+   "file": "2026-04-29_Anthropic_自动对齐研究员深度解读.html",
+   "date": "2026-04-29",
+   "title": "AI每日精读 · 2026.04.29 — Anthropic《自动化的从弱到强对齐研究员》",
+   "org": "Anthropic",
+   "type": "每日精读",
+   "tags": [
+    "对齐与安全",
+    "AI for Science"
+   ],
+   "summary": "Anthropic 让 9 个 Claude 自动化研究员（AAR）并行在沙箱里独立工作 5 天，提出假设、跑实验、共享代码与发现，去攻克对齐领域最关键的开放问题之一—— \"弱到强监督\"（Weak-to-Strong Supervision, W2S） 。结果： AAR 把 PGR 从人类专家 7 天达到的 0.23 直接推到了 0.97 ，但同时也暴露出未曾预料的\"奖励黑客\"行为。这同时是一项乐观的进展，也是一份冷静的警告。",
+   "minutes": 9
+  },
+  {
+   "file": "AI每日精读_2026-04-28_NeuroSymbolic-VLA.html",
+   "date": "2026-04-28",
+   "title": "AI 每日精读 · 2026-04-28 · 神经符号 vs VLA",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "多模态"
+   ],
+   "summary": "把高层任务规划交给 PDDL 经典符号规划器 （确定性、可解释、不需训练）， 把「拿起这块、放到那个柱子」这种 低层运动控制交给一个小型神经网络 去学； 然后把这个神经-符号组合体（NSM）和当前最强开源视觉-语言-动作模型 π0 在 同一台机器、同一份汉诺塔仿真任务、同一份能耗测量协议 下做端到端正面比试。",
+   "minutes": 10
+  },
+  {
+   "file": "AI每日精读_2026-04-27_Recursive-Language-Models.html",
+   "date": "2026-04-27",
+   "title": "AI 每日精读 · 2026-04-27 · Recursive Language Models",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "不是把更长的 prompt 塞进模型，而是把 prompt 当成一段可执行环境里的变量，让模型用代码去「主动阅读」它， 必要时再调用一个「自己」去看其中一小段——递归下去，直到答案收敛。",
+   "minutes": 8
+  },
+  {
+   "file": "AI每日精读_2026-04-25_Decoupled-DiLoCo.html",
+   "date": "2026-04-25",
+   "title": "AI每日精读 · 2026-04-25 · Decoupled DiLoCo",
+   "org": "其他",
+   "type": "每日精读",
+   "tags": [
+    "训练与方法"
+   ],
+   "summary": "Decoupled DiLoCo: Resilient, Distributed AI Training at Scale —— Arthur Douillard 等 17 位 Google DeepMind 研究者",
+   "minutes": 9
+  }
+ ]
+}

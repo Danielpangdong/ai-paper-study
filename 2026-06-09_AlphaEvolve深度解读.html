@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI每日精读 · 2026-06-09 · AlphaEvolve：用进化算法+LLM重写科学发现</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0f1a;
+    --bg-card:#131a2c;
+    --bg-card-2:#1a2340;
+    --border:#23304d;
+    --text:#e6ecff;
+    --text-dim:#9aa6c2;
+    --accent:#7c9cff;
+    --accent-2:#52d3aa;
+    --warn:#ffb454;
+    --danger:#ff6b8a;
+    --code:#0f1424;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Helvetica,sans-serif;
+    background:radial-gradient(1200px 600px at 10% -10%,#1a2550 0%,transparent 60%),
+               radial-gradient(900px 500px at 110% 10%,#21304f 0%,transparent 55%),
+               var(--bg);
+    color:var(--text);
+    line-height:1.7;
+    min-height:100vh;
+  }
+  .container{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+
+  /* Header */
+  header{margin-bottom:36px}
+  .meta-bar{
+    display:flex;justify-content:space-between;align-items:center;
+    color:var(--text-dim);font-size:13px;margin-bottom:14px;letter-spacing:.5px
+  }
+  .badge{
+    display:inline-block;background:linear-gradient(135deg,#3b5cff33,#52d3aa33);
+    border:1px solid #3b5cff66;color:#b9caff;padding:4px 12px;border-radius:999px;
+    font-size:12px;font-weight:500
+  }
+  h1{
+    font-size:42px;line-height:1.25;font-weight:800;
+    background:linear-gradient(135deg,#a5b9ff 0%,#7cd9c0 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:14px
+  }
+  .subtitle{font-size:18px;color:var(--text-dim);margin-bottom:20px}
+  .author-line{
+    display:flex;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--text-dim)
+  }
+  .author-line span{
+    background:var(--bg-card);border:1px solid var(--border);
+    padding:6px 12px;border-radius:8px
+  }
+
+  /* TL;DR */
+  .tldr{
+    margin-top:28px;background:linear-gradient(135deg,#1a2340,#131a2c);
+    border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:12px;padding:24px 28px
+  }
+  .tldr h3{color:var(--accent);font-size:14px;letter-spacing:2px;margin-bottom:10px}
+  .tldr p{font-size:16px;color:#d8e0ff}
+
+  /* Sections */
+  section{margin-top:48px}
+  h2{
+    font-size:26px;font-weight:700;margin-bottom:20px;
+    display:flex;align-items:center;gap:12px
+  }
+  h2::before{
+    content:"";width:6px;height:24px;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));
+    border-radius:3px
+  }
+  h3.sub{font-size:18px;margin:24px 0 12px;color:#cdd9ff}
+  p{margin-bottom:14px;color:#c8d2ee}
+
+  /* Grid cards */
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .card{
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:12px;padding:20px;transition:transform .2s, border-color .2s
+  }
+  .card:hover{transform:translateY(-2px);border-color:#3a4d7e}
+  .card .num{
+    font-size:32px;font-weight:800;
+    background:linear-gradient(135deg,#7c9cff,#52d3aa);
+    -webkit-background-clip:text;background-clip:text;color:transparent
+  }
+  .card .label{font-size:13px;color:var(--text-dim);margin-top:6px}
+  .card .desc{font-size:14px;color:#c8d2ee;margin-top:10px}
+
+  /* Architecture diagram */
+  .arch{
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:12px;padding:24px;margin:20px 0
+  }
+  .arch-flow{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:center}
+  .node{
+    background:var(--bg-card-2);border:1px solid #2c3a60;border-radius:10px;
+    padding:14px 18px;text-align:center;min-width:130px
+  }
+  .node.llm{border-color:#5876d4;background:#1c2546}
+  .node.eval{border-color:#52d3aa;background:#1a2e2a}
+  .node.db{border-color:#ffb454;background:#2b2519}
+  .node .ttl{font-weight:600;font-size:14px}
+  .node .sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+  .arrow{color:var(--accent);font-size:24px;font-weight:bold}
+
+  /* Table */
+  table{
+    width:100%;border-collapse:collapse;margin:18px 0;
+    background:var(--bg-card);border-radius:10px;overflow:hidden
+  }
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);font-size:14px}
+  th{background:var(--bg-card-2);color:#b9caff;font-weight:600;font-size:13px;letter-spacing:.5px}
+  tr:last-child td{border-bottom:none}
+  td.metric{color:var(--accent-2);font-weight:600;white-space:nowrap}
+
+  /* Chart container */
+  .chart-box{
+    background:var(--bg-card);border:1px solid var(--border);
+    border-radius:12px;padding:24px;margin:20px 0
+  }
+  .chart-box canvas{max-height:340px}
+
+  /* Two col */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media (max-width:780px){.two-col{grid-template-columns:1fr}}
+
+  /* Highlight box */
+  .hl{
+    background:linear-gradient(135deg,#1f2b50,#1a3a3a);
+    border:1px solid #355a8a;border-radius:12px;padding:20px 24px;margin:16px 0
+  }
+  .hl h4{color:#a5e8d2;margin-bottom:8px;font-size:15px}
+
+  /* Critique */
+  .critique{
+    background:#2a1d2a;border:1px solid #6b3a55;border-radius:12px;
+    padding:20px 24px;margin:16px 0
+  }
+  .critique h4{color:#ff9ab5;font-size:15px;margin-bottom:10px}
+  .critique ul{list-style:none;padding-left:0}
+  .critique li{padding:6px 0;padding-left:24px;position:relative;color:#e5cad6;font-size:14px}
+  .critique li::before{content:"▸";position:absolute;left:6px;color:#ff6b8a}
+
+  .confidence{
+    display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;
+    margin-left:8px;font-weight:600;letter-spacing:.5px
+  }
+  .c-high{background:#1a4d3a;color:#7be5b5}
+  .c-mid{background:#4d4a1a;color:#ffd966}
+  .c-low{background:#4d2a1a;color:#ff9966}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:30px;margin:20px 0}
+  .timeline::before{
+    content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2))
+  }
+  .tl-item{position:relative;margin-bottom:18px;padding-left:14px}
+  .tl-item::before{
+    content:"";position:absolute;left:-26px;top:6px;width:14px;height:14px;
+    border-radius:50%;background:var(--accent);border:3px solid var(--bg)
+  }
+  .tl-date{font-size:13px;color:var(--accent);font-weight:600}
+  .tl-content{font-size:14px;color:#d6deee;margin-top:4px}
+
+  /* Glossary */
+  .glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .term{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+  .term .word{color:var(--accent);font-weight:600;font-size:14px;margin-bottom:6px}
+  .term .def{font-size:13px;color:#c8d2ee}
+
+  /* Code */
+  code{
+    background:var(--code);padding:2px 6px;border-radius:4px;
+    font-size:13px;color:#a5e8d2;font-family:Menlo,Consolas,monospace
+  }
+
+  /* Footer */
+  footer{
+    margin-top:60px;padding-top:30px;border-top:1px solid var(--border);
+    color:var(--text-dim);font-size:13px
+  }
+  footer a{color:var(--accent);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  .src-list{list-style:none;padding:0;margin-top:8px}
+  .src-list li{padding:4px 0}
+  .src-list li::before{content:"→ ";color:var(--accent-2)}
+
+  /* Quote */
+  .quote{
+    border-left:3px solid var(--accent-2);padding:8px 18px;margin:14px 0;
+    color:#c8e8de;font-style:italic;background:#13241f
+  }
+  .quote .who{display:block;margin-top:6px;font-style:normal;color:#8fc9b5;font-size:12px}
+
+  ul.flat{list-style:none;padding:0}
+  ul.flat li{padding:6px 0;border-bottom:1px solid #1c2540;font-size:14px}
+  ul.flat li:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="meta-bar">
+    <span>AI每日精读 · 第 2026-06-09 期</span>
+    <span class="badge">Google DeepMind · arXiv:2506.13131</span>
+  </div>
+  <h1>AlphaEvolve：让 LLM "进化"算法，
+    一年内重写从矩阵乘法到数据中心调度的边界</h1>
+  <p class="subtitle">
+    一篇从顶级AI实验室走出的"代理式编码"白皮书 — 在2026年5月7日的影响力更新中，再次成为热议焦点
+  </p>
+  <div class="author-line">
+    <span>作者：Matej Balog · Alexander Novikov 等 18 人（Google DeepMind）</span>
+    <span>首版：2025年5月14日（博客）／2025年6月16日（arXiv）</span>
+    <span>最新更新：2026年5月7日（"Impact" 续集博客）</span>
+    <span>主题：进化式编码代理 / LLM + 自动评估器 / 算法发现</span>
+  </div>
+
+  <div class="tldr">
+    <h3>TL;DR · 一句话概括</h3>
+    <p>
+      AlphaEvolve 把 <b>Gemini 模型组合</b>当成"代码突变器"，把<b>自动评估器</b>当成"自然选择"，
+      用进化算法持续重写代码。一年内它已在数学（首次打破 Strassen 在 4×4 复数矩阵乘法上保持 56 年的纪录）、
+      Google 自家基础设施（数据中心、TPU、Gemini 训练）、量子电路、基因测序、商业应用上同时落地，
+      标志着"AI 自动发现新算法"从单点案例走向<b>通用生产工具</b>。
+    </p>
+  </div>
+</header>
+
+<!-- 为什么挑这篇 -->
+<section>
+  <h2>为什么今天挑这篇</h2>
+  <p>
+    本期从 arXiv、Hugging Face Trending、OpenAI / Anthropic / Google DeepMind 官方博客、以及若干主流技术媒体（CNBC、LLM-Stats、Sebastian Raschka 综述）筛选。
+    候选包括 Anthropic Project Vend Phase 2（AI 当店长）、EverMemOS（LLM 长期记忆）、KVarN（KV-Cache 量化）、AlphaEvolve Impact 续集等。
+  </p>
+  <p>
+    最终选 <b>AlphaEvolve</b>，理由有三：
+    (1) <b>影响力跨度最大</b> — 同时影响纯数学（Strassen 算法、Erdős 问题、TSP 下界）与工程基础设施（Borg、TPU、Spanner、编译器）；
+    (2) <b>有可验证的硬数据</b> — Google Borg 回收 0.7% 全球算力、FlashAttention 提速 32.5%、Klarna 训练加速 2 倍；
+    (3) <b>方法论可迁移</b> — 任何"能用自动评估器打分"的问题都可以套这个框架，对工程师和研究者都直接有用。
+  </p>
+</section>
+
+<!-- 关键数字 -->
+<section>
+  <h2>一图看懂关键成果</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="num">48</div>
+      <div class="label">4×4 复数矩阵乘法所需标量乘法</div>
+      <div class="desc">首次打破 Strassen 1969 年的纪录（原 49），56 年来第一次改进。</div>
+    </div>
+    <div class="card">
+      <div class="num">0.7%</div>
+      <div class="label">Google 全球算力的持续回收</div>
+      <div class="desc">Borg 调度启发式优化，已在生产环境运行 1 年以上。</div>
+    </div>
+    <div class="card">
+      <div class="num">23%</div>
+      <div class="label">Gemini 矩阵乘法 kernel 提速</div>
+      <div class="desc">直接换算成 Gemini 整体训练时间减少约 1%。</div>
+    </div>
+    <div class="card">
+      <div class="num">32.5%</div>
+      <div class="label">FlashAttention kernel 提速</div>
+      <div class="desc">在编译器已重度优化过的 GPU 底层指令上仍找到加速空间。</div>
+    </div>
+    <div class="card">
+      <div class="num">10×</div>
+      <div class="label">Willow 量子电路误差降低</div>
+      <div class="desc">使复杂分子模拟首次能在 Willow 量子处理器上跑通。</div>
+    </div>
+    <div class="card">
+      <div class="num">30%</div>
+      <div class="label">DNA 测序变异检测错误率下降</div>
+      <div class="desc">通过改进 Google DeepConsensus，PacBio 已用于商用测序仪。</div>
+    </div>
+    <div class="card">
+      <div class="num">593</div>
+      <div class="label">11 维 Kissing Number 新下界</div>
+      <div class="desc">一个困扰数学家 300 多年的几何问题获得改进。</div>
+    </div>
+    <div class="card">
+      <div class="num">20%</div>
+      <div class="label">在 50 个数学开放问题上取得改进</div>
+      <div class="desc">另外 75% 重新发现现有最佳解（SOTA）。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 架构 -->
+<section>
+  <h2>系统架构：一个"代码版的进化算法"</h2>
+  <div class="arch">
+    <div class="arch-flow">
+      <div class="node">
+        <div class="ttl">Prompt Sampler</div>
+        <div class="sub">从程序库中取样组装提示</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node llm">
+        <div class="ttl">Gemini Flash</div>
+        <div class="sub">广度探索<br>大量候选</div>
+      </div>
+      <div class="node llm">
+        <div class="ttl">Gemini Pro</div>
+        <div class="sub">深度思考<br>洞见型修改</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node eval">
+        <div class="ttl">自动评估器</div>
+        <div class="sub">运行 + 打分<br>客观指标</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node db">
+        <div class="ttl">程序数据库</div>
+        <div class="sub">进化选择<br>反馈下一轮</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub">几个关键设计</h3>
+  <ul class="flat">
+    <li><b>组合而非单模型</b>：Flash 出"量"，Pro 出"质"，两者形成廉价探索 + 昂贵精修的混合。</li>
+    <li><b>直接修改整段代码</b>：相比 FunSearch（2023）只生成单个函数，AlphaEvolve 可以进化整段代码库 — 这让方法可处理更复杂、跨模块的算法。</li>
+    <li><b>外部评估器必须存在</b>：评估函数把"好/坏"量化，这是进化能跑下去的前提；没有可机器验证的指标，框架无效。</li>
+    <li><b>人类可读代码</b>：所有输出仍是普通代码（如 Verilog、JAX、C++），可调试、可解释、可被工程师审查 — 与"黑盒神经网络解"形成对比。</li>
+  </ul>
+</section>
+
+<!-- 主要发现 -->
+<section>
+  <h2>主要发现与落地（按领域整理）</h2>
+
+  <h3 class="sub">1. 数学与理论计算机</h3>
+  <table>
+    <thead><tr><th>问题</th><th>原状态</th><th>AlphaEvolve 结果</th></tr></thead>
+    <tbody>
+      <tr><td>4×4 复矩阵乘法</td><td>Strassen 1969：49 次标量乘</td><td class="metric">48 次（56 年来首次改进）</td></tr>
+      <tr><td>11 维 Kissing Number</td><td>历史下界</td><td class="metric">593 个外切球，刷新下界</td></tr>
+      <tr><td>50+ 数学开放问题</td><td>—</td><td class="metric">75% 重现 SOTA，20% 改进</td></tr>
+      <tr><td>Erdős 问题（合作 Terence Tao）</td><td>未解</td><td class="metric">在多个不等式问题上提供了新反例与构造</td></tr>
+      <tr><td>Traveling Salesman & Ramsey 数</td><td>历史下界</td><td class="metric">均刷新下界</td></tr>
+    </tbody>
+  </table>
+
+  <div class="quote">
+    "像 AlphaEvolve 这样的工具，给数学家带来了非常有用的新能力。对优化类问题，我们可以快速检验一个潜在不等式的反例，
+    或确认我们对'极值点'的猜测 — 这极大改善了直觉，让我们更容易找到严格的证明。"
+    <span class="who">— Terence Tao，UCLA 数学教授</span>
+  </div>
+
+  <h3 class="sub">2. Google 基础设施（生产环境已部署）</h3>
+  <div class="grid">
+    <div class="card">
+      <div class="num">Borg</div>
+      <div class="label">数据中心调度</div>
+      <div class="desc">发现一个简单启发式 → 全球算力回收 0.7%（已在生产 1+ 年）。</div>
+    </div>
+    <div class="card">
+      <div class="num">TPU</div>
+      <div class="label">硬件电路（Verilog）</div>
+      <div class="desc">在矩阵乘电路中删除冗余位，通过形式化验证后已纳入下一代 TPU 设计。</div>
+    </div>
+    <div class="card">
+      <div class="num">Gemini</div>
+      <div class="label">自己训练自己</div>
+      <div class="desc">优化 Gemini 训练的核心 kernel：23% 单算子加速，整体训练时间 -1%。</div>
+    </div>
+    <div class="card">
+      <div class="num">FlashAttention</div>
+      <div class="label">GPU 底层指令</div>
+      <div class="desc">在已经被编译器深度优化的领域内仍获 32.5% 加速。</div>
+    </div>
+    <div class="card">
+      <div class="num">Spanner</div>
+      <div class="label">分布式数据库</div>
+      <div class="desc">LSM-tree compaction 启发式优化 → 写放大降低 20%。</div>
+    </div>
+    <div class="card">
+      <div class="num">Compiler</div>
+      <div class="label">编译器策略</div>
+      <div class="desc">优化策略让软件存储占用减少约 9%。</div>
+    </div>
+  </div>
+
+  <h3 class="sub">3. 科学应用（2026 年新增）</h3>
+  <table>
+    <thead><tr><th>领域</th><th>合作方 / 系统</th><th>核心成果</th></tr></thead>
+    <tbody>
+      <tr><td>基因组学</td><td>DeepConsensus + PacBio</td><td class="metric">变异检测错误 -30%</td></tr>
+      <tr><td>电网优化</td><td>AC Optimal Power Flow</td><td class="metric">GNN 找到可行解的概率 14% → 88%</td></tr>
+      <tr><td>地球科学</td><td>Earth AI（20 类灾害预测）</td><td class="metric">总体准确率 +5%</td></tr>
+      <tr><td>量子计算</td><td>Google Willow 处理器</td><td class="metric">量子电路误差 10× 降低</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub">4. 商业落地（通过 Google Cloud 早期接入）</h3>
+  <table>
+    <thead><tr><th>企业</th><th>行业</th><th>结果</th></tr></thead>
+    <tbody>
+      <tr><td>Klarna</td><td>金融科技</td><td class="metric">大型 Transformer 训练速度 ×2，质量同步提升</td></tr>
+      <tr><td>Substrate</td><td>半导体制造</td><td class="metric">计算光刻框架运行速度多倍提升</td></tr>
+      <tr><td>FM Logistic</td><td>物流</td><td class="metric">仓库 TSP 路径优化 +10.4%，年减 1.5 万公里</td></tr>
+      <tr><td>WPP</td><td>广告营销</td><td class="metric">竞价模型准确率 +10%</td></tr>
+      <tr><td>Schrödinger</td><td>药物 / 材料模拟</td><td class="metric">MLFF 训练与推理 ×4 提速</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 可视化图表 -->
+<section>
+  <h2>提升幅度对比（可视化）</h2>
+  <div class="two-col">
+    <div class="chart-box">
+      <canvas id="infraChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <canvas id="mathChart"></canvas>
+    </div>
+  </div>
+  <p style="color:var(--text-dim);font-size:13px;margin-top:8px">
+    注：基础设施类提升均为已落地生产数据；数学类成果均通过形式化验证。
+  </p>
+</section>
+
+<!-- 方法核心 -->
+<section>
+  <h2>方法的"硬骨头"：进化机制怎么跑</h2>
+  <div class="hl">
+    <h4>循环的每一步发生什么？</h4>
+    <p>
+      ① <b>选种</b>：从程序数据库中按"适应度"采样若干历史解作为种子；
+      ② <b>突变</b>：把这些解作为 few-shot 例子放进 prompt，让 Gemini 提出新代码（可以是局部修改，也可以是大段重写）；
+      ③ <b>评估</b>：在一个或多个自动评估器上跑分（可以是"算法正确性"、"运行时长"、"内存占用"、"理论下界"等任意可量化的指标）；
+      ④ <b>选择</b>：评分好的进入数据库，可能被下一轮选作种子 — 进化继续。
+    </p>
+  </div>
+  <p>
+    数据显示，AlphaEvolve 找到 48 次乘法的 4×4 复矩阵算法时，平均要经过 <b>15 次连续突变</b> — 这意味着单次 LLM 调用不可能直接给出答案，
+    必须靠"积累的进化轨迹"。这是它与"让一个大模型 0-shot 解题"的本质差别。
+  </p>
+</section>
+
+<!-- 反驳与局限 -->
+<section>
+  <h2>反方观点与硬性局限</h2>
+  <div class="critique">
+    <h4>在为它叫好之前，先看反驳</h4>
+    <ul>
+      <li><b>没有自动评估器，方法就不存在</b>。所有亮眼案例都建立在"结果能被机器打分"上：定理证明、新理论物理、新生物学假设这些"无法机器验证"的领域，目前难以套用。</li>
+      <li><b>算力代价被低估</b>。每个突变要跑 LLM 推理 + 评估器执行，规模化探索（如 50 个数学问题各跑几小时～几天）的实际成本论文未公开，对小团队来说很可能负担不起。</li>
+      <li><b>"发现"的可解释性有限</b>。Strassen 的算法人类能理解为什么对；AlphaEvolve 找到的 4×4 算法虽然可形式验证，但其结构对人类来说更像"被搜索到的密码"。这对未来定理证明的启发性存在争议。</li>
+      <li><b>对 Google 内部偏置严重</b>。绝大多数最具影响力的案例（Borg、TPU、Spanner、Gemini）都属于 Google 自家系统 — 别人无法独立复现这些 ROI 数字。</li>
+      <li><b>非开源</b>。目前只对"选定学术用户"开放早期访问；商业版本通过 Google Cloud 售卖。社区暂时无法独立验证完整管线。</li>
+      <li><b>有竞品在追赶</b>。如 GEPA（Reflective Prompt Evolution，arXiv:2507.19457）在某些任务上声称用更少算力击败强化学习，进化框架本身不是 DeepMind 独占。</li>
+    </ul>
+  </div>
+
+  <p>
+    <b>置信度评估：</b>
+    "方法可行且已生产部署" <span class="confidence c-high">高</span>
+    （多个有名有姓的合作伙伴 + 已纳入硬件的 Verilog 修改背书）；
+    "对所有领域都可迁移" <span class="confidence c-mid">中</span>
+    （强依赖自动评估器，主张普适性需更多独立案例）；
+    "会替代专家算法工程师" <span class="confidence c-low">低</span>
+    （目前更像专家的"加速器"而非替代品，且使用门槛仍需深厚领域知识来设计评估函数）。
+  </p>
+</section>
+
+<!-- 给不同读者 -->
+<section>
+  <h2>这对你意味着什么</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="label" style="color:var(--accent)">👨‍💻 如果你是工程师</div>
+      <div class="desc">
+        值得马上做的事：把团队里"性能关键 + 有自动 benchmark"的内核（kernel）列出来。
+        这些是 AlphaEvolve 风格方法最容易切入的对象。
+        即便用不上 Google 的产品，<a href="https://github.com/google-deepmind/alphaevolve_results" style="color:var(--accent-2)">公开的数学结果仓库</a>
+        给出了如何写"评估器 + 代码骨架"的可复用模板。
+      </div>
+    </div>
+    <div class="card">
+      <div class="label" style="color:var(--accent)">🔬 如果你是研究者</div>
+      <div class="desc">
+        优化类、组合搜索类问题首选；带"可机器验证不等式"的猜想最有机会从中获益。
+        Terence Tao 已示范了一种合作模式：人类给方向，AI 反复试构造与反例。
+      </div>
+    </div>
+    <div class="card">
+      <div class="label" style="color:var(--accent)">📈 如果你是产品 / 战略</div>
+      <div class="desc">
+        关注信号：(1) "代理式编码"开始能修改硬件设计与编译器代码 — 软硬一体的护城河正在被 AI 蚕食；
+        (2) 模型层公司将越来越多地用 AI 优化自家训练算法 — 形成"AI 自我加速"的飞轮。
+      </div>
+    </div>
+    <div class="card">
+      <div class="label" style="color:var(--accent)">🎓 如果你在做战略性投资</div>
+      <div class="desc">
+        Google Cloud 的 AlphaEvolve API 是 GCP 差异化的潜在卖点之一；与 AWS Trainium、Azure 的 AI 工具链做对比时需把这条算进去。
+        但短期还看不出有定价权 — 客户仍在 PoC 阶段。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 时间线 -->
+<section>
+  <h2>AlphaEvolve 一年时间线</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-date">2023 · 12</div>
+      <div class="tl-content">前作 FunSearch：首次用 LLM 生成数学函数解决开放问题。AlphaEvolve 的雏形。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025 · 05 · 14</div>
+      <div class="tl-content">DeepMind 博客发布 AlphaEvolve，同时公开 4×4 矩阵乘法、Borg、TPU 三大案例。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025 · 06 · 16</div>
+      <div class="tl-content">白皮书提交 arXiv（2506.13131），开放数学结果 Colab。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2025 · 12</div>
+      <div class="tl-content">与 Terence Tao 合作的 Erdős 问题工作公开。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2026 · 05 · 07</div>
+      <div class="tl-content">DeepMind 发布 "Impact" 续集博客：新增基因组、量子、电网、Spanner 等案例，并通过 Google Cloud 接入 Klarna / WPP / Schrödinger 等商业客户。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">2026 · 06（当下）</div>
+      <div class="tl-content">行业讨论的焦点：AlphaEvolve 类"代理式发现"框架是否会成为下一阶段 AI 实验室的标配。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 术语 -->
+<section>
+  <h2>关键术语速查</h2>
+  <div class="glossary">
+    <div class="term">
+      <div class="word">进化算法 (Evolutionary Algorithm)</div>
+      <div class="def">模拟自然选择的搜索方法：候选解 → 突变 → 评估 → 优胜者繁殖。AlphaEvolve 把"突变"交给 LLM。</div>
+    </div>
+    <div class="term">
+      <div class="word">Strassen 算法</div>
+      <div class="def">1969 年 Volker Strassen 提出，把 n×n 矩阵乘法的标量乘次数从 n³ 降低，开启快速矩阵乘法领域。</div>
+    </div>
+    <div class="term">
+      <div class="word">FlashAttention</div>
+      <div class="def">Tri Dao 等提出的 GPU 注意力优化算法，大幅降低 Transformer 训练显存与时间，是当今 LLM 训练的事实标准。</div>
+    </div>
+    <div class="term">
+      <div class="word">Kissing Number 问题</div>
+      <div class="def">"一个单位球周围最多能贴几个不重叠的单位球？"在不同维度下答案不同，11 维仍未求出精确值。</div>
+    </div>
+    <div class="term">
+      <div class="word">Borg</div>
+      <div class="def">Google 内部的集群管理系统，调度全球数据中心任务。Kubernetes 的精神前身。</div>
+    </div>
+    <div class="term">
+      <div class="word">LSM-tree</div>
+      <div class="def">Log-Structured Merge Tree，一种写入优化的存储结构，被 LevelDB、Spanner、Cassandra 广泛使用。</div>
+    </div>
+    <div class="term">
+      <div class="word">MLFF</div>
+      <div class="def">Machine Learned Force Field，机器学习的"力场"，用于分子动力学模拟，替代传统 DFT 计算。</div>
+    </div>
+    <div class="term">
+      <div class="word">写放大 (Write Amplification)</div>
+      <div class="def">实际写入存储介质的数据量 / 用户请求的数据量。比值越低越好，直接影响 SSD 寿命与吞吐。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 接下来看什么 -->
+<section>
+  <h2>接下来值得继续追的</h2>
+  <ul class="flat">
+    <li>📄 <b>白皮书原文</b>（arXiv:2506.13131）— 完整的算法细节、数据库结构、消融实验全在里面。</li>
+    <li>📦 <b>alphaevolve_results 仓库</b>（GitHub）— 公开的数学结果与可复现 notebook。</li>
+    <li>🔥 <b>GEPA</b>（arXiv:2507.19457）— "反思式 prompt 进化"作为竞争方法，值得对比阅读。</li>
+    <li>🧬 <b>PacBio + DeepConsensus 案例</b>（Nature Biotech 链路）— 看 AlphaEvolve 怎么进入生命科学。</li>
+    <li>⚙️ <b>Klarna 工程博客</b>（Beyond Prompting）— 第一个商业客户的工程视角与踩坑记录。</li>
+  </ul>
+</section>
+
+<footer>
+  <p><b>生成元信息</b></p>
+  <p>本报告由 AI 自动生成于 2026-06-09，作为每日 AI 论文精读的一期。仅使用英文原始资料，呈现为中文。</p>
+  <p style="margin-top:10px"><b>主要信源（按引用顺序）：</b></p>
+  <ul class="src-list">
+    <li><a href="https://arxiv.org/abs/2506.13131" target="_blank">Novikov et al. "AlphaEvolve: A coding agent for scientific and algorithmic discovery." arXiv:2506.13131 (2025)</a></li>
+    <li><a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/" target="_blank">Google DeepMind Blog · 原版发布（2025-05-14）</a></li>
+    <li><a href="https://deepmind.google/blog/alphaevolve-impact/" target="_blank">Google DeepMind Blog · Impact 续集（2026-05-07）</a></li>
+    <li><a href="https://github.com/google-deepmind/alphaevolve_results" target="_blank">GitHub · alphaevolve_results（公开数学结果仓库）</a></li>
+    <li><a href="https://terrytao.wordpress.com/2025/12/08/the-story-of-erdos-problem-126/" target="_blank">Terence Tao · "The story of Erdős problem 126"</a></li>
+    <li><a href="https://engineering.klarna.com/beyond-prompting-how-algorithmic-evolution-doubled-our-training-speed-8f874af3080d" target="_blank">Klarna Engineering Blog · 商业落地案例</a></li>
+    <li><a href="https://arxiv.org/abs/2507.19457" target="_blank">GEPA: Reflective Prompt Evolution（竞品参考）</a></li>
+    <li><a href="https://huggingface.co/papers/trending" target="_blank">Hugging Face Trending Papers · 候选来源</a></li>
+  </ul>
+  <p style="margin-top:14px;color:#7886a6">
+    免责声明：本文中的关键事实均交叉验证自 DeepMind 官方博客与 arXiv 白皮书；部分商业客户的提速数字来自各自的工程博客，建议作为"厂商报告"来阅读。
+    本文涉及对未来趋势的判断（如"AI 自我加速飞轮"）属于推断，非事实。
+  </p>
+</footer>
+
+</div>
+
+<script>
+  // 基础设施 / 性能提升 横向条形图
+  const infraCtx = document.getElementById('infraChart');
+  new Chart(infraCtx, {
+    type:'bar',
+    data:{
+      labels:['Borg 算力回收','Gemini matmul 内核','FlashAttention kernel','Spanner 写放大↓','编译器存储↓','FM Logistic 路径优化','Klarna 训练加速','Schrödinger MLFF','DNA 变异检测错误↓','地震AI准确率↑'],
+      datasets:[{
+        label:'提升幅度 (%)',
+        data:[0.7, 23, 32.5, 20, 9, 10.4, 100, 300, 30, 5],
+        backgroundColor:'rgba(124,156,255,0.7)',
+        borderColor:'#7c9cff',
+        borderWidth:1,
+        borderRadius:6
+      }]
+    },
+    options:{
+      indexAxis:'y',
+      plugins:{
+        title:{display:true,text:'AlphaEvolve · 各场景提升幅度（%）',color:'#e6ecff',font:{size:15,weight:'600'}},
+        legend:{display:false}
+      },
+      scales:{
+        x:{ticks:{color:'#9aa6c2'},grid:{color:'#1c2540'}},
+        y:{ticks:{color:'#d6deee',font:{size:11}},grid:{color:'#1c2540'}}
+      }
+    }
+  });
+
+  // 50 个数学问题分布
+  const mathCtx = document.getElementById('mathChart');
+  new Chart(mathCtx, {
+    type:'doughnut',
+    data:{
+      labels:['改进 SOTA (20%)','重现 SOTA (75%)','未追上 (5%)'],
+      datasets:[{
+        data:[20,75,5],
+        backgroundColor:['#52d3aa','#7c9cff','#3a4d7e'],
+        borderColor:'#0b0f1a',
+        borderWidth:3
+      }]
+    },
+    options:{
+      plugins:{
+        title:{display:true,text:'50+ 数学开放问题上的表现分布',color:'#e6ecff',font:{size:15,weight:'600'}},
+        legend:{position:'bottom',labels:{color:'#c8d2ee',padding:14}}
+      }
+    }
+  });
+</script>
+</body>
+</html>

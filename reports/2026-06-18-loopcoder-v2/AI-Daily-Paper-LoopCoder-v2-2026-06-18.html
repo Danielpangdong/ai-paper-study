@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | LoopCoder-v2</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink: #15171a;
+      --muted: #5f6670;
+      --line: #d8dee7;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-2: #eef3f8;
+      --blue: #2856a3;
+      --green: #1f7a57;
+      --amber: #9b6718;
+      --red: #9a3d3d;
+      --shadow: 0 18px 50px rgba(22, 31, 42, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; border-bottom: 1px solid rgba(40, 86, 163, .25); }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #eef3f8 55%, #f9efe0 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 0; }
+    .hero-copy { padding: 44px 42px 34px; }
+    .kicker { color: var(--blue); font-size: 13px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 16px 0 14px; font-size: clamp(30px, 5vw, 56px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 0 0 18px; font-size: 28px; line-height: 1.24; letter-spacing: 0; }
+    h3 { margin: 0 0 10px; font-size: 18px; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 0 0 14px; }
+    .subtitle { font-size: 18px; color: #2c333b; max-width: 720px; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .pill {
+      display: inline-flex; align-items: center; min-height: 30px;
+      border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px;
+      background: rgba(255,255,255,.78); color: #38404a; font-size: 13px; font-weight: 650;
+    }
+    .hero-art { padding: 26px; display: flex; align-items: center; justify-content: center; border-left: 1px solid rgba(216,222,231,.8); }
+    .section { margin-top: 22px; padding: 30px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 28px rgba(22, 31, 42, .04); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 18px; }
+    .card strong { display: block; margin-bottom: 6px; color: #111820; }
+    .note { border-left: 4px solid var(--blue); background: #eef3f8; padding: 16px 18px; border-radius: 0 8px 8px 0; }
+    .risk { border-left-color: var(--red); background: #fbefef; }
+    .green { border-left-color: var(--green); background: #eef8f3; }
+    .amber { border-left-color: var(--amber); background: #fbf2e4; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; background: #fff; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: #eef3f8; color: #26313f; font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .score { font-weight: 800; color: var(--green); }
+    .bad { color: var(--red); font-weight: 800; }
+    .small { font-size: 13px; color: var(--muted); }
+    .bigline { font-size: 22px; line-height: 1.48; font-weight: 800; color: #111820; }
+    .term { display: grid; grid-template-columns: 180px 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+    .term div { padding: 13px; border-right: 1px solid var(--line); background: #fff; }
+    .term div:last-child { border-right: 0; }
+    .term .name { background: #eef3f8; font-weight: 800; }
+    .svgbox { width: 100%; max-width: 480px; }
+    .diagram { background: #fbfcfd; border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow-x: auto; }
+    .footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 28px; }
+    @media (max-width: 860px) {
+      .hero-grid, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .hero-copy { padding: 30px 22px 24px; }
+      .hero-art { border-left: 0; border-top: 1px solid var(--line); }
+      .section { padding: 22px; }
+      .term { grid-template-columns: 1fr; }
+      .term div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .term div:last-child { border-bottom: 0; }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --ink:#edf0f5; --muted:#aeb7c2; --line:#34404f; --bg:#101317; --panel:#171c22; --panel-2:#202834; --blue:#8fb4ff; --green:#78d3a8; --amber:#edc77c; --red:#ef9c9c; }
+      .hero { background: linear-gradient(135deg, #171c22 0%, #202834 60%, #2e291d 100%); }
+      .card, table, .term div { background:#171c22; }
+      th, .term .name { background:#202834; }
+      .subtitle, .pill { color:#dce3ec; }
+      .pill { background: rgba(23,28,34,.78); }
+      .note { background:#182436; }
+      .green { background:#152a22; }
+      .amber { background:#2b2417; }
+      .risk { background:#2b1b1d; }
+      .diagram { background:#14191f; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="kicker">AI每日论文精选 · 2026-06-18</div>
+          <h1>为什么 AI 写代码时，<br>“多想一轮”刚刚好？</h1>
+          <p class="subtitle">今日论文：<strong>LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling</strong><br>中文标题：<strong>LoopCoder-v2：高效测试时计算扩展，只多循环一次</strong></p>
+          <div class="meta-row">
+            <span class="pill">arXiv: 2606.18023</span>
+            <span class="pill">cs.LG · 2026-06-16</span>
+            <span class="pill">代码模型 / Agent 工程</span>
+            <span class="pill">Hugging Face #1 Paper of the day</span>
+          </div>
+        </div>
+        <div class="hero-art">
+          <svg class="svgbox" viewBox="0 0 560 420" role="img" aria-label="LoopCoder-v2 两轮推理图示">
+            <rect x="20" y="20" width="520" height="380" rx="18" fill="#ffffff" stroke="#d8dee7"/>
+            <text x="52" y="65" font-size="22" font-weight="800" fill="#15171a">同一个大脑，转两圈</text>
+            <text x="52" y="95" font-size="14" fill="#5f6670">参数不变，测试时多做一轮内部整理</text>
+            <rect x="62" y="135" width="120" height="66" rx="10" fill="#eef3f8" stroke="#b8c5d6"/>
+            <text x="122" y="164" text-anchor="middle" font-size="15" font-weight="700" fill="#26313f">输入问题</text>
+            <text x="122" y="187" text-anchor="middle" font-size="12" fill="#5f6670">代码任务</text>
+            <path d="M190 168 H238" stroke="#2856a3" stroke-width="3" marker-end="url(#arr)"/>
+            <rect x="246" y="112" width="136" height="116" rx="12" fill="#f9efe0" stroke="#d7bc8b"/>
+            <text x="314" y="145" text-anchor="middle" font-size="15" font-weight="800" fill="#5b3a0c">共享 Transformer</text>
+            <text x="314" y="171" text-anchor="middle" font-size="12" fill="#6b532a">第 1 圈：先理解</text>
+            <text x="314" y="193" text-anchor="middle" font-size="12" fill="#6b532a">第 2 圈：再校准</text>
+            <path d="M314 230 C384 250 392 100 318 112" fill="none" stroke="#1f7a57" stroke-width="4" marker-end="url(#arrg)"/>
+            <path d="M390 168 H438" stroke="#2856a3" stroke-width="3" marker-end="url(#arr)"/>
+            <rect x="446" y="135" width="78" height="66" rx="10" fill="#eef8f3" stroke="#b7d8c8"/>
+            <text x="485" y="164" text-anchor="middle" font-size="15" font-weight="700" fill="#1f7a57">答案</text>
+            <text x="485" y="187" text-anchor="middle" font-size="12" fill="#5f6670">更稳</text>
+            <rect x="70" y="280" width="420" height="54" rx="10" fill="#fbefef" stroke="#e0b1b1"/>
+            <text x="280" y="311" text-anchor="middle" font-size="14" fill="#7a3030">第三圈以后：收益变小，错位成本还在，反而可能变差</text>
+            <defs>
+              <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2856a3"/></marker>
+              <marker id="arrg" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#1f7a57"/></marker>
+            </defs>
+          </svg>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>1. 标题区</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>项目</th><th>信息</th></tr>
+          <tr><td>英文标题</td><td>LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling</td></tr>
+          <tr><td>中文标题</td><td>LoopCoder-v2：高效测试时计算扩展，只多循环一次</td></tr>
+          <tr><td>作者</td><td>Jian Yang, Shawn Guo, Wei Zhang, Tianyu Zheng, Yaxin Du, Haau-Sing Li, Jiajun Wu, Yue Song, Yan Xing, Qingsong Cai, Zelong Huang, Chuan Hao, Ran Tao, Xianglong Liu, Wayne Xin Zhao, Mingjie Tang, Weifeng Lv, Ming Zhou, Bryan Dai</td></tr>
+          <tr><td>机构</td><td>Beihang University, IQuest Research, Langboat, Renming University of China</td></tr>
+          <tr><td>发布时间</td><td>arXiv v1: 2026-06-16；Hugging Face Daily Papers: 2026-06-17</td></tr>
+          <tr><td>平台</td><td>arXiv / Hugging Face Papers / GitHub / Hugging Face Model Hub</td></tr>
+          <tr><td>链接</td><td><a href="https://arxiv.org/abs/2606.18023">arXiv 摘要</a> · <a href="https://arxiv.org/html/2606.18023v1">arXiv HTML 全文</a> · <a href="https://github.com/CSJianYang/LoopCoder">GitHub</a> · <a href="https://huggingface.co/Multilingual-Multimodal-NLP/LoopCoder-V2">模型卡</a></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2. 为什么今天选它？</h2>
+      <div class="grid-3">
+        <div class="card"><strong>它切中一个五年问题</strong>未来模型不只靠“更大参数”，还会靠“推理时多算一点”。这篇论文给出一个关键提醒：多算不是越多越好，要找到边际收益最高的点。</div>
+        <div class="card"><strong>它离产业很近</strong>选题落在代码生成、软件工程 Agent、工具调用。SWE-bench Verified 从 43.0 提升到 64.4，意味着它不是只在玩具题上好看。</div>
+        <div class="card"><strong>它有反直觉结论</strong>两轮最好，三轮、四轮反而退步。这个结论对“让 AI 一直反思、一直循环”的产品设计有直接警示意义。</div>
+      </div>
+      <p class="note green" style="margin-top:16px">今天不选它，是因为它“最新”；而是因为它把测试时计算、潜在推理、代码 Agent 成本这几个长期议题，压缩成一个普通人也能理解的问题：AI 到底应该想多久？</p>
+    </section>
+
+    <section class="section">
+      <h2>3. 一句话讲透论文</h2>
+      <p class="bigline">这篇论文的核心意思是：让代码 AI 用同一套大脑先想一遍、再整理一遍，往往能明显变强；但如果继续反复想，新增收益会变小，结构性错位成本会留下，结果反而变差。</p>
+    </section>
+
+    <section class="section">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>提出了什么</h3>
+          <p>论文训练了一组 7B 规模的 Parallel Loop Transformer 代码模型，统一训练、统一微调、统一评测，只改变“循环次数”。这让研究者能比较：同一个模型多跑几轮内部计算，到底值不值。</p>
+        </div>
+        <div class="card">
+          <h3>解决什么问题</h3>
+          <p>传统思路像让学生写更多草稿：可能有用，但时间和内存都会涨。PLT 想做的是：让模型在接近单次前向的成本下，获得额外内部整理机会。</p>
+        </div>
+        <div class="card">
+          <h3>与旧方法区别</h3>
+          <p>旧的“循环 Transformer”通常一圈接一圈顺序跑，慢且占 KV Cache。PLT 用跨循环位置偏移和共享 KV 的门控滑动窗口注意力，把循环做得更并行、更省缓存。</p>
+        </div>
+        <div class="card">
+          <h3>为什么更好</h3>
+          <p>两轮模型在代码生成、代码推理、软件工程 Agent、工具调用上普遍更强。但论文也证明：第三轮开始不是免费午餐，可能让表示更新变得振荡、重复、信息多样性下降。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>5. 工作原理：像同一个程序员检查两遍代码</h2>
+      <p>可以把 LoopCoder-v2 想成一个程序员。第一遍，他读题、形成初稿；第二遍，他用同一个脑子重新扫一遍，把变量、边界条件、调用路径再整理一次。关键是：它不是雇了第二个程序员，也不是把模型参数变大，而是让同一套参数重复参与内部计算。</p>
+      <div class="diagram">
+        <svg viewBox="0 0 940 260" width="940" height="260" role="img" aria-label="LoopCoder-v2 工作流">
+          <rect x="20" y="30" width="150" height="74" rx="8" fill="#eef3f8" stroke="#b8c5d6"/>
+          <text x="95" y="62" text-anchor="middle" font-size="16" font-weight="800" fill="#26313f">代码任务</text>
+          <text x="95" y="88" text-anchor="middle" font-size="13" fill="#5f6670">Bug / 函数 / 仓库问题</text>
+          <path d="M178 68 H238" stroke="#2856a3" stroke-width="3" marker-end="url(#a1)"/>
+          <rect x="248" y="25" width="180" height="84" rx="8" fill="#ffffff" stroke="#d8dee7"/>
+          <text x="338" y="57" text-anchor="middle" font-size="16" font-weight="800" fill="#15171a">第 1 圈</text>
+          <text x="338" y="84" text-anchor="middle" font-size="13" fill="#5f6670">建立基本表示</text>
+          <path d="M438 68 H498" stroke="#2856a3" stroke-width="3" marker-end="url(#a1)"/>
+          <rect x="508" y="25" width="180" height="84" rx="8" fill="#eef8f3" stroke="#b7d8c8"/>
+          <text x="598" y="57" text-anchor="middle" font-size="16" font-weight="800" fill="#1f7a57">第 2 圈</text>
+          <text x="598" y="84" text-anchor="middle" font-size="13" fill="#5f6670">重排注意力与答案分布</text>
+          <path d="M698 68 H758" stroke="#2856a3" stroke-width="3" marker-end="url(#a1)"/>
+          <rect x="768" y="25" width="150" height="84" rx="8" fill="#f9efe0" stroke="#d7bc8b"/>
+          <text x="843" y="57" text-anchor="middle" font-size="16" font-weight="800" fill="#5b3a0c">输出代码</text>
+          <text x="843" y="84" text-anchor="middle" font-size="13" fill="#5f6670">更接近可用补丁</text>
+          <rect x="248" y="160" width="440" height="60" rx="8" fill="#fbefef" stroke="#e0b1b1"/>
+          <text x="468" y="187" text-anchor="middle" font-size="15" font-weight="800" fill="#7a3030">第 3 / 4 圈</text>
+          <text x="468" y="211" text-anchor="middle" font-size="13" fill="#7a3030">边际收益变小，位置错位成本仍存在，可能把模型带偏</text>
+          <path d="M598 113 C610 150 610 150 640 160" fill="none" stroke="#9a3d3d" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#ar)"/>
+          <defs>
+            <marker id="a1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2856a3"/></marker>
+            <marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#9a3d3d"/></marker>
+          </defs>
+        </svg>
+      </div>
+      <p class="small">图示为中文重构解释图，不是论文截图。</p>
+    </section>
+
+    <section class="section">
+      <h2>6. 关键术语解释</h2>
+      <div class="term"><div class="name">Test-Time Compute</div><div>专业解释：模型在推理阶段额外使用的计算量。</div><div>白话解释：考试时多花一点草稿纸和时间，不是平时多读一年书。</div></div>
+      <div class="term"><div class="name">Looped Transformer</div><div>专业解释：重复应用共享 Transformer 模块，增加有效计算深度。</div><div>白话解释：不是多请几个人，而是让同一个专家连续复核几遍。</div></div>
+      <div class="term"><div class="name">PLT</div><div>专业解释：Parallel Loop Transformer，用并行循环降低循环带来的延迟和缓存成本。</div><div>白话解释：把本来要排队完成的多轮检查，改成更像流水线的并行检查。</div></div>
+      <div class="term"><div class="name">KV Cache</div><div>专业解释：推理时缓存注意力中的 Key/Value，避免重复计算。</div><div>白话解释：模型读过的资料索引，留着下次直接查。</div></div>
+      <div class="term"><div class="name">CLP</div><div>专业解释：Cross-Loop Position Offset，用跨循环的位置偏移打破顺序依赖。</div><div>白话解释：为了并行加速，让下一轮参考邻近位置的信息，但这也可能带来“看偏一格”的成本。</div></div>
+      <div class="term"><div class="name">SWE-bench Verified</div><div>专业解释：评估模型解决真实 GitHub 软件工程问题能力的基准。</div><div>白话解释：不是写一道算法题，而是看 AI 能不能真的修现实项目里的 bug。</div></div>
+    </section>
+
+    <section class="section">
+      <h2>7. 实验结果解读</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>7B 模型</th><th>HumanEval+</th><th>LiveCodeBench</th><th>SWE-bench Verified</th><th>Multi-SWE</th><th>Terminal-Bench 2.0</th><th>BFCL V3</th><th>平均</th></tr>
+          <tr><td>Baseline, 1 loop</td><td>81.1</td><td>27.4</td><td>43.0</td><td>14.0</td><td>11.2</td><td>32.2</td><td>38.0</td></tr>
+          <tr><td>LoopCoder-v2, 2 loops</td><td class="score">84.1</td><td class="score">35.4</td><td class="score">64.4</td><td class="score">31.0</td><td class="score">21.0</td><td class="score">40.1</td><td class="score">46.5</td></tr>
+          <tr><td>LoopCoder-v2, 3 loops</td><td>75.0</td><td>28.6</td><td class="bad">27.6</td><td>11.0</td><td>12.2</td><td>36.3</td><td>36.9</td></tr>
+          <tr><td>LoopCoder-v2, 4 loops</td><td>76.8</td><td>24.5</td><td class="bad">22.4</td><td>9.3</td><td>9.0</td><td>39.5</td><td>34.3</td></tr>
+        </table>
+      </div>
+      <p style="margin-top:14px">这组数字最值得看的不是“64.4 很高”，而是<strong>曲线不是单调上升</strong>。如果 AI 产品经理把“反思更多次”当成可靠增强按钮，这篇论文提醒：反思有收益，但也有结构成本。正确问题不是“要不要多想”，而是“在哪个点停”。</p>
+    </section>
+
+    <section class="section">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid-2">
+        <div class="note risk"><strong>领域集中</strong><br>论文主要验证代码、软件工程、工具使用。它不能直接证明所有通用聊天、数学、科学任务都适合两轮。</div>
+        <div class="note risk"><strong>训练成本高</strong><br>研究从头训练多组 7B 模型，使用 18T tokens。一般团队很难完全复现实验规模。</div>
+        <div class="note risk"><strong>架构依赖</strong><br>结论属于 PLT 这种设计。其他循环架构、其他位置偏移方法，最佳循环数可能不同。</div>
+        <div class="note risk"><strong>生产仍需审查</strong><br>模型卡明确提醒，LoopCoder-v2 可能产出错误、不安全或不完整代码，不应无人审核直接用于生产。</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>9. 产业影响分析</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>对象</th><th>可能受益</th><th>可能被冲击</th></tr>
+          <tr><td>代码 Agent 产品</td><td>可用固定参数模型换来更强仓库级修复能力，降低依赖超大模型的压力。</td><td>只靠“多轮自我反思 prompt”的方案会被更结构化的测试时计算替代。</td></tr>
+          <tr><td>模型服务商</td><td>可以把循环次数、延迟、成本做成可控产品旋钮。</td><td>如果循环次数选择不当，用户会为更多计算付费却得到更差结果。</td></tr>
+          <tr><td>企业研发团队</td><td>小模型本地化或私有化部署更有想象空间，尤其是代码审查、修 bug、工具调用。</td><td>不能把 7B 模型高分直接等同于生产可靠性，仍需安全扫描和人工复核。</td></tr>
+          <tr><td>投资研究</td><td>“测试时计算效率”可能成为模型公司新竞争维度，不只是参数规模或训练数据。</td><td>单纯堆大模型规模的故事会受到成本效率路线挑战。</td></tr>
+        </table>
+      </div>
+      <p class="note amber" style="margin-top:16px">如果说 Chain-of-Thought 是让 AI 把草稿写出来，LoopCoder-v2 代表另一条路线：让 AI 在心里多整理一轮，不一定把中间过程说出来。这会影响未来推理模型的成本结构和产品形态。</p>
+    </section>
+
+    <section class="section">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2606.18023">LoopCoder-v2 arXiv 摘要页</a>：标题、作者、摘要与提交信息。</li>
+        <li><a href="https://arxiv.org/html/2606.18023v1">arXiv HTML 全文</a>：包含 PLT 结构、增益-成本分析、伪代码与附录表格。</li>
+        <li><a href="https://github.com/CSJianYang/LoopCoder">官方 GitHub</a>：README 总结、关键指标、快速开始代码。</li>
+        <li><a href="https://huggingface.co/Multilingual-Multimodal-NLP/LoopCoder-V2">Hugging Face 模型卡</a>：模型细节、评测表、使用方式、训练数据说明与局限性。</li>
+        <li><a href="https://huggingface.co/papers/2606.18023">Hugging Face Papers 页面</a>：社区热度、#1 Paper of the day、作者/社区补充链接。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>11. 引用来源</h2>
+      <div class="table-wrap">
+        <table>
+          <tr><th>来源</th><th>本文使用的信息</th></tr>
+          <tr><td>arXiv:2606.18023</td><td>论文题名、作者、机构、发布时间、摘要、PLT 机制、贡献、结论。</td></tr>
+          <tr><td>arXiv HTML 全文</td><td>循环 Transformer、PLT、CLP、G-SWA、增益-成本框架、训练配置、预训练数据构成。</td></tr>
+          <tr><td>Hugging Face Papers</td><td>2026-06-17 收录、#1 Paper of the day、社区关注度。</td></tr>
+          <tr><td>GitHub README</td><td>TL;DR、关键发现、SWE-bench / Multi-SWE / Terminal-Bench / BFCL 指标、快速开始。</td></tr>
+          <tr><td>Hugging Face 模型卡</td><td>模型参数、架构、评测表、训练数据、用途与局限性。</td></tr>
+        </table>
+      </div>
+      <p class="small">本报告为中文解释性重构，图示和类比由报告重新设计，不是论文截图。所有关键事实优先来自英文一手来源；二手页面仅用于热度与候选比较。</p>
+    </section>
+
+    <div class="footer">《AI每日论文精选》· 2026-06-18 · LoopCoder-v2</div>
+  </div>
+</body>
+</html>

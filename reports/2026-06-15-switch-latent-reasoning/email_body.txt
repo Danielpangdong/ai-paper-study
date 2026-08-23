@@ -1,0 +1,9 @@
+今天精选的论文是 SWITCH：
+Demystifying Hidden-State Recurrence: Switchable Latent Reasoning with On-Policy Reinforcement Learning。
+
+一句话推荐理由：
+它尝试让 AI 在需要时切入“隐藏推理模式”，把一部分思考放进内部状态，同时仍然可以通过强化学习训练和机制分析检查。
+
+这可能影响未来推理模型的成本、延迟、可解释性与安全审计方式。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者阅读。

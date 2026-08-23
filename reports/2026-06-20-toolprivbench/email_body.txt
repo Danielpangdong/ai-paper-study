@@ -1,0 +1,6 @@
+今天精选的论文是《When Lower Privileges Suffice: Investigating Over-Privileged Tool Selection in LLM Agents》。
+
+一句话推荐理由：
+它指出了 AI Agent 落地中的一个关键安全盲点：很多模型明明可以用低权限工具完成任务，却会主动选择更高权限、更大范围的工具。
+
+这关系到未来企业如何安全部署编码 agent、办公 agent、数据分析 agent 和自动化系统。附件为中文深度拆解 HTML 报告，适合非技术读者、产品经理、投资研究者和工程团队阅读。

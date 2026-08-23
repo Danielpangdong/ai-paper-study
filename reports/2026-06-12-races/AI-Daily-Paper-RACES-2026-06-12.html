@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选：RACES 可验证环境像积木一样组合</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #5b6575;
+      --line: #dce3ec;
+      --paper: #f7f9fc;
+      --card: #ffffff;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --amber: #b45309;
+      --red: #c2410c;
+      --green: #047857;
+      --dark: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1f2937 54%, #f8fafc 54%, #ffffff 100%);
+      color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #111827;
+      box-shadow: 0 18px 60px rgba(15, 23, 42, .18);
+    }
+    .hero-inner { padding: 34px 30px 26px; max-width: 760px; }
+    .eyebrow { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: #93c5fd; font-weight: 700; }
+    h1 { margin: 12px 0 10px; font-size: 34px; line-height: 1.18; letter-spacing: 0; }
+    .subtitle { margin: 0; color: #dbeafe; font-size: 18px; max-width: 720px; }
+    .hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 30px 28px; }
+    .metric { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); border-radius: 8px; padding: 12px; min-height: 82px; }
+    .metric b { display: block; font-size: 22px; color: #fff; line-height: 1.1; }
+    .metric span { display: block; margin-top: 6px; color: #cbd5e1; font-size: 13px; line-height: 1.35; }
+    section { margin-top: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+    h2 { margin: 0 0 14px; font-size: 23px; line-height: 1.25; }
+    h3 { margin: 22px 0 8px; font-size: 17px; }
+    p { margin: 10px 0; }
+    .lead { font-size: 18px; color: #253044; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 16px 0; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfdff; }
+    .card .k { font-size: 12px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+    .card .v { margin-top: 6px; font-weight: 700; color: var(--ink); }
+    .callout { border-left: 4px solid var(--blue); background: #eff6ff; padding: 14px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; }
+    .warn { border-left-color: var(--amber); background: #fffbeb; }
+    .risk { border-left-color: var(--red); background: #fff7ed; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #f1f5f9; color: #1e293b; }
+    .tag { display: inline-block; border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; font-size: 12px; color: #334155; background: #f8fafc; margin: 2px 4px 2px 0; }
+    .svgbox { margin: 16px 0; border: 1px solid var(--line); border-radius: 8px; background: #ffffff; overflow: hidden; }
+    .svgbox svg { display: block; width: 100%; height: auto; }
+    .caption { font-size: 13px; color: var(--muted); margin-top: -6px; }
+    .quote { font-size: 21px; line-height: 1.45; font-weight: 800; color: var(--dark); padding: 18px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--line); }
+    ul { padding-left: 20px; }
+    li { margin: 6px 0; }
+    .footer { color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      .wrap { padding: 14px 10px 34px; }
+      .hero-inner { padding: 24px 18px 18px; }
+      h1 { font-size: 27px; }
+      .subtitle { font-size: 16px; }
+      .hero-grid, .cards { grid-template-columns: 1fr; padding-left: 18px; padding-right: 18px; }
+      section { padding: 18px; }
+      table { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="hero-inner">
+        <div class="eyebrow">AI Daily Paper · 2026-06-12</div>
+        <h1>AI 训练开始从“攒题库”走向“搭环境工厂”</h1>
+        <p class="subtitle">RACES 把可验证训练环境当成积木：一个环境的输出接上另一个环境的输入，就能自动组合出更难、更丰富的新任务。</p>
+      </div>
+      <div class="hero-grid">
+        <div class="metric"><b>300</b><span>基础可验证环境</span></div>
+        <div class="metric"><b>4类</b><span>组合算子：顺序、并行、排序、选择</span></div>
+        <div class="metric"><b>+3.1</b><span>DeepSeek-R1-Distill-Qwen-14B 平均分提升</span></div>
+        <div class="metric"><b>50 &gt; 300</b><span>50 个环境经组合后超过 300 个孤立环境</span></div>
+      </div>
+    </header>
+
+    <section>
+      <h2>1. 标题区</h2>
+      <div class="cards">
+        <div class="card"><div class="k">论文</div><div class="v">Verifiable Environments Are LEGO Bricks: Recursive Composition for Reasoning Generalization</div></div>
+        <div class="card"><div class="k">中文名</div><div class="v">可验证环境像积木：用于推理泛化的递归组合</div></div>
+        <div class="card"><div class="k">平台</div><div class="v">arXiv · cs.CL · 2026-06-10</div></div>
+      </div>
+      <table>
+        <tr><th>作者</th><td>Hao Xiang, Qiaoyu Tang, Le Yu, Yaojie Lu, Xianpei Han, Ben He, Le Sun, Bowen Yu, Peng Wang, Hongyu Lin, Dayiheng Liu</td></tr>
+        <tr><th>机构</th><td>中国科学院软件研究所 / 中国科学院大学 / Qwen Team, Alibaba Group</td></tr>
+        <tr><th>论文链接</th><td><a href="https://arxiv.org/abs/2606.12373">https://arxiv.org/abs/2606.12373</a></td></tr>
+        <tr><th>社区页面</th><td><a href="https://huggingface.co/papers/2606.12373">Hugging Face Papers: 2606.12373</a></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">因为它切中了一个比“又一个更强模型”更底层的问题：如果 AI 要靠强化学习变聪明，我们到底怎样批量制造可靠、可验证、难度可控的训练环境？</p>
+      <p>过去很多推理训练像给学生刷题：你有多少题，模型就练多少题。RACES 的想法更像开了一家“训练场工厂”：先造出一批基础训练房间，再用规则把房间拼成走廊、迷宫、闯关路线。这样，同一批原材料可以生成大量结构不同的新任务。</p>
+      <div class="callout">
+        <b>行业意义：</b>Agent、代码模型、工具使用模型、科学推理模型都需要可验证反馈。真正稀缺的不是“题目文本”，而是能自动判对错、能控制难度、能持续扩展的环境。
+      </div>
+      <table>
+        <tr><th>评估维度</th><th>判断</th><th>为什么重要</th></tr>
+        <tr><td>技术新颖性</td><td>高</td><td>把环境作为可组合对象，而不是孤立数据点。</td></tr>
+        <tr><td>长期价值</td><td>高</td><td>如果 Agent 训练继续扩张，环境工程会成为基础设施。</td></tr>
+        <tr><td>产业落地</td><td>中高</td><td>可用于代码、办公自动化、数据分析、客服流程、运筹决策等可验证任务。</td></tr>
+        <tr><td>认知突破</td><td>高</td><td>让人从“模型缺数据”转向“模型缺可组合训练世界”。</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文的核心是：不要再一题一题地喂 AI，而要把可验证任务做成积木，让 AI 在自动拼出来的复杂训练场里练推理。</div>
+    </section>
+
+    <section>
+      <h2>4. 核心贡献拆解</h2>
+      <div class="cards">
+        <div class="card"><div class="k">贡献一</div><div class="v">定义“可验证环境”的统一接口</div><p>每个环境都有输入生成器、确定性映射、题面描述器、答案验证器。</p></div>
+        <div class="card"><div class="k">贡献二</div><div class="v">提出环境组合闭包</div><p>如果 A 的输出类型等于 B 的输入类型，就能自动把 A 接到 B 后面。</p></div>
+        <div class="card"><div class="k">贡献三</div><div class="v">设计四类组合算子</div><p>SEQUENTIAL、PARALLEL、SORT、SELECT 让同一批环境产生不同推理模式。</p></div>
+      </div>
+      <table>
+        <tr><th>旧方法</th><th>RACES 的做法</th><th>差异</th></tr>
+        <tr><td>人工或自动生成一个个独立任务</td><td>把已有任务环境递归组合</td><td>从线性扩展变成组合扩展</td></tr>
+        <tr><td>题目本身就是训练单位</td><td>环境才是训练单位</td><td>同一环境可生成无限输入实例</td></tr>
+        <tr><td>难度主要靠换题或加长题面</td><td>难度由组合深度和算子控制</td><td>更像课程设计，而不是题库堆叠</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. 工作原理：像搭积木一样训练 AI</h2>
+      <p>想象你有四块积木：一个会算 Fibonacci 数列，一个会把数字转字母，一个会去重字符，一个会排序。单独看，每块积木都很简单。但如果第一块的输出刚好能作为第二块输入，它们就能扣在一起。扣得越多，任务链就越长，AI 需要记住中间结果、推断顺序、避免一步错导致全错。</p>
+      <div class="svgbox">
+        <svg viewBox="0 0 920 320" role="img" aria-label="RACES environment composition flow">
+          <rect width="920" height="320" fill="#ffffff"/>
+          <text x="36" y="42" font-size="22" font-weight="700" fill="#0f172a">RACES 的核心流水线</text>
+          <g transform="translate(40,80)">
+            <rect width="145" height="74" rx="8" fill="#e0f2fe" stroke="#0891b2"/>
+            <text x="18" y="32" font-size="16" font-weight="700" fill="#164e63">基础环境 A</text>
+            <text x="18" y="56" font-size="13" fill="#155e75">数字 → 数字</text>
+          </g>
+          <path d="M205 117 H275" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+          <g transform="translate(285,80)">
+            <rect width="145" height="74" rx="8" fill="#fef3c7" stroke="#b45309"/>
+            <text x="18" y="32" font-size="16" font-weight="700" fill="#78350f">基础环境 B</text>
+            <text x="18" y="56" font-size="13" fill="#92400e">数字 → 字符串</text>
+          </g>
+          <path d="M450 117 H520" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+          <g transform="translate(530,80)">
+            <rect width="145" height="74" rx="8" fill="#dcfce7" stroke="#047857"/>
+            <text x="18" y="32" font-size="16" font-weight="700" fill="#064e3b">基础环境 C</text>
+            <text x="18" y="56" font-size="13" fill="#065f46">字符串 → 字符串</text>
+          </g>
+          <path d="M695 117 H765" stroke="#334155" stroke-width="3" marker-end="url(#arrow)"/>
+          <g transform="translate(775,80)">
+            <rect width="105" height="74" rx="8" fill="#fee2e2" stroke="#c2410c"/>
+            <text x="20" y="32" font-size="16" font-weight="700" fill="#7f1d1d">新任务</text>
+            <text x="20" y="56" font-size="13" fill="#991b1b">A→B→C</text>
+          </g>
+          <g transform="translate(115,210)">
+            <rect width="690" height="54" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="22" y="34" font-size="16" fill="#334155">只要“上一块的输出类型”能接上“下一块的输入类型”，环境就能继续递归拼接。</text>
+          </g>
+          <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker></defs>
+        </svg>
+      </div>
+      <p class="caption">图解：RACES 不是简单拼接文字题，而是拼接可执行、可验证的环境函数。</p>
+
+      <h3>四种组合算子</h3>
+      <table>
+        <tr><th>算子</th><th>像什么</th><th>训练的能力</th></tr>
+        <tr><td>SEQUENTIAL</td><td>按说明书一步步装家具</td><td>追踪中间结果，避免链式错误</td></tr>
+        <tr><td>PARALLEL</td><td>同时处理几条独立流水线</td><td>在同一上下文里维护多线程推理</td></tr>
+        <tr><td>SORT</td><td>给你一堆步骤，让你排出正确顺序</td><td>反推因果顺序和操作依赖</td></tr>
+        <tr><td>SELECT</td><td>从工具箱里挑对工具并按正确方式使用</td><td>选择相关步骤，过滤干扰项</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 关键术语解释</h2>
+      <table>
+        <tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr>
+        <tr><td>Verifiable Environment</td><td>能自动生成输入、计算标准答案、验证模型输出的交互环境。</td><td>一个自带答案裁判的小训练房间。</td></tr>
+        <tr><td>RLVR</td><td>Reinforcement Learning with Verifiable Rewards，用可验证奖励训练模型。</td><td>AI 做完题，机器裁判能立刻判对错。</td></tr>
+        <tr><td>Domain / Codomain</td><td>函数可接受的输入类型与产生的输出类型。</td><td>积木的接口规格：这一头能不能扣到那一头。</td></tr>
+        <tr><td>Composition Size</td><td>组合环境里串联或组织的基础环境数量。</td><td>闯关路线有几关。</td></tr>
+        <tr><td>Reasoning Generalization</td><td>模型在未见过的评测任务上迁移推理能力。</td><td>不是背过这道题，而是学会了一类解题方法。</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>7. 实验结果解读</h2>
+      <p>论文的结果不应该只读成“分数涨了”。更重要的是：组合后的环境让同样的训练预算产生了更丰富的推理结构。</p>
+      <table>
+        <tr><th>模型</th><th>基座平均分</th><th>孤立环境 RL</th><th>RACES RL</th><th>解读</th></tr>
+        <tr><td>DeepSeek-R1-Distill-Qwen-14B</td><td>48.2</td><td>48.8</td><td>51.3</td><td>孤立训练只小幅提升，组合环境带来明显泛化收益。</td></tr>
+        <tr><td>Qwen3-14B</td><td>58.8</td><td>60.1</td><td>61.1</td><td>强基座上仍有增益，说明不是只修补弱模型。</td></tr>
+      </table>
+      <div class="svgbox">
+        <svg viewBox="0 0 920 300" role="img" aria-label="Main result bar chart">
+          <rect width="920" height="300" fill="#fff"/>
+          <text x="34" y="42" font-size="22" font-weight="700" fill="#0f172a">主实验：RACES 比孤立环境更能提升泛化</text>
+          <line x1="80" y1="246" x2="860" y2="246" stroke="#cbd5e1"/>
+          <g transform="translate(130,72)">
+            <text x="0" y="188" font-size="14" fill="#334155">DeepSeek-R1-Distill-Qwen-14B</text>
+            <rect x="12" y="64" width="54" height="116" fill="#94a3b8"/><text x="10" y="54" font-size="13">48.2</text>
+            <rect x="82" y="59" width="54" height="121" fill="#60a5fa"/><text x="80" y="49" font-size="13">48.8</text>
+            <rect x="152" y="28" width="54" height="152" fill="#2563eb"/><text x="150" y="18" font-size="13" font-weight="700">51.3</text>
+          </g>
+          <g transform="translate(545,72)">
+            <text x="20" y="188" font-size="14" fill="#334155">Qwen3-14B</text>
+            <rect x="12" y="82" width="54" height="98" fill="#94a3b8"/><text x="10" y="72" font-size="13">58.8</text>
+            <rect x="82" y="56" width="54" height="124" fill="#60a5fa"/><text x="80" y="46" font-size="13">60.1</text>
+            <rect x="152" y="36" width="54" height="144" fill="#2563eb"/><text x="150" y="26" font-size="13" font-weight="700">61.1</text>
+          </g>
+          <rect x="122" y="266" width="13" height="13" fill="#94a3b8"/><text x="142" y="278" font-size="13" fill="#475569">Base</text>
+          <rect x="204" y="266" width="13" height="13" fill="#60a5fa"/><text x="224" y="278" font-size="13" fill="#475569">RL individual</text>
+          <rect x="330" y="266" width="13" height="13" fill="#2563eb"/><text x="350" y="278" font-size="13" fill="#475569">RL RACES</text>
+        </svg>
+      </div>
+      <h3>最值得看的结果：50 个环境组合后超过 300 个孤立环境</h3>
+      <table>
+        <tr><th>设置</th><th>Qwen3-4B 平均分</th><th>含义</th></tr>
+        <tr><td>Base</td><td>49.2</td><td>未做这类环境 RL。</td></tr>
+        <tr><td>RLindividual：50 envs</td><td>50.2</td><td>增加一些孤立训练环境。</td></tr>
+        <tr><td>RLindividual：300 envs</td><td>50.4</td><td>环境数量扩大 6 倍，但收益有限。</td></tr>
+        <tr><td>RACES：50 envs</td><td>50.8</td><td>只用 1/6 基础环境，通过组合超过 300 个孤立环境。</td></tr>
+        <tr><td>RACES：300 envs</td><td>51.9</td><td>基础环境更多时，组合扩展继续放大收益。</td></tr>
+      </table>
+      <p>这对产业非常关键：如果每个高质量训练环境都很贵，那么“复用并组合已有环境”比“无限外包标注新题”更像一条能规模化的路。</p>
+    </section>
+
+    <section>
+      <h2>8. 局限性与问题</h2>
+      <div class="callout risk">
+        <b>不要过度解读：</b>RACES 证明了“组合环境有效”，但还没有证明它能直接覆盖真实世界所有复杂 Agent 场景。
+      </div>
+      <ul>
+        <li><b>组合形式还有限：</b>论文只实现了四类代表性算子，条件分支、循环、动态工具调用等更真实的结构尚未充分探索。</li>
+        <li><b>对模型底座有要求：</b>如果模型本身推理能力太弱，组合任务会让奖励变得稀疏，训练可能学不到东西。</li>
+        <li><b>上下文窗口成本：</b>复合环境会生成更长推理轨迹，论文实验使用 32K 上下文，实际训练成本不能忽略。</li>
+        <li><b>环境质量仍是瓶颈：</b>基础环境如果接口定义不严、验证器有漏洞，组合会把问题放大。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>9. 产业影响分析</h2>
+      <div class="svgbox">
+        <svg viewBox="0 0 920 330" role="img" aria-label="Industry impact map">
+          <rect width="920" height="330" fill="#fff"/>
+          <text x="34" y="42" font-size="22" font-weight="700" fill="#0f172a">从题库经济到环境工程</text>
+          <g transform="translate(54,86)">
+            <rect width="190" height="90" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+            <text x="24" y="34" font-size="17" font-weight="700" fill="#1e3a8a">受益者</text>
+            <text x="24" y="60" font-size="14" fill="#334155">Agent 平台、代码模型</text>
+            <text x="24" y="80" font-size="14" fill="#334155">可验证企业流程</text>
+          </g>
+          <g transform="translate(365,86)">
+            <rect width="190" height="90" rx="8" fill="#ecfdf5" stroke="#047857"/>
+            <text x="24" y="34" font-size="17" font-weight="700" fill="#064e3b">新能力</text>
+            <text x="24" y="60" font-size="14" fill="#334155">课程自动生成</text>
+            <text x="24" y="80" font-size="14" fill="#334155">可控难度扩展</text>
+          </g>
+          <g transform="translate(676,86)">
+            <rect width="190" height="90" rx="8" fill="#fff7ed" stroke="#c2410c"/>
+            <text x="24" y="34" font-size="17" font-weight="700" fill="#7c2d12">被冲击者</text>
+            <text x="24" y="60" font-size="14" fill="#334155">低质量题库生产</text>
+            <text x="24" y="80" font-size="14" fill="#334155">不可验证评测集</text>
+          </g>
+          <path d="M245 132 H355" stroke="#64748b" stroke-width="3" marker-end="url(#arr2)"/>
+          <path d="M556 132 H666" stroke="#64748b" stroke-width="3" marker-end="url(#arr2)"/>
+          <g transform="translate(160,225)">
+            <rect width="600" height="58" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+            <text x="24" y="36" font-size="16" fill="#334155">核心变化：竞争点从“谁有更多题”转向“谁能设计更好的可验证训练世界”。</text>
+          </g>
+          <defs><marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#64748b"/></marker></defs>
+        </svg>
+      </div>
+      <table>
+        <tr><th>领域</th><th>可能变化</th></tr>
+        <tr><td>软件工程 Agent</td><td>把文件操作、测试、修复、依赖安装做成可验证环境，再组合成长周期任务。</td></tr>
+        <tr><td>企业流程自动化</td><td>订单校验、异常处理、报价审批、库存调拨等流程天然有输入输出和规则验证。</td></tr>
+        <tr><td>教育与训练平台</td><td>题目不再只是静态题库，而是可组合的能力训练单元。</td></tr>
+        <tr><td>AI 实验室</td><td>环境工程、验证器工程、课程生成会成为 RL 后训练的重要岗位能力。</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2606.12373">RACES 原论文 arXiv 页面</a></li>
+        <li><a href="https://arxiv.org/pdf/2606.12373">RACES PDF</a></li>
+        <li><a href="https://huggingface.co/papers/2606.12373">Hugging Face Daily Papers: RACES</a></li>
+        <li><a href="https://arxiv.org/abs/2606.12191">Agentic Environment Engineering for Large Language Models</a></li>
+        <li><a href="https://huggingface.co/papers/2606.12191">Hugging Face Daily Papers: Agentic Environment Engineering</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>11. 引用来源</h2>
+      <p>本文主要依据英文原始来源撰写：arXiv 论文页面、论文 PDF 全文、Hugging Face Daily Papers 页面，以及同日相关综述《Agentic Environment Engineering for Large Language Models》。</p>
+      <p class="footer">本报告为中文解读，不替代原论文。数值均来自论文正文与表格，解读部分为基于来源的分析判断。</p>
+    </section>
+  </div>
+</body>
+</html>

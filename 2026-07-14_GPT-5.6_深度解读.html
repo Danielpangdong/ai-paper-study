@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenAI GPT-5.6 深度解读｜2026-07-14 AI 日报</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b0f1a;
+  --card:#131a2c;
+  --card-2:#1a2340;
+  --line:#25314f;
+  --text:#e6ecff;
+  --muted:#8ea1cc;
+  --brand:#7aa2ff;
+  --brand-2:#a78bfa;
+  --ok:#4ade80;
+  --warn:#fbbf24;
+  --err:#f87171;
+  --openai:#10a37f;
+  --anthropic:#c07f5f;
+  --google:#4285f4;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:radial-gradient(1200px 800px at 10% -10%, #1b2547 0%, transparent 60%), radial-gradient(900px 700px at 100% 0%, #2a1e4d 0%, transparent 55%), var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;line-height:1.7}
+.wrap{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+header.hero{padding:28px 32px;border-radius:20px;background:linear-gradient(135deg,#182448 0%,#2a1e4d 100%);border:1px solid var(--line);position:relative;overflow:hidden}
+header.hero:before{content:"";position:absolute;inset:-1px;background:linear-gradient(120deg,transparent 40%,rgba(122,162,255,.15) 50%,transparent 60%);pointer-events:none}
+.tag{display:inline-block;background:rgba(122,162,255,.15);color:var(--brand);padding:4px 10px;border-radius:999px;font-size:12px;letter-spacing:.5px}
+h1{font-size:32px;margin:10px 0 8px;letter-spacing:-.5px}
+h2{font-size:22px;margin:0 0 12px;letter-spacing:-.3px;display:flex;align-items:center;gap:10px}
+h3{font-size:17px;margin:14px 0 8px;color:#cfd9ff}
+.sub{color:var(--muted);font-size:14px}
+.meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:13px;color:var(--muted)}
+.meta span b{color:#cfd9ff}
+.grid{display:grid;gap:16px}
+.grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:800px){.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h2 .dot{width:8px;height:8px;background:var(--brand);border-radius:999px;box-shadow:0 0 12px var(--brand)}
+.section{margin-top:28px}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:8px 16px;font-size:14px}
+.kv b{color:#cfd9ff}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;margin-right:6px}
+.pill.sol{background:rgba(251,191,36,.15);color:#fde68a;border:1px solid rgba(251,191,36,.3)}
+.pill.terra{background:rgba(74,222,128,.15);color:#86efac;border:1px solid rgba(74,222,128,.3)}
+.pill.luna{background:rgba(147,197,253,.15);color:#93c5fd;border:1px solid rgba(147,197,253,.3)}
+.callout{border-left:3px solid var(--brand);background:rgba(122,162,255,.06);padding:12px 16px;border-radius:0 12px 12px 0;margin:12px 0}
+.callout.warn{border-color:var(--warn);background:rgba(251,191,36,.06)}
+.callout.err{border-color:var(--err);background:rgba(248,113,113,.06)}
+.callout.ok{border-color:var(--ok);background:rgba(74,222,128,.06)}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:#cfd9ff;background:rgba(122,162,255,.05);font-weight:600}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-block;padding:2px 8px;font-size:11px;border-radius:6px;font-weight:600;letter-spacing:.3px}
+.badge.hi{background:rgba(74,222,128,.15);color:#86efac}
+.badge.mid{background:rgba(251,191,36,.15);color:#fde68a}
+.badge.lo{background:rgba(248,113,113,.15);color:#fca5a5}
+.badge.unk{background:rgba(142,161,204,.15);color:#c5d1ec}
+.chart-box{position:relative;height:320px}
+.chart-box.tall{height:420px}
+ul.clean{padding-left:18px;margin:6px 0}
+ul.clean li{margin:6px 0}
+.footnote{color:var(--muted);font-size:12px;margin-top:8px}
+.linkbtn{color:var(--brand);text-decoration:none;border-bottom:1px dashed rgba(122,162,255,.4)}
+.linkbtn:hover{border-bottom-color:var(--brand)}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:800px){.split{grid-template-columns:1fr}}
+.tier-card{border-radius:14px;padding:16px;border:1px solid var(--line);background:var(--card-2)}
+.tier-card .name{font-size:20px;font-weight:700;letter-spacing:.3px}
+.tier-card .price{font-size:14px;color:var(--muted);margin-top:4px}
+.tier-card ul{margin:10px 0 0;padding-left:18px}
+.tier-card ul li{font-size:13px;color:#dbe4ff}
+.gradient-sol{background:linear-gradient(135deg,#3b2b0f 0%,#5a3f14 100%)}
+.gradient-terra{background:linear-gradient(135deg,#0f2b1f 0%,#155a34 100%)}
+.gradient-luna{background:linear-gradient(135deg,#0f1f3b 0%,#1a3a6b 100%)}
+.note{font-size:12px;color:var(--muted);font-style:italic}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pros-cons .col{padding:12px;border-radius:12px}
+.pros{background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.25)}
+.cons{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.25)}
+.pros h3,.cons h3{margin-top:0}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:40px;padding-top:20px;border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">AI 日报 · 2026-07-14 · 精选一篇</span>
+  <h1>OpenAI GPT-5.6：Sol / Terra / Luna 家族深度解读</h1>
+  <p class="sub">"每一个 token 都要更值钱" —— 这次真正卖点不是智能上限，而是 <b>单位美元产出</b> 与 <b>可编排的多智能体推理</b>。</p>
+  <div class="meta">
+    <span><b>来源：</b> OpenAI 官方公告 (2026-07-09) + Simon Willison 独立评测</span>
+    <span><b>类型：</b> 大厂旗舰模型发布</span>
+    <span><b>置信度：</b> 基准数据 <span class="badge hi">高</span>（官方披露） · 长期影响 <span class="badge mid">中</span></span>
+  </div>
+</header>
+
+<!-- 0. 一句话 & 反驳 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>一句话总结 & 最强反驳</h2>
+    <div class="callout ok">
+      <b>看点：</b> GPT-5.6 Sol 在 <i>Agents' Last Exam</i>（长时程专业工作流基准）上拿下 53.6 分，比 Claude Fable 5 高 13.1 分；即便中等推理档也超对手 11.4 分，同时成本只有对方的 <b>约 1/4</b>。这不是"更聪明"的常规升级，而是把"用更少 token 干更多活"这件事产品化。
+    </div>
+    <div class="callout err">
+      <b>最强反驳（读之前请先记住）：</b>
+      <ul class="clean">
+        <li>1. <b>基准是 OpenAI 自选的</b>：在 SWE-Bench Pro 上 Sol 只有 64.6%，被 Claude Fable 5 的 80% 拉开 15 个百分点。OpenAI 前一天专门发文<a class="linkbtn" href="https://openai.com/index/separating-signal-from-noise-coding-evaluations/" target="_blank">质疑 SWE-Bench Pro</a>约 30% 任务"有缺陷"，动机可疑。</li>
+        <li>2. <b>"便宜"是估算</b>：官方口径的成本对比包含"token 数 × 单价 + 延迟"的模拟估算，并非同一任务的真实计费对比。真实业务里 token 消耗差异需要自测。</li>
+        <li>3. <b>Simon Willison 的一手体验：</b>"目前用它做复杂编程，我并没觉得比 Claude Fable 明显更好。" 独立开发者 vibe 与官方叙事有落差。</li>
+        <li>4. <b>Cyber & 生物安全能力上升</b>：官方也承认 Sol 的 ExploitGym（真实漏洞利用）通过率从 GPT-5.5 的 15.1% 飙到 33.7%（6 小时预算），这带来了新的滥用风险面。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 1. 三款模型 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>三款模型速览：一族三档</h2>
+    <p class="sub">OpenAI 把"数字（5.6）代表代际，名字（Sol/Terra/Luna）代表<b>能力档</b>"——这是明显的产品化信号：档位会自己迭代，不用等下一个大版本号。</p>
+    <div class="grid cols-3" style="margin-top:14px">
+      <div class="tier-card gradient-sol">
+        <div class="name">☀️ Sol · 旗舰</div>
+        <div class="price">$5 / $30（输入 / 输出 · 每百万 token）</div>
+        <ul>
+          <li>Artificial Analysis 智能指数 58.9，接近 Fable 5 (59.9)</li>
+          <li>专属 <b>max</b> 与 <b>ultra</b>（多智能体并行）档</li>
+          <li>Cerebras 推理最高 750 tokens/s</li>
+        </ul>
+      </div>
+      <div class="tier-card gradient-terra">
+        <div class="name">🌍 Terra · 均衡</div>
+        <div class="price">$2.50 / $15</div>
+        <ul>
+          <li>官方说"跟 GPT-5.5 差不多，但便宜"</li>
+          <li>编程指数 77.4，超过 GPT-5.5 (76.4)</li>
+          <li>面向"日常工作"档，取代过去的 GPT-5.5</li>
+        </ul>
+      </div>
+      <div class="tier-card gradient-luna">
+        <div class="name">🌙 Luna · 快而便宜</div>
+        <div class="price">$1 / $6</div>
+        <ul>
+          <li>Coding Index 74.6，超过 Opus 4.8 (72.5)</li>
+          <li>官方声称成本约为 Fable 5 的 1/16</li>
+          <li>用于高频、低延迟的规模化任务</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footnote">三档共同参数：知识截止 2026-02-16、上下文 1M tokens、最大输出 128K tokens。</div>
+  </div>
+</section>
+
+<!-- 2. 关键技术亮点 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>四个真正值得关注的技术变化</h2>
+    <div class="grid cols-2" style="margin-top:12px">
+      <div>
+        <h3>1. Programmatic Tool Calling（可编程工具调用）</h3>
+        <p>过去的 tool use：模型每一次调用工具都要把"工具的返回值"喂回上下文，再让模型决定下一步。<b>token 消耗和延迟被工具轮次拖垮。</b></p>
+        <p>新做法：模型可以<b>在 Response API 内直接写并运行一段 JS 程序</b>，由这段程序去编排多次工具调用、过滤中间结果，只把"值得看的部分"塞回上下文。</p>
+        <div class="callout">
+          官方对比：Clio 的多步文档分析任务，<b>prompt tokens 直接降 38%</b>，质量不变。PlayCo 的 Unity 场景构建，<b>总 token 降 63.5%，模型轮数降 50.1%</b>。
+          <br><span class="note">通俗理解：过去像"每一步都请示老板"，现在给了老板一支笔和一张便签，让他先自己算，只回报结论。</span>
+        </div>
+      </div>
+      <div>
+        <h3>2. Multi-Agent / ultra 档</h3>
+        <p>ultra 档默认起 <b>4 个子智能体并行工作</b>，最后合并结果；在 API 里叫 <i>multi-agent beta</i>，开发者可以自定义子智能体数量与拓扑。</p>
+        <p>官方 BrowseComp 数据：单 agent → 4 agent → 16 agent 曲线整体"向左上移动"，即在同等或更短时间内拿到更高分。</p>
+        <div class="callout warn">
+          <b>但要冷静：</b> 多智能体并行 = token 消耗成倍。ultra 挂 16 agent 时成本几乎不再是"廉价"。这是<b>把云计算里"横向扩展 vs 纵向扩展"的老问题搬进推理层</b>——用钱买时间。
+        </div>
+      </div>
+      <div>
+        <h3>3. 显式 Prompt Cache Breakpoints</h3>
+        <p>Anthropic 早在 Claude 上做过<b>显式缓存断点</b>，OpenAI 现在跟上：开发者可以自己声明"这一段是稳定前缀，缓存它"，命中率与折扣变得更可控。</p>
+        <ul class="clean">
+          <li>缓存最短保留时间：<b>30 分钟</b></li>
+          <li>缓存写入：按原价的 <b>1.25×</b> 计费</li>
+          <li>缓存命中：按 <b>10% 输入价</b>（即 90% 折扣）计费</li>
+        </ul>
+      </div>
+      <div>
+        <h3>4. max 推理档 & 图像 detail:original</h3>
+        <p><b>max</b>：比 xhigh 更极端的推理档，给模型更多"思考 token 预算"去反复自检、探索、修正。</p>
+        <p><b>detail: original</b>：图像不再默认被下采样，视觉任务能保留原始分辨率。这对 UI 审查、代码截图、图表分析类场景是刚需。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 基准可视化 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>基准数据可视化（含对手对比）</h2>
+    <p class="sub">数据全部来自 OpenAI 官方公告页面。我保留了 <b>OpenAI 输给对手</b>的项目（比如 SWE-Bench Pro），不做美化。</p>
+    <div class="grid cols-2" style="margin-top:14px">
+      <div>
+        <h3>Agents' Last Exam（越高越好）</h3>
+        <div class="chart-box"><canvas id="chartALE"></canvas></div>
+      </div>
+      <div>
+        <h3>SWE-Bench Pro（越高越好）· 反例</h3>
+        <div class="chart-box"><canvas id="chartSWE"></canvas></div>
+      </div>
+      <div>
+        <h3>Artificial Analysis Coding Agent Index</h3>
+        <div class="chart-box"><canvas id="chartCoding"></canvas></div>
+      </div>
+      <div>
+        <h3>BrowseComp（Agentic 浏览）</h3>
+        <div class="chart-box"><canvas id="chartBrowse"></canvas></div>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:14px">
+      <b>解读要点：</b> Sol 在<b>综合智能指数</b>上与 Claude Fable 5 <b>基本打平</b>（58.9 vs 59.9），编程与浏览类"agent 工作流"上略胜；<b>但在真实代码修复（SWE-Bench Pro）上大幅落后</b>。这与 Claude Sonnet 5、Opus 4.8 在开发者社群的口碑一致：Anthropic 在"改真实代码"这条线上仍是标杆。
+    </div>
+  </div>
+</section>
+
+<!-- 4. 定价与经济性 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>定价与"每美元产出"的真实含义</h2>
+    <div class="split">
+      <div>
+        <h3>价格表（$/百万 token）</h3>
+        <table>
+          <thead><tr><th>模型</th><th>输入</th><th>输出</th><th>相对定位</th></tr></thead>
+          <tbody>
+            <tr><td>GPT-5.6 Sol</td><td>$5</td><td>$30</td><td>与 Claude Opus 系列 ($5/$25) 同档</td></tr>
+            <tr><td>GPT-5.6 Terra</td><td>$2.50</td><td>$15</td><td>与 Claude Sonnet 5 ($3/$15) 同档</td></tr>
+            <tr><td>GPT-5.6 Luna</td><td>$1</td><td>$6</td><td>低价高频档，直接压 Gemini 3.5 Flash</td></tr>
+            <tr><td>Claude Fable 5</td><td>$10</td><td>$50</td><td>Anthropic 顶配</td></tr>
+          </tbody>
+        </table>
+        <p class="note">注：Anthropic 已确认 Sonnet 5 换了新 tokenizer，<b>同样英文文本 token 数增加约 30%</b>，实际综合成本比表面价格高。GPT-5.6 未披露相似调整，需实测验证。</p>
+      </div>
+      <div>
+        <h3>为什么 "$/token" 不再是好指标？</h3>
+        <p>agentic 模型自己决定<b>推理 token 数量</b>：同一任务，Sol 在 max 档可能烧 10 万 token，Fable 5 只烧 3 万 token，也可能反过来。所以真正的成本对比只能看<b>"任务完成成本"</b>。</p>
+        <p>OpenAI 的隐藏叙事其实是：<b>"我们更贵的模型，因为更省 token，反而更便宜"</b>——这套逻辑站得住的前提是：任务结果真的对得起价格。</p>
+        <div class="callout">
+          <b>建议决策方式：</b>
+          <ul class="clean">
+            <li>拿你的真实任务跑 A/B（Sol vs Sonnet 5 vs Fable 5）</li>
+            <li>记录"任务成功率 × 总花费"，而不是"每百万 token 单价"</li>
+            <li>把 <b>Programmatic Tool Calling</b> 打开再测——那才是 OpenAI 的真实杀器</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 安全 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>安全：能力上升带来的新风险</h2>
+    <div class="split">
+      <div>
+        <h3>能力提升带来的新暴露面</h3>
+        <ul class="clean">
+          <li><b>ExploitBench</b>（V8 漏洞利用推进）：47.9% → <b>73.5%</b></li>
+          <li><b>ExploitGym</b>（把真实 CVE 转成可用 exploit）：15.1% → <b>24.9%</b>（2 小时预算）；6 小时预算下达到 <b>33.7%</b></li>
+          <li><b>SEC-Bench Pro</b>：45.8% → <b>71.2%</b></li>
+        </ul>
+        <p class="note">OpenAI 官方措辞："在 cyber 类别上更强，但未越过 Critical 阈值。" —— 也就是差一点。</p>
+      </div>
+      <div>
+        <h3>OpenAI 的应对</h3>
+        <ul class="clean">
+          <li>Sol 的 cyber 安全护栏拦截量约为上一代的 <b>10 倍</b></li>
+          <li>引入 <b>"reasoning monitor"</b>（推理型监控器）在对话回合里判断意图</li>
+          <li>敏感能力保留给通过 <b>Trusted Access for Cyber</b> 认证的用户，个人用户需要在 9 月 1 日前启用硬件级 passkey</li>
+          <li>发布前投入约 <b>70 万 A100e GPU 小时</b>做黑盒红队测试</li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout err" style="margin-top:14px">
+      <b>要清醒：</b> 一个能自动化漏洞发现和 exploit 生成、且成本极低的模型，对<b>攻防两侧同时是杠杆</b>。企业蓝队的红利期与滥用风险窗口是同时打开的。这不是营销口径，是行业新常态。
+    </div>
+  </div>
+</section>
+
+<!-- 6. 独立评测者视角 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>独立视角：Simon Willison 的第一印象</h2>
+    <p>Simon Willison（LLM 领域最活跃的独立观察者之一，Django 联合创造者）拿到早期访问后的三段核心评论：</p>
+    <div class="callout">
+      1. "旗舰 Sol 很能干，但在我的复杂编码任务上，<b>并没有明显强于 Anthropic 的模型</b>。"
+    </div>
+    <div class="callout">
+      2. "18 只 pelican-riding-a-bicycle 测试图（3 个模型 × 6 个 reasoning 档）——最便宜的 Luna(none) 只需 <b>0.71 美分</b>，最贵的 Sol(max) 要 <b>48.55 美分</b>。同一测试上的<b>费用差距 ~68 倍</b>。"
+    </div>
+    <div class="callout">
+      3. "Programmatic Tool Calling 和 Multi-Agent 才是真新东西——它们把'模型 + 工具编排'的角色边界重画了一次。"
+    </div>
+  </div>
+</section>
+
+<!-- 7. 优劣一览 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>优 vs 劣（不刷好评）</h2>
+    <div class="pros-cons">
+      <div class="col pros">
+        <h3>✅ 值得肯定</h3>
+        <ul class="clean">
+          <li>Agent 类工作流基准全面领先（Agents' Last Exam / OSWorld 2.0 / BrowseComp）</li>
+          <li>Programmatic Tool Calling 是<b>真正的架构变化</b>，不是概念营销</li>
+          <li>三档差异化清晰，Luna 把低价段的性价比又拉高一档</li>
+          <li>安全测试投入巨大（70 万 GPU 小时红队）</li>
+          <li>Cerebras 750 tok/s 部署——推理速度做到了工程可用级</li>
+        </ul>
+      </div>
+      <div class="col cons">
+        <h3>⚠️ 要打问号</h3>
+        <ul class="clean">
+          <li>SWE-Bench Pro 落后 Claude Fable 5 <b>15 个百分点</b>——OpenAI 用"基准有缺陷"回应，动机存疑</li>
+          <li>"更便宜"是官方仿真估算，缺乏第三方 apples-to-apples 复现</li>
+          <li>ARC-AGI-3 上 Sol 只有 <b>7.78%</b>——真"通用抽象推理"离达标还很远</li>
+          <li>Cyber 能力显著上升，滥用风险面变大</li>
+          <li>1M 上下文 8-needle 512K–1M 段位 <b>73.8%</b>，长上下文的稳定性并非无损</li>
+          <li>Chat 里 Sol 只面向 Plus/Pro/Business/Enterprise，免费用户仍是 Terra</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 给不同人的行动建议 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>给不同角色的可执行建议</h2>
+    <div class="grid cols-3">
+      <div class="tier-card">
+        <h3>👨‍💻 独立开发者 / SaaS 团队</h3>
+        <ul class="clean">
+          <li>把 <b>Programmatic Tool Calling</b> 打开重跑一遍现有 agent，实测 token 降幅</li>
+          <li>混用策略：<b>Terra 做日常，Sol 做疑难点</b>，只在需要 ultra 时才开多智能体</li>
+          <li>把新的 <b>显式 cache breakpoint</b> 加到长系统提示里，30 分钟内高频调用可省 90%</li>
+        </ul>
+      </div>
+      <div class="tier-card">
+        <h3>🏢 企业 IT / 采购决策</h3>
+        <ul class="clean">
+          <li>不要只看 $/token；对<b>典型工作流做 3 家 A/B</b>（GPT-5.6、Claude Sonnet 5/Opus 4.8、Gemini 3.1 Pro）</li>
+          <li>要求供应商提供<b>同任务的真实计费凭证</b>而非估算</li>
+          <li>为 cyber 用途独立做合规评估，考虑 Trusted Access 门槛</li>
+        </ul>
+      </div>
+      <div class="tier-card">
+        <h3>🔬 研究者 / 论文追踪</h3>
+        <ul class="clean">
+          <li>关注 <b>RSI Index / KernelGen 1P / NanoGPT</b> 三个自我改进内评——OpenAI 自曝内部研究者日均 token 是 GPT-5.5 时的 <b>2 倍多</b></li>
+          <li>Programmatic Tool Calling 与<b>受控代码执行 in-context</b> 或将改变 agent-research 范式</li>
+          <li>持续跟踪 Sonnet 5 / Opus 4.8 / Fable 5 / Gemini 3.5 Pro（延期至 7/17 发布）的对位</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. 置信度与不确定性 -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>置信度分级 & 结论</h2>
+    <table>
+      <thead><tr><th>论断</th><th>置信度</th><th>依据</th></tr></thead>
+      <tbody>
+        <tr><td>GPT-5.6 家族已 GA，价格与规格如上文</td><td><span class="badge hi">高</span></td><td>官方 blog + Simon Willison 复核</td></tr>
+        <tr><td>Agents' Last Exam 上领先 Claude Fable 5 约 13 分</td><td><span class="badge hi">高</span></td><td>官方数据，但基准由第三方维护</td></tr>
+        <tr><td>"用 token 更省，因此总成本更低"</td><td><span class="badge mid">中</span></td><td>官方模拟估算，非第三方复现</td></tr>
+        <tr><td>SWE-Bench Pro 落后 Claude 是真实能力短板</td><td><span class="badge mid">中</span></td><td>OpenAI 有反证但未去除该项</td></tr>
+        <tr><td>Programmatic Tool Calling 将成为下一代 agent 编排的默认范式</td><td><span class="badge mid">中</span></td><td>技术方向合理，但需生态验证</td></tr>
+        <tr><td>Cyber 滥用风险显著上升</td><td><span class="badge hi">高</span></td><td>OpenAI 自陈能力数据</td></tr>
+        <tr><td>GPT-5.6 会短期夺回 OpenAI 的旗舰话语权</td><td><span class="badge lo">低</span></td><td>叙事层判断，取决于 Claude Mythos 5 / Gemini 3.5 Pro 后续</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 10. Sources -->
+<section class="section">
+  <div class="card">
+    <h2><span class="dot"></span>信息来源（均为英文原文）</h2>
+    <ul class="clean">
+      <li><a class="linkbtn" href="https://openai.com/index/gpt-5-6/" target="_blank">OpenAI — GPT-5.6: Frontier intelligence that scales with your ambition (2026-07-09)</a></li>
+      <li><a class="linkbtn" href="https://openai.com/index/previewing-gpt-5-6-sol/" target="_blank">OpenAI — Previewing GPT-5.6 Sol</a></li>
+      <li><a class="linkbtn" href="https://openai.com/index/separating-signal-from-noise-coding-evaluations/" target="_blank">OpenAI — Separating signal from noise in coding evaluations (SWE-Bench Pro 质疑)</a></li>
+      <li><a class="linkbtn" href="https://simonwillison.net/2026/Jul/9/gpt-5-6/" target="_blank">Simon Willison — The new GPT-5.6 family: Luna, Terra, Sol</a></li>
+      <li><a class="linkbtn" href="https://simonwillison.net/2026/Jun/30/claude-sonnet-5/" target="_blank">Simon Willison — What's new in Claude Sonnet 5（对手对比参照）</a></li>
+      <li><a class="linkbtn" href="https://www.anthropic.com/news/claude-sonnet-5" target="_blank">Anthropic — Introducing Claude Sonnet 5</a></li>
+      <li><a class="linkbtn" href="https://developers.openai.com/api/docs/guides/tools-programmatic-tool-calling" target="_blank">OpenAI Docs — Programmatic Tool Calling</a></li>
+      <li><a class="linkbtn" href="https://developers.openai.com/api/docs/guides/tools-multi-agent" target="_blank">OpenAI Docs — Multi-agent (beta)</a></li>
+      <li><a class="linkbtn" href="https://deploymentsafety.openai.com/gpt-5-6" target="_blank">OpenAI — GPT-5.6 System Card</a></li>
+    </ul>
+    <p class="footnote">本文所有数据点均可回溯到上述英文原文。凡"官方口径"均标注来源；凡"独立评测"来自 Simon Willison 博客。作者未对任何模型持有偏好，评价基于当前公开数据。</p>
+  </div>
+</section>
+
+<div class="footer">
+  自动化 AI 日报 · 生成于 2026-07-14 · 输出面向中文读者 · 素材仅英文源
+</div>
+
+</div>
+
+<script>
+const commonOpts = (max) => ({
+  responsive:true,
+  maintainAspectRatio:false,
+  plugins:{
+    legend:{labels:{color:'#e6ecff'}},
+    tooltip:{backgroundColor:'#131a2c',titleColor:'#e6ecff',bodyColor:'#cfd9ff',borderColor:'#25314f',borderWidth:1}
+  },
+  scales:{
+    x:{ticks:{color:'#8ea1cc'},grid:{color:'rgba(37,49,79,.5)'}},
+    y:{ticks:{color:'#8ea1cc'},grid:{color:'rgba(37,49,79,.5)'},beginAtZero:true, suggestedMax:max}
+  }
+});
+
+// Agents' Last Exam
+new Chart(document.getElementById('chartALE'),{
+  type:'bar',
+  data:{
+    labels:['GPT-5.6 Sol','GPT-5.6 Terra','GPT-5.6 Luna','GPT-5.5','Claude Fable 5','Claude Opus 4.8','Gemini 3.1 Pro Preview'],
+    datasets:[{
+      label:'Agents\' Last Exam (%)',
+      data:[52.7,50.4,50.3,46.9,40.5,45.2,32.1],
+      backgroundColor:['#fbbf24','#4ade80','#93c5fd','#94a3b8','#c07f5f','#c07f5f','#4285f4']
+    }]
+  },
+  options: commonOpts(60)
+});
+
+// SWE-Bench Pro
+new Chart(document.getElementById('chartSWE'),{
+  type:'bar',
+  data:{
+    labels:['GPT-5.6 Sol','GPT-5.6 Terra','GPT-5.6 Luna','GPT-5.5','Claude Mythos 5','Claude Fable 5','Claude Opus 4.8','Gemini 3.1 Pro'],
+    datasets:[{
+      label:'SWE-Bench Pro (%)',
+      data:[64.6,63.4,62.7,59.4,80.3,80,69.2,54.2],
+      backgroundColor:['#fbbf24','#4ade80','#93c5fd','#94a3b8','#c07f5f','#c07f5f','#c07f5f','#4285f4']
+    }]
+  },
+  options: commonOpts(90)
+});
+
+// Coding Agent Index
+new Chart(document.getElementById('chartCoding'),{
+  type:'bar',
+  data:{
+    labels:['GPT-5.6 Sol','GPT-5.6 Terra','GPT-5.6 Luna','GPT-5.5','Claude Fable 5','Claude Opus 4.8','Gemini 3.1 Pro'],
+    datasets:[{
+      label:'Coding Agent Index',
+      data:[80,77.4,74.6,76.4,77.2,72.5,42.7],
+      backgroundColor:['#fbbf24','#4ade80','#93c5fd','#94a3b8','#c07f5f','#c07f5f','#4285f4']
+    }]
+  },
+  options: commonOpts(90)
+});
+
+// BrowseComp
+new Chart(document.getElementById('chartBrowse'),{
+  type:'bar',
+  data:{
+    labels:['GPT-5.6 Sol Ultra','GPT-5.6 Sol','GPT-5.6 Terra','GPT-5.6 Luna','GPT-5.5','Claude Mythos 5','Claude Opus 4.8','Gemini 3.1 Pro'],
+    datasets:[{
+      label:'BrowseComp (%)',
+      data:[92.2,90.4,87.5,83.3,84.4,88,84.3,85.9],
+      backgroundColor:['#fde68a','#fbbf24','#4ade80','#93c5fd','#94a3b8','#c07f5f','#c07f5f','#4285f4']
+    }]
+  },
+  options: commonOpts(100)
+});
+</script>
+</body>
+</html>

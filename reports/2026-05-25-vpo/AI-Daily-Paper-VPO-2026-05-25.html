@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | Vector Policy Optimization</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --panel-2: #eef3f7;
+      --ink: #101418;
+      --muted: #5d6875;
+      --line: #d9e1ea;
+      --blue: #0b66c3;
+      --cyan: #16a3b8;
+      --green: #138a52;
+      --orange: #c46a18;
+      --red: #b23a48;
+      --shadow: 0 20px 60px rgba(16, 20, 24, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1419;
+        --panel: #161d24;
+        --panel-2: #1f2a33;
+        --ink: #edf2f7;
+        --muted: #a9b4c0;
+        --line: #33414f;
+        --shadow: 0 20px 60px rgba(0, 0, 0, .32);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+    .kicker { color: var(--blue); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    h1 { margin: 12px 0 14px; font-size: clamp(30px, 5vw, 56px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 44px 0 16px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 26px 0 12px; font-size: 19px; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .subtitle { max-width: 850px; color: var(--muted); font-size: 18px; }
+    .meta-grid, .card-grid, .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .card, .metric, .section, .quote, .risk {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .metric { background: var(--panel-2); }
+    .label { color: var(--muted); font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+    .value { margin-top: 6px; font-size: 15px; font-weight: 700; }
+    .section { margin-top: 18px; }
+    .quote {
+      border-left: 5px solid var(--blue);
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--panel-2);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; color: var(--muted); font-size: 13px; background: var(--panel); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      margin: 16px 0 22px;
+      font-size: 14px;
+    }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--panel-2); color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: 0; }
+    .strong { font-weight: 800; color: var(--green); }
+    .warn { color: var(--orange); font-weight: 800; }
+    .bad { color: var(--red); font-weight: 800; }
+    .diagram {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 18px 0;
+      overflow-x: auto;
+    }
+    .diagram svg { width: 100%; min-width: 760px; height: auto; display: block; }
+    .flow-text { font-size: 15px; font-weight: 700; fill: #101418; }
+    .flow-muted { font-size: 12px; fill: #5d6875; }
+    .small { color: var(--muted); font-size: 13px; }
+    .term { display: grid; grid-template-columns: 170px 1fr 1fr; gap: 0; border: 1px solid var(--line); border-bottom: 0; }
+    .term > div { padding: 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .term > div:last-child { border-right: 0; }
+    .term .name { font-weight: 800; background: var(--panel-2); }
+    .sources li { margin-bottom: 8px; }
+    .footer { color: var(--muted); font-size: 12px; margin: 36px 0 10px; }
+    @media (max-width: 780px) {
+      .wrap { padding: 14px; }
+      .hero { padding: 22px; }
+      .meta-grid, .card-grid, .impact-grid { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; }
+      .term > div { border-right: 0; }
+      table { font-size: 13px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="kicker">AI每日论文精选 · 2026-05-25</div>
+      <h1>让 AI 不再只押一个答案：Vector Policy Optimization</h1>
+      <p class="subtitle">今日论文：<strong>Vector Policy Optimization: Training for Diversity Improves Test-Time Search</strong>。它讨论一个很现实的问题：如果未来的 AI 系统会在推理时生成很多候选答案，再用搜索、验证器或进化算法挑选最好的，那么训练阶段就不应该把模型逼成“只会一种解法”。</p>
+      <div class="meta-grid">
+        <div class="metric"><div class="label">论文</div><div class="value">Vector Policy Optimization: Training for Diversity Improves Test-Time Search</div></div>
+        <div class="metric"><div class="label">作者</div><div class="value">Ryan Bahlous-Boldi, Isha Puri, Idan Shenfeld, Akarsh Kumar, Mehul Damani, Sebastian Risi, Omar Khattab, Zhang-Wei Hong, Pulkit Agrawal</div></div>
+        <div class="metric"><div class="label">机构</div><div class="value">MIT, Improbable AI Lab, MIT-IBM Computing Research Lab, Sakana AI</div></div>
+        <div class="metric"><div class="label">发布时间</div><div class="value">2026-05-21</div></div>
+        <div class="metric"><div class="label">平台</div><div class="value">arXiv:2605.22817 · cs.LG / cs.AI / cs.CL / cs.NE</div></div>
+        <div class="metric"><div class="label">链接</div><div class="value"><a href="https://arxiv.org/abs/2605.22817">arxiv.org/abs/2605.22817</a></div></div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>1. 为什么今天选它？</h2>
+      <p>过去一年，“测试时计算”正在成为 AI 能力增长的重要路线：模型不是一次性回答，而是生成很多方案，再用验证器、搜索或进化算法筛选。AlphaEvolve、FunSearch、Best-of-N、Tree-of-Thoughts、代码评测器驱动的 Agent，都属于这条路线。</p>
+      <p>但 VPO 指出一个矛盾：我们一边希望推理阶段有很多不同候选，另一边又用传统 RL 后训练把模型压向一个最高分答案。这就像训练一个团队时，只奖励“所有人说同一个标准答案”，最后比赛时却要求他们拿出十种解法。</p>
+      <div class="card-grid">
+        <div class="card"><div class="label">行业意义</div><p>如果 AI 产品越来越依赖“多候选 + 自动筛选”，那么训练目标必须服务于搜索，而不是破坏搜索。</p></div>
+        <div class="card"><div class="label">技术突破</div><p>VPO 把奖励从一个数字改成多个维度，让模型学会输出一组互补答案。</p></div>
+        <div class="card"><div class="label">长期价值</div><p>它可能影响 RLHF、RLVR、代码 Agent、工具调用 Agent 和科研发现系统的后训练范式。</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2. 一句话讲透论文</h2>
+      <div class="quote">这篇论文是在训练 AI 做一个“解题投资组合”，而不是把所有筹码押在一个看起来最高分的答案上。</div>
+      <p>普通 RL 像是在挑一个冠军选手；VPO 像是在组建一支队伍：有人擅长找证据，有人擅长最后计算，有人擅长避坑，有人擅长代码边界条件。真正上场时，搜索系统再从这支队伍里挑最适合当前问题的人。</p>
+    </section>
+
+    <section class="section">
+      <h2>3. 核心贡献拆解</h2>
+      <table>
+        <thead><tr><th>问题</th><th>旧方法</th><th>VPO 的做法</th><th>为什么更好</th></tr></thead>
+        <tbody>
+          <tr><td>奖励信号</td><td>把所有指标加权成一个分数</td><td>保留多个奖励维度，例如代码测试用例、推理每一步、工具参数质量</td><td>不丢掉“哪里好、哪里坏”的结构信息</td></tr>
+          <tr><td>答案生成</td><td>每次生成一个答案</td><td>一次生成多个候选答案，形成一个集合</td><td>模型可以看到前面的候选，主动补充不同路线</td></tr>
+          <tr><td>训练目标</td><td>让单个答案在固定标尺上得高分</td><td>随机抽取不同权重，看答案集合能否覆盖不同取舍</td><td>鼓励“有用的多样性”，不是表面换句话说</td></tr>
+          <tr><td>推理阶段</td><td>多采样后常得到近似重复答案</td><td>给搜索器提供更分散、更有竞争力的候选池</td><td>搜索预算越大，越能从候选池里榨出价值</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>4. 工作原理：像经营一支“专家解题队”</h2>
+      <p>想象你要解决一道复杂题。传统 RL 训练相当于告诉全班同学：“只看总分，谁最高学谁。”结果大家很快都学成同一种做法。VPO 则说：“这题有多个评分维度：思路、证据、计算、格式、安全。我们不只要一个总分最高的人，而要一组覆盖不同强项的人。”</p>
+      <div class="diagram">
+        <svg viewBox="0 0 960 360" role="img" aria-label="VPO 工作流程图">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 Z" fill="#5d6875"/></marker>
+          </defs>
+          <rect x="30" y="40" width="170" height="80" rx="8" fill="#e8f1fb" stroke="#9bbce0"/>
+          <text x="115" y="75" text-anchor="middle" class="flow-text">输入问题</text>
+          <text x="115" y="100" text-anchor="middle" class="flow-muted">prompt x</text>
+          <line x1="200" y1="80" x2="260" y2="80" stroke="#5d6875" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="260" y="30" width="210" height="100" rx="8" fill="#e7f7f3" stroke="#8cc9b8"/>
+          <text x="365" y="64" text-anchor="middle" class="flow-text">一次生成多个答案</text>
+          <text x="365" y="90" text-anchor="middle" class="flow-muted">y1, y2, y3 在同一条链里产生</text>
+          <line x1="470" y1="80" x2="530" y2="80" stroke="#5d6875" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="530" y="30" width="210" height="100" rx="8" fill="#fff3df" stroke="#ddb36e"/>
+          <text x="635" y="64" text-anchor="middle" class="flow-text">多维评分</text>
+          <text x="635" y="90" text-anchor="middle" class="flow-muted">证据、答案、工具、测试用例...</text>
+          <line x1="740" y1="80" x2="800" y2="80" stroke="#5d6875" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="800" y="30" width="130" height="100" rx="8" fill="#fdecef" stroke="#e59aa5"/>
+          <text x="865" y="64" text-anchor="middle" class="flow-text">RL 更新</text>
+          <text x="865" y="90" text-anchor="middle" class="flow-muted">奖励整个集合</text>
+          <rect x="210" y="190" width="180" height="90" rx="8" fill="#f7f9fb" stroke="#d9e1ea"/>
+          <text x="300" y="224" text-anchor="middle" class="flow-text">传统 GRPO</text>
+          <text x="300" y="250" text-anchor="middle" class="flow-muted">所有答案被推向同一个峰</text>
+          <circle cx="252" cy="306" r="9" fill="#0b66c3"/><circle cx="280" cy="304" r="9" fill="#0b66c3"/><circle cx="310" cy="307" r="9" fill="#0b66c3"/><circle cx="340" cy="305" r="9" fill="#0b66c3"/>
+          <rect x="560" y="190" width="210" height="90" rx="8" fill="#f7f9fb" stroke="#d9e1ea"/>
+          <text x="665" y="224" text-anchor="middle" class="flow-text">VPO</text>
+          <text x="665" y="250" text-anchor="middle" class="flow-muted">答案分布在不同取舍区域</text>
+          <circle cx="596" cy="308" r="9" fill="#0b66c3"/><circle cx="638" cy="292" r="9" fill="#16a3b8"/><circle cx="690" cy="315" r="9" fill="#138a52"/><circle cx="735" cy="285" r="9" fill="#c46a18"/>
+        </svg>
+      </div>
+      <h3>步骤化理解</h3>
+      <p><strong>第一步：</strong>模型一次输出多个候选答案，而不是只输出一个。</p>
+      <p><strong>第二步：</strong>每个候选不只拿一个总分，而是拿一个向量分数。比如代码题可以按每个测试用例打分；多跳问答可以按每一步证据是否找对打分。</p>
+      <p><strong>第三步：</strong>训练时随机抽取不同“评分权重”。有时更看重证据，有时更看重最终答案，有时更看重工具参数。</p>
+      <p><strong>第四步：</strong>如果这一组候选能在不同权重下都找到强项答案，整个集合就得高分。于是模型学会输出一组互补候选。</p>
+    </section>
+
+    <section class="section">
+      <h2>5. 关键术语解释</h2>
+      <div class="term"><div class="name">RL 后训练</div><div>专业解释：用奖励信号继续优化已经训练好的语言模型策略。</div><div>白话解释：模型毕业后再“专项训练”，告诉它什么答案更值得鼓励。</div></div>
+      <div class="term"><div class="name">GRPO</div><div>专业解释：Group Relative Policy Optimization，一种用同组样本相对奖励来更新策略的 RL 方法。</div><div>白话解释：不一定要训练一个额外评委，而是把同一题的多个答案互相比，好的加分，差的扣分。</div></div>
+      <div class="term"><div class="name">标量奖励</div><div>专业解释：把所有评价维度合成一个数字。</div><div>白话解释：像只看总分，不看语文、数学、英语分别哪里强。</div></div>
+      <div class="term"><div class="name">向量奖励</div><div>专业解释：保留多个 reward component，形成 r = [r1, r2, ...]。</div><div>白话解释：成绩单上保留每一科分数，而不是只写一个总分。</div></div>
+      <div class="term"><div class="name">Pareto 前沿</div><div>专业解释：多目标优化中，不能在不牺牲其他目标的情况下继续改进某一目标的候选集合。</div><div>白话解释：一组各有取舍的高手：有人快，有人稳，有人便宜，不能简单说谁绝对最好。</div></div>
+      <div class="term"><div class="name">best@k / pass@k</div><div>专业解释：从 k 个候选里选最好或看是否至少一个通过。</div><div>白话解释：不是看第一枪打没打中，而是给 k 次机会，看最好的一次能到哪里。</div></div>
+      <div class="term"><div class="name">测试时搜索</div><div>专业解释：推理阶段生成、评估、筛选或迭代候选解的过程。</div><div>白话解释：AI 不是直接交卷，而是先打草稿、比较方案、修改，再交最好的。</div></div>
+    </section>
+
+    <section class="section">
+      <h2>6. 实验结果解读</h2>
+      <p>论文在四类任务上做了主实验：多跳问答 MuSiQue、链式推理 EUREQA、迷宫 Maze、工具调用 ToolRL。核心观察很一致：传统 GRPO 很快平台化，继续多采样也拿不到太多新价值；VPO 随着候选数量增加继续提升。</p>
+      <table>
+        <thead><tr><th>任务</th><th>模型</th><th>GRPO best@30</th><th>VPO best@30</th><th>读法</th></tr></thead>
+        <tbody>
+          <tr><td>MuSiQue 多跳问答</td><td>Qwen3-1.7B</td><td>0.728</td><td class="strong">0.832</td><td>VPO 更会保留不同证据路径，F1@30 也明显更高。</td></tr>
+          <tr><td>EUREQA 链式推理</td><td>Qwen3-8B</td><td>0.236</td><td class="strong">0.279</td><td>每一步推理都是一个奖励维度，VPO 能覆盖更多局部路径。</td></tr>
+          <tr><td>Maze 迷宫导航</td><td>Qwen3-4B</td><td>0.432</td><td class="strong">0.593</td><td>即使最终仍按统一总分评价，训练时保留多取舍也更强。</td></tr>
+          <tr><td>ToolRL 工具调用</td><td>Qwen3-1.7B</td><td>0.925</td><td class="strong">0.952</td><td>任务接近天花板，但 VPO 在候选多样性上优势明显。</td></tr>
+        </tbody>
+      </table>
+      <p>更重要的是 LiveCodeBench 案例：单次 pass@1 时 GRPO 更强，因为它就是为“第一答案最好”训练的；但一旦允许多候选或 OpenEvolve 进化搜索，VPO 反超，并在 32 个最难问题上持续找到 GRPO 找不到的新解。</p>
+      <div class="diagram">
+        <svg viewBox="0 0 960 330" role="img" aria-label="VPO 和 GRPO 的测试时搜索差异">
+          <rect x="55" y="40" width="850" height="230" rx="8" fill="#f7f9fb" stroke="#d9e1ea"/>
+          <line x1="120" y1="230" x2="820" y2="230" stroke="#5d6875" stroke-width="2"/>
+          <line x1="120" y1="230" x2="120" y2="70" stroke="#5d6875" stroke-width="2"/>
+          <text x="470" y="300" text-anchor="middle" class="flow-muted">候选数量 k / 搜索迭代增加</text>
+          <text x="74" y="155" text-anchor="middle" transform="rotate(-90 74 155)" class="flow-muted">最好候选质量</text>
+          <path d="M120 205 C210 170, 330 150, 430 148 S650 146, 820 145" fill="none" stroke="#b23a48" stroke-width="5"/>
+          <path d="M120 212 C220 175, 330 135, 450 110 S650 82, 820 66" fill="none" stroke="#138a52" stroke-width="5"/>
+          <circle cx="430" cy="148" r="6" fill="#b23a48"/><circle cx="450" cy="110" r="6" fill="#138a52"/>
+          <text x="725" y="135" class="flow-text" fill="#b23a48">GRPO：很快平台化</text>
+          <text x="705" y="58" class="flow-text" fill="#138a52">VPO：搜索预算越大越有用</text>
+          <text x="145" y="255" class="flow-muted">k=1</text><text x="805" y="255" class="flow-muted">k=30 / 200轮</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>7. 局限性与问题</h2>
+      <div class="impact-grid">
+        <div class="risk"><div class="label">不是免费午餐</div><p>VPO 需要多答案链和多维奖励，训练与评估都更复杂。</p></div>
+        <div class="risk"><div class="label">不适合只要第一答案的场景</div><p>论文承认 VPO 会牺牲 pass@1，适合本来就有测试时搜索的系统。</p></div>
+        <div class="risk"><div class="label">依赖可分解奖励</div><p>如果奖励本质上只有一个维度，VPO 的优势会缩小，甚至低于标量基线。</p></div>
+      </div>
+      <p>这意味着 VPO 不是“所有 AI 产品都该立刻使用”的方法。它更适合代码、工具调用、多步推理、科研发现、自动验证足够强的任务。对于聊天、客服、简单摘要这类只需一次稳定输出的场景，它可能不是最佳优先级。</p>
+    </section>
+
+    <section class="section">
+      <h2>8. 产业影响分析</h2>
+      <table>
+        <thead><tr><th>对象</th><th>可能受益</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td>代码 Agent 公司</td><td class="strong">高</td><td>代码天然有测试用例，适合向量奖励，也适合多候选搜索。</td></tr>
+          <tr><td>科研发现系统</td><td class="strong">高</td><td>AlphaEvolve 类系统依赖“生成很多方案 + 自动评估”，VPO 正好服务这个范式。</td></tr>
+          <tr><td>RLHF / 对齐团队</td><td>中高</td><td>用户偏好本来就是多维的，VPO 提醒团队不要过早压成一个总分。</td></tr>
+          <tr><td>推理服务商</td><td>中</td><td>如果客户愿意为搜索预算付费，多样候选会提高高端任务成功率。</td></tr>
+          <tr><td>只做单轮聊天的应用</td><td class="warn">有限</td><td>没有搜索和验证器时，VPO 的优势难以兑现。</td></tr>
+        </tbody>
+      </table>
+      <p>更大的趋势是：AI 竞争可能从“单个模型第一答案有多强”，转向“模型 + 搜索 + 验证器 + 后训练目标”组成的系统工程竞争。VPO 的价值在于，它让训练阶段开始为这种系统工程服务。</p>
+    </section>
+
+    <section class="section">
+      <h2>9. 普通人应该记住什么？</h2>
+      <p>今天的 AI 研究正在从“让模型更像一个答题高手”，走向“让模型成为一个会提出多种候选方案的团队成员”。</p>
+      <p>如果一个系统后面有搜索器、测试器或评审器，那么模型最重要的能力不一定是第一句话就说对，而是能提供足够多、足够不同、且都靠谱的选择。VPO 就是在训练这种能力。</p>
+    </section>
+
+    <section class="section">
+      <h2>10. 延伸阅读</h2>
+      <ul class="sources">
+        <li>原论文：<a href="https://arxiv.org/abs/2605.22817">Vector Policy Optimization: Training for Diversity Improves Test-Time Search</a></li>
+        <li>论文 HTML：<a href="https://arxiv.org/html/2605.22817v1">arXiv HTML version</a></li>
+        <li>AlphaEvolve 官方博客：<a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/">Google DeepMind: AlphaEvolve</a></li>
+        <li>AlphaEvolve 论文：<a href="https://arxiv.org/abs/2506.13131">AlphaEvolve: A coding agent for scientific and algorithmic discovery</a></li>
+        <li>Multi-answer RL 相关工作：<a href="https://arxiv.org/abs/2603.24844">Reaching Beyond the Mode</a></li>
+        <li>GRPO 背景：<a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</a></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>11. 引用来源</h2>
+      <ol class="sources">
+        <li>Ryan Bahlous-Boldi et al., <a href="https://arxiv.org/abs/2605.22817">Vector Policy Optimization: Training for Diversity Improves Test-Time Search</a>, arXiv, submitted 2026-05-21.</li>
+        <li>Google DeepMind, <a href="https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/">AlphaEvolve: A Gemini-powered coding agent for designing advanced algorithms</a>, 2025-05-14.</li>
+        <li>Matej Balog et al., <a href="https://arxiv.org/abs/2506.13131">AlphaEvolve: A coding agent for scientific and algorithmic discovery</a>, arXiv, 2025.</li>
+        <li>Isha Puri et al., <a href="https://arxiv.org/abs/2603.24844">Reaching Beyond the Mode: RL for Distributional Reasoning in Language Models</a>, arXiv, 2026.</li>
+        <li>Zhihong Shao et al., <a href="https://arxiv.org/abs/2402.03300">DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models</a>, arXiv, 2024.</li>
+      </ol>
+    </section>
+
+    <p class="footer">本报告为中文重构解读，图示为重新设计的解释性 SVG，不是论文截图。生成时间：2026-05-25 Asia/Shanghai。</p>
+  </main>
+</body>
+</html>

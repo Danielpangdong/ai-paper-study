@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI每日论文精选｜Crafter：让 AI 生成可编辑科学图</title>
+<style>
+:root{
+  --bg:#f5f7fb;
+  --ink:#111827;
+  --muted:#5b6475;
+  --soft:#e7ecf4;
+  --card:#ffffff;
+  --line:#d8deea;
+  --navy:#162033;
+  --cyan:#0ea5c8;
+  --blue:#2563eb;
+  --amber:#d9901f;
+  --green:#0f9f6e;
+  --red:#c2413a;
+  --shadow:0 18px 46px rgba(22,32,51,.10);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:linear-gradient(180deg,#101827 0,#182235 290px,var(--bg) 290px);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Arial,sans-serif;
+  line-height:1.72;
+}
+a{color:#0969da;text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:34px 20px 68px}
+.hero{color:#fff;padding:20px 0 34px}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);border-radius:999px;padding:7px 12px;font-size:13px;color:#cfe7f2}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 16px var(--cyan)}
+h1{font-size:38px;line-height:1.22;margin:20px 0 10px;letter-spacing:0}
+.subtitle{font-size:17px;color:#c9d3e6;max-width:850px}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}
+.pill{border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;color:#dce5f5;font-size:13px}
+.pill b{display:block;color:#fff;font-size:12px;letter-spacing:.4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:26px;margin:18px 0}
+.section-title{display:flex;align-items:center;gap:12px;margin:0 0 16px}
+.num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#fff;background:var(--navy);border-radius:7px;padding:3px 8px;font-size:12px}
+h2{font-size:23px;line-height:1.35;margin:0}
+h3{font-size:17px;margin:18px 0 8px}
+p{margin:10px 0;color:var(--muted)}
+.lead{font-size:18px;color:#243046}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.mini{border:1px solid var(--line);border-radius:12px;background:#fbfcff;padding:17px}
+.mini b{display:block;color:var(--ink);margin-bottom:6px}
+.mini p{font-size:14px;margin:0}
+.callout{border-left:5px solid var(--cyan);background:#eefaff;border-radius:12px;padding:17px 18px;margin:14px 0}
+.callout p{color:#1f3a4a;margin:0;font-size:17px}
+.warn{border-left-color:var(--amber);background:#fff8ea}
+.warn p{color:#523a12}
+table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;margin:14px 0;font-size:14px}
+th,td{padding:12px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#f0f3f9;color:#334155;font-weight:700}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:700;color:#172033}
+.tag{display:inline-block;border:1px solid var(--line);background:#f8fafc;border-radius:999px;padding:3px 9px;font-size:12px;color:#506079;margin:2px 5px 2px 0}
+.svgbox{background:#0f172a;border-radius:14px;padding:14px;overflow:auto;margin:15px 0}
+.svgbox svg{max-width:100%;height:auto;display:block;margin:auto}
+.caption{text-align:center;color:#6b7280;font-size:13px;margin-top:8px}
+.terms{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.term{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}
+.term b{color:var(--navy)}
+.term small{display:block;color:#64748b;margin-top:4px}
+.sources li{margin:8px 0;color:#4b5563}
+.footer{font-size:13px;color:#738097;text-align:center;margin-top:24px}
+@media (max-width:760px){
+  .wrap{padding:22px 14px 44px}
+  h1{font-size:29px}
+  .meta,.g2,.g3,.terms{grid-template-columns:1fr}
+  .card{padding:20px}
+  th,td{padding:10px 9px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow"><span class="dot"></span>AI每日论文精选 · 2026-06-06</div>
+    <h1>Crafter：AI 不只是画图，而是把科学图变成可编辑的“工程项目”</h1>
+    <p class="subtitle">今日精选论文：<b>Crafter: A Multi-Agent Harness for Editable Scientific Figure Generation from Diverse Inputs</b>。它的关键价值不是“图更漂亮”，而是让 AI 图示具备计划、检查、返工和可编辑交付。</p>
+    <div class="meta">
+      <div class="pill"><b>论文平台</b>arXiv · cs.CV / cs.AI / cs.CL</div>
+      <div class="pill"><b>发布时间</b>2026-05-28</div>
+      <div class="pill"><b>机构</b>UIUC · 清华大学 · 北京大学</div>
+      <div class="pill"><b>代码数据</b>GitHub + CraftBench</div>
+    </div>
+  </header>
+
+  <section class="card">
+    <div class="section-title"><span class="num">01</span><h2>标题区</h2></div>
+    <table>
+      <tr><th>项目</th><th>信息</th></tr>
+      <tr><td>英文标题</td><td>Crafter: A Multi-Agent Harness for Editable Scientific Figure Generation from Diverse Inputs</td></tr>
+      <tr><td>中文标题</td><td>Crafter：面向多种输入的可编辑科学图生成多智能体框架</td></tr>
+      <tr><td>作者</td><td>Haozhe Zhao, Shuzheng Si, Zhenhailong Wang, Zheng Wang, Liang Chen, Xiaotong Li, Zhixiang Liang, Maosong Sun, Minjia Zhang</td></tr>
+      <tr><td>机构</td><td>University of Illinois at Urbana-Champaign, Tsinghua University, Peking University</td></tr>
+      <tr><td>链接</td><td><a href="https://arxiv.org/abs/2605.30611">arXiv:2605.30611</a> · <a href="https://github.com/HaozheZhao/Crafter">GitHub</a> · <a href="https://huggingface.co/papers/2605.30611">Hugging Face Papers</a> · <a href="https://huggingface.co/datasets/BleachNick/CraftBench">CraftBench 数据集</a></td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">02</span><h2>为什么今天选它？</h2></div>
+    <p class="lead">因为它抓住了“AI 生成内容进入专业工作流”的一个核心矛盾：普通生成模型能给你一张看起来不错的图，但专业工作需要的是可以检查、修改、复用、交付的结构化成果。</p>
+    <div class="grid g3">
+      <div class="mini"><b>行业意义</b><p>科研、咨询、产品、教育都依赖图示。图示从一次性图片变成可编辑对象，等于把 AI 从“出图工具”推进到“生产流程工具”。</p></div>
+      <div class="mini"><b>技术突破</b><p>论文没有盲目换更大的图像模型，而是在外面套了一个 Harness：多角色规划、执行、验证、修订。</p></div>
+      <div class="mini"><b>长期价值</b><p>这是一种可迁移范式：当生成模型容易犯局部错误时，用结构化记忆和闭环验证包住它，可能适用于图表、UI、PPT、代码和报告。</p></div>
+    </div>
+    <div class="callout">
+      <p><b>一句话讲透：</b>Crafter 像给 AI 画图模型配了一个小型设计团队：有人读论文定目标，有人出方案，有人画图，有人挑错，有人把修改写进“施工图”，直到交付一张还能继续编辑的科学图。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">03</span><h2>核心贡献拆解</h2></div>
+    <table>
+      <tr><th>贡献</th><th>解决的问题</th><th>为什么更好</th></tr>
+      <tr><td>Crafter</td><td>从论文、草图、局部图、关键元素等不同输入生成科学图。</td><td>用多智能体协作和共享规格书，避免每次只靠一段提示词碰运气。</td></tr>
+      <tr><td>CraftEditor</td><td>把不可编辑的 raster 图片转成可编辑 SVG。</td><td>用户可以改标签、移动箭头、替换图标，而不是重新生成整张图。</td></tr>
+      <tr><td>CraftBench</td><td>旧评测多集中在“文字生成学术方法图”。</td><td>覆盖 279 个样本、三类图示、四类输入条件，更接近真实工作场景。</td></tr>
+    </table>
+    <p>它的思路很像装修：只说“帮我把客厅改好看”很容易返工；如果每次返工都更新一份结构化施工图，下一轮才不会忘记墙在哪、门在哪、插座在哪。</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">04</span><h2>工作原理：从“抽奖出图”到“闭环交付”</h2></div>
+    <div class="svgbox">
+      <svg width="960" height="430" viewBox="0 0 960 430" role="img" aria-label="Crafter 多智能体闭环图">
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7dd3fc"/></marker>
+          <linearGradient id="g" x1="0" x2="1"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#fbbf24"/></linearGradient>
+        </defs>
+        <rect width="960" height="430" rx="16" fill="#0f172a"/>
+        <text x="36" y="42" fill="#e5edf8" font-size="24" font-weight="700">Crafter 的四角色 Harness</text>
+        <text x="36" y="70" fill="#94a3b8" font-size="14">同一个生成模型外面，加上计划、验证、修订和共享规格书</text>
+        <rect x="350" y="130" width="260" height="170" rx="18" fill="#111c31" stroke="#334155"/>
+        <text x="480" y="164" text-anchor="middle" fill="#fff" font-size="20" font-weight="700">共享规格书 S</text>
+        <text x="480" y="198" text-anchor="middle" fill="#cbd5e1" font-size="14">目标、布局、元素、约束</text>
+        <text x="480" y="224" text-anchor="middle" fill="#cbd5e1" font-size="14">上一轮诊断与 typed edits</text>
+        <text x="480" y="250" text-anchor="middle" fill="#cbd5e1" font-size="14">保证修改不互相打架</text>
+        <circle cx="165" cy="148" r="58" fill="#12243a" stroke="#22d3ee"/>
+        <text x="165" y="142" text-anchor="middle" fill="#67e8f9" font-size="18" font-weight="700">Designer</text>
+        <text x="165" y="166" text-anchor="middle" fill="#cbd5e1" font-size="13">提出 K 个方案</text>
+        <circle cx="795" cy="148" r="58" fill="#2b2112" stroke="#fbbf24"/>
+        <text x="795" y="142" text-anchor="middle" fill="#fde68a" font-size="18" font-weight="700">Executor</text>
+        <text x="795" y="166" text-anchor="middle" fill="#e5e7eb" font-size="13">调用图像模型</text>
+        <circle cx="795" cy="330" r="58" fill="#153222" stroke="#34d399"/>
+        <text x="795" y="324" text-anchor="middle" fill="#86efac" font-size="18" font-weight="700">Verifier</text>
+        <text x="795" y="348" text-anchor="middle" fill="#d1fae5" font-size="13">按维度挑错</text>
+        <circle cx="165" cy="330" r="58" fill="#321b1a" stroke="#fb7185"/>
+        <text x="165" y="324" text-anchor="middle" fill="#fda4af" font-size="18" font-weight="700">Reviser</text>
+        <text x="165" y="348" text-anchor="middle" fill="#ffe4e6" font-size="13">写入结构化修正</text>
+        <path d="M224 148 C270 120 310 118 350 155" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <path d="M610 155 C670 110 715 112 738 146" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <path d="M795 207 L795 267" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <path d="M738 330 C690 365 650 350 610 274" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <path d="M350 274 C292 354 246 368 224 330" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <path d="M165 272 L165 206" stroke="#7dd3fc" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <rect x="344" y="356" width="272" height="42" rx="21" fill="url(#g)" opacity=".95"/>
+        <text x="480" y="383" text-anchor="middle" fill="#06111f" font-size="16" font-weight="700">接受、继续修、或回退到最佳版本</text>
+      </svg>
+    </div>
+    <p class="caption">重绘图示：不是截图，而是把论文机制翻译成可读流程。</p>
+    <div class="grid g2">
+      <div class="mini"><b>第一步：多方案探索</b><p>一次不要只画一张。先让 Designer 提出多个视觉方案，避免一开始走错布局路线。</p></div>
+      <div class="mini"><b>第二步：结构化纠错</b><p>批评不是追加一句“再大一点”。它会变成明确修改项，例如扩大标题、禁止伪文字、调整箭头连接。</p></div>
+      <div class="mini"><b>第三步：指令式验证</b><p>Verifier 不只打分，还说明错在哪里、该怎么修。像审稿人给出可执行意见。</p></div>
+      <div class="mini"><b>第四步：可编辑交付</b><p>CraftEditor 再把最终图片拆解、定位、组合成 SVG，让后续人工精修成为可能。</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">05</span><h2>与旧方法对比</h2></div>
+    <table>
+      <tr><th>方法</th><th>像什么</th><th>主要问题</th><th>Crafter 的变化</th></tr>
+      <tr><td>普通文生图</td><td>让一个画师听一句需求直接交稿</td><td>标签错、箭头错、布局不稳，且不好局部修改</td><td>增加设计、审查、返工流程</td></tr>
+      <tr><td>反复改 Prompt</td><td>电话里一遍遍补充装修要求</td><td>前后要求容易矛盾，模型可能越修越乱</td><td>把修改写入共享规格书</td></tr>
+      <tr><td>代码画图</td><td>用工程图纸画线框</td><td>可编辑但视觉表现弱，图标与复杂版式不够自然</td><td>保留图像模型的视觉能力，再转成可编辑 SVG</td></tr>
+      <tr><td>Crafter</td><td>一个小型设计交付团队</td><td>成本和延迟更高，依赖强闭源模型</td><td>更适合专业图示和长期工作流</td></tr>
+    </table>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">06</span><h2>关键术语解释</h2></div>
+    <div class="terms">
+      <div class="term"><b>Harness</b><small>专业解释：包在执行模型外部的编排层，负责计划、验证、修订和状态管理。</small><p>白话：给“会干活但会犯错的人”配一个项目经理和质检员。</p></div>
+      <div class="term"><b>Raster / SVG</b><small>专业解释：Raster 是像素图；SVG 是由形状、文字、路径组成的矢量图。</small><p>白话：前者像照片，放大和修改困难；后者像 PPT 元件，可以单独移动和编辑。</p></div>
+      <div class="term"><b>VLM-as-judge</b><small>专业解释：用视觉语言模型作为评审器，对图像和目标进行对比打分。</small><p>白话：让另一个能看图的 AI 当评委，但评委也可能有偏见。</p></div>
+      <div class="term"><b>Typed Edits</b><small>专业解释：结构化修改操作，如增加布局约束、禁止某类伪影、调整命名元素。</small><p>白话：不是“改好看点”，而是“把 A 框右移 20%，箭头接到 B”。</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">07</span><h2>实验结果怎么读？</h2></div>
+    <table>
+      <tr><th>指标</th><th>Crafter 结果</th><th>意味着什么</th></tr>
+      <tr><td>PaperBanana-Bench</td><td>相对最强 agentic 基线领先 16.61 分。</td><td>在学术方法图这种旧基准上，它不是只靠运气提升，而是系统性更稳。</td></tr>
+      <tr><td>CraftBench</td><td>相对最强 agentic 基线领先 22.20 分。</td><td>在更多图型、更多输入条件下优势更大，说明它不是只适配单一场景。</td></tr>
+      <tr><td>消融实验</td><td>去掉任一机制，整体下降 5.04 到 8.90 分。</td><td>多方案、结构化纠错、迭代验证都不是装饰，而是实际贡献质量。</td></tr>
+      <tr><td>SVG 编辑质量</td><td>CraftEditor 总分 8.04；AutoFigure-Edit 6.91；Edit-Banana 3.69。</td><td>“能不能继续编辑”是它与普通图片生成工具的核心分水岭。</td></tr>
+      <tr><td>成本</td><td>Crafter 每图约 0.25-0.32 美元；CraftEditor 每次转换约 0.85 美元。</td><td>比简单生成贵，但如果替代数小时人工画图，成本仍可能合理。</td></tr>
+    </table>
+    <div class="svgbox">
+      <svg width="920" height="310" viewBox="0 0 920 310" role="img" aria-label="实验结果条形图">
+        <rect width="920" height="310" rx="16" fill="#0f172a"/>
+        <text x="34" y="42" fill="#e5edf8" font-size="22" font-weight="700">关键结果：不是最高画质，而是更稳的结构化交付</text>
+        <text x="34" y="70" fill="#94a3b8" font-size="14">分数为论文报告的 overall / 总体评价，单位已按原表保留</text>
+        <g transform="translate(48,105)">
+          <text x="0" y="20" fill="#cbd5e1" font-size="14">PaperBanana-Bench</text>
+          <rect x="190" y="2" width="151" height="24" rx="5" fill="#64748b"/><text x="352" y="20" fill="#cbd5e1" font-size="13">33.73 PaperBanana</text>
+          <rect x="190" y="42" width="225" height="24" rx="5" fill="#22d3ee"/><text x="426" y="60" fill="#e0f2fe" font-size="13">50.34 Crafter</text>
+          <text x="0" y="112" fill="#cbd5e1" font-size="14">CraftBench</text>
+          <rect x="190" y="94" width="126" height="24" rx="5" fill="#64748b"/><text x="328" y="112" fill="#cbd5e1" font-size="13">28.00 PaperBanana</text>
+          <rect x="190" y="134" width="235" height="24" rx="5" fill="#fbbf24"/><text x="438" y="152" fill="#fef3c7" font-size="13">52.30 Crafter</text>
+          <text x="0" y="204" fill="#cbd5e1" font-size="14">Editable SVG</text>
+          <rect x="190" y="186" width="184" height="24" rx="5" fill="#64748b"/><text x="386" y="204" fill="#cbd5e1" font-size="13">6.91 AutoFigure-Edit</text>
+          <rect x="190" y="226" width="214" height="24" rx="5" fill="#34d399"/><text x="416" y="244" fill="#dcfce7" font-size="13">8.04 CraftEditor</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">08</span><h2>局限性与问题</h2></div>
+    <div class="grid g3">
+      <div class="mini"><b>依赖闭源模型</b><p>生成、评测和编辑都依赖 Gemini、gpt-image-2、Claude 等强模型。结论有模型可用性和评测偏差。</p></div>
+      <div class="mini"><b>成本与延迟</b><p>一次运行可能包含多张并行生成和多轮修订，不适合超低成本大规模实时场景。</p></div>
+      <div class="mini"><b>基准仍偏小</b><p>CraftBench 有 279 个样本，覆盖更广但仍远小于训练语料，且 infographics 样本相对少。</p></div>
+    </div>
+    <div class="callout warn"><p>客观看，它不是“替代设计师”的最终答案，更像一个把 AI 出图纳入专业交付流程的早期样板。</p></div>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">09</span><h2>产业影响分析</h2></div>
+    <table>
+      <tr><th>对象</th><th>可能变化</th></tr>
+      <tr><td>科研人员</td><td>论文图、海报图、博客图从手工重画变成“生成初稿 + 局部精修”。</td></tr>
+      <tr><td>产品经理与咨询团队</td><td>复杂流程图、架构图、汇报图可以由 Agent 生成可编辑版本，缩短沟通周期。</td></tr>
+      <tr><td>设计工具</td><td>Figma、PPT、白板工具的下一步竞争点可能不是生成图片，而是生成可编辑结构。</td></tr>
+      <tr><td>模型厂商</td><td>单模型画质之外，谁能提供更好的可控性、可验证性、可编辑输出，谁更接近生产力入口。</td></tr>
+    </table>
+    <p>真正重要的是范式：未来很多 AI 产品可能不再把“生成一次”当结束，而是把生成物放进一个可检查、可回滚、可继续编辑的工作流。</p>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">10</span><h2>延伸阅读</h2></div>
+    <ul class="sources">
+      <li><a href="https://arxiv.org/abs/2605.30611">Crafter arXiv 页面</a>：论文原文、PDF 与元数据。</li>
+      <li><a href="https://github.com/HaozheZhao/Crafter">Crafter GitHub</a>：代码、示例、配置与运行说明。</li>
+      <li><a href="https://huggingface.co/papers/2605.30611">Hugging Face Papers 讨论页</a>：社区关注度、相似论文推荐与作者说明。</li>
+      <li><a href="https://huggingface.co/datasets/BleachNick/CraftBench">CraftBench 数据集</a>：279 个测试样本，含图像和文本字段。</li>
+      <li>相关方向：PaperBanana、AutoFigure、LiveFigure、视觉生成 Agent、可编辑 SVG 生成。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <div class="section-title"><span class="num">11</span><h2>引用来源</h2></div>
+    <p><span class="tag">Primary</span> arXiv:2605.30611，论文 PDF 与抽取文本。</p>
+    <p><span class="tag">Primary</span> 官方 GitHub README，确认系统组件、运行方式、模型配置、CraftBench 说明。</p>
+    <p><span class="tag">Community</span> Hugging Face Papers 月榜与论文页，确认社区关注度、上榜排名、upvote 与讨论。</p>
+    <p><span class="tag">Dataset</span> Hugging Face Dataset API，确认 CraftBench split 为 test，样本数 279，格式包含图像与文本字段。</p>
+  </section>
+
+  <div class="footer">本报告为中文深度解读版，面向非专业读者；图示均为重新设计的解释性 SVG，并非论文截图。</div>
+</div>
+</body>
+</html>

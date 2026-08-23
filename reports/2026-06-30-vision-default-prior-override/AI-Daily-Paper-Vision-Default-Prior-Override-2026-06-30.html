@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | Vision-Default, Prior-Override</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f6f8;
+      --paper: #ffffff;
+      --ink: #121417;
+      --muted: #657080;
+      --line: #dfe3e8;
+      --blue: #1769ff;
+      --cyan: #16a6b6;
+      --red: #d84b57;
+      --amber: #c98612;
+      --green: #1f8a61;
+      --soft-blue: #eaf1ff;
+      --soft-red: #fff0f1;
+      --soft-green: #edf8f3;
+      --shadow: 0 14px 38px rgba(21, 30, 45, .08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 54px;
+    }
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 28px;
+    }
+    .kicker {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      background: #fafbfc;
+    }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(32px, 5vw, 58px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0;
+      font-size: 18px;
+      color: #394252;
+      max-width: 760px;
+    }
+    .meta-grid {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      font-size: 14px;
+    }
+    .meta {
+      border: 1px solid var(--line);
+      background: #fafbfc;
+      padding: 10px 12px;
+    }
+    .meta b {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+    .hero-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #fbfcff, #fff);
+      padding: 18px;
+      min-height: 360px;
+    }
+    .section {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 28px rgba(21, 30, 45, .05);
+      padding: 28px;
+    }
+    h2 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 22px 0 8px;
+      font-size: 19px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+    p { margin: 10px 0; }
+    .lead {
+      font-size: 19px;
+      color: #283142;
+    }
+    .bigline {
+      margin: 18px 0 4px;
+      padding: 18px 20px;
+      background: #101418;
+      color: #fff;
+      font-size: 22px;
+      line-height: 1.45;
+      font-weight: 750;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      padding: 16px;
+    }
+    .card b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+    .tag {
+      display: inline-block;
+      margin: 2px 6px 2px 0;
+      padding: 4px 8px;
+      border: 1px solid var(--line);
+      background: #fafbfc;
+      color: #445064;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .note {
+      border-left: 4px solid var(--blue);
+      background: var(--soft-blue);
+      padding: 14px 16px;
+      margin: 14px 0;
+    }
+    .risk {
+      border-left: 4px solid var(--amber);
+      background: #fff7e8;
+      padding: 14px 16px;
+      margin: 14px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 11px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #f0f3f7;
+      color: #283142;
+    }
+    .metric {
+      font-size: 30px;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--blue);
+      margin: 4px 0 6px;
+    }
+    .muted { color: var(--muted); }
+    .caption {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+    .svgbox {
+      border: 1px solid var(--line);
+      background: #fbfcff;
+      padding: 8px;
+      margin: 14px 0;
+      overflow-x: auto;
+    }
+    svg {
+      display: block;
+      width: 100%;
+      min-width: 700px;
+      height: auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .sources li { margin: 8px 0; }
+    .footer {
+      margin-top: 20px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    @media (max-width: 820px) {
+      .wrap { width: min(100% - 20px, 1120px); padding-top: 10px; }
+      .hero, .grid-3, .grid-2, .meta-grid { grid-template-columns: 1fr; }
+      .hero, .section { padding: 20px; }
+      .hero-card { min-height: auto; }
+      h1 { font-size: 36px; }
+      .bigline { font-size: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <span class="kicker">AI每日论文精选 · 2026-06-30</span>
+        <h1>当 AI 眼前所见<br>和常识打架时</h1>
+        <p class="subtitle">今日论文：<b>Vision-Default, Prior-Override: Causal Mechanisms of Perception-Knowledge Conflict in Vision-Language Models</b></p>
+        <p class="subtitle">中文标题：<b>视觉默认，常识覆盖：视觉语言模型中“看见”与“知道”冲突的因果机制</b></p>
+        <div class="meta-grid">
+          <div class="meta"><b>作者</b>Niclas Lietzow, Danielle Bitterman, Carsten Eickhoff, William Rudman, Michal Golovanevsky</div>
+          <div class="meta"><b>机构</b>University of Tübingen, Harvard University, The University of Texas at Austin</div>
+          <div class="meta"><b>发布时间</b>2026-06-26 · arXiv:2606.28273v1</div>
+          <div class="meta"><b>平台</b>arXiv · Computer Science / Computation and Language；代码已开源</div>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <svg viewBox="0 0 760 440" role="img" aria-label="视觉默认和常识覆盖机制图">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"></path>
+            </marker>
+          </defs>
+          <rect x="22" y="30" width="180" height="118" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="112" y="64" text-anchor="middle" font-size="22" font-weight="800" fill="#123">蓝色草莓</text>
+          <circle cx="112" cy="104" r="34" fill="#3973ff"></circle>
+          <path d="M96 78 C100 60 126 60 128 78" fill="none" stroke="#1f8a61" stroke-width="8" stroke-linecap="round"></path>
+          <text x="112" y="137" text-anchor="middle" font-size="14" fill="#445064">图像证据：蓝色</text>
+
+          <rect x="292" y="38" width="176" height="290" rx="2" fill="#fff" stroke="#dfe3e8"></rect>
+          <text x="380" y="68" text-anchor="middle" font-size="19" font-weight="800" fill="#121417">Transformer</text>
+          <g stroke="#aeb7c5">
+            <line x1="320" y1="96" x2="440" y2="96"></line>
+            <line x1="320" y1="126" x2="440" y2="126"></line>
+            <line x1="320" y1="156" x2="440" y2="156"></line>
+            <line x1="320" y1="186" x2="440" y2="186"></line>
+            <line x1="320" y1="216" x2="440" y2="216"></line>
+            <line x1="320" y1="246" x2="440" y2="246"></line>
+            <line x1="320" y1="276" x2="440" y2="276"></line>
+          </g>
+          <circle cx="352" cy="216" r="11" fill="#d84b57"></circle>
+          <circle cx="410" cy="246" r="11" fill="#d84b57"></circle>
+          <circle cx="388" cy="276" r="11" fill="#d84b57"></circle>
+          <text x="380" y="314" text-anchor="middle" font-size="14" fill="#657080">少量后半段注意力头</text>
+
+          <path d="M205 92 C240 90 258 110 292 124" fill="none" stroke="#1769ff" stroke-width="4" marker-end="url(#arrow)"></path>
+          <path d="M468 134 C520 126 548 116 596 96" fill="none" stroke="#1769ff" stroke-width="4" marker-end="url(#arrow)"></path>
+          <path d="M468 240 C520 242 548 280 596 304" fill="none" stroke="#d84b57" stroke-width="4" marker-end="url(#arrow)"></path>
+
+          <rect x="596" y="52" width="136" height="92" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="664" y="84" text-anchor="middle" font-size="18" font-weight="800" fill="#1769ff">视觉默认</text>
+          <text x="664" y="112" text-anchor="middle" font-size="15" fill="#283142">回答：蓝色</text>
+
+          <rect x="596" y="260" width="136" height="100" fill="#fff0f1" stroke="#efb8be"></rect>
+          <text x="664" y="292" text-anchor="middle" font-size="18" font-weight="800" fill="#d84b57">常识覆盖</text>
+          <text x="664" y="320" text-anchor="middle" font-size="15" fill="#283142">回答：红色</text>
+          <text x="664" y="344" text-anchor="middle" font-size="13" fill="#657080">草莓通常是红的</text>
+
+          <text x="28" y="408" font-size="14" fill="#657080">直觉：模型默认相信“眼睛”；要说出常识，需要几个内部开关把答案改写回来。</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>为什么今天选它？</h2>
+      <p class="lead">这篇论文重要，不是因为它发明了一个更大的模型，而是因为它打开了多模态 AI 的一个黑箱：当模型看到的东西和它记住的世界知识冲突时，内部到底谁说了算。</p>
+      <div class="grid-3">
+        <div class="card">
+          <b>行业意义</b>
+          医疗影像、自动驾驶、机器人、质检系统都在做同一件事：把“眼前证据”和“背景知识”合并判断。如果 AI 在冲突时总是盲目相信画面，可靠性会出问题。
+        </div>
+        <div class="card">
+          <b>技术突破</b>
+          论文不是只观察行为，而是用 activation patching 和 ablation 找到因果组件：只有 2.5-4.8% 的注意力头在负责“常识覆盖”。
+        </div>
+        <div class="card">
+          <b>长期价值</b>
+          多模态模型会进入真实世界。未来的关键不是“看得更清楚”而已，而是知道什么时候该相信视觉、什么时候该调用知识。
+        </div>
+      </div>
+      <div class="bigline">一句话讲透：这篇论文发现，视觉语言模型默认相信眼前所见；如果要让它回答“常识上应该是什么”，必须依赖少数后半段注意力头像内部开关一样把答案改写回来。</div>
+    </section>
+
+    <section class="section">
+      <h2>论文信息卡</h2>
+      <table>
+        <tr><th>项目</th><th>内容</th></tr>
+        <tr><td>英文题名</td><td>Vision-Default, Prior-Override: Causal Mechanisms of Perception-Knowledge Conflict in Vision-Language Models</td></tr>
+        <tr><td>中文题名</td><td>视觉默认，常识覆盖：视觉语言模型中“看见”与“知道”冲突的因果机制</td></tr>
+        <tr><td>研究对象</td><td>Qwen-VL 3B/7B、LLaVA-NeXT 7B、PaliGemma 3B/10B</td></tr>
+        <tr><td>数据集</td><td>Visual-Counterfact：把常见物体改成反常颜色，例如蓝色草莓、橙色大象；论文实际使用 467 个有效冲突样本。</td></tr>
+        <tr><td>核心方法</td><td>Residual stream、attention heads、MLP sublayers 三个粒度的 activation patching；再用 component ablation 验证必要性。</td></tr>
+        <tr><td>原论文</td><td><a href="https://arxiv.org/abs/2606.28273">https://arxiv.org/abs/2606.28273</a></td></tr>
+        <tr><td>代码</td><td><a href="https://github.com/nlietzow/vision-default-prior-override">https://github.com/nlietzow/vision-default-prior-override</a></td></tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>核心贡献拆解</h2>
+      <div class="grid-2">
+        <div class="card">
+          <b>贡献 1：把“视觉 vs 常识”从行为现象变成因果机制</b>
+          过去我们知道模型会在蓝色草莓前犯迷糊：问“这里是什么颜色”它答蓝色，问“草莓通常是什么颜色”有时仍答蓝色。本文进一步问：是哪些内部零件导致这种选择？
+        </div>
+        <div class="card">
+          <b>贡献 2：发现不对称结构</b>
+          视觉不是一个需要努力维持的答案，而像默认道路；常识答案需要额外组件主动覆盖。把这些组件移除，常识答案大量崩塌，视觉答案基本不动。
+        </div>
+        <div class="card">
+          <b>贡献 3：区分 routing heads 和 writing heads</b>
+          一部分注意力头像交通警察，负责把信息流从图像转向文本上下文；另一部分像书记员，直接把最终颜色词写进输出空间。
+        </div>
+        <div class="card">
+          <b>贡献 4：跨架构复现</b>
+          Qwen-VL、LLaVA-NeXT、PaliGemma 内部实现不同，但都出现“视觉默认、常识覆盖”的总体结构，说明这可能是多模态 Transformer 的常见策略。
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>工作原理：像两条路的交通系统</h2>
+      <p>把模型想成一个城市交通系统：图像信息像从高速入口进来的车流，通常会直接通向答案出口；常识信息像城市里另一套路网，只有几个关键匝道打开时，车流才会改道。</p>
+      <div class="svgbox">
+        <svg viewBox="0 0 920 430" role="img" aria-label="模型内部工作流程图">
+          <defs>
+            <marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M0 0 L10 5 L0 10Z" fill="#334155"></path>
+            </marker>
+          </defs>
+          <rect x="34" y="54" width="160" height="72" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="114" y="84" text-anchor="middle" font-size="18" font-weight="800">输入图片</text>
+          <text x="114" y="110" text-anchor="middle" font-size="14">蓝色草莓</text>
+
+          <rect x="34" y="214" width="160" height="72" fill="#fff7e8" stroke="#e8ca91"></rect>
+          <text x="114" y="244" text-anchor="middle" font-size="18" font-weight="800">输入问题</text>
+          <text x="114" y="270" text-anchor="middle" font-size="14">通常是什么颜色？</text>
+
+          <rect x="268" y="84" width="190" height="216" fill="#fff" stroke="#dfe3e8"></rect>
+          <text x="363" y="116" text-anchor="middle" font-size="18" font-weight="800">多模态 Transformer</text>
+          <rect x="302" y="144" width="122" height="30" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="363" y="165" text-anchor="middle" font-size="14">早期：视觉先进入</text>
+          <rect x="302" y="190" width="122" height="30" fill="#f8fafc" stroke="#dfe3e8"></rect>
+          <text x="363" y="211" text-anchor="middle" font-size="14">中期：冲突累积</text>
+          <rect x="302" y="236" width="122" height="30" fill="#fff0f1" stroke="#efb8be"></rect>
+          <text x="363" y="257" text-anchor="middle" font-size="14">后期：少数头覆盖</text>
+
+          <rect x="548" y="58" width="154" height="96" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="625" y="92" text-anchor="middle" font-size="18" font-weight="800" fill="#1769ff">视觉默认路</text>
+          <text x="625" y="122" text-anchor="middle" font-size="14">不需要额外开关</text>
+
+          <rect x="548" y="230" width="154" height="116" fill="#fff0f1" stroke="#efb8be"></rect>
+          <text x="625" y="264" text-anchor="middle" font-size="18" font-weight="800" fill="#d84b57">常识覆盖路</text>
+          <text x="625" y="294" text-anchor="middle" font-size="14">routing heads 改道</text>
+          <text x="625" y="318" text-anchor="middle" font-size="14">writing heads 写答案</text>
+
+          <rect x="770" y="68" width="118" height="72" fill="#eaf1ff" stroke="#b8c9ef"></rect>
+          <text x="829" y="98" text-anchor="middle" font-size="17" font-weight="800">答：蓝色</text>
+          <text x="829" y="122" text-anchor="middle" font-size="13">眼前所见</text>
+          <rect x="770" y="250" width="118" height="72" fill="#fff0f1" stroke="#efb8be"></rect>
+          <text x="829" y="280" text-anchor="middle" font-size="17" font-weight="800">答：红色</text>
+          <text x="829" y="304" text-anchor="middle" font-size="13">世界常识</text>
+
+          <path d="M194 92 C226 96 236 120 268 146" fill="none" stroke="#1769ff" stroke-width="4" marker-end="url(#arrow2)"></path>
+          <path d="M194 250 C228 246 236 222 268 204" fill="none" stroke="#c98612" stroke-width="4" marker-end="url(#arrow2)"></path>
+          <path d="M458 158 C500 136 512 112 548 106" fill="none" stroke="#1769ff" stroke-width="4" marker-end="url(#arrow2)"></path>
+          <path d="M458 250 C502 258 516 282 548 288" fill="none" stroke="#d84b57" stroke-width="4" marker-end="url(#arrow2)"></path>
+          <path d="M702 106 C728 106 742 104 770 104" fill="none" stroke="#1769ff" stroke-width="4" marker-end="url(#arrow2)"></path>
+          <path d="M702 288 C728 288 742 286 770 286" fill="none" stroke="#d84b57" stroke-width="4" marker-end="url(#arrow2)"></path>
+        </svg>
+      </div>
+      <h3>三步理解论文实验</h3>
+      <p><b>第一步：制造冲突。</b> 给模型看一张反常图片，比如蓝色草莓。然后分别问两类问题：“这里是什么颜色？”和“草莓通常是什么颜色？”</p>
+      <p><b>第二步：替换内部信号。</b> activation patching 就像在模型大脑里临时换一段电路信号，看某个层、某个注意力头被换掉后，答案是否跟着改变。</p>
+      <p><b>第三步：拔掉关键零件。</b> ablation 就像把某些注意力头关掉。如果关掉后模型不再能回答“红色”，说明这些头不是旁观者，而是常识覆盖所必需的零件。</p>
+    </section>
+
+    <section class="section">
+      <h2>关键实验结果怎么读？</h2>
+      <div class="grid-3">
+        <div class="card">
+          <b>少数头承担关键开关</b>
+          <div class="metric">2.5-4.8%</div>
+          <span class="muted">被识别为冲突调解相关的注意力头比例。</span>
+        </div>
+        <div class="card">
+          <b>移除后常识回答崩塌</b>
+          <div class="metric">68-96%</div>
+          <span class="muted">promoting heads 组消融后，Prior 模式答案翻回视觉答案的比例。</span>
+        </div>
+        <div class="card">
+          <b>视觉回答很稳</b>
+          <div class="metric">0.8-7.5%</div>
+          <span class="muted">同样消融对 Visual 模式答案的翻转比例。</span>
+        </div>
+      </div>
+
+      <table>
+        <tr>
+          <th>模型</th>
+          <th>无冲突时表现</th>
+          <th>冲突时：问“通常是什么颜色”</th>
+          <th>解读</th>
+        </tr>
+        <tr>
+          <td>Qwen-VL 3B</td>
+          <td>视觉/常识任务大多在 90% 左右</td>
+          <td>17.7%</td>
+          <td>看到反常颜色后，常识几乎被视觉压倒。</td>
+        </tr>
+        <tr>
+          <td>Qwen-VL 7B</td>
+          <td>视觉任务 86-93% 左右</td>
+          <td>55.7%</td>
+          <td>更大模型更能抵抗视觉覆盖，但远未解决。</td>
+        </tr>
+        <tr>
+          <td>LLaVA-NeXT 7B</td>
+          <td>视觉任务 86-92% 左右</td>
+          <td>21.7%</td>
+          <td>同为 7B，行为显著弱于 Qwen-VL，说明不是只靠参数规模。</td>
+        </tr>
+        <tr>
+          <td>PaliGemma 3B / 10B</td>
+          <td>视觉任务 87-92% 左右</td>
+          <td>32.4% / 44.6%</td>
+          <td>扩大参数改善有限；机制仍是视觉默认、常识覆盖。</td>
+        </tr>
+      </table>
+
+      <div class="note">
+        <b>这组结果的真实含义：</b> 多模态模型不是平均权衡“看到的”和“知道的”。它更像默认先按视觉走，除非内部少数开关启动，把答案从视觉轨道切到常识轨道。
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>与旧方法有什么不同？</h2>
+      <table>
+        <tr>
+          <th>研究方式</th>
+          <th>能回答什么</th>
+          <th>局限</th>
+          <th>本文推进</th>
+        </tr>
+        <tr>
+          <td>行为测试</td>
+          <td>模型在蓝色草莓前会不会答错</td>
+          <td>只能看到结果，不知道内部原因</td>
+          <td>定位到具体组件，并验证因果必要性</td>
+        </tr>
+        <tr>
+          <td>相关性分析</td>
+          <td>哪些层或头看起来和结果有关</td>
+          <td>相关不等于因果</td>
+          <td>通过 patching 和 ablation 验证“换它会变、关它会坏”</td>
+        </tr>
+        <tr>
+          <td>只研究单一模型</td>
+          <td>某个模型的内部习惯</td>
+          <td>可能只是架构偶然性</td>
+          <td>覆盖三类 VLM 家族、五个模型大小</td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>关键术语解释</h2>
+      <table>
+        <tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr>
+        <tr>
+          <td>Vision-Language Model / VLM</td>
+          <td>能同时处理图像和文本输入，并输出文本或多模态结果的模型。</td>
+          <td>既能看图，又能读问题的 AI。</td>
+        </tr>
+        <tr>
+          <td>Perception-Knowledge Conflict</td>
+          <td>视觉证据与模型参数中存储的世界知识发生冲突。</td>
+          <td>眼睛看到“蓝色草莓”，脑子知道“草莓通常是红色”。</td>
+        </tr>
+        <tr>
+          <td>Activation Patching</td>
+          <td>把某次前向传播中的中间激活替换到另一次前向传播中，观察输出变化。</td>
+          <td>像把大脑某一段信号临时换掉，看答案会不会变。</td>
+        </tr>
+        <tr>
+          <td>Ablation</td>
+          <td>将某个模型组件的输出置零或移除，测试该组件是否必要。</td>
+          <td>像拔掉一个开关，如果机器不工作了，说明这个开关关键。</td>
+        </tr>
+        <tr>
+          <td>Attention Head</td>
+          <td>Transformer 内部负责选择、聚合信息的一组注意力计算单元。</td>
+          <td>像一个小编辑，决定当前答案该看图片、看问题，还是看上下文。</td>
+        </tr>
+        <tr>
+          <td>Residual Stream</td>
+          <td>Transformer 各层持续读写的主信息通道。</td>
+          <td>像模型内部的主干流水线，所有层都往里面加东西。</td>
+        </tr>
+        <tr>
+          <td>MLP Sublayer</td>
+          <td>Transformer 层中的前馈网络部分，常与事实知识存储和放大有关。</td>
+          <td>像仓库和放大器，常识可能在这里被加工，但它不是主要交通警察。</td>
+        </tr>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>局限性与问题</h2>
+      <div class="risk">
+        <b>1. 研究主要集中在颜色冲突。</b>
+        颜色很适合做干净实验，但现实世界冲突更复杂：形状、空间关系、动作、医学征象、时间变化，都可能有不同机制。
+      </div>
+      <div class="risk">
+        <b>2. 模型规模只有 3B-10B。</b>
+        这是机制可解释性研究中比较可操作的范围。更大的闭源模型可能学到不同策略，不能直接外推。
+      </div>
+      <div class="risk">
+        <b>3. 干预集中在答案生成的最后 token 位置。</b>
+        论文承认，这可能漏掉更早处理图像 token 时发生的组件贡献。
+      </div>
+      <div class="risk">
+        <b>4. 机制发现不等于产品安全。</b>
+        找到开关只是第一步；真正落地还需要自动检测、可控干预、不会损害正常视觉能力的调参方法。</div>
+    </section>
+
+    <section class="section">
+      <h2>产业影响分析</h2>
+      <div class="grid-2">
+        <div class="card">
+          <b>谁会受益？</b>
+          多模态模型团队、AI 安全团队、医疗/工业质检/自动驾驶/机器人产品团队。它给了一个具体方向：不仅要评测答案，还要评测内部冲突解决机制。
+        </div>
+        <div class="card">
+          <b>谁会被冲击？</b>
+          只用表层 benchmark 宣称“模型懂图”的产品会被挑战。真实部署需要证明模型知道什么时候该信图、什么时候该信先验知识或外部证据。
+        </div>
+        <div class="card">
+          <b>对产品经理意味着什么？</b>
+          多模态产品不能只设计“上传图片 + 问问题”。还要设计冲突策略：当图像和常识不一致时，是否提示不确定性、是否要求二次确认、是否调用外部数据库。
+        </div>
+        <div class="card">
+          <b>对投资研究意味着什么？</b>
+          VLM 的护城河不只是更大模型和更多数据，未来会包括可解释的冲突仲裁、可审计的安全机制、能被工程化控制的内部模块。</div>
+      </div>
+      <h3>一个现实例子</h3>
+      <p>假设医疗 AI 看到一张影像，图像局部像某种病变，但患者年龄、病史和其他检查指标都不支持。一个好系统不能机械地“相信眼睛”，也不能机械地“相信常识”。它需要明确仲裁：哪些证据权重更高？什么时候输出不确定？什么时候交给医生复核？这篇论文虽然只研究颜色，但它提供了理解这种仲裁机制的第一块拼图。</p>
+    </section>
+
+    <section class="section">
+      <h2>延伸阅读</h2>
+      <ul class="sources">
+        <li><a href="https://arxiv.org/abs/2606.28273">Vision-Default, Prior-Override: Causal Mechanisms of Perception-Knowledge Conflict in Vision-Language Models</a> · arXiv 原论文</li>
+        <li><a href="https://github.com/nlietzow/vision-default-prior-override">vision-default-prior-override</a> · 官方代码仓库与复现实验说明</li>
+        <li><a href="https://huggingface.co/datasets/mgolov/Visual-Counterfact">Visual-Counterfact dataset</a> · 反常颜色图像数据集</li>
+        <li><a href="https://arxiv.org/abs/2505.17127">Pixels versus Priors: Controlling Knowledge Priors in Vision-Language Models through Visual Counterfacts</a> · 本文使用数据集的相关前作</li>
+        <li><a href="https://arxiv.org/abs/2406.16320">What do VLMs NOTICE?</a> · VLM activation patching 方法相关前作</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>引用来源</h2>
+      <ul class="sources">
+        <li>Niclas Lietzow et al., <a href="https://arxiv.org/abs/2606.28273">Vision-Default, Prior-Override</a>, arXiv:2606.28273v1, 2026-06-26.</li>
+        <li>GitHub repository: <a href="https://github.com/nlietzow/vision-default-prior-override">nlietzow/vision-default-prior-override</a>, accessed 2026-06-30.</li>
+        <li>Visual-Counterfact dataset reference from the paper and repository: <a href="https://huggingface.co/datasets/mgolov/Visual-Counterfact">mgolov/Visual-Counterfact</a>.</li>
+      </ul>
+      <p class="caption">说明：本文为中文深度解读，实验数字均来自 arXiv 论文正文、表格与作者开源仓库 README；没有使用中文二手解读作为事实来源。</p>
+    </section>
+
+    <div class="footer">AI每日论文精选 · 面向普通读者的 AI 前沿研究拆解 · 2026-06-30</div>
+  </main>
+</body>
+</html>

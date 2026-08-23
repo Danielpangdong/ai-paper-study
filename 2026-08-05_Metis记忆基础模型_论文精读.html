@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Metis：记忆基础模型 — AI论文每日精读 · 2026-08-05</title>
+<style>
+  :root {
+    --bg: #0b1020;
+    --bg-2: #121935;
+    --panel: #171e3d;
+    --panel-2: #1e2650;
+    --border: #2a3466;
+    --text: #e8ecff;
+    --muted: #9aa3d1;
+    --accent: #6ea8ff;
+    --accent-2: #a78bfa;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --bad: #f87171;
+    --pill: rgba(110,168,255,0.15);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    background: radial-gradient(1200px 800px at 10% -10%, #1a2050 0%, transparent 50%),
+                radial-gradient(1000px 700px at 100% 10%, #2b1a55 0%, transparent 55%),
+                var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    letter-spacing: 0.2px;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 48px 24px 96px; }
+
+  /* Header */
+  .hero {
+    background: linear-gradient(135deg, rgba(110,168,255,0.12), rgba(167,139,250,0.10));
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 36px 36px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: ""; position: absolute; inset: -60px -60px auto auto;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(167,139,250,0.35), transparent);
+    filter: blur(20px);
+  }
+  .breadcrumbs { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+  .breadcrumbs span { color: var(--accent); }
+  h1.title {
+    margin: 0 0 8px;
+    font-size: 34px;
+    line-height: 1.25;
+    letter-spacing: 0.5px;
+  }
+  .subtitle { color: var(--muted); font-size: 15px; margin: 0 0 20px; }
+  .meta-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-top: 18px;
+  }
+  .meta {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px;
+  }
+  .meta .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .meta .v { font-size: 14px; margin-top: 4px; color: var(--text); }
+  .links { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--pill); color: var(--accent);
+    text-decoration: none; font-size: 13px; border: 1px solid rgba(110,168,255,0.25);
+    transition: all .2s ease;
+  }
+  .btn:hover { background: rgba(110,168,255,0.25); color: #fff; }
+
+  /* TL;DR */
+  .tldr {
+    margin-top: 28px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px 26px;
+  }
+  .tldr h2 { margin: 0 0 10px; font-size: 18px; color: var(--accent); }
+  .tldr p { margin: 6px 0; color: #dbe1ff; }
+
+  /* Sections */
+  section { margin-top: 40px; }
+  h2.section-title {
+    font-size: 22px; margin: 0 0 6px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2.section-title .num {
+    display: inline-block; width: 30px; height: 30px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #0b1020; text-align: center; line-height: 30px;
+    font-weight: 700; font-size: 14px;
+  }
+  h2.section-title .en {
+    color: var(--muted); font-size: 13px; font-weight: 400; margin-left: auto;
+  }
+  .lead { color: var(--muted); margin: 4px 0 18px; font-size: 14px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px 24px;
+  }
+  .card + .card { margin-top: 14px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+  /* Compare table */
+  table.compare {
+    width: 100%; border-collapse: separate; border-spacing: 0;
+    font-size: 14px;
+  }
+  table.compare th, table.compare td {
+    padding: 12px 14px; text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.compare thead th {
+    background: var(--panel-2); color: var(--accent);
+    font-weight: 600; font-size: 13px; letter-spacing: 0.4px;
+  }
+  table.compare tr:last-child td { border-bottom: none; }
+  table.compare .cell-row td:first-child { color: var(--muted); font-weight: 500; }
+
+  /* Term */
+  .term {
+    display: inline-block; padding: 2px 8px; border-radius: 6px;
+    background: rgba(167,139,250,0.15); color: #d5c6ff;
+    font-size: 13px; margin: 0 3px;
+  }
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px; margin: 12px 0; color: #cfd6ff;
+    background: rgba(110,168,255,0.06); border-radius: 0 8px 8px 0;
+    font-style: italic; font-size: 14px;
+  }
+  .callout {
+    padding: 14px 16px; border-radius: 10px;
+    background: rgba(52,211,153,0.08);
+    border: 1px solid rgba(52,211,153,0.25);
+    color: #d0f3e2;
+    font-size: 14px;
+  }
+  .callout.warn { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.25); color: #ffe6b3; }
+  .callout.bad { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.25); color: #ffcfcf; }
+
+  /* Confidence */
+  .conf {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    letter-spacing: 0.5px; text-transform: uppercase; font-weight: 600;
+    margin-left: 6px; vertical-align: middle;
+  }
+  .conf.high { background: rgba(52,211,153,0.15); color: #6ee7b7; }
+  .conf.med { background: rgba(251,191,36,0.15); color: #fcd34d; }
+  .conf.low { background: rgba(248,113,113,0.15); color: #fca5a5; }
+
+  ul.clean { padding-left: 20px; margin: 8px 0; }
+  ul.clean li { margin: 6px 0; }
+
+  /* Roadmap */
+  .roadmap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 8px; }
+  .step {
+    background: var(--panel-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; text-align: center; position: relative;
+  }
+  .step .stage { font-size: 11px; color: var(--muted); }
+  .step .name { font-size: 14px; margin-top: 6px; color: #fff; font-weight: 600; }
+  .step.active { border-color: var(--accent); background: linear-gradient(180deg, rgba(110,168,255,0.15), transparent); }
+
+  /* Model chips */
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .chip {
+    padding: 10px 14px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(110,168,255,0.12), rgba(167,139,250,0.12));
+    border: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .chip b { color: #fff; font-size: 15px; margin-right: 6px; }
+
+  /* Footer */
+  footer { margin-top: 60px; color: var(--muted); font-size: 12px; text-align: center; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* Responsive */
+  @media (max-width: 780px) {
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2, .grid-3, .roadmap { grid-template-columns: 1fr; }
+    h1.title { font-size: 26px; }
+    .wrap { padding: 24px 14px 60px; }
+  }
+
+  /* Diagram helpers */
+  .diagram {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    border: 1px dashed var(--border); border-radius: 12px;
+    padding: 20px; margin: 12px 0 6px;
+    overflow-x: auto;
+  }
+  .diagram svg { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+  .diagram-cap { text-align: center; color: var(--muted); font-size: 12px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="breadcrumbs">AI论文每日精读 · <span>2026年8月5日</span> · 来源：arXiv · cs.CL</div>
+  <h1 class="title">Metis：让记忆变成"基础模型的原生能力"</h1>
+  <p class="subtitle">A first prototype of Memory Foundation Model — 把 RAG / MemGPT / KV Cache 抛在身后，让 LLM 自己"长出"记忆</p>
+
+  <div class="meta-grid">
+    <div class="meta"><div class="k">论文标题</div><div class="v">Metis: Memory Foundation Model</div></div>
+    <div class="meta"><div class="k">arXiv 编号</div><div class="v">2607.26760 v1</div></div>
+    <div class="meta"><div class="k">提交日期</div><div class="v">2026-07-29（6天前）</div></div>
+    <div class="meta"><div class="k">机构</div><div class="v">MemTensor · 人大 · 新国立 · 上交 · 同济</div></div>
+  </div>
+
+  <div class="links">
+    <a class="btn" href="https://arxiv.org/abs/2607.26760" target="_blank">arXiv 原文</a>
+    <a class="btn" href="https://arxiv.org/pdf/2607.26760" target="_blank">PDF</a>
+    <a class="btn" href="https://github.com/MemTensor/Metis" target="_blank">GitHub 代码</a>
+    <a class="btn" href="https://huggingface.co/collections/IAAR-Shanghai/metis" target="_blank">HuggingFace 模型</a>
+    <a class="btn" href="https://huggingface.co/papers/2607.26760" target="_blank">HF 论文页</a>
+  </div>
+
+  <!-- TL;DR -->
+  <div class="tldr">
+    <h2>一句话摘要</h2>
+    <p>作者提出"<b>记忆基础模型</b>（Memory Foundation Model）"新概念，把"记忆"像"多模态"和"推理"一样，做成 LLM 主干里<b>原生的一等能力</b>；发布了首个原型 <b>Metis</b>，基于 Qwen 3.5 开源 4B / 9B / 27B 三个尺寸的权重。</p>
+    <h2 style="margin-top:14px;">为什么值得读</h2>
+    <p>过去两年 Agent 的"记忆"几乎全靠<b>外挂</b>（RAG / MemGPT / 向量库 / 长上下文），本文首次系统性地把它内化成模型自身的<b>持久状态</b>——用<b>前向计算就能更新，无需梯度</b>，为下一代 Agent 架构提供了新的候选路径。</p>
+  </div>
+</div>
+
+<!-- 1. Problem -->
+<section>
+  <h2 class="section-title"><span class="num">01</span>问题：外挂记忆的三大天花板 <span class="en">Why external memory falls short</span></h2>
+  <p class="lead">论文用 Figure 1 把当前 Agent 记忆的三个结构性缺陷讲得很直白：</p>
+
+  <div class="grid-3">
+    <div class="card">
+      <div style="font-size:20px;color:var(--warn);">🧩 解耦</div>
+      <b>目标割裂</b>
+      <p style="font-size:14px;color:var(--muted);">外部记忆和主干模型是"两套系统"，训练目标、处理阶段都分离。主干未必真会用检索来的内容。</p>
+    </div>
+    <div class="card">
+      <div style="font-size:20px;color:var(--warn);">⚙️ 不可端到端</div>
+      <b>无法回传梯度</b>
+      <p style="font-size:14px;color:var(--muted);">检索、排序、拼接这些"离散操作"挡住了梯度，端到端优化基本做不了。</p>
+    </div>
+    <div class="card">
+      <div style="font-size:20px;color:var(--warn);">🐌 显式操作 = 延迟</div>
+      <b>推理延迟上升</b>
+      <p style="font-size:14px;color:var(--muted);">每次查询都要在主干之外跑一遍"检索 + 组织提示"的流水线，实时性受损。</p>
+    </div>
+  </div>
+
+  <div class="quote">"External memory is decoupled from backbones… gradients cannot be effectively propagated through discrete memory operations… online inference latency inevitably increases."<br>—— 论文 §1，Figure 1 说明</div>
+</section>
+
+<!-- 2. Key Innovation -->
+<section>
+  <h2 class="section-title"><span class="num">02</span>核心创新：原生记忆的两个维度 <span class="en">Native memory, formalized</span></h2>
+  <p class="lead">作者把 <span class="term">Native Memory（原生记忆）</span> 拆成两个正交视角，这是全文的锚点：</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <b style="color:var(--accent);">① 原生记忆状态（State）</b>
+      <p style="font-size:14px;">主干里"活的参数"——跨多次推理持久存在、动态演化。它和主干处在<b>同一个语义空间</b>，天然对齐。</p>
+      <div class="quote" style="font-size:13px;">"Memory states are dynamically represented as part of the parameters of backbones, whose semantic spaces are aligned at the pre-training or mid-training stage."</div>
+    </div>
+    <div class="card">
+      <b style="color:var(--accent-2);">② 原生记忆过程（Procedure）</b>
+      <p style="font-size:14px;">"记住 / 遗忘 / 更新"这些动作也<b>不再写死为外部规则</b>，而是伴随主干的前向计算自动完成。</p>
+      <div class="quote" style="font-size:13px;">"Specific memory operations… are accomplished autonomously alongside the backbone's forward computation."</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;">
+    <b style="color:var(--accent);">正式定义</b>
+    <p style="font-size:14px;">记忆基础模型是一个"跨多步交互都保持状态"的自回归基础模型：
+    <br><code style="background:#0b1020;padding:4px 8px;border-radius:6px;font-size:13px;">y<sub>t,k</sub> ~ P(y | X<sub>t</sub>, Y<sub>t,&lt;k</sub>; θ<sub>t</sub>)</code>
+    <br>其中 θ<sub>t+1</sub> 是通过 X<sub>t</sub>、Y<sub>t</sub> 的<b>一次前向计算</b>自动更新出来的（不涉及反向传播）。</p>
+  </div>
+
+  <div class="callout" style="margin-top:14px;">
+    <b>类比：CoT 之于推理 = 原生记忆之于 Agent。</b> 就像把 Chain-of-Thought 从"外部提示技巧"内化成"推理模型"的原生能力，Metis 想把"记忆"从"外挂模块"内化成基础模型的原生能力。
+  </div>
+</section>
+
+<!-- 3. Compare with existing -->
+<section>
+  <h2 class="section-title"><span class="num">03</span>与现有方案的关键差异 <span class="en">Metis vs. RAG / KV Cache / MANN / Memory3</span></h2>
+  <p class="lead">下表按论文 §2 相关工作 的表述整理：</p>
+
+  <div class="card" style="padding:0;">
+    <table class="compare">
+      <thead>
+        <tr>
+          <th>方案</th>
+          <th>存储在哪</th>
+          <th>更新方式</th>
+          <th>跨会话 / 多轮持久？</th>
+          <th>与主干耦合度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="cell-row"><td>RAG / MemGPT</td><td>外部数据库/文本</td><td>显式检索 + 拼接提示</td><td>持久，但离散</td><td>低（离线）</td></tr>
+        <tr class="cell-row"><td>长上下文 / KV Cache</td><td>Attention 缓存</td><td>随窗口滑动，历史丢失</td><td>否（单序列内）</td><td>中</td></tr>
+        <tr class="cell-row"><td>TTT (Test-Time Training)</td><td>模型权重（梯度更新）</td><td>需反向传播</td><td>单序列内适应</td><td>高但代价大</td></tr>
+        <tr class="cell-row"><td>MANN（记忆增强网络）</td><td>外部矩阵 + 控制器</td><td>控制器读写</td><td>是</td><td>低（异构）</td></tr>
+        <tr class="cell-row"><td>Memory3</td><td>可检索的"显式记忆"</td><td>离线知识注入</td><td>是（静态知识）</td><td>中</td></tr>
+        <tr class="cell-row" style="background:rgba(110,168,255,0.08);"><td><b>Metis（本文）</b></td><td><b>主干内的参数状态</b></td><td><b>前向即更新（gradient-free）</b></td><td><b>是（在线交互信息）</b></td><td><b>原生一体</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout warn" style="margin-top:14px;">
+    <b>一个重要区分：</b> 论文明确把<b>"记忆"限定为在线交互中获得的信息</b>——离线的世界知识仍归为"knowledge"，由预训练承担。Metis 不是想替代 RAG 检索静态知识，而是替代"多轮对话/长任务里那部分动态的、个性化的、会持续演化的信息"。
+  </div>
+</section>
+
+<!-- 4. Architecture with SVG -->
+<section>
+  <h2 class="section-title"><span class="num">04</span>架构：Metis Block 是怎么长的 <span class="en">Inside a Metis block</span></h2>
+  <p class="lead">Metis 把两个新模块插进 Transformer 层里，构成一个"Metis Block"：</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#6ea8ff"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#9aa3d1"/>
+        </marker>
+      </defs>
+
+      <!-- Transformer block outline -->
+      <rect x="20" y="20" width="860" height="340" rx="14" fill="none" stroke="#2a3466" stroke-dasharray="6 4"/>
+      <text x="40" y="45" fill="#9aa3d1" font-size="13">Transformer Block（Qwen 3.5 主干）</text>
+
+      <!-- Original attention branch -->
+      <rect x="60" y="80" width="220" height="90" rx="10" fill="#171e3d" stroke="#2a3466"/>
+      <text x="170" y="115" text-anchor="middle" fill="#e8ecff" font-size="15" font-weight="600">原始 Attention 分支</text>
+      <text x="170" y="140" text-anchor="middle" fill="#9aa3d1" font-size="12">保持原有前向路径</text>
+
+      <!-- Local memory -->
+      <rect x="330" y="80" width="240" height="90" rx="10" fill="url(#g1)" opacity="0.9"/>
+      <text x="450" y="115" text-anchor="middle" fill="#0b1020" font-size="15" font-weight="700">Local Memory Block</text>
+      <text x="450" y="140" text-anchor="middle" fill="#0b1020" font-size="12">M ∈ ℝ^(d_k × d_v) + 归一化向量 S</text>
+      <text x="450" y="158" text-anchor="middle" fill="#0b1020" font-size="11">跨步动态状态（初始化为 0）</text>
+
+      <!-- Hyper memory -->
+      <rect x="620" y="80" width="230" height="90" rx="10" fill="#1e2650" stroke="#a78bfa"/>
+      <text x="735" y="115" text-anchor="middle" fill="#d5c6ff" font-size="15" font-weight="700">Hyper Memory Block</text>
+      <text x="735" y="140" text-anchor="middle" fill="#9aa3d1" font-size="12">投影 W_K / W_V、重要度 w_agg</text>
+      <text x="735" y="158" text-anchor="middle" fill="#9aa3d1" font-size="11">中训练学到的静态参数</text>
+
+      <!-- Update arrow -->
+      <path d="M735,180 C 735,230 450,230 450,180" stroke="#9aa3d1" stroke-width="2" fill="none" marker-end="url(#arr)"/>
+      <text x="590" y="248" text-anchor="middle" fill="#9aa3d1" font-size="12">① 前向计算即更新 Local Memory（无需梯度）</text>
+
+      <!-- Memory attention -->
+      <rect x="330" y="270" width="240" height="70" rx="10" fill="#171e3d" stroke="#6ea8ff"/>
+      <text x="450" y="298" text-anchor="middle" fill="#6ea8ff" font-size="14" font-weight="600">Memory Attention</text>
+      <text x="450" y="318" text-anchor="middle" fill="#9aa3d1" font-size="12">查询时读取记忆并与原分支融合</text>
+
+      <path d="M450,180 L450,270" stroke="#6ea8ff" stroke-width="2" marker-end="url(#arr)"/>
+      <path d="M280,125 C 300,180 320,220 340,270" stroke="#6ea8ff" stroke-width="1.5" fill="none" marker-end="url(#arr)"/>
+
+      <text x="60" y="310" fill="#9aa3d1" font-size="12">② 后续 Query 通过 Memory Attention 复用压缩后的历史</text>
+    </svg>
+    <div class="diagram-cap">图示：Metis Block 内部（示意，据论文 Figure 2 与 HF 官方说明重绘）</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <b style="color:var(--accent);">关键点 1：无需回放历史文本</b>
+      <p style="font-size:14px;">历史信息被<b>压缩到定长状态 M</b>；后续查询不再需要重放原始 token 序列，从根本上摆脱了"上下文越长越慢"的瓶颈。</p>
+    </div>
+    <div class="card">
+      <b style="color:var(--accent);">关键点 2：默认更新算子 = Gated Delta Network (GDN)</b>
+      <p style="font-size:14px;">Local Memory 的默认更新使用 GDN；在 Qwen 3.5 hybrid 架构里，Metis 挂在 full-attention 层，线性注意力层保留原路径。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Training methodology -->
+<section>
+  <h2 class="section-title"><span class="num">05</span>训练方法：Mid-training + 三大目标 <span class="en">Mid-training with 3 objectives</span></h2>
+
+  <div class="grid-3">
+    <div class="card">
+      <b>🎯 Memory Reconstruction</b>
+      <p style="font-size:14px;color:var(--muted);">记忆重建目标——刻画记忆状态的"压缩上限"，逼迫模型学会用有限参数容量存最重要的东西。</p>
+    </div>
+    <div class="card">
+      <b>🔧 Memory Operation</b>
+      <p style="font-size:14px;color:var(--muted);">操作目标——教会模型显式地"记住 / 遗忘 / 更新"，把 Procedure 从数据里学出来，而不是写死规则。</p>
+    </div>
+    <div class="card">
+      <b>🛡️ Regularization</b>
+      <p style="font-size:14px;color:var(--muted);">正则化目标——提升在复杂场景下的鲁棒性，防止记忆状态坍塌或漂移。</p>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:14px;">
+    <b>Mid-training 是什么？</b> 位于"预训练"和"后训练/SFT"之间的一个新阶段。作者在这个阶段用大规模<b>专门为记忆合成</b>的数据（Primary + Auxiliary）来<b>让模型"长出"原生记忆能力</b>——之后的推理阶段权重就完全冻结了。
+  </div>
+</section>
+
+<!-- 6. Model releases -->
+<section>
+  <h2 class="section-title"><span class="num">06</span>发布的模型 <span class="en">Open weights: 4B / 9B / 27B</span></h2>
+  <p class="lead">基于 Qwen 3.5 主干，官方 HuggingFace 集合已上架三个尺寸：</p>
+  <div class="chips">
+    <div class="chip"><b>Metis-4B</b> 轻量级，实验友好</div>
+    <div class="chip"><b>Metis-9B</b> 中等尺寸，性能与成本平衡</div>
+    <div class="chip"><b>Metis-27B</b> 旗舰尺寸，用于 SOTA 比较</div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:10px;">
+    附录还给出 <b>迁移到 Llama 主干</b> 的实验，表明"原生记忆"这个思路和具体主干无关。
+  </p>
+</section>
+
+<!-- 7. Experiments -->
+<section>
+  <h2 class="section-title"><span class="num">07</span>实验层面（论文声明） <span class="en">Reported evaluations</span></h2>
+  <div class="card">
+    <p style="font-size:14px;">论文的实验章节（§6–§7 + 附录）包含以下内容——但由于本次抓取仅覆盖到 §3，具体分数<b>需以原文 PDF 为准</b>：</p>
+    <ul class="clean">
+      <li><b>Overall Performance</b>：与 Qwen3.5 主干、Temp-LoRA、δ-Mem、MemoryBank、MemGPT、MEMOS、MemGen、Memory3、MEMO、MemFT、In-place TTT 等一众基线比较。</li>
+      <li><b>Ablation</b>：三大训练目标各自贡献；Hyper Memory / Local Memory 的分离实验。</li>
+      <li><b>OOD Memory Tasks</b>：在训练分布外的记忆任务上的迁移能力。</li>
+      <li><b>Memory Capacity</b>：定长状态到底能"装"多少信息，何时开始饱和。</li>
+      <li><b>General Capability</b>：加入记忆模块后，通用能力（MMLU 类）是否退化。</li>
+      <li><b>Efficiency</b>：在 <b>LoCoMo</b> 长对话基准上测量延迟随上下文长度的变化，以及单会话存储成本。</li>
+    </ul>
+  </div>
+
+  <div class="callout warn" style="margin-top:12px;">
+    <b>置信度声明 <span class="conf med">中</span>：</b> 上述实验清单来源于论文正文和目录，均为原文明确列出的评测项；但<b>具体数值本次未抓取到</b>，如需引用请查 PDF §6 表 1–表 5。
+  </div>
+</section>
+
+<!-- 8. Roadmap -->
+<section>
+  <h2 class="section-title"><span class="num">08</span>作者给出的"记忆能力"路线图 <span class="en">Roadmap of native memory</span></h2>
+  <div class="roadmap">
+    <div class="step active">
+      <div class="stage">Stage 1（当前）</div>
+      <div class="name">Stateful<br>有状态能力</div>
+    </div>
+    <div class="step">
+      <div class="stage">Stage 2</div>
+      <div class="name">Self-managing<br>自管理记忆</div>
+    </div>
+    <div class="step">
+      <div class="stage">Stage 3</div>
+      <div class="name">Experience-driven<br>经验驱动学习</div>
+    </div>
+    <div class="step">
+      <div class="stage">Stage 4</div>
+      <div class="name">Persistent Cognition<br>持久认知</div>
+    </div>
+    <div class="step">
+      <div class="stage">Stage 5</div>
+      <div class="name">Self-evolving<br>自演化能力</div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-top:10px;">Metis 只走到了第一阶段——一个"有状态"的原型。真正意义上的"自进化 Agent"仍是远景。</p>
+</section>
+
+<!-- 9. Critical assessment -->
+<section>
+  <h2 class="section-title"><span class="num">09</span>批判性评估 <span class="en">Skeptical read</span></h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <b style="color:var(--ok);">✅ 值得肯定</b>
+      <ul class="clean" style="font-size:14px;color:#d0f3e2;">
+        <li>提出了一个<b>干净的概念抽象</b>（State + Procedure），把散落的"记忆增强"工作放进了统一坐标系。</li>
+        <li>推理时权重冻结、前向即更新——<b>工程上极其友好</b>，可以复用现有推理栈。</li>
+        <li>开源 4B/9B/27B 三个尺寸 + 训练代码，<b>可复现</b>。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <b style="color:var(--bad);">⚠️ 需要警惕的地方</b>
+      <ul class="clean" style="font-size:14px;color:#ffcfcf;">
+        <li>论文自己承认："<b>在长时任务上性能会衰减</b>，因为固定大小的参数状态会有信息损失。"</li>
+        <li>"<b>某些场景会出现信息混淆</b>"——潜空间语义混叠是老问题，Metis 也没完全解决。</li>
+        <li>核心比较对象是<b>相对老的记忆增强方法</b>；对最强 RAG 系统（如带 reranker 的 hybrid retrieval）是否真的赢，需要看 PDF 里的具体表。</li>
+        <li>作者主体是 <b>MemTensor 公司</b>——其品牌就是"记忆张量"。存在把自研概念包装成"范式"的动机偏差，需要独立复现来验证。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout bad" style="margin-top:14px;">
+    <b>最强反驳：</b> "把记忆压进固定大小的参数状态"本身可能就是错的方向——现实世界的记忆是稀疏、长尾、结构化的，检索式外部记忆的可解释性和可编辑性都远超参数记忆。Metis 更像"用参数拟合缓存"，而不是"给 AI 装了海马体"。是否真是通往 Agent 记忆的正解，未来两年才见分晓。
+  </div>
+</section>
+
+<!-- 10. Verdict -->
+<section>
+  <h2 class="section-title"><span class="num">10</span>今日结论 <span class="en">Bottom line</span></h2>
+  <div class="card">
+    <p style="font-size:15px;">
+      Metis 的价值不在具体数字，而在<b>提出一个新范式并给出可用原型</b>——就像 2022 年的 CoT 之于推理模型。它把"Agent 需要记忆"这件事从"外挂工程问题"重新定义为"基础模型架构问题"。
+    </p>
+    <p style="font-size:15px;">
+      对<b>研究者</b>：这是一个必读的坐标系文章，即使你不用 Metis，也需要用它的抽象（State vs. Procedure）来重新理解现有方法。
+    </p>
+    <p style="font-size:15px;">
+      对<b>工程师</b>：不建议现在就替换 RAG。可行的做法是<b>先跟 4B 模型跑 LoCoMo 或自家长对话数据</b>，看看在自己的场景下延迟/召回/成本三个维度是否真的优于 hybrid retrieval。
+    </p>
+    <p style="font-size:15px;">
+      对<b>投资/战略视角</b>：这是"Agent 基础设施要不要 API 化 vs. 模型化"这条辩论的最新论据——如果原生记忆走通，专注做"记忆中间件"的公司会受冲击。
+    </p>
+  </div>
+</section>
+
+<footer>
+  本报告由 AI 每日精读任务自动生成 · 2026-08-05 · 一切引文均以 arXiv:2607.26760 原文为准<br>
+  <a href="https://arxiv.org/abs/2607.26760">arXiv:2607.26760</a> ·
+  <a href="https://github.com/MemTensor/Metis">GitHub</a> ·
+  <a href="https://huggingface.co/collections/IAAR-Shanghai/metis">HuggingFace</a>
+</footer>
+
+</div>
+</body>
+</html>

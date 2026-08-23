@@ -1,0 +1,646 @@
+from __future__ import annotations
+
+from datetime import datetime
+from html import escape
+from pathlib import Path
+
+from playwright.sync_api import sync_playwright
+
+
+BASE = Path(__file__).resolve().parent
+ASSETS = BASE / "assets"
+HTML = BASE / "2026-07-05_StructuredOutputs（结构化输出）.html"
+PDF = BASE / "2026-07-05_StructuredOutputs（结构化输出）.pdf"
+PREVIEW = BASE / "html_preview.png"
+EMAIL_SUBJECT = BASE / "email_subject.txt"
+EMAIL_BODY = BASE / "email_body.txt"
+SOURCES = BASE / "sources.md"
+
+
+TITLE = "Structured Outputs 结构化输出"
+SUBTITLE = "为什么 AI 回答必须变成系统能接住的数据？"
+CORE_SENTENCE = "结构化输出的本质，是让 AI 不只会说话，还能按固定格式交付可验证、可执行的信息。"
+
+
+SECTIONS = [
+    {
+        "id": "why",
+        "title": "为什么这个概念重要？",
+        "body": """
+<p>很多人第一次用大模型，会觉得它已经很聪明：能写邮件、总结文档、回答问题。但只要你想把它接进真实业务系统，就会遇到一个很现实的问题：它写得再像人话，系统也不一定能用。</p>
+<p>例如客服系统需要的是 <code>订单号</code>、<code>问题类型</code>、<code>优先级</code>、<code>下一步动作</code>。如果 AI 只返回一段漂亮文字，程序还要再猜：哪一个是订单号？严重程度是什么？该不该创建工单？一旦猜错，就可能漏单、误派、重复处理。</p>
+<div class="insight"><b>它解决的问题：</b>把 AI 的自由表达，变成符合固定结构的数据。这样数据库、工单系统、API、表格和自动化流程才能稳定接住。</div>
+<p>这也是 AI 行业离不开它的原因。RAG 让 AI 先查资料，Agent 让 AI 能调用工具，而结构化输出让这些能力真正进入软件系统。没有它，AI 很像一个会说话的同事；有了它，AI 才更像一个能按表格交作业的数字员工。</p>
+""",
+    },
+    {
+        "id": "analogy",
+        "title": "一个直观类比：餐厅点餐表",
+        "body": """
+<p>想象你在餐厅点餐。你可以自由地说：“我想要一份宫保鸡丁，不要辣，花生少一点，顺便备注一下我赶时间。”服务员能听懂，但后厨系统不一定能直接处理这句话。</p>
+<p>餐厅真正需要的是一张固定点餐表：菜品、辣度、配料、备注、桌号、是否加急。每一栏都有固定位置，有些栏不能为空，有些栏只能选几个固定值。这样后厨、收银、配送都不会混乱。</p>
+<p>结构化输出就是给 AI 一张这样的“固定表单”。用户可以随便说，AI 负责理解，但最后必须按表单交付。字段不能漏，类型要正确，枚举值不能乱写，系统才能直接执行。</p>
+""",
+        "image": "assets/structured_outputs_form.png",
+        "caption": "图解 1：结构化输出像固定点餐表。AI 可以理解自然语言，但交给系统时必须字段完整、类型正确。",
+    },
+    {
+        "id": "how",
+        "title": "工作原理（深入浅出）",
+        "body": """
+<p>结构化输出通常有三个核心角色：自然语言输入、结构规则、模型输出。</p>
+<div class="steps">
+  <div><span>1</span><b>用户用自然语言提出需求</b><p>用户不用按表格说话，可以像平时一样描述问题、任务或资料。</p></div>
+  <div><span>2</span><b>开发者给出结构规则</b><p>规则常用 JSON Schema 表达：有哪些字段、字段是什么类型、哪些必须填写、哪些值可以选择。</p></div>
+  <div><span>3</span><b>模型在规则约束下生成</b><p>模型不是随便写一段话，而是按指定结构输出，例如一个可解析的 JSON 对象。</p></div>
+  <div><span>4</span><b>系统验证并执行</b><p>程序检查输出是否合规。合规则写入数据库、创建工单、调用 API；不合规则拒绝或重试。</p></div>
+</div>
+<p>可以把 JSON Schema 理解成“数据合同”。合同写清楚：订单号必须是字符串，优先级只能是 <code>low</code>、<code>medium</code>、<code>high</code>，日期要符合格式，邮箱要像邮箱。模型要交付的不是“差不多像”，而是“能通过合同检查”。</p>
+<p>它和普通 JSON 模式的差别很关键。普通 JSON 模式通常只要求“看起来是 JSON”；结构化输出要求“这个 JSON 必须符合指定结构”。前者像让学生用表格答题，后者像老师已经规定了每一栏怎么填。</p>
+""",
+        "image": "assets/structured_outputs_pipeline.png",
+        "caption": "图解 2：从自然语言到业务系统。结构化输出把模型回复变成可验证、可存储、可调用的数据。",
+    },
+    {
+        "id": "terms",
+        "title": "关键术语解释",
+        "body": """
+<table>
+  <thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead>
+  <tbody>
+    <tr><td>Structured Outputs</td><td>让模型输出符合预设结构和约束的数据。</td><td>让 AI 按表格交作业，不随便写。</td></tr>
+    <tr><td>JSON</td><td>一种常见的数据交换格式，由键值对、数组、数字、字符串等组成。</td><td>程序之间传纸条用的标准格式。</td></tr>
+    <tr><td>JSON Schema</td><td>描述 JSON 数据结构、类型、必填字段和约束规则的规范。</td><td>一张规定每个格子怎么填的表单说明书。</td></tr>
+    <tr><td>Validation</td><td>检查输出是否符合规则。</td><td>像老师检查答题卡有没有漏填、填错格。</td></tr>
+    <tr><td>Enum</td><td>枚举值，字段只能从一组固定选项中选择。</td><td>例如优先级只能选低、中、高，不能写“特别急急急”。</td></tr>
+    <tr><td>Function Calling</td><td>模型选择某个函数或工具，并生成调用它所需的参数。</td><td>AI 决定要叫哪个工具，并把表单填好交给工具。</td></tr>
+    <tr><td>Constrained Generation</td><td>在生成过程中限制模型只能产生符合某些规则的输出。</td><td>边写边检查，不能写出格式外的东西。</td></tr>
+    <tr><td>Parser</td><td>把文本解析成程序可处理数据的组件。</td><td>把 AI 写的内容读成机器能理解的表格。</td></tr>
+  </tbody>
+</table>
+""",
+    },
+    {
+        "id": "case",
+        "title": "一个真实应用案例",
+        "body": """
+<p>假设一个物流客服助手收到用户消息：“我的包裹 A12345 到中转场后两天没动了，我很着急，能不能帮我查一下？”</p>
+<p>如果 AI 只返回一段自然语言，系统很难自动处理。但如果使用结构化输出，它可以返回类似这样的数据：</p>
+<pre><code>{
+  "order_id": "A12345",
+  "issue_type": "delivery_delay",
+  "urgency": "high",
+  "needs_human_followup": true,
+  "customer_summary": "用户反馈包裹到达中转场后两天无更新，希望尽快查询。"
+}</code></pre>
+<p>这段输出可以直接进入工单系统：订单号用于查询轨迹，问题类型用于分派，紧急程度用于排序，是否需要人工跟进用于触发客服队列。AI 不只是“回复用户”，而是在帮业务系统准备下一步动作。</p>
+<div class="insight"><b>现实意义：</b>在客服、财务报销、合同审查、医疗初筛、招聘简历提取、投研资料整理中，结构化输出都能把“AI 看懂了”变成“系统能处理”。</div>
+""",
+    },
+    {
+        "id": "myths",
+        "title": "常见误区（非常重要）",
+        "body": """
+<div class="myths">
+  <div><b>误区一：只要让 AI 回答 JSON 就够了。</b><p>不够。JSON 只是格式，结构化输出还要检查字段、类型、必填项、枚举值等约束。</p></div>
+  <div><b>误区二：结构化输出能保证内容一定正确。</b><p>不能。它保证“格式更可靠”，但不自动保证事实正确。订单号可能格式对，但内容仍需查证。</p></div>
+  <div><b>误区三：Schema 越复杂越好。</b><p>不是。规则太复杂会提高维护成本，也可能降低模型表现。好 Schema 应该清晰、必要、稳定。</p></div>
+  <div><b>误区四：有了结构化输出就不用后端校验。</b><p>错误。真实系统仍然要在后端验证、限权、去重和记录日志，不能完全相信模型。</p></div>
+  <div><b>误区五：结构化输出等于 Function Calling。</b><p>它们相关但不同。Function Calling 关注“调用哪个工具以及参数”，结构化输出更广，关注模型最终结果是否符合结构。</p></div>
+</div>
+""",
+    },
+    {
+        "id": "summary",
+        "title": "总结：3句话讲清核心认知",
+        "body": """
+<ol class="summary-list">
+  <li>结构化输出让 AI 从“会表达”升级为“能按规则交付数据”。</li>
+  <li>JSON Schema 像一张固定表单，规定字段、类型、必填项和可选值。</li>
+  <li>它不保证事实一定正确，但能显著提高 AI 接入业务系统、工具调用和自动化流程的可靠性。</li>
+</ol>
+""",
+    },
+    {
+        "id": "questions",
+        "title": "复习问题",
+        "body": """
+<div class="questions">
+  <div><b>1. 为什么“让 AI 输出 JSON”和“结构化输出”不是一回事？</b><p>请用“表格答题”和“老师检查答题卡”的类比解释。</p></div>
+  <div><b>2. 如果一个 AI 客服返回了格式完全正确的工单 JSON，这是否代表它的判断一定正确？为什么？</b><p>提示：区分格式可靠与事实可靠。</p></div>
+  <div><b>3. 为什么结构化输出对 Agent 和自动化工作流特别重要？</b><p>请从“工具能否稳定接收参数”的角度回答。</p></div>
+</div>
+""",
+    },
+]
+
+
+SOURCES_TEXT = """# Sources
+
+- OpenAI Platform Docs, Structured Outputs: https://platform.openai.com/docs/guides/structured-outputs
+- OpenAI Platform Docs, Function Calling: https://platform.openai.com/docs/guides/function-calling
+- JSON Schema, Creating your first schema: https://json-schema.org/learn/getting-started-step-by-step
+- JSON Schema, What is JSON Schema: https://json-schema.org/overview/what-is-jsonschema
+- Anthropic, Define tools: https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implement-tool-use
+- Anthropic, Tool use with Claude: https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview
+"""
+
+
+CSS = """
+:root {
+  --ink: #0f172a;
+  --muted: #475569;
+  --soft: #f8fafc;
+  --line: #dbeafe;
+  --blue: #2563eb;
+  --cyan: #0891b2;
+  --green: #059669;
+  --amber: #d97706;
+  --paper: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #eef4f8;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  line-height: 1.75;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  background: var(--paper);
+  box-shadow: 0 22px 80px rgba(15, 23, 42, 0.14);
+}
+
+.cover {
+  min-height: 760px;
+  padding: 72px 74px 42px;
+  color: #fff;
+  background:
+    linear-gradient(120deg, rgba(15, 23, 42, 0.96), rgba(8, 47, 73, 0.94)),
+    radial-gradient(circle at 72% 24%, rgba(34, 211, 238, 0.28), transparent 34%),
+    radial-gradient(circle at 18% 70%, rgba(245, 158, 11, 0.18), transparent 36%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #a5f3fc;
+  font-size: 15px;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.kicker::before {
+  content: "";
+  width: 32px;
+  height: 2px;
+  background: #22d3ee;
+}
+
+h1 {
+  margin: 56px 0 18px;
+  font-size: 62px;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.subtitle {
+  max-width: 780px;
+  margin: 0;
+  color: #dbeafe;
+  font-size: 28px;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
+.core {
+  max-width: 850px;
+  margin-top: 44px;
+  padding: 24px 28px;
+  border: 1px solid rgba(165, 243, 252, 0.38);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 22px;
+}
+
+.cover-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-top: 54px;
+}
+
+.cover-chip {
+  padding: 16px 18px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(226, 232, 240, 0.16);
+}
+
+.cover-chip b {
+  display: block;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.cover-chip span {
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 48px;
+  color: #cbd5e1;
+  font-size: 15px;
+}
+
+.content {
+  padding: 48px 74px 82px;
+}
+
+.toc {
+  margin: 0 0 46px;
+  padding: 28px 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.toc h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+}
+
+.toc ol {
+  margin: 0;
+  padding-left: 22px;
+  columns: 2;
+  column-gap: 44px;
+}
+
+.toc li { break-inside: avoid; margin: 6px 0; }
+
+.toc a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(37, 99, 235, 0.22);
+}
+
+section {
+  padding: 38px 0 8px;
+  border-top: 1px solid #e5edf7;
+}
+
+h2 {
+  margin: 0 0 20px;
+  font-size: 34px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+p {
+  margin: 13px 0;
+  font-size: 18px;
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+pre {
+  margin: 22px 0;
+  padding: 22px 24px;
+  color: #dbeafe;
+  background: #0f172a;
+  border-radius: 8px;
+  overflow: auto;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+pre code {
+  padding: 0;
+  color: inherit;
+  background: transparent;
+}
+
+.insight {
+  margin: 24px 0;
+  padding: 20px 22px;
+  border-left: 5px solid var(--cyan);
+  background: #ecfeff;
+  border-radius: 0 8px 8px 0;
+  font-size: 18px;
+}
+
+.figure {
+  margin: 30px 0 14px;
+}
+
+.figure img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+  border: 1px solid #dbeafe;
+}
+
+.caption {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.steps div {
+  position: relative;
+  min-height: 150px;
+  padding: 20px 20px 18px 72px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.steps span {
+  position: absolute;
+  left: 20px;
+  top: 22px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 800;
+}
+
+.steps b {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.steps p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+table {
+  width: 100%;
+  margin: 22px 0;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+
+th {
+  color: #fff;
+  background: #0f172a;
+}
+
+th, td {
+  padding: 13px 14px;
+  border: 1px solid #dbeafe;
+  text-align: left;
+  vertical-align: top;
+}
+
+td:first-child {
+  width: 18%;
+  font-weight: 800;
+  color: #0f766e;
+}
+
+.myths {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 13px;
+  margin: 22px 0;
+}
+
+.myths div,
+.questions div {
+  padding: 18px 20px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #fff7ed;
+}
+
+.myths b,
+.questions b {
+  display: block;
+  margin-bottom: 5px;
+  color: #9a3412;
+  font-size: 18px;
+}
+
+.myths p,
+.questions p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.summary-list {
+  margin: 22px 0 8px;
+  padding-left: 26px;
+  font-size: 20px;
+}
+
+.summary-list li {
+  margin: 14px 0;
+  padding-left: 6px;
+}
+
+.questions {
+  display: grid;
+  gap: 14px;
+}
+
+.source-list {
+  margin-top: 36px;
+  padding: 24px 28px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.source-list h2 {
+  font-size: 24px;
+}
+
+.source-list li {
+  margin: 7px 0;
+  color: var(--muted);
+  font-size: 14px;
+  word-break: break-word;
+}
+
+@page {
+  size: A4;
+  margin: 10mm;
+}
+
+@media print {
+  body { background: #fff; }
+  .page { box-shadow: none; max-width: none; }
+  .cover { min-height: 268mm; page-break-after: always; }
+  .content { padding: 0 8mm 8mm; }
+  .toc { page-break-after: always; margin-top: 8mm; }
+  section { break-inside: avoid; }
+  .figure { break-inside: avoid; }
+  h2 { break-after: avoid; }
+  .steps { grid-template-columns: 1fr 1fr; }
+}
+"""
+
+
+def render_toc() -> str:
+    items = "\n".join(
+        f'<li><a href="#{escape(section["id"])}">{escape(section["title"])}</a></li>'
+        for section in SECTIONS
+    )
+    return f'<nav class="toc"><h2>目录</h2><ol>{items}</ol></nav>'
+
+
+def render_sections() -> str:
+    rendered: list[str] = []
+    for section in SECTIONS:
+        image_html = ""
+        if "image" in section:
+            image_html = (
+                '<figure class="figure">'
+                f'<img src="{escape(section["image"])}" alt="{escape(section["caption"])}">'
+                f'<figcaption class="caption">{escape(section["caption"])}</figcaption>'
+                "</figure>"
+            )
+        rendered.append(
+            f'<section id="{escape(section["id"])}">'
+            f'<h2>{escape(section["title"])}</h2>'
+            f'{section["body"]}'
+            f'{image_html}'
+            "</section>"
+        )
+    return "\n".join(rendered)
+
+
+def render_sources() -> str:
+    source_items = [
+        ("OpenAI Platform Docs", "Structured Outputs", "https://platform.openai.com/docs/guides/structured-outputs"),
+        ("OpenAI Platform Docs", "Function Calling", "https://platform.openai.com/docs/guides/function-calling"),
+        ("JSON Schema", "Creating your first schema", "https://json-schema.org/learn/getting-started-step-by-step"),
+        ("JSON Schema", "What is JSON Schema", "https://json-schema.org/overview/what-is-jsonschema"),
+        ("Anthropic", "Define tools", "https://docs.anthropic.com/en/docs/agents-and-tools/tool-use/implement-tool-use"),
+        ("Anthropic", "Tool use with Claude", "https://docs.anthropic.com/en/docs/build-with-claude/tool-use/overview"),
+    ]
+    lis = "\n".join(
+        f'<li><b>{escape(org)}</b>：{escape(title)}<br><span>{escape(url)}</span></li>'
+        for org, title, url in source_items
+    )
+    return f'<aside class="source-list"><h2>参考来源</h2><ol>{lis}</ol></aside>'
+
+
+def build_html() -> str:
+    today = "2026-07-05"
+    return f"""<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{escape(TITLE)}｜AI每日深度科普</title>
+  <style>{CSS}</style>
+</head>
+<body>
+  <main class="page">
+    <header class="cover">
+      <div>
+        <div class="kicker">AI每日深度科普 · 概念课 2026-07-05</div>
+        <h1>{escape(TITLE)}</h1>
+        <p class="subtitle">{escape(SUBTITLE)}</p>
+        <div class="core"><b>核心一句话：</b>{escape(CORE_SENTENCE)}</div>
+        <div class="cover-grid">
+          <div class="cover-chip"><b>知识地图位置</b><span>RAG 之后，Agent 与工具调用之前的可靠性基础</span></div>
+          <div class="cover-chip"><b>适合读者</b><span>高中生、产品经理、运营、业务负责人、AI 初学者</span></div>
+          <div class="cover-chip"><b>今天要建立的直觉</b><span>AI 不是只要会说，还要能按规则交付</span></div>
+        </div>
+      </div>
+      <div class="meta">
+        <span>主题：Structured Outputs（结构化输出）</span>
+        <span>形式：HTML / PDF 科普文档</span>
+      </div>
+    </header>
+    <article class="content">
+      {render_toc()}
+      {render_sections()}
+      {render_sources()}
+    </article>
+  </main>
+</body>
+</html>
+"""
+
+
+def write_email_files() -> None:
+    EMAIL_SUBJECT.write_text(
+        "【AI每日深度科普】Structured Outputs：为什么 AI 回答必须变成系统能接住的数据？",
+        encoding="utf-8",
+    )
+    EMAIL_BODY.write_text(
+        """今天的主题是 Structured Outputs（结构化输出）。
+
+这是理解 AI 工程化、工具调用、Agent 工作流和企业自动化的重要基础概念。
+
+附件会用“餐厅点餐表”的方式解释：
+为什么 AI 不只要会说话，还要能按固定结构交付可验证、可执行的数据。
+
+适合非技术读者、AI初学者、产品经理、业务系统负责人和自动化工作流设计者阅读。""",
+        encoding="utf-8",
+    )
+
+
+def main() -> None:
+    HTML.write_text(build_html(), encoding="utf-8")
+    SOURCES.write_text(SOURCES_TEXT, encoding="utf-8")
+    write_email_files()
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(viewport={"width": 1280, "height": 1600}, device_scale_factor=1)
+        page.goto(HTML.as_uri(), wait_until="networkidle")
+        page.screenshot(path=str(PREVIEW), full_page=True)
+        page.pdf(path=str(PDF), format="A4", print_background=True, prefer_css_page_size=True)
+        browser.close()
+
+    print(f"Built: {HTML}")
+    print(f"Built: {PDF}")
+    print(f"Built: {PREVIEW}")
+    print(f"Built at: {datetime.now().isoformat(timespec='seconds')}")
+
+
+if __name__ == "__main__":
+    main()

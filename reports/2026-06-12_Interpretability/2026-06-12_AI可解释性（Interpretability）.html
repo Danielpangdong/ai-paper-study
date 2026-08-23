@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-12_AI可解释性（Interpretability）</title>
+  <style>
+    :root {
+      --ink: #0f172a; --muted: #475569; --quiet: #64748b; --line: #e2e8f0;
+      --soft: #f8fafc; --navy: #1e3a8a; --teal: #0d9488; --amber: #d97706; --red: #e11d48;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink); background: #f8fafc; line-height: 1.78;
+    }
+    header { background: #fff; border-bottom: 1px solid var(--line); padding: 56px 24px 42px; }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+    .eyebrow { color: var(--teal); font-weight: 700; letter-spacing: 0; }
+    h1 { margin: 16px 0 10px; font-size: clamp(38px, 6vw, 72px); line-height: 1.08; letter-spacing: 0; }
+    .subtitle { font-size: 26px; color: var(--muted); margin: 0 0 24px; }
+    .core { margin-top: 24px; padding: 18px 22px; border: 1px solid #99f6e4; background: #f0fdfa; border-radius: 8px; font-weight: 700; color: var(--teal); }
+    nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 28px 0 8px; }
+    nav a { color: var(--navy); text-decoration: none; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+    main { padding: 34px 24px 72px; }
+    section { max-width: 1040px; margin: 0 auto 28px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 28px; }
+    h2 { font-size: 32px; line-height: 1.25; margin: 0 0 16px; letter-spacing: 0; }
+    p { margin: 12px 0; font-size: 18px; }
+    figure { margin: 20px 0; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    figcaption { color: var(--quiet); font-size: 14px; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
+    th, td { border: 1px solid var(--line); padding: 12px; vertical-align: top; }
+    th { width: 16%; background: #f8fafc; color: var(--navy); text-align: left; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 10px 0; font-size: 18px; }
+    .note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 8px; padding: 14px 18px; margin-top: 18px; }
+    @media print {
+      body { background: #fff; }
+      section { break-inside: avoid; border-color: #ddd; }
+      nav a { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-12</div>
+      <h1>AI可解释性<br><span style="color:var(--navy)">Interpretability</span></h1>
+      <p class="subtitle">为什么我们不能只看 AI 答案，还要追问它为什么这样想？</p>
+      <div class="core">核心一句话：可解释性的本质，是让 AI 的判断过程留下可被人检查的原因、证据和边界。</div>
+      <nav><a href="#why">为什么这个概念重要？</a>
+<a href="#analogy">一个直观类比：老师不只看答案，还看解题步骤</a>
+<a href="#mechanism">工作原理：可解释性怎样运作？</a>
+<a href="#terms">关键术语解释</a>
+<a href="#case">一个真实应用案例：AI 贷款审核</a>
+<a href="#mistakes">常见误区</a>
+<a href="#summary">3句话总结</a>
+<a href="#quiz">复习问题</a></nav>
+    </div>
+  </header>
+  <main>
+    <section id="why"><h2>为什么这个概念重要？</h2><p>AI可解释性解决的是一个朴素但关键的问题：AI 给了一个答案，我们能不能知道它为什么这样判断？如果一个模型拒绝贷款、推荐药物、筛选简历或让客服转人工，只看结果远远不够，人们还需要看见证据、原因和边界。</p>
+<p>在大模型时代，AI 不再只是做一道选择题。它会写方案、调工具、生成报告、影响业务流程。越是进入真实生活，越不能只问“它答对了吗”，还要问“它是靠什么答对的，如果错了我们怎么发现”。</p>
+<p>可解释性让 AI 从一个神秘黑箱，变成一个可以检查、可以讨论、可以修复的系统。它不能保证模型永远正确，但能让错误更早暴露，让信任建立在证据上，而不是建立在感觉上。</p></section>
+    <section id="analogy"><h2>一个直观类比：老师不只看答案，还看解题步骤</h2><figure><img src="chatgpt_interpretability_blackbox_window.png" alt="AI可解释性黑箱开窗图"><figcaption>黑箱开窗：可解释性让输入、输出和关键解释线索进入人类可检查的范围。</figcaption></figure><p>想象一个学生做数学题，最后答案写对了。老师仍然会看草稿：用了什么公式？有没有偷换条件？中间哪一步最关键？因为答案可能是蒙对的，也可能是用错方法碰巧得到的。</p>
+<p>AI可解释性也是在看“解题步骤”。我们不一定能完整读出模型大脑里的每个念头，但可以要求它留下可检查的线索：它参考了哪些资料，关注了输入里的哪些部分，哪些因素最影响结果。</p>
+<p>这件事的重点不是让 AI 像人一样讲一个漂亮故事，而是让人类能追问：这个解释站得住脚吗？证据够不够？如果换一个条件，结论会不会变？</p></section>
+    <section id="mechanism"><h2>工作原理：可解释性怎样运作？</h2><figure><img src="chatgpt_interpretability_loop.png" alt="AI可解释性五步流程图"><figcaption>可解释性闭环：输入任务、模型判断、生成解释线索、人类核对证据、发现问题后改进。</figcaption></figure><p>第一步，看输入。对文本模型来说，输入可能是一段话、一个问题、一份合同；对视觉模型来说，输入可能是一张 X 光片或道路照片。解释要先说明模型到底在看什么。</p>
+<p>第二步，看证据。AI 搜索和 RAG 系统常用引用来源来解释答案；风控模型会列出收入、负债、历史记录等关键因素；图像模型可能用热力图标出它关注的区域。</p>
+<p>第三步，看影响。可解释工具会估计：如果某个词、某个特征、某条证据被拿掉，结果会不会明显变化。影响越大，越值得人类重点检查。</p>
+<p>第四步，让人核对。解释不是自动等于真相。医生、工程师、产品经理或审核员要判断解释是否符合常识、规则和业务证据。</p>
+<p>第五步，用解释改进系统。如果解释暴露出偏见、错误证据或脆弱逻辑，就要修数据、调规则、补评测，甚至限制模型的使用范围。</p></section>
+    <section id="terms"><h2>关键术语解释</h2><table><thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead><tbody><tr><th>可解释性</th><td>专业解释：让模型输出和关键决策因素能够被人理解、检查和验证的能力。</td><td>白话解释：AI 不能只给答案，还要留下人能看懂的理由和证据。</td></tr>
+<tr><th>黑箱模型</th><td>专业解释：内部机制复杂，难以直接观察每个判断原因的模型。</td><td>白话解释：像一个锁着的盒子，输入进去、结果出来，但里面怎么想不容易看见。</td></tr>
+<tr><th>特征贡献</th><td>专业解释：某个输入因素对最终预测结果的影响程度。</td><td>白话解释：看看到底是收入、病历、关键词还是图片区域，把结果推向了这个方向。</td></tr>
+<tr><th>注意力热图</th><td>专业解释：用颜色显示模型在输入不同位置上的关注强弱。</td><td>白话解释：像老师用荧光笔标重点，颜色越亮，说明模型越关注那里。</td></tr>
+<tr><th>反事实解释</th><td>专业解释：通过假设某个条件改变，观察模型结论是否随之改变。</td><td>白话解释：问一句“如果这个条件不一样，AI 还会给同样答案吗？”</td></tr>
+<tr><th>可审计性</th><td>专业解释：系统决策过程、证据和记录能被事后检查与追责。</td><td>白话解释：出了问题不能只说“AI 就是这么说的”，要能回头查清楚发生了什么。</td></tr></tbody></table></section>
+    <section id="case"><h2>一个真实应用案例：AI 贷款审核</h2><p>假设银行用 AI 辅助判断一个人能否获得贷款。如果系统只给出“拒绝”两个字，用户会困惑，业务人员也很难知道模型是否公平。可解释性要求系统说明：主要影响因素是收入稳定性、已有负债、还款记录，还是资料不完整。</p>
+<p>一个合格的解释不应该泄露商业机密，也不应该编造理由。它至少要让人知道：哪些因素最重要，哪些证据可以补充，模型有没有使用不该使用的敏感线索。</p>
+<p>这对企业也有价值。如果很多被拒案例都被解释为“地址区域风险高”，工程和合规团队就要警惕：模型是否把地理位置当成了收入、族群或职业的替代线索？这就是可解释性帮助发现偏见的地方。</p><div class="note">可解释性的价值：把“AI 说了什么”推进到“人能检查 AI 凭什么这么说”。</div></section>
+    <section id="mistakes"><h2>常见误区</h2><ul><li><strong>误区一：AI 能解释，就说明它一定正确。</strong><br>不对。解释只是可检查的线索，不是正确性的保证。一个学生也可能把错误步骤讲得很流畅。</li>
+<li><strong>误区二：可解释性就是让 AI 说出思考过程。</strong><br>不完全是。大模型生成的理由可能是事后组织的语言，真正可靠的解释还要看证据、特征影响和可验证记录。</li>
+<li><strong>误区三：解释越复杂越专业。</strong><br>好的解释应该让目标读者能做判断。给普通用户看，应清楚说明主要原因和可行动建议，而不是堆满术语。</li>
+<li><strong>误区四：黑箱模型完全不能用。</strong><br>不一定。关键是看场景风险。低风险推荐可以宽松一些；医疗、金融、招聘等高风险场景就必须有更强解释和审计。</li>
+<li><strong>误区五：开源模型天然更可解释。</strong><br>开源能帮助研究者检查结构和权重，但普通用户仍然需要面向具体任务的证据、日志和解释界面。</li></ul></section>
+    <section id="summary"><h2>3句话总结</h2><ol><li>AI可解释性的本质，是让模型判断留下人类可以检查的原因、证据和影响线索。</li>
+<li>解释不是正确性的证明，但能帮助我们发现错误、偏见、脆弱逻辑和不该上线的风险。</li>
+<li>理解可解释性，能让你从“相信 AI 的答案”升级为“审视 AI 的依据”。</li></ol></section>
+    <section id="quiz"><h2>复习问题</h2><ol><li>为什么一个 AI 答案看起来正确，仍然需要可解释性？请用“老师看解题步骤”的类比回答。</li>
+<li>在贷款审核、医疗建议、短视频推荐这三个场景里，哪个最需要强解释？为什么？</li>
+<li>如果一个 AI 说“因为用户画像相似，所以推荐这份工作”，你会继续追问哪三个问题？</li></ol></section>
+  </main>
+</body>
+</html>

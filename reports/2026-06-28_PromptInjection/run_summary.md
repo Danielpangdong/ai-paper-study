@@ -1,0 +1,31 @@
+# Run Summary
+
+- Date: 2026-06-28 Asia/Shanghai.
+- Automation ID: `ai-pdf`.
+- Selected concept: 提示词注入（Prompt Injection）.
+- Rationale: prior concept reports already covered Context Window, Prompt Engineering, RAG, AI Memory, Agent, Tool Use, Guardrails, AI Safety Evaluation, Red Teaming, Context Engineering, and related infrastructure concepts. Prompt Injection is the next high-value bridge concept because it explains why AI systems must distinguish trusted instructions from untrusted web, email, document, and tool content before Agent workflows can be safe.
+- Built files:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/2026-06-28_提示词注入（Prompt Injection）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/2026-06-28_提示词注入（Prompt Injection）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/prompt_injection_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/prompt_injection_defense_stack.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/email_body.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-28_PromptInjection/sources.md`
+- Image generation: used built-in ChatGPT image generation for two Chinese science diagrams, then copied the generated PNGs into the report directory.
+- Validation:
+  - HTML parse and required-section check passed.
+  - Source links returned HTTP 200.
+  - PDF exported via Playwright + Chrome.
+  - `pdfinfo` reported 10 A4 pages, unencrypted, 4.4 MB.
+  - `pdftotext` confirmed title, required sections, quiz, and OWASP source text are extractable.
+  - `pdfimages -list` confirmed two embedded images: 1672 x 941 and 1536 x 1024.
+  - Rendered and visually checked previews of pages 1, 3, 4, and 5.
+  - SHA256 PDF: `641453b47881ecb9abe949d34bf57e84e833a1cb5fde8f19e483258b5cf1df7f`.
+- Delivery:
+  - Sent by Gmail with PDF attachment to `pangdong@sf-express.com,seekiingforhappiness@gmail.com`.
+  - Subject: `【AI每日深度科普】提示词注入：为什么AI也会被“话术攻击”？`
+  - Gmail message id: `19f0b94decd6bc6b`; thread id: `19f0b94decd6bc6b`.
+  - Sent search proof: `in:sent subject:"提示词注入" has:attachment newer_than:1d` returned `19f0b94decd6bc6b`.
+- Sources used for factual grounding: OWASP LLM01 Prompt Injection, OpenAI Model Spec instruction hierarchy, OpenAI computer-use prompt injection guidance, Anthropic prompt-injection mitigation docs, Microsoft indirect prompt-injection defense guidance.
+- Completed: 2026-06-28 08:16:15 CST.

@@ -1,0 +1,35 @@
+# Run Summary
+
+- Run time: 2026-07-08 08:12:37 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: Top-p（核采样）
+- Rationale: yesterday's concept was Temperature（采样温度）. Top-p is the natural next step because it explains the other major sampling control: Temperature changes the shape of token probabilities, while Top-p sets the candidate-pool boundary for generation.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/2026-07-08_Top-p（核采样）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/2026-07-08_Top-p（核采样）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/assets/top_p_candidate_pool.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/assets/temperature_vs_top_p.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/html_preview.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-08_TopP/pdf_text.txt`
+- Image proof:
+  - ChatGPT Image 2.0 generated two Chinese infographic images under `/Users/mac/.codex/generated_images/019f3f06-9926-73f2-b30a-d0575091268a/`.
+  - The generated images were copied into report assets and embedded in the final HTML/PDF.
+  - The build script also contains deterministic PIL fallback diagrams if the generated images are unavailable in a future rerun.
+- Validation proof:
+  - HTML parsed successfully: h2=9, img=2, TOC links=8, source links=5, scripts=0.
+  - Required sections found: 为什么这个概念重要, 一个直观类比, 工作原理, 关键术语解释, 一个真实应用案例, 常见误区, 总结, 复习问题.
+  - PDF is 8 A4 pages, unencrypted, Chromium generated, size 3,761,145 bytes.
+  - `pdfimages -list` found two embedded generated diagrams at 1693x929 and 1536x1024.
+  - `pdftotext` found required terms/headings: Top-p, 核采样, Temperature, 事实检查器, required section headings.
+  - Five source URLs returned HTTP 200.
+- Delivery proof:
+  - Final Gmail send id: `19f3f11488347a7d`.
+  - Sent search: `in:sent subject:"Top-p 核采样" has:attachment newer_than:1d` returned `19f3f11488347a7d` and the superseded earlier message `19f3f0f1f0853473`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject `【AI每日深度科普】Top-p 核采样：为什么AI不是从所有词里乱选？`, body includes `本封为最终图解版，请以此附件为准。`, and attached PDF `2026-07-08_Top-p（核采样）.pdf` at 3,761,145 bytes.
+  - Superseded message id `19f3f0f1f0853473` sent the earlier 1,245,745-byte fallback-diagram PDF before the ChatGPT Image 2.0 images were copied into the final artifact.
+- Sources:
+  - OpenAI API Reference: Responses create
+  - Hugging Face Transformers: Text generation parameters
+  - Hugging Face Transformers: Generation strategies
+  - Holtzman et al.: The Curious Case of Neural Text Degeneration
+  - OpenAI Cookbook: How to generate text

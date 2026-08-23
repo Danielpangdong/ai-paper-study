@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI每日论文精选 | SARC Agent 运行时治理架构</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111418;
+      --muted: #5a6572;
+      --paper: #f5f6f8;
+      --panel: #ffffff;
+      --line: #dce1e8;
+      --blue: #1f66d1;
+      --red: #b83a3a;
+      --green: #0f7661;
+      --gold: #916600;
+      --soft-blue: #eaf2ff;
+      --soft-red: #fff1ef;
+      --soft-green: #eaf8f2;
+      --soft-gold: #fff6dd;
+      --shadow: 0 18px 50px rgba(17, 20, 24, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.7;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1080px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      background: #10141b;
+      color: #fff;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      overflow: hidden;
+      min-height: 430px;
+    }
+    .hero-copy { padding: 42px 42px 36px; display: flex; flex-direction: column; justify-content: space-between; gap: 28px; }
+    .kicker {
+      display: inline-flex;
+      width: fit-content;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 999px;
+      color: #d9e7ff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    h1 { margin: 16px 0 14px; font-size: clamp(34px, 5vw, 56px); line-height: 1.05; letter-spacing: 0; }
+    h2 { margin: 0 0 16px; font-size: 26px; line-height: 1.24; letter-spacing: 0; }
+    h3 { margin: 22px 0 10px; font-size: 18px; line-height: 1.28; letter-spacing: 0; }
+    p { margin: 0 0 14px; }
+    .subtitle { color: #d8dee8; font-size: 18px; max-width: 740px; }
+    .hero-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; color: #d6deea; font-size: 13px; }
+    .hero-meta div { border-top: 1px solid rgba(255,255,255,0.16); padding-top: 10px; }
+    .hero-art {
+      background: linear-gradient(135deg, #161d29 0%, #0c1016 100%);
+      border-left: 1px solid rgba(255,255,255,0.12);
+      padding: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .section { margin-top: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 28px; box-shadow: 0 10px 26px rgba(17, 20, 24, 0.04); }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 16px; }
+    .blue { background: var(--soft-blue); border-color: #cbdfff; }
+    .green { background: var(--soft-green); border-color: #c9eadc; }
+    .red { background: var(--soft-red); border-color: #ffd2ce; }
+    .gold { background: var(--soft-gold); border-color: #f3dfa4; }
+    .label { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: 0; margin-bottom: 5px; }
+    .big { font-size: 24px; font-weight: 800; line-height: 1.22; margin-bottom: 8px; }
+    .lead { font-size: 18px; color: #2a3038; }
+    .muted { color: var(--muted); }
+    .quote { border-left: 4px solid var(--blue); background: #f2f6ff; padding: 16px 18px; border-radius: 0 8px 8px 0; font-size: 20px; font-weight: 760; margin: 18px 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px 10px; text-align: left; vertical-align: top; }
+    th { background: #f8fafc; color: var(--muted); font-size: 13px; }
+    .figure { border: 1px solid var(--line); border-radius: 8px; background: #fbfcfe; padding: 16px; overflow-x: auto; margin: 16px 0; }
+    .caption { color: var(--muted); font-size: 13px; margin: 8px 0 0; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .term { display: grid; grid-template-columns: 180px 1fr 1fr; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .term:last-child { border-bottom: 0; }
+    .pill { display: inline-block; padding: 3px 9px; border-radius: 999px; background: #eef2f7; color: #445062; font-size: 12px; font-weight: 800; margin: 0 5px 6px 0; }
+    .source-list li { margin-bottom: 10px; }
+    .footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 24px; }
+    @media (max-width: 820px) {
+      .hero { grid-template-columns: 1fr; }
+      .hero-copy { padding: 28px 24px; }
+      .hero-art { border-left: 0; border-top: 1px solid rgba(255,255,255,0.12); }
+      .hero-meta, .grid, .grid.two { grid-template-columns: 1fr; }
+      .section { padding: 20px; }
+      .term { grid-template-columns: 1fr; gap: 4px; }
+      table { font-size: 13px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-copy">
+        <div>
+          <div class="kicker">AI DAILY PAPER PICK · 2026-05-14</div>
+          <h1>AI每日论文精选：给 Agent 装上“制度刹车”</h1>
+          <p class="subtitle">今日论文：<strong>SARC: A Governance-by-Architecture Framework for Agentic AI Systems</strong><br />中文标题：<strong>SARC：面向智能体 AI 系统的“架构即治理”框架</strong></p>
+        </div>
+        <div class="hero-meta">
+          <div><strong>作者</strong><br />Gaston Besanson</div>
+          <div><strong>平台</strong><br />arXiv · cs.SE / cs.CY · Working Paper</div>
+          <div><strong>提交时间</strong><br />2026-05-08</div>
+          <div><strong>核心主题</strong><br />Agent 治理、运行时约束、可审计轨迹</div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg width="420" height="360" viewBox="0 0 420 360" role="img" aria-label="Agent 治理运行环路">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1"><stop stop-color="#3b82f6"/><stop offset="1" stop-color="#14b8a6"/></linearGradient>
+          </defs>
+          <rect x="24" y="28" width="372" height="304" rx="18" fill="#111827" stroke="#334155"/>
+          <circle cx="210" cy="180" r="72" fill="#0f172a" stroke="url(#g)" stroke-width="3"/>
+          <text x="210" y="174" fill="#fff" font-size="22" font-weight="800" text-anchor="middle">AI Agent</text>
+          <text x="210" y="202" fill="#b6c3d6" font-size="13" text-anchor="middle">会调用工具、子代理、外部服务</text>
+          <rect x="34" y="56" width="118" height="54" rx="8" fill="#eaf2ff"/>
+          <text x="93" y="80" fill="#1f66d1" font-size="14" font-weight="800" text-anchor="middle">运行前门禁</text>
+          <text x="93" y="99" fill="#344256" font-size="11" text-anchor="middle">先判断能不能做</text>
+          <rect x="268" y="56" width="118" height="54" rx="8" fill="#fff6dd"/>
+          <text x="327" y="80" fill="#916600" font-size="14" font-weight="800" text-anchor="middle">运行中监控</text>
+          <text x="327" y="99" fill="#344256" font-size="11" text-anchor="middle">边做边限速</text>
+          <rect x="268" y="250" width="118" height="54" rx="8" fill="#eaf8f2"/>
+          <text x="327" y="274" fill="#0f7661" font-size="14" font-weight="800" text-anchor="middle">运行后审计</text>
+          <text x="327" y="293" fill="#344256" font-size="11" text-anchor="middle">留下证据链</text>
+          <rect x="34" y="250" width="118" height="54" rx="8" fill="#fff1ef"/>
+          <text x="93" y="274" fill="#b83a3a" font-size="14" font-weight="800" text-anchor="middle">升级路由</text>
+          <text x="93" y="293" fill="#344256" font-size="11" text-anchor="middle">交给人或停机</text>
+          <path d="M145 111 L171 139" stroke="#9db8e9" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M275 111 L249 139" stroke="#e8c76c" stroke-width="3" fill="none"/>
+          <path d="M275 249 L249 221" stroke="#8dd8bf" stroke-width="3" fill="none"/>
+          <path d="M145 249 L171 221" stroke="#ef9a94" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section" id="info">
+      <h2>1. 标题区</h2>
+      <div class="grid two">
+        <div class="card">
+          <div class="label">Paper Card</div>
+          <p><strong>英文标题：</strong>SARC: A Governance-by-Architecture Framework for Agentic AI Systems</p>
+          <p><strong>中文标题：</strong>SARC：面向智能体 AI 系统的“架构即治理”框架</p>
+          <p><strong>作者：</strong>Gaston Besanson</p>
+          <p><strong>机构：</strong>论文页面未列出正式机构；arXiv 提交者显示为 Carlos Gaston Besanson</p>
+          <p><strong>发布时间：</strong>2026-05-08</p>
+          <p><strong>论文链接：</strong><a href="https://arxiv.org/abs/2605.07728">https://arxiv.org/abs/2605.07728</a></p>
+          <p><strong>会议/平台：</strong>arXiv Working Paper，Software Engineering / Computers and Society</p>
+        </div>
+        <div class="card blue">
+          <div class="label">今天的关键词</div>
+          <div class="big">不是让 Agent “更听话”，而是让它“没法越界”。</div>
+          <p class="muted">SARC 的核心不是写一段更长的安全提示词，而是把规则编进 Agent 的运行路径：行动前检查、行动中监控、行动后审计，必要时升级给人类或停机。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">2026 年，AI Agent 正在从“聊天窗口里的助手”变成“能调用工具、能花钱、能写代码、能操作系统的执行者”。问题也随之变化：过去我们担心模型说错话；现在我们更担心它做错事。</p>
+      <div class="grid">
+        <div class="card green">
+          <div class="label">行业意义</div>
+          <p><strong>Agent 上生产的最大瓶颈不是能力，而是控制。</strong>企业愿意让 AI 写邮件、查库存、改代码，但不敢让它越权下单、泄露数据或误删系统。</p>
+        </div>
+        <div class="card blue">
+          <div class="label">技术突破</div>
+          <p><strong>SARC 把治理从“文档”变成“运行时部件”。</strong>约束不只是写在合规手册里，而是变成 Agent 每次行动必须经过的关卡。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">长期价值</div>
+          <p><strong>它很可能成为 Agent 工程的基础范式之一。</strong>未来 Agent 系统不只比拼模型多聪明，还会比拼权限、审计、升级、责任归属设计得多清楚。</p>
+        </div>
+      </div>
+      <p>我今天选它，是因为它抓住了 Agent 产业化里一个非常现实的断点：很多团队已经能把 Agent 做出来，却还没有一套让企业放心使用的“操作规程”。</p>
+    </section>
+
+    <section class="section" id="one">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文的意思是：不要只靠一句“请遵守规则”的提示词管理 Agent，而要像机场安检一样，把每个危险动作都放进可检查、可拦截、可追责的通道里。</div>
+    </section>
+
+    <section class="section" id="contrib">
+      <h2>4. 核心贡献拆解</h2>
+      <table>
+        <thead>
+          <tr><th>问题</th><th>常见旧做法</th><th>SARC 的做法</th><th>为什么更好</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Agent 如何遵守规则？</td>
+            <td>把政策写进 prompt，或者让模型自己“记得要合规”。</td>
+            <td>把约束当作一等对象，写清来源、类别、判断条件、检查时点和响应动作。</td>
+            <td>规则不再是口头提醒，而是系统执行路径的一部分。</td>
+          </tr>
+          <tr>
+            <td>什么时候检查？</td>
+            <td>多数系统在输出之后过滤，或者事后审计日志。</td>
+            <td>编译到四个位置：运行前门禁、运行中监控、运行后审计、升级路由。</td>
+            <td>有些错误一旦发生就无法补救，所以必须在行动前或行动中拦住。</td>
+          </tr>
+          <tr>
+            <td>多 Agent 怎么管？</td>
+            <td>只记录主 Agent，子代理之间的授权和责任容易模糊。</td>
+            <td>用约束传播、权限交集、保留归因的 trace tree 处理多 Agent 工作流。</td>
+            <td>能回答“谁让谁做了什么、依据哪条规则、留下了什么证据”。</td>
+          </tr>
+          <tr>
+            <td>软规则和硬规则怎么区分？</td>
+            <td>把违规都变成扣分，希望模型自己权衡。</td>
+            <td>论文强调有限 reward penalty 不能替代硬性运行时约束。</td>
+            <td>“不许转账超过上限”不能只是扣一点分；应该直接禁止。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="how">
+      <h2>5. 工作原理：把 Agent 想象成一名新员工</h2>
+      <p>如果一个新员工要采购一批设备，靠谱公司不会只说“请你遵守制度”。公司会给他系统权限、审批流程、预算上限、合同模板和留痕机制。SARC 对 Agent 做的事情很像这个。</p>
+      <div class="figure">
+        <svg width="980" height="310" viewBox="0 0 980 310" role="img" aria-label="SARC 四段式运行流程">
+          <defs>
+            <marker id="arrow2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#536173"/>
+            </marker>
+          </defs>
+          <rect x="20" y="46" width="160" height="96" rx="8" fill="#eaf2ff" stroke="#9fc0ff"/>
+          <text x="100" y="82" font-size="18" font-weight="800" fill="#1f66d1" text-anchor="middle">1. 运行前门禁</text>
+          <text x="100" y="112" font-size="13" fill="#344256" text-anchor="middle">这件事能不能做？</text>
+          <text x="100" y="132" font-size="13" fill="#344256" text-anchor="middle">预算、权限、数据范围</text>
+          <rect x="255" y="46" width="160" height="96" rx="8" fill="#fff6dd" stroke="#e0c56e"/>
+          <text x="335" y="82" font-size="18" font-weight="800" fill="#916600" text-anchor="middle">2. 运行中监控</text>
+          <text x="335" y="112" font-size="13" fill="#344256" text-anchor="middle">执行时是否越界？</text>
+          <text x="335" y="132" font-size="13" fill="#344256" text-anchor="middle">限速、暂停、纠偏</text>
+          <rect x="490" y="46" width="160" height="96" rx="8" fill="#eaf8f2" stroke="#8ed8bf"/>
+          <text x="570" y="82" font-size="18" font-weight="800" fill="#0f7661" text-anchor="middle">3. 运行后审计</text>
+          <text x="570" y="112" font-size="13" fill="#344256" text-anchor="middle">做完留下证据</text>
+          <text x="570" y="132" font-size="13" fill="#344256" text-anchor="middle">日志、归因、复盘</text>
+          <rect x="725" y="46" width="160" height="96" rx="8" fill="#fff1ef" stroke="#f1a39d"/>
+          <text x="805" y="82" font-size="18" font-weight="800" fill="#b83a3a" text-anchor="middle">4. 升级路由</text>
+          <text x="805" y="112" font-size="13" fill="#344256" text-anchor="middle">不确定就升级</text>
+          <text x="805" y="132" font-size="13" fill="#344256" text-anchor="middle">人审、降级、停机</text>
+          <path d="M184 94 H248" stroke="#536173" stroke-width="2.5" marker-end="url(#arrow2)"/>
+          <path d="M419 94 H483" stroke="#536173" stroke-width="2.5" marker-end="url(#arrow2)"/>
+          <path d="M654 94 H718" stroke="#536173" stroke-width="2.5" marker-end="url(#arrow2)"/>
+          <rect x="105" y="205" width="750" height="58" rx="8" fill="#f8fafc" stroke="#dce1e8"/>
+          <text x="480" y="232" font-size="17" font-weight="800" fill="#111418" text-anchor="middle">SARC 规范：规则来源 + 规则类别 + 判断条件 + 检查位置 + 违规响应 + 运行点</text>
+          <text x="480" y="254" font-size="13" fill="#5a6572" text-anchor="middle">它像一张“工作许可证”：每个动作都要说明自己为什么可以做，以及出事时谁负责处理。</text>
+        </svg>
+        <p class="caption">图 1：SARC 不是一个单独的安全过滤器，而是一条贯穿 Agent 行动前、中、后的治理通道。</p>
+      </div>
+      <h3>白话步骤</h3>
+      <p><strong>第一步，先把规则结构化。</strong>比如“采购金额超过 5 万元必须人工审批”，不能只写在文档里，而要变成系统能判断的条件。</p>
+      <p><strong>第二步，把规则放到正确位置。</strong>有的规则要在行动前检查，比如是否有权限；有的要在行动中检查，比如连续调用外部 API 是否超限；有的要在行动后检查，比如日志是否完整。</p>
+      <p><strong>第三步，留下可复盘的轨迹。</strong>如果一个子 Agent 调用了另一个子 Agent，系统要能追溯链条，而不是只看到最后一句“任务完成”。</p>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term">
+        <b>Agentic AI</b>
+        <span>专业解释：能基于目标自主规划、调用工具、与环境交互并执行多步任务的 AI 系统。</span>
+        <span>白话解释：不只是回答问题，而是能“出去办事”的 AI。</span>
+      </div>
+      <div class="term">
+        <b>Runtime Governance</b>
+        <span>专业解释：在系统运行过程中实时执行的权限、策略、监控和审计机制。</span>
+        <span>白话解释：不是事后查监控，而是在它动手时就盯住。</span>
+      </div>
+      <div class="term">
+        <b>Hard Constraint</b>
+        <span>专业解释：不可通过收益权衡被突破的硬性约束，通常需要直接阻断或升级。</span>
+        <span>白话解释：红线就是红线，不是“扣点分也能做”。</span>
+      </div>
+      <div class="term">
+        <b>Trace Tree</b>
+        <span>专业解释：记录主 Agent、子 Agent、工具调用和决策归因的树状执行轨迹。</span>
+        <span>白话解释：像快递物流记录，能看到每一站是谁处理的。</span>
+      </div>
+      <div class="term">
+        <b>Policy-as-Code</b>
+        <span>专业解释：用代码或声明式配置表达组织政策，并由系统自动执行。</span>
+        <span>白话解释：把制度写成机器能执行的规则表。</span>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p>论文实现了一个原型审计检查器，并在采购任务上做了 50 个随机种子的可复现实验，对比事后审计、输出过滤、工作流规则、单纯 policy-as-code 等基线。</p>
+      <table>
+        <thead>
+          <tr><th>结果</th><th>论文数据</th><th>人话解读</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>硬约束违规</td>
+            <td>在精确谓词下，SARC 执行了 0 次硬约束违规。</td>
+            <td>只要系统能准确判断规则，SARC 可以在动作发生前把“绝对不能做”的事情挡住。</td>
+          </tr>
+          <tr>
+            <td>软窗口超限</td>
+            <td>PAA throttling response 相比单纯 policy-as-code 降低 89.5% 的软窗口超限。</td>
+            <td>它不只是会拒绝，还会“限速”：比如不是彻底禁止采购，而是控制节奏、等待审批或减少频率。</td>
+          </tr>
+          <tr>
+            <td>残余风险来源</td>
+            <td>噪声和 enforcement failure 扫描显示，残余硬违规更像来自执行栈错误，而不是环境机会多少。</td>
+            <td>真正的风险重点转向工程质量：规则判断器、日志、拦截器、权限系统是否可靠。</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>这意味着什么：</strong>Agent 安全可能会从“让模型更乖”转向“让系统更像操作系统”。模型仍会犯错，但关键动作必须经过独立的门禁和审计层。</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid">
+        <div class="card red">
+          <div class="label">论文成熟度</div>
+          <p>它是 arXiv working paper，不是顶会正式录用论文；作者信息和外部复现实验还有限。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">实验范围</div>
+          <p>核心实验是合成采购任务，不等于已经覆盖真实企业的复杂业务流、灰色权限和跨系统异常。</p>
+        </div>
+        <div class="card blue">
+          <div class="label">工程难点</div>
+          <p>要落地 SARC，企业需要有结构化政策、可靠权限系统、完整日志和实时拦截能力，这比写 prompt 难得多。</p>
+        </div>
+      </div>
+      <p>最大的现实问题是：很多组织的规则本身就不清楚。SARC 能把规则执行好，但它不能替组织先把混乱制度整理成清晰、可执行的谓词。</p>
+    </section>
+
+    <section class="section" id="impact">
+      <h2>9. 产业影响分析</h2>
+      <div class="figure">
+        <svg width="980" height="340" viewBox="0 0 980 340" role="img" aria-label="产业影响地图">
+          <rect x="34" y="40" width="255" height="230" rx="8" fill="#eaf8f2" stroke="#8ed8bf"/>
+          <text x="162" y="76" font-size="20" font-weight="800" fill="#0f7661" text-anchor="middle">受益者</text>
+          <text x="64" y="116" font-size="15" fill="#26313d">• 企业 Agent 平台</text>
+          <text x="64" y="148" font-size="15" fill="#26313d">• 金融、医疗、物流、政企</text>
+          <text x="64" y="180" font-size="15" fill="#26313d">• 安全与合规团队</text>
+          <text x="64" y="212" font-size="15" fill="#26313d">• 可审计 AI 基础设施厂商</text>
+          <rect x="363" y="40" width="255" height="230" rx="8" fill="#fff6dd" stroke="#e0c56e"/>
+          <text x="491" y="76" font-size="20" font-weight="800" fill="#916600" text-anchor="middle">被冲击者</text>
+          <text x="393" y="116" font-size="15" fill="#26313d">• 只卖“更聪明模型”的供应商</text>
+          <text x="393" y="148" font-size="15" fill="#26313d">• 只靠输出过滤的安全方案</text>
+          <text x="393" y="180" font-size="15" fill="#26313d">• 没有审计链的低门槛 Agent</text>
+          <text x="393" y="212" font-size="15" fill="#26313d">• 手工合规报表流程</text>
+          <rect x="692" y="40" width="255" height="230" rx="8" fill="#eaf2ff" stroke="#9fc0ff"/>
+          <text x="820" y="76" font-size="20" font-weight="800" fill="#1f66d1" text-anchor="middle">可能变化</text>
+          <text x="722" y="116" font-size="15" fill="#26313d">• Agent 需要独立身份和权限</text>
+          <text x="722" y="148" font-size="15" fill="#26313d">• 工具调用默认要留痕</text>
+          <text x="722" y="180" font-size="15" fill="#26313d">• 高风险动作进入审批流</text>
+          <text x="722" y="212" font-size="15" fill="#26313d">• 审计日志成为产品卖点</text>
+        </svg>
+        <p class="caption">图 2：如果 Agent 真的进入企业核心流程，治理层会像数据库权限、云安全、DevOps 监控一样成为基础设施。</p>
+      </div>
+      <p>这篇论文的产业信号和微软 2026 年发布的 Agent Governance Toolkit 方向一致：市场正在从“造 Agent”进入“管 Agent”。NIST AI RMF、欧盟 AI Act 时间线、OWASP Agentic AI 风险分类，都在推动同一个问题：Agent 的每次关键行动都需要可解释、可拦截、可审计。</p>
+      <p><strong>对产品经理：</strong>未来 Agent 产品不能只展示“自动完成任务”，还要展示“它为什么有权这么做、什么时候会停下来、出了事如何追责”。</p>
+      <p><strong>对创业者：</strong>Agent 治理、权限、审计、策略编译、工具调用网关，会成为新的基础设施机会。</p>
+      <p><strong>对投资研究者：</strong>Agent 的规模化不是单纯模型能力曲线，而是能力、治理、监管和组织流程一起演进。</p>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.07728">原论文：SARC: A Governance-by-Architecture Framework for Agentic AI Systems</a></li>
+        <li><a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST AI Risk Management Framework</a></li>
+        <li><a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act">EU AI Act implementation timeline</a></li>
+        <li><a href="https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/">Microsoft Agent Governance Toolkit</a></li>
+        <li><a href="https://bestpractice.ai/insights/ai-daily-brief/2026-05-11">Best Practice AI Daily Brief 对 SARC 的收录</a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <ol class="source-list">
+        <li>arXiv: <a href="https://arxiv.org/abs/2605.07728">SARC: A Governance-by-Architecture Framework for Agentic AI Systems</a>，用于论文标题、作者、提交日期、摘要、实验结果与核心机制。</li>
+        <li>Best Practice AI: <a href="https://bestpractice.ai/insights/ai-daily-brief/2026-05-11">AI Daily Brief: 11 May 2026</a>，用于交叉验证该论文进入英文 AI brief 视野。</li>
+        <li>NIST: <a href="https://www.nist.gov/itl/ai-risk-management-framework">AI Risk Management Framework</a>，用于说明 AI 风险治理正在被制度化、工程化。</li>
+        <li>European Commission AI Act Service Desk: <a href="https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act">Timeline for the Implementation of the EU AI Act</a>，用于监管时间线背景。</li>
+        <li>Microsoft Open Source Blog: <a href="https://opensource.microsoft.com/blog/2026/04/02/introducing-the-agent-governance-toolkit-open-source-runtime-security-for-ai-agents/">Introducing the Agent Governance Toolkit</a>，用于产业落地参照。</li>
+      </ol>
+    </section>
+
+    <div class="footer">AI每日论文精选 · 2026-05-14 · 面向非技术读者的 AI 前沿研究解读</div>
+  </main>
+</body>
+</html>

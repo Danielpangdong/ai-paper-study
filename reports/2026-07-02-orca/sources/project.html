@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Orca: The World is in Your Mind. Observation, Reasoning, Cognition, and Action for world learning.">
+  <title>Orca: The World is in Your Mind</title>
+  <link rel="icon" type="image/svg+xml" sizes="any" href="figs/orca_icon_tight.svg?v=6">
+  <link rel="apple-touch-icon" href="figs/orca_icon_tight.svg?v=6">
+  <style>
+    :root {
+      --bg: #fbfaf7;
+      --text: #191a18;
+      --muted: #686d67;
+      --line: #e5e1d9;
+      --soft: #f2efe8;
+      --link: #166e72;
+      --accent: #a45f1a;
+      --code: #111817;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--link);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .reader-layout {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 240px minmax(0, 820px);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .side-toc {
+      position: sticky;
+      top: 86px;
+      padding: 52px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .side-toc strong {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--text);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .side-toc a {
+      display: block;
+      padding: 5px 0 5px 13px;
+      border-left: 2px solid var(--line);
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .side-toc a:not(.sub) {
+      margin-top: 6px;
+      color: #4b514c;
+      font-weight: 650;
+    }
+
+    .side-toc a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .side-toc a.active {
+      border-left-color: var(--link);
+      color: var(--link);
+      font-weight: 700;
+    }
+
+    .side-toc .sub {
+      padding-left: 24px;
+      font-size: 13px;
+    }
+
+    .side-toc .sub::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      margin: 0 8px 2px 0;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.45;
+    }
+
+    main {
+      max-width: 820px;
+      margin: 0;
+      padding: 52px 20px 72px;
+    }
+
+    header {
+      margin-bottom: 42px;
+      scroll-margin-top: 82px;
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h1,
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(26px, 4vw, 36px);
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 0 0 18px;
+      color: #515751;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-style: italic;
+      line-height: 1.58;
+    }
+
+    .lead strong {
+      color: var(--text);
+      font-style: normal;
+      font-weight: 700;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .date-line {
+      margin: 0 0 4px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .hero-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .hero-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 5px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fffdf8;
+      color: var(--link);
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    button.hero-link {
+      appearance: none;
+    }
+
+    .hero-link.is-active {
+      border-color: var(--link);
+      background: #eef5f2;
+      color: #0d5659;
+    }
+
+    .hero-video-controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin: -8px 0 20px;
+    }
+
+    .hero-video-controls .hero-link {
+      min-height: 28px;
+      padding: 4px 10px;
+    }
+
+    .hero-link:hover {
+      border-color: var(--link);
+      text-decoration: none;
+    }
+
+    .abstract {
+      margin: 26px 0;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      scroll-margin-top: 92px;
+    }
+
+    .abstract h2 {
+      margin-bottom: 10px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .abstract p {
+      margin-bottom: 0;
+      color: #404540;
+    }
+
+    section {
+      padding: 34px 0;
+      border-top: 1px solid var(--line);
+      scroll-margin-top: 82px;
+    }
+
+    h3 {
+      margin: 24px 0 8px;
+      font-size: 21px;
+      scroll-margin-top: 82px;
+    }
+
+    p {
+      margin: 0 0 16px;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 18px 1.2rem;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .citation {
+      color: var(--link);
+      font-size: 0.92em;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin: 20px 0;
+      padding: 18px 20px;
+      border-left: 4px solid var(--link);
+      background: var(--soft);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .formula-card {
+      margin: 22px 0;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    .formula-card p {
+      margin: 14px auto 0;
+      max-width: 720px;
+      color: #4f554f;
+      font-size: 15px;
+      line-height: 1.68;
+    }
+
+    .equation {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin: 4px 0 8px;
+      padding: 8px 0 10px;
+      color: var(--code);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(18px, 2.4vw, 23px);
+      line-height: 1.55;
+      overflow-x: auto;
+    }
+
+    .equation-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px 14px;
+      text-align: center;
+    }
+
+    .math-expression,
+    .equation-condition {
+      white-space: nowrap;
+    }
+
+    .equation-condition {
+      color: #62685f;
+      font-size: 0.82em;
+    }
+
+    .equation var {
+      font-style: italic;
+    }
+
+    .video-box,
+    .figure-box {
+      margin: 20px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+      overflow: hidden;
+    }
+
+    .video-placeholder {
+      min-height: 310px;
+      padding: 24px;
+      display: flex;
+      align-items: flex-end;
+      background: linear-gradient(180deg, #243330, #111817);
+      color: #fbfaf7;
+    }
+
+    .video-placeholder h3 {
+      margin: 0 0 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 22px;
+    }
+
+    .video-placeholder p {
+      margin: 0;
+      color: rgba(251, 250, 247, 0.78);
+    }
+
+    .figure-box {
+      padding: 18px;
+    }
+
+    .figure-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .figure-carousel {
+      margin: 20px 0;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    .carousel-stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      border-radius: 6px;
+      background: #ffffff;
+      user-select: none;
+    }
+
+    .carousel-slide {
+      display: none;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+    }
+
+    .carousel-slide.is-active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+
+    .carousel-hit {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .carousel-hit.prev {
+      left: 0;
+      cursor: w-resize;
+    }
+
+    .carousel-hit.next {
+      right: 0;
+      cursor: e-resize;
+    }
+
+    .carousel-hit::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 11px;
+      height: 11px;
+      border-top: 2px solid rgba(25, 26, 24, 0.72);
+      border-right: 2px solid rgba(25, 26, 24, 0.72);
+      opacity: 0;
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .carousel-hit.prev::after {
+      left: 18px;
+      transform: translateY(-50%) rotate(-135deg);
+    }
+
+    .carousel-hit.next::after {
+      right: 18px;
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .carousel-stage:hover .carousel-hit::after,
+    .carousel-hit:focus-visible::after {
+      opacity: 1;
+    }
+
+    .carousel-hit:focus-visible {
+      outline: none;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: #cac5b9;
+      cursor: pointer;
+      transition: width 160ms ease, background 160ms ease;
+    }
+
+    .carousel-dot.is-active {
+      width: 22px;
+      background: var(--link);
+    }
+
+    video {
+      width: 100%;
+      display: block;
+      background: #111817;
+    }
+
+    .video-box video {
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+    }
+
+    .galbot-gallery {
+      padding: 18px;
+      background: linear-gradient(180deg, #fffdf8 0%, #f2efe8 100%);
+      color: var(--text);
+    }
+
+    .galbot-gallery-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .galbot-gallery-header h3 {
+      margin: 0 0 6px;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 24px;
+    }
+
+    .galbot-gallery-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .galbot-stats {
+      display: grid;
+      grid-template-columns: repeat(2, max-content);
+      gap: 8px;
+    }
+
+    .galbot-stat {
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .galbot-stat strong {
+      display: block;
+      color: var(--link);
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .galbot-featured {
+      margin: 0 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .galbot-featured video {
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      background: #f2efe8;
+    }
+
+    .galbot-featured figcaption {
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      color: #30342f;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .galbot-thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .galbot-task-block {
+      margin-top: 14px;
+    }
+
+    .galbot-task-block h4,
+    h4 {
+      margin: 0 0 8px;
+      color: var(--link);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    .galbot-task-block p {
+      margin: -3px 0 9px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .demo-trials-heading {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin: 0 0 12px;
+      white-space: nowrap;
+    }
+
+    .demo-trials-heading h4,
+    .demo-trials-heading p {
+      margin: 0;
+    }
+
+    .demo-trials-heading p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .galbot-thumb {
+      width: 100%;
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--text);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+      text-align: left;
+    }
+
+    .galbot-thumb:hover,
+    .galbot-thumb.is-active {
+      border-color: var(--link);
+      background: #eef5f2;
+    }
+
+    .galbot-thumb video {
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      pointer-events: none;
+      background: #f2efe8;
+    }
+
+    .galbot-thumb::before {
+      content: "";
+      position: absolute;
+      top: calc((100% - 33px) * 0.36);
+      left: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(255, 253, 248, 0.88);
+      box-shadow: 0 2px 10px rgba(25, 26, 24, 0.18);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .galbot-thumb::after {
+      content: "";
+      position: absolute;
+      top: calc((100% - 33px) * 0.36);
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 12px solid var(--link);
+      transform: translate(-38%, -50%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .galbot-thumb span {
+      display: block;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .galbot-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(7, 10, 10, 0.8);
+    }
+
+    .galbot-modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .galbot-modal {
+      width: min(960px, 100%);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000000;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .galbot-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: #faf8f2;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .galbot-modal-title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .galbot-modal-close {
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      background: #ffffff;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .galbot-modal-close:hover {
+      background: #eef5f2;
+      color: var(--link);
+    }
+
+    .galbot-modal-body {
+      background: #000000;
+    }
+
+    .galbot-modal-body video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      background: #000000;
+    }
+
+    .simple-diagram {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .triple-diagram {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .diagram-cell {
+      display: grid;
+      align-content: start;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--soft);
+      text-align: center;
+    }
+
+    .diagram-cell strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .figure-placeholder {
+      min-height: 190px;
+      padding: 18px;
+      border: 1px dashed #c9c3b8;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #fffdf8;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .pipeline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #404540;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .chart-row.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .learning-visuals {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      width: 100%;
+      margin: 18px 0 22px;
+    }
+
+    .learning-visuals figure {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    .learning-visuals img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+    }
+
+    .framework-figure {
+      margin: 20px 0 22px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    .framework-figure img {
+      width: 100%;
+      height: auto;
+    }
+
+    .q1-overview {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(260px, 1.05fr);
+      gap: 18px;
+      align-items: center;
+      margin: 12px 0 24px;
+    }
+
+    .q1-overview .figure-box {
+      margin: 0;
+    }
+
+    .q1-copy {
+      margin: 0;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--link);
+      border-radius: 8px;
+      background: #fffdf8;
+      color: #404540;
+    }
+
+    .chart {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffdf8;
+    }
+
+    .chart h3 {
+      margin-top: 0;
+      font-size: 18px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+
+    .chart svg {
+      width: 100%;
+      height: 170px;
+      display: block;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .axis {
+      stroke: #777;
+      stroke-width: 1.2;
+    }
+
+    .curve-a {
+      fill: none;
+      stroke: #166e72;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    .curve-b {
+      fill: none;
+      stroke: #a45f1a;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+
+    table {
+      width: 100%;
+      margin: 16px 0 22px;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fffdf8;
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin: 16px 0 22px;
+    }
+
+    .table-wrap table {
+      min-width: 760px;
+      margin: 0;
+    }
+
+    .results-table th,
+    .results-table td {
+      vertical-align: middle;
+    }
+
+    .model-link {
+      color: var(--link);
+      font-weight: 650;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--soft);
+      color: #30342f;
+      font-weight: 750;
+    }
+
+    pre {
+      margin: 16px 0 0;
+      padding: 18px;
+      overflow-x: auto;
+      border-radius: 8px;
+      background: var(--code);
+      color: #edf5f2;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .inline-math {
+      color: var(--code);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.95em;
+      white-space: nowrap;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 20px 44px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .visit-pixel {
+      position: fixed;
+      width: 1px;
+      height: 1px;
+      left: -9999px;
+      bottom: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 1080px) {
+      .reader-layout {
+        display: block;
+        max-width: 860px;
+        padding: 0 20px;
+      }
+
+      .side-toc {
+        display: none;
+      }
+
+      main {
+        max-width: 820px;
+        margin: 0 auto;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .reader-layout {
+        display: block;
+        padding: 0 20px;
+      }
+
+      main {
+        padding-top: 38px;
+      }
+
+      .simple-diagram,
+      .triple-diagram,
+      .learning-visuals,
+      .q1-overview,
+      .chart-row,
+      .chart-row.three {
+        grid-template-columns: 1fr;
+      }
+
+      .video-placeholder {
+        min-height: 240px;
+      }
+
+      .galbot-gallery {
+        padding: 12px;
+      }
+
+      .galbot-gallery-header {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .galbot-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .galbot-stat {
+        white-space: normal;
+      }
+
+      .demo-trials-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+        white-space: normal;
+      }
+
+      .carousel-stage {
+        aspect-ratio: 4 / 3;
+      }
+
+      .galbot-thumb-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="reader-layout">
+    <aside class="side-toc" aria-label="Reading navigation">
+      <a href="#demo" data-spy-link data-zh="摘要">Abstract</a>
+      <a href="#training" data-spy-link data-zh="1. 学习世界">1. Learning the World</a>
+      <a class="sub" href="#definition" data-spy-link data-zh="下一状态预测">Next state prediction</a>
+      <a class="sub" href="#modeling" data-spy-link data-zh="潜在世界状态建模">Latent world-state modeling</a>
+      <a class="sub" href="#learning" data-spy-link data-zh="双重学习范式">Dual learning paradigms</a>
+      <a class="sub" href="#downstream" data-spy-link data-zh="下游读出">Downstream readouts</a>
+      <a href="#data" data-spy-link data-zh="2. 世界学习数据">2. World-Learning Resources</a>
+      <a class="sub" href="#composition" data-spy-link data-zh="世界学习数据">World-learning resources</a>
+      <a href="#evaluation" data-spy-link data-zh="3. 评测 World Latent">3. Evaluating the World Latent</a>
+      <a class="sub" href="#q1" data-spy-link data-zh="Q1：规模化表现">Q1: Scaling behavior</a>
+      <a class="sub" href="#q2" data-spy-link data-zh="Q2：下游读出能力">Q2: Downstream performance</a>
+      <a class="sub" href="#understand" data-spy-link data-zh="2.1 文本生成">2.1 To language</a>
+      <a class="sub" href="#predict" data-spy-link data-zh="2.2 图像预测">2.2 To vision</a>
+      <a class="sub" href="#change" data-spy-link data-zh="2.3 动作生成">2.3 To action</a>
+      <a href="#citation" data-spy-link data-zh="引用">Citation</a>
+    </aside>
+
+    <main id="top">
+    <header id="demo">
+      <h1 data-zh="Orca: The World is in Your Mind">Orca: The World is in Your Mind</h1>
+      <p class="date-line" data-zh="2026 年 6 月 25 日">June 25, 2026</p>
+      <p class="meta" data-zh="Orca Team · 北京智源人工智能研究院">Orca Team · Beijing Academy of Artificial Intelligence</p>
+      <div class="hero-links">
+        <a class="hero-link" href="https://arxiv.org/abs/2606.30534" target="_blank" rel="noopener" aria-label="Open Orca paper PDF">arXiv</a>
+        <a class="hero-link" href="https://x.com/_akhaliq/status/2072303675737866532" target="_blank" rel="noopener" aria-label="Open AK Twitter post">X AK</a>
+        <a class="hero-link" href="figs/wechat-group-qr.png" target="_blank" rel="noopener" data-zh="加入微信群">Join WeChat Group</a>
+      </div>
+
+      <div class="video-box">
+        <video id="hero-video" controls preload="metadata" poster="figs/orca-en-poster.jpg" data-video-en="figs/orca-en.mp4" data-video-zh="figs/orca-zh.mp4" data-poster-en="figs/orca-en-poster.jpg" data-poster-zh="figs/orca-zh-poster.jpg">
+          <source id="hero-video-source" src="figs/orca-en.mp4" type="video/mp4">
+          Your browser does not support this video format.
+        </video>
+      </div>
+      <div class="hero-video-controls" aria-label="Hero video language">
+        <button class="hero-link hero-video-language is-active" type="button" data-hero-video-lang="en" aria-pressed="true">EN</button>
+        <button class="hero-link hero-video-language" type="button" data-hero-video-lang="zh" aria-pressed="false">中文</button>
+      </div>
+    </header>
+
+    <section id="training">
+      <h2 data-zh="1. 学习世界">1. Learning the World</h2>
+
+      <h3 id="definition" data-zh="Why：世界模型应预测状态（state）">Why: World Models Should Predict States</h3>
+      <p data-zh="现有的 next prediction 范式已经在各自领域取得了很强的效果。&lt;strong&gt;Next token prediction&lt;/strong&gt; 带来了强语言能力，&lt;strong&gt;Next frame prediction&lt;/strong&gt; 支持高质量图像和视频生成，&lt;strong&gt;Next action prediction&lt;/strong&gt; 支持具身策略学习。然而，当训练目标主要绑定在单一输出接口上时，模型仍可能生成局部合理、整体反直觉的结果：文本可能描述违反物理规律的事件，视频可能破坏物体恒存、接触关系或运动一致性，动作可能看起来像示范轨迹，却没有真正建模动作之后世界如何变化。">
+        Existing next prediction paradigms have achieved impressive results in their own domains.
+        <strong>Next token prediction</strong> brings strong language capabilities,
+        <strong>Next frame prediction</strong> enables high-quality image and video generation, and
+        <strong>Next action prediction</strong> supports embodied policy learning. However, when the
+        objective is mainly tied to a single output interface, models may still generate results that look
+        locally plausible but globally counterintuitive: text may describe physically impossible events,
+        videos may break object permanence, contact, or motion consistency, and actions may resemble
+        demonstrations without modeling how the world changes afterward.
+      </p>
+
+      <p data-zh="我们认为，通往通用智能的关键一步，是构建一个能够像人类一样持续学习并适应世界的模型。这样的模型应不断吸收多模态世界信号，从视觉、文本、音频、动作和触觉，到力、光等物理信号，甚至更广泛科学领域中的观测信号，并在潜在空间中组织世界状态及其转移。由此学习到的 world latent 可以作为统一接口，支撑不同模态的下游生成与决策。">
+        We argue that a key step toward general intelligence is to build a model that can continuously
+        learn from and adapt to the world like humans do. Such a model should absorb multimodal world
+        signals, from vision, text, audio, action, and touch to physical signals such as force and light,
+        and even broader scientific observations, then organize world states and their transitions in a
+        latent space. The learned world latent can serve as a unified interface for downstream generation
+        and decision-making across modalities.
+      </p>
+
+      <figure class="framework-figure">
+        <img src="figs/teaser.png" alt="Figure 1. Orca overview teaser.">
+      </figure>
+
+      <p data-zh="Orca 因此将建模目标从预测下一个 token、frame 或 action，转向预测下一个 state。多模态信号提供 observation；状态转移建模支撑 reasoning；学习到的 world latent 承载 cognition；语言、视觉和动作则作为同一潜在世界状态的不同 readout，使模型能够以更一致的方式理解、预测并改变世界。">
+        Orca therefore shifts the modeling target from predicting the next token, frame, or action to
+        predicting the next state. Multimodal signals provide observation; state-transition modeling
+        supports reasoning; the learned world latent carries cognition; and language, vision, and action
+        serve as different readouts of the same latent world state, enabling the model to understand,
+        predict, and change the world in a more consistent way.
+      </p>
+
+      <div class="note" data-zh="Next State Prediction 指学习一种内部世界状态，使模型能够预测符合常识和物理规律的状态转移，并通过语言、视觉和动作等接口使用这一状态。">
+        <strong>Next State Prediction</strong> means learning an internal world state that supports
+        physically consistent transitions and can be used through language, vision, and action interfaces.
+      </div>
+
+      <div class="figure-box">
+        <img src="figs/concept.png" alt="Conceptual illustration of Orca moving from passive task-driven prediction to active world learning.">
+      </div>
+
+      <h3 id="modeling" data-zh="核心公式：潜在世界状态建模">Core formulation: latent world-state modeling</h3>
+      <p data-zh="Orca 将世界学习形式化为潜在世界状态建模，包括从多模态世界信号中抽象状态，以及建模状态转移。给定世界信号 &lt;span class=&quot;inline-math&quot;&gt;&lt;var&gt;X&lt;/var&gt;&amp;nbsp;=&amp;nbsp;{&lt;var&gt;X&lt;/var&gt;&lt;sub&gt;&lt;var&gt;m&lt;/var&gt;&lt;/sub&gt;}&lt;sub&gt;&lt;var&gt;m&lt;/var&gt;∈&lt;var&gt;M&lt;/var&gt;&lt;/sub&gt;&lt;/span&gt;，其中 &lt;var&gt;M&lt;/var&gt; 可以包含语言、视觉、音频、力、光以及红外辐射等丰富模态，Orca 通过 &lt;span class=&quot;inline-math&quot;&gt;&lt;var&gt;S&lt;/var&gt;&amp;nbsp;=&amp;nbsp;&lt;var&gt;f&lt;/var&gt;&lt;sub&gt;θ&lt;/sub&gt;(&lt;var&gt;X&lt;/var&gt;)&lt;/span&gt; 将这些信号映射到潜在世界状态 &lt;var&gt;S&lt;/var&gt;。">
+        Orca formulates world learning as latent world-state modeling, including state abstraction from
+        multimodal world signals and state transition. Given world signals
+        <span class="inline-math"><var>X</var>&nbsp;=&nbsp;{<var>X</var><sub><var>m</var></sub>}<sub><var>m</var>∈<var>M</var></sub></span>, where <var>M</var> can encompass
+        language, vision, audio, force, light, and even signals beyond human perception such as infrared
+        radiation, Orca maps these signals to a latent world state <span class="inline-math"><var>S</var>&nbsp;=&nbsp;<var>f</var><sub>θ</sub>(<var>X</var>)</span>.
+      </p>
+
+      <div class="formula-card">
+        <div class="equation">
+          <span class="equation-main">
+            <span class="math-expression">
+              <var>S</var><sub><var>t</var>+Δ</sub>
+              ∼
+              <var>p</var><sub>Θ</sub>(<var>S</var><sub><var>t</var>+Δ</sub> |
+              <var>S</var><sub><var>t</var></sub>,
+              <var>z</var><sub><var>t</var></sub>,
+              <var>c</var><sub><var>t</var></sub>)
+            </span>
+            <span class="equation-condition">Δ ∈ ℤ<sub>Δ≠0</sub></span>
+          </span>
+        </div>
+        <p data-zh="其中 z&lt;sub&gt;t&lt;/sub&gt; 表示隐式动态，c&lt;sub&gt;t&lt;/sub&gt; 表示显式条件；Δ 决定模型预测未来状态还是回溯早期状态。">
+          Here, z<sub>t</sub> captures implicit dynamics, c<sub>t</sub> specifies explicit conditions,
+          and Δ determines whether Orca predicts future states or backtracks to earlier states.
+        </p>
+      </div>
+
+      <h3 id="learning" data-zh="How：有意识学习与无意识学习">How: conscious and unconscious learning</h3>
+      <p data-zh="模型如何学习世界的下一个状态？一个直观的参照是婴儿学习世界的过程。在学会说话之前，婴儿已经通过无意识学习（unconscious learning）观察客观世界：物体如何移动、接触如何发生、遮挡之后是否仍然存在、动作之后场景如何变化。这些学习并不依赖明确标签，而是来自对连续事件本身的稠密观察。">
+        How can a model learn the next state of the world? A useful reference is how infants learn before
+        they acquire language. Through unconscious learning, they observe the objective world directly:
+        how objects move, how contact happens, whether occluded objects still exist, and how scenes change
+        after actions. This learning does not rely on explicit labels; it comes from dense observation of
+        continuous events themselves.
+      </p>
+      <div class="learning-visuals" aria-label="Examples of unconscious learning from observation">
+        <figure>
+          <img src="figs/unconscious-infant-leaves.jpg" alt="An infant observing falling leaves before language learning.">
+        </figure>
+        <figure>
+          <img src="figs/unconscious-natural-dynamics.png" alt="Dogs running in a field, illustrating dense natural dynamics from continuous visual experience.">
+        </figure>
+        <figure>
+          <img src="figs/unconscious-infant-observation.png" alt="An infant observing people and the surrounding home environment before language learning.">
+        </figure>
+      </div>
+      <p data-zh="随着语言、目标和意图逐渐出现，人类还会通过有意识学习（conscious learning）理解因果规律：把连续状态变化抽象成事件，并进一步思考发生了什么、接下来会如何、原因是什么、如果进行干预又会发生什么。换言之，无意识学习提供稠密的世界经验，有意识学习则将这些经验组织成可被推理和交流的因果结构。">
+        As language, goals, and intention emerge, conscious learning further organizes these observations
+        into causal structure. It abstracts continuous state changes into events and asks what happened,
+        what will happen next, why it happened, and what would happen under intervention. In this sense,
+        unconscious learning provides dense world experience, while conscious learning turns that
+        experience into causal patterns that can be reasoned about and communicated.
+      </p>
+      <p data-zh="因此，我们使用两种互补的学习模式。无意识学习从连续视觉经验中吸收自然动态，使模型在没有显式任务标签的情况下学习稠密状态转移和物理规律。有意识学习引入语言、事件、指令和问题作为语义条件，使模型学习与因果解释和任务意图相关的稀疏但有意义的状态转移。">
+        We therefore use two complementary learning modes. Unconscious learning absorbs natural dynamics
+        from continuous visual experience, allowing the model to learn dense state transitions and physical
+        regularities without explicit task labels. Conscious learning introduces language, events,
+        instructions, and questions as semantic conditions, allowing the model to learn meaningful state
+        transitions associated with causal explanations and task intentions.
+      </p>
+
+      <div class="figure-box">
+        <img src="figs/con_vs_uncon.png" alt="Overview of Orca encoder with unconscious learning and conscious learning paths.">
+      </div>
+
+      <h3 id="downstream" data-zh="Action：通过下游解码器解析世界状态">Action: using the world state through downstream readouts</h3>
+      <p data-zh="一旦学到 world latent，它就可以通过不同接口被解码出来。这也是将世界状态作为中心表示的实践意义：同一个 world latent 可以支持用于解释和推理的语言读出、用于预测和想象的视觉读出，以及用于干预世界的动作读出。">
+        Once learned, the world latent can be decoded through different interfaces. This is the practical
+        reason for treating world state as the central representation: the same world latent can support a
+        language readout for explanation and reasoning, a vision readout for prediction and imagination,
+        and an action readout for intervention.
+      </p>
+
+      <div class="figure-box">
+        <img src="figs/readout.png" alt="Downstream readout architectures from Orca world latent representation to language, vision, and action.">
+      </div>
+
+    </section>
+
+    <section id="data">
+      <h2 data-zh="2. 世界学习数据">2. World-Learning Resources</h2>
+
+      <h3 id="composition" data-zh="世界学习数据">World-learning resources</h3>
+      <p data-zh="Orca 使用面向世界学习范式设计的大规模世界学习数据进行训练：125K 小时视频用于稠密自然状态转移，160M 事件标注用于有意义的状态转移，11.5M VQA 样本用于问题条件下的世界理解。">
+        Orca is trained with large-scale world-learning resources designed for Orca's world-learning paradigm:
+        125K hours of video for dense natural state transitions, 160M event annotations for language-described
+        meaningful changes, and 11.5M VQA examples for question-conditioned state understanding.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th data-zh="资源">Resource</th>
+            <th data-zh="规模">Scale</th>
+            <th data-zh="学习作用">Learning role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-zh="连续视频">Continuous video</td>
+            <td>125K hours</td>
+            <td data-zh="为稠密自然状态转移提供观察信号。">Observation signals for dense natural state transitions.</td>
+          </tr>
+          <tr>
+            <td data-zh="事件标注">Event annotations</td>
+            <td>160M events</td>
+            <td data-zh="为有意义的因果状态转移提供推理信号。">Reasoning signals for meaningful causal state transitions.</td>
+          </tr>
+          <tr>
+            <td data-zh="VQA 样本">VQA examples</td>
+            <td>11.5M examples</td>
+            <td data-zh="为问题条件下的世界理解提供认知信号。">Cognition signals for question-conditioned world understanding.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="figure-box">
+        <img src="figs/datapipline.png" alt="Orca data composition and pre-training pipeline.">
+      </div>
+    </section>
+
+    <section id="evaluation">
+      <h2 data-zh="3. 评测 World Latent">3. Evaluating the World Latent</h2>
+
+      <h3 id="q1" data-zh="问题 1：Orca 的规模化效果如何？">Question 1: How effective is Orca at scale-up?</h3>
+
+      <div class="q1-overview">
+        <div class="figure-box">
+          <img src="figs/scaling_loss_01.png" alt="World-learning loss decreases as the pre-training data scale increases, with the larger Orca backbone achieving lower loss.">
+        </div>
+
+        <p class="q1-copy" data-zh="Orca 的世界学习目标会随着模型和数据规模稳定提升。随着预训练数据增长，world-learning loss 持续下降；同时，更大的 backbone 获得更低 loss，说明模型容量能够有效吸收更丰富的状态转移结构。这一趋势表明，next-state prediction 不只是一个可优化的训练目标，也是一种能够随数据和模型规模共同扩展的世界学习信号。">
+          <b>Orca's world-learning objective scales consistently with model and data. </b>
+          As pre-training data grows, world-learning loss continues to decrease, while the larger backbone
+          achieves lower loss than the smaller one. This trend suggests that model capacity is effectively
+          used to absorb richer state-transition structure, making next-state prediction a scalable
+          signal for world learning.
+        </p>
+      </div>
+
+
+      <h3 id="q2" data-zh="Question 2：Orca 如何带来更强的下游读出？">
+        Question 2: How does Orca lead to stronger downstream readouts?
+      </h3>
+
+      <div class="figure-box">
+          <img src="figs/scaling_performance_01.png" alt="Downstream readout scores improve with pre-training scale across text generation, image prediction, and action generation">
+        </div>
+
+      <p data-zh="更强的世界预训练会带来更强的下游读出。由于读出训练阶段 backbone 保持冻结，收益直接反映 latent space 质量。跨模态的一致提升表明，扩大世界预训练能够产生更有用的共享表示。">
+        <b>Stronger world pre-training leads to stronger downstream readouts. </b>
+        Since the backbone is frozen during readout training, gains reflect latent
+        space quality directly. Consistent improvements across modalities confirm 
+        that scaling world pre-training produces a more useful shared representation.
+      </p>
+
+      <!-- <p data-zh="Orca 连接到三类下游读出：语言、视觉和动作。我们分别使用语言读出、图像预测和具身动作生成 benchmark 进行评测，以衡量模型理解世界、预测世界和改变世界的能力。">
+        Orca is connected to three downstream readouts: language, vision, and action. 
+        We evaluate them with benchmarks of language readout, image prediction and embodied action generation, 
+        that measure the model’s ability to understand, predict, and change the world.
+      </p> -->
+      
+
+      <h3 id="understand" data-zh="2.1 文本生成">2.1 To language: text generation</h3>
+      <!-- <h4 data-zh="基准设置">Benchmark</h4> -->
+      <p data-zh="我们使用来自不同视角的 VQA benchmark 评测 Orca 的世界理解能力。结果如下图所示。">
+        We evaluate Orca's capability of text generation using VQA benchmarks of various perspectives. The results are shown as below. 
+      </p>
+        <!-- <ul>
+          <li data-zh="无意识学习：TemporalBench &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2410.10818&quot;&gt;(Cai et al., 2024)&lt;/a&gt; 检查动态 latent，3DSRBench &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2412.07825&quot;&gt;(Ma et al., 2025)&lt;/a&gt; 评估结构信息以及物体之间的关系。">
+            <b>Unconscious Learning:</b> TemporalBench <a class="citation" href="https://arxiv.org/abs/2410.10818" target="_blank" rel="noopener">(Cai et al., 2024)</a> examines the dynamic latent, and
+            3DSRBench <a class="citation" href="https://arxiv.org/abs/2412.07825" target="_blank" rel="noopener">(Ma et al., 2025)</a>
+            evaluates the structural information and relationships between objects.
+          </li>
+          <li data-zh="有意识学习：Switch &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2511.17649&quot;&gt;(Lin et al., 2025)&lt;/a&gt; 要求模型理解有形控制接口，并基于常识和操作意图预测控制动作的结果。MVBench &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2311.17005&quot;&gt;(Li et al., 2024)&lt;/a&gt; 用于评估模型通过有意识学习获得的通用视频理解能力。">
+            <b>Conscious Learning:</b> Switch <a class="citation" href="https://arxiv.org/abs/2511.17649" target="_blank" rel="noopener">(Lin et al., 2025)</a>
+            requires understanding tangible control interfaces and predicting the outcomes of control actions based on common sense and operational intentions.
+            MVBench <a class="citation" href="https://arxiv.org/abs/2311.17005" target="_blank" rel="noopener">(Li et al., 2024)</a> is used to evaluate a model’s general video understanding capabilities
+through conscious learning.
+          </li>
+        </ul> -->
+
+      <!-- <h4 data-zh="结果">Results</h4> -->
+
+
+      <div class="table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th data-zh="模型">Model</th>
+              <th data-zh="规模(B)">Size(B)</th>
+              <th>Overall</th>
+              <th>MVBench</th>
+              <th>TemporalBench</th>
+              <th>3DSRBench</th>
+              <th>SWITCH</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="background: var(--soft);">
+              <th colspan="7" scope="rowgroup" data-zh="World Models（Large size）"><em>World Models (Large size)</em></th>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1<br><span style="font-size: 0.9em;">(+LLaMA3-8B)</span></a></td>
+              <td>10</td>
+              <td style="border-left: 2px solid var(--line);">/</td>
+              <td><strong>75.4</strong></td>
+              <td>28.5</td>
+              <td>/</td>
+              <td>/</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://www.nature.com/articles/s41586-025-10041-x" target="_blank" rel="noopener">Emu3</a></td>
+              <td>8</td>
+              <td style="border-left: 2px solid var(--line);">30.4</td>
+              <td style="border-left: 2px solid var(--line);">35.2</td>
+              <td>9.5</td>
+              <td>39.1</td>
+              <td>38.0</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://arxiv.org/abs/2510.26583" target="_blank" rel="noopener">Emu3.5</a></td>
+              <td>34</td>
+              <td style="border-left: 2px solid var(--line);">29.8</td>
+              <td style="border-left: 2px solid var(--line);">39.5</td>
+              <td>9.5</td>
+              <td>31.3</td>
+              <td>38.9</td>
+            </tr>
+            <tr style="background: var(--soft);">
+              <th colspan="7" scope="rowgroup" data-zh="Vision Language Models（Tiny size）"><em>Vision Language Models (Tiny size)</em></th>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+              <td>0.8</td>
+              <td style="border-left: 2px solid var(--line);">33.1</td>
+              <td style="border-left: 2px solid var(--line);">52.7</td>
+              <td>19.1</td>
+              <td>21.8</td>
+              <td>38.8</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/" target="_blank" rel="noopener">Gemma 4</a></td>
+              <td>2</td>
+              <td style="border-left: 2px solid var(--line);">29.8</td>
+              <td style="border-left: 2px solid var(--line);">32.5</td>
+              <td>17.1</td>
+              <td>29.5</td>
+              <td>39.9</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://arxiv.org/abs/2504.05299" target="_blank" rel="noopener">SmolVLM2</a></td>
+              <td>2</td>
+              <td style="border-left: 2px solid var(--line);">33.7</td>
+              <td style="border-left: 2px solid var(--line);">48.7</td>
+              <td>18.4</td>
+              <td>35.5</td>
+              <td>32.0</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://arxiv.org/abs/2604.27393" target="_blank" rel="noopener">MiniCPM-V-4.6</a></td>
+              <td>2</td>
+              <td style="border-left: 2px solid var(--line);">37.9</td>
+              <td style="border-left: 2px solid var(--line);">41.4</td>
+              <td>21.2</td>
+              <td>47.7</td>
+              <td>41.2</td>
+            </tr>
+            <tr style="background: #eaf3e8; border-top: 2px solid var(--text);">
+              <td><strong>Orca</strong></td>
+              <td>0.8</td>
+              <td>40.8</td>
+              <td>53.6</td>
+              <td>22.6</td>
+              <td>43.4</td>
+              <td>43.7</td>
+            </tr>
+            <tr style="background: var(--soft);">
+              <th colspan="7" scope="rowgroup" data-zh="Vision Language Models（Small size）"><em>Vision Language Models (Small size)</em></th>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://arxiv.org/abs/2412.10302" target="_blank" rel="noopener">DeepSeek-VL2</a></td>
+              <td>3</td>
+              <td style="border-left: 2px solid var(--line);">32.3</td>
+              <td style="border-left: 2px solid var(--line);">40.5</td>
+              <td>21.0</td>
+              <td>32.1</td>
+              <td>35.5</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+              <td>4</td>
+              <td style="border-left: 2px solid var(--line);">46.7</td>
+              <td style="border-left: 2px solid var(--line);">67.1</td>
+              <td>25.2</td>
+              <td>48.1</td>
+              <td>42.8</td>
+            </tr>
+            <tr>
+              <td><a class="model-link" href="https://blog.google/innovation-and-ai/technology/developers-tools/gemma-4/" target="_blank" rel="noopener">Gemma 4</a></td>
+              <td>4</td>
+              <td style="border-left: 2px solid var(--line);">40.8</td>
+              <td style="border-left: 2px solid var(--line);">45.6</td>
+              <td>20.2</td>
+              <td>44.8</td>
+              <td>52.4</td>
+            </tr>
+            <tr style="background: #eaf3e8; border-top: 2px solid var(--text);">
+              <td><strong>Orca</strong></td>
+              <td>4</td>
+              <td style="border-left: 2px solid var(--line);"><strong>51.8</strong></td>
+              <td style="border-left: 2px solid var(--line);">65.3</td>
+              <td><strong>34.2</strong></td>
+              <td><strong>52.1</strong></td>
+              <td><strong>55.6</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p data-zh="Orca 在 4B 级别 small VLM 中取得最佳综合表现（overall），超过同参数规模的 Qwen3.5 和 Gemma 4。它在时间推理和空间感知上具备核心优势，并在不同模型规模下体现出优秀的参数利用效率。">
+        <b>Orca achieves the best overall performance among 4B-scale small VLMs, outperforming Qwen3.5 and Gemma 4 with the same parameter size.</b>
+         It possesses core advantages in temporal reasoning and spatial perception, and demonstrates exceptional parameter 
+         utilization efficiency across different model scales.
+      </p>
+
+      <h4 data-zh="能力维度分析">Capability Analysis</h4>
+      <p data-zh="通过对 Orca 在各基准能力子类别上的表现进行分析，我们发现模型在状态转移、常识推理、空间关系和动态运动等方面，相比 Qwen3.5 backbone 都取得了明显提升。">
+        By aggregating samples associated with each capability dimension across multiple benchmarks and
+      computing the corresponding average success rates, we find that Orca consistently outperforms Qwen3.5 in all four capability dimensions.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th data-zh="能力">Capability</th>
+            <th>Qwen3.5</th>
+            <th data-zh="Orca 优势">Orca advantage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-zh="状态转移">State Transition</td>
+            <td>51.86</td>
+            <td><b>64.13</b> (+12.27%)</td>
+          </tr>
+          <tr>
+            <td data-zh="常识推理">Commonsense Reasoning</td>
+            <td>57.76</td>
+            <td><b>62.95</b> (+5.19%)</td>
+          </tr>
+          <tr>
+            <td data-zh="空间关系">Spatial Relations</td>
+            <td>54.68</td>
+            <td><b>55.25</b> (+0.57%)</td>
+          </tr>
+          <tr>
+            <td data-zh="动态运动">Dynamic Motion</td>
+            <td>57.03</td>
+            <td><b>65.55</b> (+8.52%)</td>
+          </tr>
+        </tbody>
+      </table>
+
+
+      <h5 data-zh="状态转移">State Transition</h5>
+      <div class="figure-carousel" data-figure-carousel="state-transition">
+        <div class="carousel-stage" tabindex="0" aria-label="State Transition examples">
+          <figure class="carousel-slide is-active">
+            <img src="figs/capability-carousel/state-1_cropped_centered_same_width.png" alt="State Transition example 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/capability-carousel/state-2_cropped_centered_same_width.png" alt="State Transition example 2">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/capability-carousel/state-3_cropped_centered_same_width.png" alt="State Transition example 3">
+          </figure>
+          <button class="carousel-hit prev" type="button" data-carousel-prev aria-label="Previous State Transition example"></button>
+          <button class="carousel-hit next" type="button" data-carousel-next aria-label="Next State Transition example"></button>
+        </div>
+        <div class="carousel-dots" aria-label="State Transition examples">
+          <button class="carousel-dot is-active" type="button" data-carousel-dot="0" aria-label="Show State Transition example 1"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="1" aria-label="Show State Transition example 2"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="2" aria-label="Show State Transition example 3"></button>
+        </div>
+      </div>
+
+      <h5 data-zh="常识推理">Commonsense Reasoning</h5>
+      <div class="figure-carousel" data-figure-carousel="commonsense-reasoning">
+        <div class="carousel-stage" tabindex="0" aria-label="Commonsense Reasoning examples">
+          <figure class="carousel-slide is-active">
+            <img src="figs/capability-carousel/sense-1_cropped_centered_same_width.png" alt="Commonsense Reasoning example 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/capability-carousel/sense-2_cropped_centered_same_width.png" alt="Commonsense Reasoning example 2">
+          </figure>
+          <button class="carousel-hit prev" type="button" data-carousel-prev aria-label="Previous Commonsense Reasoning example"></button>
+          <button class="carousel-hit next" type="button" data-carousel-next aria-label="Next Commonsense Reasoning example"></button>
+        </div>
+        <div class="carousel-dots" aria-label="Commonsense Reasoning examples">
+          <button class="carousel-dot is-active" type="button" data-carousel-dot="0" aria-label="Show Commonsense Reasoning example 1"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="1" aria-label="Show Commonsense Reasoning example 2"></button>
+        </div>
+      </div>
+
+      <h5 data-zh="动态运动">Dynamic Motion</h5>
+      <div class="figure-carousel" data-figure-carousel="dynamic-motion">
+        <div class="carousel-stage" tabindex="0" aria-label="Dynamic Motion examples">
+          <figure class="carousel-slide is-active">
+            <img src="figs/capability-carousel/movement-1_cropped_centered_same_width.png" alt="Dynamic Motion example 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/capability-carousel/movement-2_cropped_centered_same_width.png" alt="Dynamic Motion example 2">
+          </figure>
+          <button class="carousel-hit prev" type="button" data-carousel-prev aria-label="Previous Dynamic Motion example"></button>
+          <button class="carousel-hit next" type="button" data-carousel-next aria-label="Next Dynamic Motion example"></button>
+        </div>
+        <div class="carousel-dots" aria-label="Dynamic Motion examples">
+          <button class="carousel-dot is-active" type="button" data-carousel-dot="0" aria-label="Show Dynamic Motion example 1"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="1" aria-label="Show Dynamic Motion example 2"></button>
+        </div>
+      </div>
+
+      <h5 data-zh="空间关系">Spatial Relations</h5>
+      <div class="figure-box" >
+        <img src="figs/sp.png" alt="Spatial Relations">
+      </div>
+
+      <p data-zh="通过分析 Orca 在各基准能力子类别上的表现，我们发现模型在状态转移、常识推理、空间关系和动态运动等方面，相比 Qwen3.5 backbone 都取得了明显提升。">
+        By analyzing Orca's performance across individual capability subcategories in all benchmarks,
+        we find that our model achieves substantial gains over the Qwen3.5 backbone in all aspects of <strong>state transition</strong>, <strong>commonsense reasoning</strong>,
+        <strong>spatial relations</strong>, and <strong>dynamic motion</strong>.
+      </p>
+
+      <h3 id="predict" data-zh="2.2 图像预测">2.2 To vision: image prediction</h3>
+      <h4 data-zh="基准设置">benchmark</h4>
+      <p data-zh="我们使用 &lt;b&gt;PRICE-V0.1&lt;/b&gt;（Prediction of Real-world Interactions with Constraints Evaluation）benchmark 来评测模型预测真实世界物理状态变化的能力。该 benchmark 要求模型基于当前图像和语言指令生成未来状态图像。">
+        <!-- The prediction evaluation uses the PRICE benchmark. PRICE asks the model to predict future images
+        from the current image and language instruction. Although the output is image generation, the target
+        is not painter ability; the target is predictor ability. -->
+        We use <b>PRICE-V0.1</b> (Prediction of Real-world Interactions with Constraints Evaluation) benchmark to
+        evaluates a model's ability to predict real-world physical state changes. 
+        It operates by requiring the model to generate a future state image based on a current 
+        image and a language instruction. 
+      </p>
+
+
+      <div class="figure-box">
+        <img src="figs/PRICE.png" alt="PRICE benchmark example figure.">
+      </div>
+
+      <p data-zh="注：PRICE 评测重在物理预测，而非纯绘图。">
+        <em>Note:</em> PRICE focuses on physical prediction rather than pure image painting.
+      </p>
+
+      <h4 data-zh="结果">RESULTS</h4>
+      <!-- <p data-zh="我们用表格和定性 case comparison 报告 PRICE 结果。对比 baseline 选择了近期有代表性、规模与 Orca 接近的图像生成模型，包括 OmniGen2 &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2506.18871&quot;&gt;(Wu et al., 2026)&lt;/a&gt;（3B VLM + 4B vision decoder）、FLUX.1-Kontext &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2506.15742&quot;&gt;(Black Forest Labs et al., 2025)&lt;/a&gt;（12B vision decoder）和 Flux.2 [klein] &lt;a class=&quot;citation&quot; href=&quot;https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence&quot;&gt;(Black Forest Labs, 2026)&lt;/a&gt;（4B VLM + 4B vision decoder）。Orca 在定量和定性评测中均优于所有 baseline。">
+        We report PRICE results with tables and qualitative case comparisons. 
+        We selected recent, representative image generation models with a similar scale to Orca as baselines 
+        for comparison: including OmniGen2 <a class="citation" href="https://arxiv.org/abs/2506.18871" target="_blank" rel="noopener">(Wu et al., 2026)</a> (3B VLM + 4B vision decoder),
+        FLUX.1-Kontext <a class="citation" href="https://arxiv.org/abs/2506.15742" target="_blank" rel="noopener">(Black Forest Labs et al., 2025)</a> (12B vision decoder),
+        and Flux.2 [klein] <a class="citation" href="https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence" target="_blank" rel="noopener">(Black Forest Labs, 2026)</a> (4B VLM + 4B vision decoder),
+        in which Orca outperforms all baselines in both quantitative and qualitative evaluations.
+      </p> -->
+
+      <div style="overflow-x: auto; max-width: 100%;">
+        <table style="border-collapse: collapse; font-size: small; border: none; width: 100%; table-layout: fixed;">
+          <colgroup>
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+            <col style="width: 14.28%;">
+          </colgroup>
+          <caption style="caption-side: top; margin-bottom: 6px; text-align: left; " data-zh="方法使用评判模型为 PRICE-V0.1 给出分数。在 <b>Avg.</b> 中，<i>a</i>±<i>b</i> 表示 <i>avg</i>±<i>std</i>。较大的 <i>avg</i> 和较小的 <i>std</i> 表示更好的性能。<b>粗体</b>表示最佳值。">
+            Methods use judge models to give scores in PRICE-V0.1. In <b>Avg.</b>, <i>a</i>±<i>b</i> represents <i>avg</i>±<i>std</i>. A larger <i>avg</i> and a smaller <i>std</i> value represent better performance. <b>Bold</b> represents the best value.
+          </caption>
+          <thead>
+            <tr>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">Model</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">Size (B)</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">Gemini 3.1 Pro</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">GPT 5.4</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">Doubao-Seed-2.0</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;">Gemma 4-31B</th>
+              <th style="padding: 4px 8px; border-top: 2px solid black; border-bottom: 1px solid black;"><b>Avg.</b></th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- OmniGen2 带引用 -->
+            <tr>
+              <td style="padding: 4px 8px;"><a class="model-link" href="https://arxiv.org/abs/2506.18871" target="_blank" rel="noopener">OmniGen2</a></td>
+              <td style="padding: 4px 8px;">3+4</td>
+              <td style="padding: 4px 8px;">24.6</td>
+              <td style="padding: 4px 8px;">46.8</td>
+              <td style="padding: 4px 8px;">41.4</td>
+              <td style="padding: 4px 8px;">45.5</td>
+              <td style="padding: 4px 8px;">39.6<span style="font-size:0.7em;">±10.2</span></td>
+            </tr>
+            <!-- FLUX.1-Kontext 带引用 -->
+            <tr>
+              <td style="padding: 4px 8px;"><a class="model-link" href="https://arxiv.org/abs/2506.15742" target="_blank" rel="noopener">FLUX.1-Kontext</a></td>
+              <td style="padding: 4px 8px;">12</td>
+              <td style="padding: 4px 8px;">21.6</td>
+              <td style="padding: 4px 8px;">46.9</td>
+              <td style="padding: 4px 8px;">42.7</td>
+              <td style="padding: 4px 8px;">52.5</td>
+              <td style="padding: 4px 8px;">40.9<span style="font-size:0.7em;">±13.5</span></td>
+            </tr>
+            <!-- FLUX.2 [klein] 带引用，并加下边框作为 \midrule -->
+            <tr>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://bfl.ai/blog/flux2-klein-towards-interactive-visual-intelligence" target="_blank" rel="noopener">FLUX.2 [klein]</a></td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">4+4</td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">29.7</td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">64.6</td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">60.0</td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">70.2</td>
+              <td style="padding: 4px 8px; border-bottom: 0.5pt solid black;">56.1<span style="font-size:0.7em;">±18.1</span></td>
+            </tr>
+            <!-- Orca 两行，无底部边框 -->
+            <tr style="background-color: rgb(227, 242, 217);">
+              <td style="padding: 4px 8px; vertical-align: middle;" rowspan="2"><b>Orca</b></td>
+              <td style="padding: 4px 8px;">0.8+2</td>
+              <td style="padding: 4px 8px;">17.0</td>
+              <td style="padding: 4px 8px;">48.5</td>
+              <td style="padding: 4px 8px;">46.0</td>
+              <td style="padding: 4px 8px;">26.5</td>
+              <td style="padding: 4px 8px;">34.5<span style="font-size:0.7em;">±15.3</span></td>
+            </tr>
+            <tr style="background-color: rgb(227, 242, 217);">
+              <!-- 第一列留空，保持背景色一致 -->
+              <td style="padding: 4px 8px;">4+2</td>
+              <td style="padding: 4px 8px;">44.0</td>
+              <td style="padding: 4px 8px;">67.9</td>
+              <td style="padding: 4px 8px;">61.0</td>
+              <td style="padding: 4px 8px;">66.3</td>
+              <td style="padding: 4px 8px;"><b>59.8<span style="font-size:0.7em;">±10.9</span></b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- <div class="figure-box" style="width:50%; margin:0 auto;">
+        <img src="figs/PRICE-results.png" alt="PRICE box-plot result." style="display:block; width:100%;">
+      </div> -->
+
+      <h4 data-zh="案例对比">case comparison</h4>
+      <p data-zh="我们在代表性的 PRICE 样例上比较 Orca 与其他 baseline。绿框标出了典型 baseline failure；相比之下，Orca 在交互过程中能更好地保持机器人本体和其他关键信息。">
+        We compare Orca with other baseline on representative PRICE examples. 
+        Green boxes mark typical baseline failures, which Orca better preserves the robot embodiment and other information during interaction. 
+
+      </p>
+
+      <div class="figure-box">
+        <img src="figs/ToV_visualization.png" alt="PRICE visual case comparison.">
+      </div>
+
+      <h3 id="change" data-zh="2.3 动作生成">2.3 To action: action generation</h3>
+      <p data-zh="动作生成评测使用真机实验作为 out-of-domain（OOD）benchmark，用于评估具身任务能力。">
+        <!-- This section should describe the setting and emphasize two definitions of OOD generalization. -->
+        The action generation evaluation uses real robot experiments as an out-of-domain (OOD) benchmark to evaluate embodied task.
+      </p>
+      <h4 data-zh="设置">settings</h4>
+      <p data-zh="我们使用双臂轮式真机采集五类任务数据，包括 Take book、Stacked bowls、Pull out tissue、Stamp 和 Scoop sugar。基于这些任务，我们设计了多种 OOD 实验，包括 3 类环境泛化和 5 类物体泛化，如下图所示。">
+        We used the <b>dual-arm wheeled robot</b> to collect data on five tasks, including:
+        Take book, Stacked bowls, Pull out tissue, Stamp, and Scoop sugar. Based on these, several OOD 
+        experiments were designed, including 3 kinds of Environmental Generalization and 5 kinds of 
+        Object Generalization, as shown in the figure below. 
+      </p>
+
+      <div class="figure-box">
+        <img src="figs/Realrobot.png" alt="GalBot OOD generalization figure.">
+      </div>
+
+
+      <h4 data-zh="结果">results</h4>
+      <p data-zh="我们使用 rule-based score 和 PRM-as-a-Judge &lt;a class=&quot;citation&quot; href=&quot;https://arxiv.org/abs/2603.21669&quot;&gt;(Ji et al., 2026)&lt;/a&gt; 作为指标。rule-based score 衡量关键阶段的任务完成情况；PRM-as-a-Judge 提供稠密的轨迹级诊断，包括 progress、stagnation、failure progress、recovery 和整体动作质量。">
+        We use the <b>rule-based score</b> and <b>PRM-as-a-Judge</b>
+        <a class="citation" href="https://arxiv.org/abs/2603.21669" target="_blank" rel="noopener">(Ji et al., 2026)</a> as metrics. The rule-based score measures key-stage task completion,
+        and PRM-as-a-Judge provides dense trajectory-level diagnostics, including progress, stagation, failure progress, recovery and overall action quality.
+      </p>
+
+      <div style="margin-bottom: 6px; font-size: 0.9em; text-align: left;"
+       data-zh="动作生成对比。&uarr; 表示数值越高越好，反之亦然。指标为 PRM-as-a-Judge 的轨迹级诊断。注意所有方法的 backbone 均被冻结，Orca、V-JEPA 2.1 和 Qwen3.5 的 &lt;em&gt;Action Experts&lt;/em&gt; 可从零开始训练。">
+        Comparison on action generation. ↑ represents the higher value, the better, and vice versa.
+        The metrics are trajectory-level diagnostics from PRM-as-a-Judge. <b>Note</b> that the backbones of all methods are frozen, and <i>Action Experts</i> for Orca, V‑JEPA 2.1, and Qwen3.5 are trainable from scratch.
+      </div>
+
+      <div style="overflow-x: auto; overflow-y: hidden; max-width: 100%; padding-bottom: 6px;">
+        <table style="border-collapse: collapse; font-size: small; min-width: 900px; width: max-content; table-layout: fixed; border: none;">
+          <colgroup>
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+            <col style="width: 120px;">
+          </colgroup>
+
+          <!-- ============ Environment OOD ============ -->
+          <tbody>
+            <tr>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; font-style: italic; font-weight: bold; text-align: center;" colspan="1">Environment OOD</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">Rule-based ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">M25<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">M50<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">SR<sup>2</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">MaxP‑F<sup>3</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">FNS<sup>4</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">DRR<sup>5</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 2px solid black; border-bottom: 1px solid black; text-align: left;">SQS<sup>6</sup> ↑</th>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">15.2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">40</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">12</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">23.0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">13.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">25.8</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">12.4</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">26</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">10</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">18.3</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">11.2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">19.2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">π₀.₅</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">27.6</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">54</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">16</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">27.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">17.7</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">31.5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">1.5</td>
+            </tr>
+            <tr style="background-color: rgb(227, 242, 217);">
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">Orca</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">36.6</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">64</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">16</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">4</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">33.9</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">19.3</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">32.9</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">1.8</td>
+            </tr>
+          </tbody>
+
+          <!-- ============ Object OOD ============ -->
+          <tbody>
+            <tr>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; font-style: italic; font-weight: bold; text-align: center;" colspan="1">Object OOD</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">Rule-based ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">M25<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">M50<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">SR<sup>2</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">MaxP‑F<sup>3</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">FNS<sup>4</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">DRR<sup>5</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">SQS<sup>6</sup> ↑</th>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">18.8</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">14</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">11.8</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">6.3</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">15.2</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">8.6</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">10</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">7.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">4.0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">4.61</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;"><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">π₀.₅</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">33.1</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">54</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">12</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">8</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">25.1</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">12.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">21.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">4.5</td>
+            </tr>
+            <tr style="background-color: rgb(227, 242, 217);">
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">Orca</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black;">28.2</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black;">46</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">12</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">8</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black;">21.8</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black;">10.8</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black; font-weight: bold;">27.7</td>
+              <td style="padding: 4px 6px; border-bottom: 1pt solid black;">3.9</td>
+            </tr>
+          </tbody>
+
+          <!-- ============ Overall ============ -->
+          <tbody>
+            <tr>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; font-style: italic; font-weight: bold; text-align: center;" colspan="1">Overall</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">Rule-based ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">M25<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">M50<sup>1</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">SR<sup>2</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">MaxP‑F<sup>3</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">FNS<sup>4</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">DRR<sup>5</sup> ↑</th>
+              <th style="padding: 4px 6px; border-top: 1pt solid black; border-bottom: 1px solid black; text-align: left;">SQS<sup>6</sup> ↑</th>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">17.0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">27</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">7</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">17.4</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">10.1</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">20.5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">10.5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">18</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">13.1</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">7.6</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">11.9</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">0.0</td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;"><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">π₀.₅</a></td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">29.4</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">54</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">14</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">26.5</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">15.3</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black;">26.7</td>
+              <td style="padding: 4px 6px; border-bottom: 0.5pt solid black; font-weight: bold;">3.0</td>
+            </tr>
+            <tr style="background-color: rgb(227, 242, 217);">
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">Orca</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">32.4</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">55</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">14</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">6</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">27.9</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black;">15.1</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black; font-weight: bold;">30.3</td>
+              <td style="padding: 4px 6px; border-bottom: 2px solid black;">2.9</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 脚注 -->
+        <!-- <ol style="font-size: small; margin-top: 8px; padding-left: 20px; list-style-type: decimal;">
+          <li>M25 and M50 are Milestone25% and Milestone50%. They are the proportions of the trajectory reaching 25% and 50%.</li>
+          <li>SR is the binary Success Rate. The unit is %.</li>
+          <li>MaxP‑F is MaxProcess in Failure. It represents the max-level execution process in the failure.</li>
+          <li>FNS is Failure Near‑Success Score. It measures the progress achieved by failed trajectories before termination.</li>
+          <li>DRR is the Drawdown Recovery Ratio. It measures recovery after the largest progress drawdown.</li>
+          <li>SQS is the Success Quality Score. It measures the stability, smoothness, and high quality in the success process.</li>
+        </ol> -->
+      </div>   
+      
+      <ul style="font-size: small; margin-top: 8px; padding-left: 20px;">
+          <li data-zh="<sup>1</sup> M25 和 M50 是 Milestone25% 和 Milestone50%。它们是达到 25% 和 50% 轨迹的比例。"><sup>1</sup> 
+                    M25 and M50 are Milestone25% and Milestone50%. They are the proportions of the trajectory reaching 25% and 50%.</li>
+                  <li data-zh="<sup>2</sup> SR 是二元成功率。单位是 %。"><sup>2</sup> 
+                    SR is the binary Success Rate. The unit is %.</li>
+                  <li data-zh="<sup>3</sup> MaxP-F 是失败中的最大进程。它代表了失败中的最高级别执行过程。"><sup>3</sup> 
+                    MaxP-F is MaxProcess in Failure. It represents the max-level execution process in the failure.</li>
+                  <li data-zh="<sup>4</sup> FNS 是失败附近的成功评分。它衡量了失败轨迹在终止前取得的进展。"><sup>4</sup> 
+                    FNS is Failure Near-Success Score. It measures the progress achieved by failed trajectories before termination.</li>
+                  <li data-zh="<sup>5</sup> DRR 是最大进度回撤后的恢复比例。它衡量模型在最大进度回撤后的恢复能力。"><sup>5</sup> 
+                    DRR is the Drawdown Recovery Ratio. It measures recovery after the largest progress drawdown.</li>
+                  <li data-zh="<sup>6</sup> SQS 是成功质量评分。它衡量成功过程中的稳定性、平滑性和高质量。"><sup>6</sup> 
+                    SQS is the Success Quality Score. It measures the stability, smoothness, and high quality in the success process.</li>
+      </ul>
+
+      <!-- <div class="table-container">
+          <table>
+              <caption data-zh="动作生成对比。&uarr; 表示数值越高越好，反之亦然。指标为 PRM-as-a-Judge 的轨迹级诊断。注意所有方法的 backbone 均被冻结，Orca、V-JEPA 2.1 和 Qwen3.5 的 &lt;em&gt;Action Experts&lt;/em&gt; 可从零开始训练。">
+                  <strong>Comparison on action generation.</strong> &uarr; represents the higher value, the better, and vice versa. 
+                  The metrics are trajectory-level diagnostics from PRM-as-a-Judge. 
+                  <strong>Note</strong> that the backbones of all methods are frozen, and <em>Action Experts</em> for Orca, V-JEPA 2.1, and Qwen3.5 are trainable from scratch.
+              </caption>
+              <thead>
+                  <tr>
+                      <th><strong><em>Environment OOD</em></strong></th>
+                      <th>Rule-based &uarr;</th>
+                      <th>M25 &uarr;<sup>1</sup></th>
+                      <th>M50 &uarr;<sup>1</sup></th>
+                      <th>SR &uarr;<sup>2</sup></th>
+                      <th>MaxP-F &uarr;<sup>3</sup></th>
+                      <th>FNS &uarr;<sup>4</sup></th>
+                      <th>DRR &uarr;<sup>5</sup></th>
+                      <th>SQS &uarr;<sup>6</sup></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td>
+                      <td>15.2</td><td>40</td><td>12</td><td>0</td><td>23.0</td><td>13.9</td><td>25.8</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+                      <td>12.4</td><td>26</td><td>10</td><td>0</td><td>18.3</td><td>11.2</td><td>19.2</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">&pi;<sub>0.5</sub></a></td>
+                      <td>27.6</td><td>54</td><td><strong>16</strong></td><td>2</td><td>27.9</td><td>17.7</td><td>31.5</td><td>1.5</td>
+                  </tr>
+                  <tr class="highlight-row" style="background: #eaf3e8;">
+                      <td><strong>Orca</strong></td><td><strong>36.6</strong></td><td><strong>64</strong></td><td><strong>16</strong></td><td><strong>4</strong></td><td><strong>33.9</strong></td><td><strong>19.3</strong></td><td><strong>32.9</strong></td><td><strong>1.8</strong></td>
+                  </tr>
+
+                  <tr class="section-header">
+                      <th><strong><em>Object OOD</em></strong></th>
+                      <th>Rule-based &uarr;</th>
+                      <th>M25 &uarr;</th>
+                      <th>M50 &uarr;</th>
+                      <th>SR &uarr;</th>
+                      <th>MaxP-F &uarr;</th>
+                      <th>FNS &uarr;</th>
+                      <th>DRR &uarr;</th>
+                      <th>SQS &uarr;</th>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td><td>18.8</td><td>14</td><td>2</td><td>0</td><td>11.8</td><td>6.3</td><td>15.2</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td><td>8.6</td><td>10</td><td>0</td><td>0</td><td>7.9</td><td>4.0</td><td>4.61</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">&pi;<sub>0.5</sub></a></td>
+                      <td><strong>33.1</strong></td><td><strong>54</strong></td><td><strong>12</strong></td><td><strong>8</strong></td><td><strong>25.1</strong></td><td><strong>12.9</strong></td><td>21.9</td><td><strong>4.5</strong></td>
+                  </tr>
+                  <tr class="highlight-row" style="background: #eaf3e8;">
+                      <td><strong>Orca</strong></td><td>28.2</td><td>46</td><td><strong>12</strong></td><td><strong>8</strong></td><td>21.8</td><td>10.8</td><td><strong>27.7</strong></td><td>3.9</td>
+                  </tr>
+
+                  <tr class="section-header">
+                      <th><strong><em>Overall</em></strong></th>
+                      <th>Rule-based &uarr;</th>
+                      <th>M25 &uarr;</th>
+                      <th>M50 &uarr;</th>
+                      <th>SR &uarr;</th>
+                      <th>MaxP-F &uarr;</th>
+                      <th>FNS &uarr;</th>
+                      <th>DRR &uarr;</th>
+                      <th>SQS &uarr;</th>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2603.14482" target="_blank" rel="noopener">V-JEPA 2.1</a></td>
+                      <td>17.0</td><td>27</td><td>7</td><td>0</td><td>17.4</td><td>10.1</td><td>20.5</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://qwen.ai/blog?id=qwen3.5" target="_blank" rel="noopener">Qwen3.5</a></td>
+                      <td>10.5</td><td>18</td><td>5</td><td>0</td><td>13.1</td><td>7.6</td><td>11.9</td><td>0.0</td>
+                  </tr>
+                  <tr>
+                      <td><a class="model-link" href="https://arxiv.org/abs/2504.16054" target="_blank" rel="noopener">&pi;<sub>0.5</sub></a></td>
+                      <td>29.4</td><td>54</td><td><strong>14</strong></td><td>5</td><td>26.5</td><td><strong>15.3</strong></td><td>26.7</td><td><strong>3.0</strong></td>
+                  </tr>
+                  <tr class="highlight-row" style="background: #eaf3e8;">
+                      <td><strong>Orca</strong></td><td><strong>32.4</strong></td><td><strong>55</strong></td><td><strong>14</strong></td><td><strong>6</strong></td><td><strong>27.9</strong></td><td>15.1</td><td><strong>30.3</strong></td><td>2.9</td>
+                  </tr>
+              </tbody>
+          </table>
+
+          <div class="tablenotes">
+              <ul>
+                  <li data-zh="<sup>1</sup> M25 和 M50 是 Milestone25% 和 Milestone50%。它们是达到 25% 和 50% 轨迹的比例。"><sup>1</sup> 
+                    M25 and M50 are Milestone25% and Milestone50%. They are the proportions of the trajectory reaching 25% and 50%.</li>
+                  <li data-zh="<sup>2</sup> SR 是二元成功率。单位是 %。"><sup>2</sup> 
+                    SR is the binary Success Rate. The unit is %.</li>
+                  <li data-zh="<sup>3</sup> MaxP-F 是失败中的最大进程。它代表了失败中的最高级别执行过程。"><sup>3</sup> 
+                    MaxP-F is MaxProcess in Failure. It represents the max-level execution process in the failure.</li>
+                  <li data-zh="<sup>4</sup> FNS 是失败附近的成功评分。它衡量了失败轨迹在终止前取得的进展。"><sup>4</sup> 
+                    FNS is Failure Near-Success Score. It measures the progress achieved by failed trajectories before termination.</li>
+                  <li data-zh="<sup>5</sup> DRR 是最大进度回撤后的恢复比例。它衡量模型在最大进度回撤后的恢复能力。"><sup>5</sup> 
+                    DRR is the Drawdown Recovery Ratio. It measures recovery after the largest progress drawdown.</li>
+                  <li data-zh="<sup>6</sup> SQS 是成功质量评分。它衡量成功过程中的稳定性、平滑性和高质量。"><sup>6</sup> 
+                    SQS is the Success Quality Score. It measures the stability, smoothness, and high quality in the success process.</li>
+              </ul>
+          </div>
+      </div> -->
+
+
+
+      <h4 data-zh="分析">analysis</h4>
+      <p>
+        <ul>
+          <li data-zh="根据上表，Orca 的学习范式和学习到的世界潜在知识能有效地转移到 OOD 环境中的动作输出。">
+            According to the table above, Orca’s learning paradigm and learned world latent transfers effectively to action readout in OOD environments. </li>
+          <li data-zh="Orca 一致地推进任务并从执行错误中恢复得更好。示例如下。">
+            Orca consistently advances the task and recovers better from execution errors. The examples are as follows.</li>
+        </ul>
+      </p>
+
+      <div class="figure-carousel" data-figure-carousel="action-recovery">
+        <div class="carousel-stage" tabindex="0" aria-label="Action recovery examples">
+          <figure class="carousel-slide is-active">
+            <img src="figs/action-carousel/recover-1_cropped.png" alt="Recovery evaluation example 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/action-carousel/recover-2_cropped.png" alt="Recovery evaluation example 2">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/action-carousel/recover-3_cropped.png" alt="Recovery evaluation example 3">
+          </figure>
+          <button class="carousel-hit prev" type="button" data-carousel-prev aria-label="Previous action recovery example"></button>
+          <button class="carousel-hit next" type="button" data-carousel-next aria-label="Next action recovery example"></button>
+        </div>
+        <div class="carousel-dots" aria-label="Action recovery example selector">
+          <button class="carousel-dot is-active" type="button" data-carousel-dot="0" aria-label="Show recovery example 1"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="1" aria-label="Show recovery example 2"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="2" aria-label="Show recovery example 3"></button>
+        </div>
+      </div>
+
+      <div class="figure-carousel" data-figure-carousel="action-failure">
+        <div class="carousel-stage" tabindex="0" aria-label="Action failure examples">
+          <figure class="carousel-slide is-active">
+            <img src="figs/action-carousel/failure-1_cropped.png" alt="Failure evaluation example 1">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/action-carousel/failure-2_cropped.png" alt="Failure evaluation example 2">
+          </figure>
+          <figure class="carousel-slide">
+            <img src="figs/action-carousel/failure-3_cropped.png" alt="Failure evaluation example 3">
+          </figure>
+          <button class="carousel-hit prev" type="button" data-carousel-prev aria-label="Previous action failure example"></button>
+          <button class="carousel-hit next" type="button" data-carousel-next aria-label="Next action failure example"></button>
+        </div>
+        <div class="carousel-dots" aria-label="Action failure example selector">
+          <button class="carousel-dot is-active" type="button" data-carousel-dot="0" aria-label="Show failure example 1"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="1" aria-label="Show failure example 2"></button>
+          <button class="carousel-dot" type="button" data-carousel-dot="2" aria-label="Show failure example 3"></button>
+        </div>
+      </div>
+
+
+      <div class="demo-trials-heading">
+        <h4 data-zh="演示实验">demo trials</h4>
+        <p data-zh="下方是一个 5 任务矩阵，覆盖 in-domain 执行、环境泛化和物体泛化。">
+          A 5-task matrix evaluated across in-domain execution, environment generalization, and object generalization.
+        </p>
+      </div>
+
+      <div class="video-box">
+        <div class="galbot-gallery" aria-label="real-robot evaluation gallery">
+          <div class="galbot-gallery-header">
+            <div>
+              <h3 data-zh="真机评测">Real-Robot Evaluation</h3>
+            </div>
+          </div>
+
+          <div class="galbot-task-block">
+            <h4 data-zh="Base / In-Domain 任务">Base / In-Domain Tasks</h4>
+            <p data-zh="五类核心操作技能在基础设置下进行评测。">Five core manipulation skills evaluated in their base settings.</p>
+            <div class="galbot-thumb-grid" aria-label="Select a base GalBot trial">
+              <button class="galbot-thumb" type="button" data-video-src="video/book_base.mp4" data-video-poster="video/posters/book_base.mp4.png" data-video-label="Base 01 · Take Book" data-video-label-zh="Base 01 · 取书">
+                <video preload="metadata" muted poster="video/posters/book_base.mp4.png" aria-hidden="true"><source src="video/book_base.mp4" type="video/mp4"></video>
+                <span data-zh="取书">Take Book</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/bowl_base.mp4" data-video-poster="video/posters/bowl_base.mp4.png" data-video-label="Base 02 · Stacked Bowls" data-video-label-zh="Base 02 · 叠碗">
+                <video preload="metadata" muted poster="video/posters/bowl_base.mp4.png" aria-hidden="true"><source src="video/bowl_base.mp4" type="video/mp4"></video>
+                <span data-zh="叠碗">Stacked Bowls</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/tissue_base.mp4" data-video-poster="video/posters/tissue_base.mp4.png" data-video-label="Base 03 · Pull Out Tissue" data-video-label-zh="Base 03 · 抽纸巾">
+                <video preload="metadata" muted poster="video/posters/tissue_base.mp4.png" aria-hidden="true"><source src="video/tissue_base.mp4" type="video/mp4"></video>
+                <span data-zh="抽纸巾">Pull Out Tissue</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/stamp_base.mp4" data-video-poster="video/posters/stamp_base.mp4.png" data-video-label="Base 04 · Regular Stamp" data-video-label-zh="Base 04 · 普通印章">
+                <video preload="metadata" muted poster="video/posters/stamp_base.mp4.png" aria-hidden="true"><source src="video/stamp_base.mp4" type="video/mp4"></video>
+                <span data-zh="普通印章">Regular Stamp</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/sugar_base.mp4" data-video-poster="video/posters/sugar_base.mp4.png" data-video-label="Base 05 · Scoop White Sugar" data-video-label-zh="Base 05 · 舀白糖">
+                <video preload="metadata" muted poster="video/posters/sugar_base.mp4.png" aria-hidden="true"><source src="video/sugar_base.mp4" type="video/mp4"></video>
+                <span data-zh="舀白糖">Scoop White Sugar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="galbot-task-block">
+            <h4 data-zh="环境泛化">Environment Generalization</h4>
+            <p data-zh="在桌布样式、背景和干扰物变化后的同类任务上进行评测。">The same task families under changed tablecloth styles, backgrounds, and distractors.</p>
+            <div class="galbot-thumb-grid" aria-label="Select an environment generalization GalBot trial">
+              <button class="galbot-thumb" type="button" data-video-src="video/book_env.mp4" data-video-poster="video/posters/book_env.mp4.png" data-video-label="Env 01 · Take Book" data-video-label-zh="Env 01 · 取书">
+                <video preload="metadata" muted poster="video/posters/book_env.mp4.png" aria-hidden="true"><source src="video/book_env.mp4" type="video/mp4"></video>
+                <span data-zh="取书">Take Book</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/bowl_env.mp4" data-video-poster="video/posters/bowl_env.mp4.png" data-video-label="Env 02 · Stacked Bowls" data-video-label-zh="Env 02 · 叠碗">
+                <video preload="metadata" muted poster="video/posters/bowl_env.mp4.png" aria-hidden="true"><source src="video/bowl_env.mp4" type="video/mp4"></video>
+                <span data-zh="叠碗">Stacked Bowls</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/tissue_env.mp4" data-video-poster="video/posters/tissue_env.mp4.png" data-video-label="Env 03 · Pull Out Tissue" data-video-label-zh="Env 03 · 抽纸巾">
+                <video preload="metadata" muted poster="video/posters/tissue_env.mp4.png" aria-hidden="true"><source src="video/tissue_env.mp4" type="video/mp4"></video>
+                <span data-zh="抽纸巾">Pull Out Tissue</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/stamp_env.mp4" data-video-poster="video/posters/stamp_env.mp4.png" data-video-label="Env 04 · Regular Stamp" data-video-label-zh="Env 04 · 普通印章">
+                <video preload="metadata" muted poster="video/posters/stamp_env.mp4.png" aria-hidden="true"><source src="video/stamp_env.mp4" type="video/mp4"></video>
+                <span data-zh="普通印章">Regular Stamp</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/sugar_env.mp4" data-video-poster="video/posters/sugar_env.mp4.png" data-video-label="Env 05 · Scoop White Sugar" data-video-label-zh="Env 05 · 舀白糖">
+                <video preload="metadata" muted poster="video/posters/sugar_env.mp4.png" aria-hidden="true"><source src="video/sugar_env.mp4" type="video/mp4"></video>
+                <span data-zh="舀白糖">Scoop White Sugar</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="galbot-task-block">
+            <h4 data-zh="物体泛化">Object Generalization</h4>
+            <p data-zh="每个推理物体都从其对应训练任务迁移而来：书到砧板、碗到盒子、纸巾到面包、印章到儿童印章、糖到糖果。">Each inference object transfers from its paired training task: book to cutting board, bowls to boxes, tissue to bread, stamp to children's stamp, and sugar to candy.</p>
+            <div class="galbot-thumb-grid" aria-label="Select an object generalization GalBot trial">
+              <button class="galbot-thumb" type="button" data-video-src="video/book_obj.mp4" data-video-poster="video/posters/book_obj.mp4.png" data-video-label="Object 01 · Take Cutting Board" data-video-label-zh="Object 01 · 取砧板">
+                <video preload="metadata" muted poster="video/posters/book_obj.mp4.png" aria-hidden="true"><source src="video/book_obj.mp4" type="video/mp4"></video>
+                <span data-zh="取砧板"> Take Cutting Board</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/bowl_obj.mp4" data-video-poster="video/posters/bowl_obj.mp4.png" data-video-label="Object 02 · Stacked Boxes" data-video-label-zh="Object 02 · 叠盒子">
+                <video preload="metadata" muted poster="video/posters/bowl_obj.mp4.png" aria-hidden="true"><source src="video/bowl_obj.mp4" type="video/mp4"></video>
+                <span data-zh="叠盒子"> Stacked Boxes</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/tissue_obj.mp4" data-video-poster="video/posters/tissue_obj.mp4.png" data-video-label="Object 03 · Pull Out Bread" data-video-label-zh="Object 03 · 取出面包">
+                <video preload="metadata" muted poster="video/posters/tissue_obj.mp4.png" aria-hidden="true"><source src="video/tissue_obj.mp4" type="video/mp4"></video>
+                <span data-zh="取出面包">Pull Out Bread</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/stamp_obj.mp4" data-video-poster="video/posters/stamp_obj.mp4.png" data-video-label="Object 04 · Children's Stamp" data-video-label-zh="Object 04 · 儿童印章">
+                <video preload="metadata" muted poster="video/posters/stamp_obj.mp4.png" aria-hidden="true"><source src="video/stamp_obj.mp4" type="video/mp4"></video>
+                <span data-zh="儿童印章">Children's Stamp</span>
+              </button>
+              <button class="galbot-thumb" type="button" data-video-src="video/sugar_obj.mp4" data-video-poster="video/posters/sugar_obj.mp4.png" data-video-label="Object 05 · Scoop Candy" data-video-label-zh="Object 05 · 舀糖果">
+                <video preload="metadata" muted poster="video/posters/sugar_obj.mp4.png" aria-hidden="true"><source src="video/sugar_obj.mp4" type="video/mp4"></video>
+                <span data-zh="舀糖果">Scoop Candy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="galbot-modal-backdrop" id="galbot-video-modal" aria-hidden="true">
+        <div class="galbot-modal" role="dialog" aria-modal="true" aria-label="Video player">
+          <div class="galbot-modal-header">
+            <div class="galbot-modal-title" id="galbot-modal-title">Video</div>
+            <button class="galbot-modal-close" id="galbot-modal-close" type="button" aria-label="Close video">×</button>
+          </div>
+          <div class="galbot-modal-body">
+            <video id="galbot-modal-video" controls preload="metadata" playsinline poster="">
+              <source id="galbot-modal-source" src="" type="video/mp4">
+              Your browser does not support this video format.
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="citation">
+      <h2 data-zh="引用">Citation</h2>
+      <p>
+        If you find Orca useful, please cite our arXiv paper.
+      </p>
+      <pre><code>@article{orca2026,
+  title={Orca: The World is in Your Mind},
+  author={Yihao Wang and Yuheng Ji and Mingyu Cao and Yanqing Shen and Runze Xiao and Huaihai Lyu and Senwei Xie and Euan Liu and Klara Tian and Tianfeng Long and Yichi Zhang and Zhengliang Cai and Ruike Chen and Jifan Zhao and Ruochuan Shi and Zihan Tang and Jing Lyu and Wenxing Tan and Ningbo Zhang and Yangtao Hu and Yuming Gao and Xiansheng Chen and Junkai Zhao and Congsheng Xu and Boan Zhu and Ziqi Wang and Yupu Feng and Qiongqiong Zhang and Yingli Zhao and Yulong Ao and Shaoxuan Xie and You Liu and Guocai Yao and Leiduo Zhang and Xiaodan Liu and Yunyan Zhang and Yance Jiao and Xinyan Yang and Jiaxing Wei and Xu Liu and Tengfei Pan and Shaokai Nie and Chunlei Men and Sen Cui and Xiaojie Jin and Hongyang Li and Jianlan Luo and Yao Mu and Yunchao Wei and Jun Yan and Hang Zhao and Xiaolong Zheng and Jiaming Li and Yonghua Lin and Tiejun Huang and Zhongyuan Wang and Pengwei Wang},
+  journal={arXiv preprint arXiv:2606.30534},
+  year={2026}
+}</code></pre>
+
+    </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <span data-zh="Orca Team · 北京智源人工智能研究院">Orca Team · Beijing Academy of Artificial Intelligence</span>
+    <img class="visit-pixel" src="https://hits.sh/orca-wm.github.io.svg?style=flat-square&label=Views&color=166e72&labelColor=f2efe8" alt="" width="1" height="1" aria-hidden="true" referrerpolicy="no-referrer">
+  </footer>
+  <script>
+    const galbotModal = document.querySelector("#galbot-video-modal");
+    const galbotModalVideo = document.querySelector("#galbot-modal-video");
+    const galbotModalSource = document.querySelector("#galbot-modal-source");
+    const galbotModalTitle = document.querySelector("#galbot-modal-title");
+    const galbotModalClose = document.querySelector("#galbot-modal-close");
+    const galbotThumbs = Array.from(document.querySelectorAll(".galbot-thumb"));
+    const figureCarousels = Array.from(document.querySelectorAll("[data-figure-carousel]"));
+    const heroVideo = document.querySelector("#hero-video");
+    const heroVideoSource = document.querySelector("#hero-video-source");
+    const heroVideoLanguageButtons = Array.from(document.querySelectorAll("[data-hero-video-lang]"));
+
+    function setHeroVideoLanguage(language) {
+      if (!heroVideo || !heroVideoSource) {
+        return;
+      }
+
+      const isChinese = language === "zh";
+      const nextSrc = isChinese ? heroVideo.dataset.videoZh : heroVideo.dataset.videoEn;
+      const nextPoster = isChinese ? heroVideo.dataset.posterZh : heroVideo.dataset.posterEn;
+
+      if (!nextSrc) {
+        return;
+      }
+
+      heroVideoLanguageButtons.forEach((button) => {
+        const isActive = button.dataset.heroVideoLang === language;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      if (heroVideoSource.getAttribute("src") === nextSrc) {
+        return;
+      }
+
+      const wasPlaying = !heroVideo.paused && !heroVideo.ended;
+      heroVideo.pause();
+      heroVideoSource.src = nextSrc;
+      if (nextPoster) {
+        heroVideo.poster = nextPoster;
+      }
+      heroVideo.load();
+      if (wasPlaying) {
+        heroVideo.play().catch(() => {});
+      }
+    }
+
+    heroVideoLanguageButtons.forEach((button) => {
+      button.addEventListener("click", () => setHeroVideoLanguage(button.dataset.heroVideoLang));
+    });
+
+    function openVideoModal(videoSrc, videoPoster, videoLabel) {
+      if (!galbotModal || !galbotModalVideo || !galbotModalSource || !galbotModalTitle || !videoSrc) {
+        return;
+      }
+
+      galbotModalSource.src = videoSrc;
+      galbotModalVideo.poster = videoPoster || "";
+      galbotModalTitle.textContent = videoLabel;
+      galbotModal.classList.add("is-open");
+      galbotModal.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+      galbotModalVideo.load();
+      galbotModalVideo.play().catch(() => {});
+    }
+
+    function closeVideoModal() {
+      if (!galbotModal || !galbotModalVideo || !galbotModalSource) {
+        return;
+      }
+
+      galbotModalVideo.pause();
+      galbotModalSource.removeAttribute("src");
+      galbotModalVideo.load();
+      galbotModal.classList.remove("is-open");
+      galbotModal.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    galbotThumbs.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const videoSrc = thumb.dataset.videoSrc;
+        const videoPoster = thumb.dataset.videoPoster;
+        const videoLabel = thumb.dataset.videoLabel;
+        galbotThumbs.forEach((item) => item.classList.remove("is-active"));
+        thumb.classList.add("is-active");
+        openVideoModal(videoSrc, videoPoster, videoLabel);
+      });
+    });
+
+    if (galbotModalClose) {
+      galbotModalClose.addEventListener("click", closeVideoModal);
+    }
+
+    if (galbotModal) {
+      galbotModal.addEventListener("click", (event) => {
+        if (event.target === galbotModal) {
+          closeVideoModal();
+        }
+      });
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeVideoModal();
+      }
+    });
+
+    figureCarousels.forEach((carousel) => {
+      const stage = carousel.querySelector(".carousel-stage");
+      const slides = Array.from(carousel.querySelectorAll(".carousel-slide"));
+      const dots = Array.from(carousel.querySelectorAll("[data-carousel-dot]"));
+      const prevButton = carousel.querySelector("[data-carousel-prev]");
+      const nextButton = carousel.querySelector("[data-carousel-next]");
+
+      if (!stage || !slides.length || !prevButton || !nextButton) {
+        return;
+      }
+
+      let activeIndex = 0;
+
+      const showSlide = (nextIndex) => {
+        activeIndex = (nextIndex + slides.length) % slides.length;
+        slides.forEach((slide, index) => {
+          slide.classList.toggle("is-active", index === activeIndex);
+        });
+        dots.forEach((dot, index) => {
+          dot.classList.toggle("is-active", index === activeIndex);
+        });
+      };
+
+      prevButton.addEventListener("click", () => showSlide(activeIndex - 1));
+      nextButton.addEventListener("click", () => showSlide(activeIndex + 1));
+
+      dots.forEach((dot) => {
+        dot.addEventListener("click", () => {
+          showSlide(Number(dot.dataset.carouselDot || 0));
+        });
+      });
+
+      stage.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          showSlide(activeIndex + 1);
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          showSlide(activeIndex - 1);
+        }
+      });
+    });
+  </script>
+</body>
+
+<!-- trigger pages rebuild -->
+</html>

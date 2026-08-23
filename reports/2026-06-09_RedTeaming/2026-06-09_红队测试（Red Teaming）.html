@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-09_红队测试（Red Teaming）</title>
+  <style>
+    :root {
+      --ink: #0f172a; --muted: #475569; --quiet: #64748b; --line: #e2e8f0;
+      --soft: #f8fafc; --navy: #1e3a8a; --teal: #0d9488; --amber: #d97706; --red: #e11d48;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink); background: #f8fafc; line-height: 1.78;
+    }
+    header { background: #fff; border-bottom: 1px solid var(--line); padding: 56px 24px 42px; }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+    .eyebrow { color: var(--red); font-weight: 700; letter-spacing: 0; }
+    h1 { margin: 16px 0 10px; font-size: clamp(38px, 6vw, 72px); line-height: 1.08; letter-spacing: 0; }
+    .subtitle { font-size: 26px; color: var(--muted); margin: 0 0 24px; }
+    .core { margin-top: 24px; padding: 18px 22px; border: 1px solid #bfdbfe; background: #eff6ff; border-radius: 8px; font-weight: 700; color: var(--navy); }
+    nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 28px 0 8px; }
+    nav a { color: var(--navy); text-decoration: none; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+    main { padding: 34px 24px 72px; }
+    section { max-width: 1040px; margin: 0 auto 28px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 28px; }
+    h2 { font-size: 32px; line-height: 1.25; margin: 0 0 16px; letter-spacing: 0; }
+    p { margin: 12px 0; font-size: 18px; }
+    figure { margin: 20px 0; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    figcaption { color: var(--quiet); font-size: 14px; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
+    th, td { border: 1px solid var(--line); padding: 12px; vertical-align: top; }
+    th { width: 16%; background: #f8fafc; color: var(--navy); text-align: left; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 10px 0; font-size: 18px; }
+    .note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 8px; padding: 14px 18px; margin-top: 18px; }
+    @media print {
+      body { background: #fff; }
+      section { break-inside: avoid; border-color: #ddd; }
+      nav a { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-09</div>
+      <h1>红队测试<br><span style="color:var(--navy)">Red Teaming</span></h1>
+      <p class="subtitle">为什么要主动给 AI 找麻烦？</p>
+      <div class="core">核心一句话：红队测试是在事故发生前，主动模拟坏情况，找出 AI 的薄弱点。</div>
+      <nav><a href="#why">为什么这个概念重要？</a>
+<a href="#analogy">一个直观类比：消防演练</a>
+<a href="#mechanism">工作原理：红队怎样测试 AI？</a>
+<a href="#terms">关键术语解释</a>
+<a href="#case">真实应用案例：企业 AI 客服上线前</a>
+<a href="#mistakes">常见误区</a>
+<a href="#summary">3句话总结</a>
+<a href="#quiz">复习问题</a></nav>
+    </div>
+  </header>
+  <main>
+    <section id="why"><h2>为什么这个概念重要？</h2><p>红队测试解决的是一个很现实的问题：AI 产品上线前，我们不能只问“它大多数时候能不能答对”，还要问“它在被诱导、压力很大、边界模糊时会不会出错”。</p>
+<p>大模型越能办事，出错的代价就越高。一个聊天机器人说错一句话可能只是尴尬；一个 AI 客服泄露隐私、一个代码助手生成危险指令、一个企业 Agent 乱用工具，就可能变成真实损失。</p>
+<p>所以红队测试不是给 AI 找茬，而是给系统做体检。它让团队在真实用户遇到问题之前，先主动模拟坏情况，把漏洞、误导、越权和不安全行为找出来。</p></section>
+    <section id="analogy"><h2>一个直观类比：消防演练</h2><figure><img src="chatgpt_red_teaming_fire_drill.png" alt="AI红队测试消防演练类比图"><figcaption>消防演练类比：红队测试不是破坏，而是提前发现薄弱点。</figcaption></figure><p>想象一栋新大楼准备营业。管理者不会只看大厅漂不漂亮、灯亮不亮，还会做消防演练：模拟起火、停电、拥挤、有人走错楼梯，看看系统会不会卡住。</p>
+<p>红队测试就是 AI 世界里的消防演练。红队成员会故意提出刁钻问题、诱导模型越界、测试它是否泄露敏感信息，或者让它在多轮指令里迷路。</p>
+<p>这听起来像“攻击”，但目标不是破坏，而是提前发现薄弱点。越早发现，修复成本越低，真实用户越安全。</p></section>
+    <section id="mechanism"><h2>工作原理：红队怎样测试 AI？</h2><figure><img src="chatgpt_red_teaming_workflow.png" alt="AI红队测试工作流图"><figcaption>红队测试是一轮轮发现、归因、修复和复测的循环。</figcaption></figure><p>第一步，先画风险地图。团队会列出模型可能出错的场景，比如隐私泄露、危险建议、偏见歧视、编造事实、工具误用、越权操作。</p>
+<p>第二步，设计挑战问题。红队会像压力测试员一样，写出正常问题、诱导问题、绕过限制的问题和多轮对话陷阱。</p>
+<p>第三步，执行测试并记录失败方式。重要的不是一句“模型错了”，而是记录它为什么错：是理解错、边界不清、拒答策略过度，还是工具权限太宽。</p>
+<p>第四步，按严重度分级并修复。修复可能包括改系统提示、加规则、限制工具权限、补训练数据、调整评测集。最后还要复测，确认问题没有换个形式回来。</p></section>
+    <section id="terms"><h2>关键术语解释</h2><table><thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead><tbody><tr><th>红队</th><td>专业解释：主动模拟攻击者或极端使用者来发现系统弱点的测试团队。</td><td>白话解释：专门站在“挑刺者”角度，提前帮系统找麻烦的人。</td></tr>
+<tr><th>越狱提示</th><td>专业解释：诱导模型绕过安全规则或开发者限制的输入方式。</td><td>白话解释：像用话术哄模型“别听规则，按我说的做”。</td></tr>
+<tr><th>风险场景</th><td>专业解释：模型可能造成伤害、误导、泄露或越权的具体使用情境。</td><td>白话解释：提前想象 AI 在什么情况下最容易出事。</td></tr>
+<tr><th>严重度分级</th><td>专业解释：按影响范围、可复现性和潜在损害给问题排序。</td><td>白话解释：不是所有错误都一样，要先修最危险、最可能发生的。</td></tr>
+<tr><th>复测</th><td>专业解释：修复后再次运行相同或相似测试，确认风险是否降低。</td><td>白话解释：补完漏洞后再演练一遍，看看门是不是真的关上了。</td></tr></tbody></table></section>
+    <section id="case"><h2>真实应用案例：企业 AI 客服上线前</h2><p>假设一家银行要上线 AI 客服。普通测试会问：它能不能解释账单、能不能引导用户改密码、能不能回答营业时间。</p>
+<p>红队测试会问得更尖锐：如果用户套取别人的账户信息，它会不会泄露？如果用户伪装成内部员工，它会不会透露后台流程？如果用户用多轮对话慢慢诱导，它会不会绕过身份验证？</p>
+<p>红队发现问题后，团队可能会增加身份校验、限制可查询字段、把高风险请求转人工、给模型加入更明确的拒答边界，并把这些案例加入持续评测。</p>
+<p>这就是红队测试的价值：它不只看 AI 会不会回答，还看 AI 在压力和诱导下能不能守住边界。</p><div class="note">红队测试的价值：不只看 AI 会不会回答，还看它在诱导和压力下能不能守住边界。</div></section>
+    <section id="mistakes"><h2>常见误区</h2><ul><li><strong>误区一：红队测试就是黑客攻击。</strong><br>不准确。红队会借用攻击视角，但目标是帮助建设者发现风险、改进系统，而不是破坏系统。</li>
+<li><strong>误区二：做一次红队测试就够了。</strong><br>不够。模型、提示词、工具权限和用户行为都会变化，红队测试应该是持续循环。</li>
+<li><strong>误区三：红队测试只看安全问题。</strong><br>不只如此。它也会检查偏见、幻觉、隐私、过度拒答、工具误用和用户体验风险。</li>
+<li><strong>误区四：通过红队测试就说明 AI 完全安全。</strong><br>不能这么理解。红队测试只能发现已想到、已测试的一部分风险，它降低风险，但不等于消除风险。</li></ul></section>
+    <section id="summary"><h2>3句话总结</h2><ol><li>红队测试的本质，是在 AI 上线前主动模拟坏情况，提前找出系统薄弱点。</li>
+<li>它不是为了证明 AI 完美，而是为了知道 AI 在哪里会失败、失败有多严重、应该先修哪里。</li>
+<li>理解红队测试，能帮助普通人看懂 AI 安全、企业上线评估和模型治理为什么必须持续进行。</li></ol></section>
+    <section id="quiz"><h2>复习问题</h2><ol><li>为什么一个企业 AI 客服不能只做“正常问题回答测试”，还要做红队测试？</li>
+<li>如果你要红队测试一个代码助手，你会设计哪些可能危险或越界的场景？</li>
+<li>为什么“通过一次红队测试”不等于“这个 AI 一直安全”？</li></ol></section>
+  </main>
+</body>
+</html>

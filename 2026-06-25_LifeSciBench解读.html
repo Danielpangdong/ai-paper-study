@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日AI论文精读 · 2026-06-25 · LifeSciBench：当前沿模型走进真实生命科学研究</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b1020;
+  --panel:#111836;
+  --panel-2:#0e1530;
+  --text:#e7ecff;
+  --muted:#9aa6c7;
+  --accent:#7c5cff;
+  --accent-2:#22d3ee;
+  --warn:#f59e0b;
+  --bad:#ef4444;
+  --good:#10b981;
+  --border:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 10% -20%,#1a2566 0%,transparent 60%),radial-gradient(900px 500px at 110% 10%,#1b3756 0%,transparent 55%),var(--bg);color:var(--text);font-family:-apple-system,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased}
+.container{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+header.hero{padding:40px 28px;border-radius:20px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.12));border:1px solid var(--border);position:relative;overflow:hidden}
+header.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 80% -10%,rgba(124,92,255,.35),transparent 60%);pointer-events:none}
+.kicker{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(124,92,255,.25);color:#cdbfff;font-size:12px;letter-spacing:.06em;font-weight:600;text-transform:uppercase}
+h1{font-size:34px;margin:14px 0 8px;line-height:1.25}
+h2{font-size:22px;margin:32px 0 12px;padding-left:12px;border-left:4px solid var(--accent);}
+h3{font-size:17px;margin:18px 0 8px;color:#cfd6f5}
+p{margin:8px 0}
+.meta{display:flex;flex-wrap:wrap;gap:10px;color:var(--muted);font-size:13px;margin-top:10px}
+.meta span{padding:4px 10px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:999px}
+.grid{display:grid;gap:16px}
+.grid.cols-4{grid-template-columns:repeat(4,1fr)}
+.grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+@media (max-width:860px){.grid.cols-4,.grid.cols-3,.grid.cols-2{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.grid.cols-4,.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--panel) 0%,var(--panel-2) 100%);border:1px solid var(--border);border-radius:16px;padding:18px}
+.stat{padding:18px}
+.stat .v{font-size:28px;font-weight:700;color:var(--accent-2)}
+.stat .l{color:var(--muted);font-size:13px;margin-top:4px}
+.tag{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;margin-right:6px}
+.tag.high{background:rgba(16,185,129,.15);color:#34d399}
+.tag.mid{background:rgba(245,158,11,.15);color:#fbbf24}
+.tag.low{background:rgba(239,68,68,.15);color:#f87171}
+.tag.info{background:rgba(34,211,238,.15);color:#67e8f9}
+.chartwrap{position:relative;height:300px}
+ul{padding-left:20px}
+li{margin:4px 0}
+.callout{padding:16px;border-radius:12px;background:rgba(245,158,11,.08);border-left:4px solid var(--warn);color:#fde68a;font-size:14px}
+.callout.good{background:rgba(16,185,129,.08);border-left-color:var(--good);color:#a7f3d0}
+.callout.bad{background:rgba(239,68,68,.08);border-left-color:var(--bad);color:#fca5a5}
+.callout.info{background:rgba(34,211,238,.08);border-left-color:var(--accent-2);color:#bae6fd}
+table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+th{background:rgba(255,255,255,.04);color:#bfc7e8;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+tr:hover td{background:rgba(124,92,255,.05)}
+.timeline{position:relative;padding-left:24px;border-left:2px solid rgba(124,92,255,.4)}
+.timeline .item{position:relative;padding:6px 0 18px}
+.timeline .item::before{content:"";position:absolute;left:-30px;top:10px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.timeline .item .t{font-size:12px;color:var(--muted)}
+.footer{margin-top:40px;padding:18px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+a{color:#a5b4fc;text-decoration:none;border-bottom:1px dashed rgba(165,180,252,.5)}
+a:hover{color:#fff;border-bottom-style:solid}
+.pill{display:inline-block;padding:2px 10px;border-radius:999px;background:rgba(124,92,255,.18);color:#cdbfff;font-size:11px;margin-left:6px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+@media (max-width:760px){.split{grid-template-columns:1fr}}
+.kv{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:14px}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--muted)}
+.bar{height:10px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden;margin-top:4px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="hero">
+  <span class="kicker">每日AI论文精读 · 2026-06-25</span>
+  <h1>LifeSciBench：当前沿大模型走进真实生命科学研究，它们到底能不能"干活"？</h1>
+  <p style="color:var(--muted);max-width:880px">OpenAI 在 2026 年 6 月 17 日发布的 <b>LifeSciBench</b>，是迄今规模最大、由 173 位 PhD 级科学家亲手撰写、453 位独立专家复核的"生物医药真实工作流"评测集。其核心结论冰冷又关键——<b>当前最强模型 GPT‑Rosalind 仅通过 36.1% 的任务</b>，而上一代 GPT‑5.5 仅 25.7%。这意味着前沿 LLM 在"实验室级别科学决策"上仍远未达到可独立使用的标准。</p>
+  <div class="meta">
+    <span>来源：OpenAI 官方研究博客</span>
+    <span>发布日期：2026-06-17</span>
+    <span>类型：基准评测 (Benchmark)</span>
+    <span>领域：AI for Science · 生命科学 · 药物研发</span>
+    <span>置信度：高（一手官方资料 + 论文 PDF）</span>
+  </div>
+</header>
+
+<h2>① 一句话看懂</h2>
+<div class="card">
+<p>LifeSciBench 用 <b>750 道"像真正研究员一天会遇到的"开放式任务</b>（含 PDF/图表/序列文件等 1062 个附件），加上 <b>19,020 条逐点评分细则</b>，把"AI 是否真的能做生物医药研究"这个被吹了几年的命题，第一次拽进了可重复、可比对、可证伪的量化语境里。</p>
+<p>结论是：<b>会说话 ≠ 会做事</b>。模型在"科学沟通/翻译临床意义"等"说服性写作"任务上正在快速进步，但一旦碰到"看图找证据、给出精确数值、设计构建体"等真实工作动作，正确率断崖式下滑。</p>
+</div>
+
+<h2>② 关键数字一览</h2>
+<div class="grid cols-4">
+  <div class="card stat"><div class="v">750</div><div class="l">专家撰写任务总数</div></div>
+  <div class="card stat"><div class="v">173</div><div class="l">PhD 级出题科学家</div></div>
+  <div class="card stat"><div class="v">453</div><div class="l">独立专家复核员</div></div>
+  <div class="card stat"><div class="v">19,020</div><div class="l">评分细则（平均 25/任务）</div></div>
+  <div class="card stat"><div class="v">1,062</div><div class="l">附件（图/表/序列/PDF）</div></div>
+  <div class="card stat"><div class="v">79%</div><div class="l">任务需多步推理</div></div>
+  <div class="card stat"><div class="v">53%</div><div class="l">任务需读取附件</div></div>
+  <div class="card stat"><div class="v">36.1%</div><div class="l">最强模型整体通过率</div></div>
+</div>
+
+<h2>③ 评测设计：为什么它"更像真实工作"？</h2>
+<div class="split">
+  <div class="card">
+    <h3>7 大工作流（Workflow）</h3>
+    <ul>
+      <li><b>Evidence Handling</b>·证据搜集与对账</li>
+      <li><b>Analysis</b>·数据分析</li>
+      <li><b>Design, Optimization &amp; Prediction</b>·实验/分子设计与优化</li>
+      <li><b>Reasoning</b>·跨域科学推理</li>
+      <li><b>Validation &amp; Operations</b>·验证与实验操作</li>
+      <li><b>Translation</b>·临床转化（bench→bedside）</li>
+      <li><b>Scientific Communication</b>·科学沟通</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>7 大生物学领域</h3>
+    <ul>
+      <li>分子生物学、细胞生物学、结构生物学</li>
+      <li>药学/药代动力学、医药化学</li>
+      <li>临床/转化医学、基因治疗</li>
+    </ul>
+    <h3 style="margin-top:14px">质控流程</h3>
+    <ul>
+      <li>平均 <b>6 轮</b> 自动审核 + <b>≥2 轮</b> 专家复核</li>
+      <li>同领域专家共识 <b>≥90%</b> 才采纳</li>
+      <li>97% 复核员持博士学位，平均 12 年科研经验</li>
+    </ul>
+  </div>
+</div>
+
+<h2>④ 模型表现：能做什么，不能做什么？</h2>
+<div class="grid cols-2">
+  <div class="card">
+    <h3>各工作流 Pass Rate（%）：GPT‑5.5 vs GPT‑Rosalind</h3>
+    <div class="chartwrap"><canvas id="workflowChart"></canvas></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:6px">数据来源：OpenAI LifeSciBench 官方页面。Scientific Communication 样本量较小（n=9），需谨慎解读。</p>
+  </div>
+  <div class="card">
+    <h3>任务类型对通过率的影响</h3>
+    <div class="chartwrap"><canvas id="formatChart"></canvas></div>
+    <p style="font-size:12px;color:var(--muted);margin-top:6px">"带附件"和"需要精确数字/序列"的任务，是当前模型最大的短板。</p>
+  </div>
+</div>
+
+<div class="card" style="margin-top:16px">
+  <h3>整体进步 vs 仍存在的差距</h3>
+  <table>
+    <thead><tr><th>维度</th><th>GPT‑5.5</th><th>GPT‑Rosalind</th><th>变化</th><th>解读</th></tr></thead>
+    <tbody>
+      <tr><td>整体 Pass Rate</td><td>25.7%</td><td><b>36.1%</b></td><td><span class="tag high">+10.4pp</span></td><td>一代进步明显，但仍有 64% 任务过不了</td></tr>
+      <tr><td>Scientific Communication</td><td>56.3%</td><td><b>71.1%</b></td><td><span class="tag high">+14.8pp</span></td><td>"会说"提升最快——可读、可向专家解释</td></tr>
+      <tr><td>Translation（临床转化）</td><td>36.8%</td><td><b>57.7%</b></td><td><span class="tag high">+20.9pp</span></td><td>"连接基础与临床"的判断能力进步显著</td></tr>
+      <tr><td>Design/Optimization/Prediction</td><td>—</td><td>30.7%</td><td><span class="tag low">仍偏低</span></td><td>真正做"设计"的工程性任务依然困难</td></tr>
+      <tr><td>Analysis（数据分析）</td><td>—</td><td>30.3%</td><td><span class="tag low">仍偏低</span></td><td>定量分析未达可信工程水平</td></tr>
+      <tr><td>纯文本任务</td><td>29.9%</td><td>45.1%</td><td><span class="tag mid">+15.2pp</span></td><td>无附件时表现明显更好</td></tr>
+      <tr><td>带附件任务</td><td>21.9%</td><td>28.1%</td><td><span class="tag low">+6.2pp</span></td><td>读图/读 PDF/读序列仍是硬骨头</td></tr>
+      <tr><td>需要精确数字</td><td>—</td><td><b>14.8%</b></td><td><span class="tag low">最弱项</span></td><td>计算与单位严谨度严重不足</td></tr>
+      <tr><td>序列/结构输出</td><td>—</td><td>24.0%</td><td><span class="tag low">关键短板</span></td><td>CRISPR/HDR、siRNA 设计这类"必须精确到碱基"的任务几乎不可用</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>⑤ 评分机制：为什么"答对结论"还可能不及格？</h2>
+<div class="card">
+<p>每道任务的评分细则平均 <b>25 条</b>，覆盖：科学论断、计算步骤、决策判断、限定条件、不确定性提示、格式与术语。LifeSciBench 显式规定——</p>
+<ul>
+  <li><b>结论正确但漏掉关键限制（如 assay 缺陷）</b>→ 仍判不合格；</li>
+  <li><b>未达通过线但局部推理正确</b>→ 给予 rubric 部分分；</li>
+  <li>大约 <b>14%</b> 的任务存在"明显有思路但被关键约束扣到不及格"的情况；</li>
+  <li>GPT‑Rosalind 在 109 道任务上 pass rate &lt; 20% 但拿到 ≥50% 的 rubric 分。</li>
+</ul>
+<div class="callout info">这正是 LifeSciBench 与传统选择题/填空题评测的根本差别：<b>它检查"是否像一位合格的同行那样思考"</b>，而非"是否在最后一栏写对答案"。</div>
+</div>
+
+<h2>⑥ 示例任务一窥（节选）</h2>
+<div class="card">
+<p><b>场景：</b>FDA Type B 会议准备——基于 AAV9 的 micro‑dystrophin 杜氏肌营养不良基因治疗，能否仅凭"蛋白表达量替代终点"申请加速审批？</p>
+<p>给定开放标签 1b/2 期数据（n=12，4–7 岁）：</p>
+<ul>
+  <li>治疗前肌肉活检：dystrophin 表达 0–3%；治疗后 12 周：平均 38%（范围 18–61%）</li>
+  <li>NSAA 48 周变化：+1.4 vs 自然史对照组 −0.6 (p=0.03，非配对 t 检验)</li>
+  <li>安全性：8/12 出现一过性转氨酶升高，1 例心肌炎</li>
+</ul>
+<p><b>评分要点（共加权 100 分，部分）：</b></p>
+<table>
+<thead><tr><th>评分维度</th><th>分值</th></tr></thead>
+<tbody>
+<tr><td>指出 Western Blot 抗体（MANEX1A）与全长 dystrophin 共表位，定量标准品错误</td><td>+24</td></tr>
+<tr><td>解释"表达量 ≠ 临床获益"的替代终点效度问题</td><td>+22</td></tr>
+<tr><td>识别活检部位/组织成分/年龄窗口的混杂</td><td>+19</td></tr>
+<tr><td>批评 NSAA 对照与统计方法（外部自然史 + 非配对 t）</td><td>+12</td></tr>
+<tr><td>讨论 AAV 持久性、转氨酶、心肌炎及长期安全</td><td>+15</td></tr>
+<tr><td>指出入排标准的代表性局限</td><td>+8</td></tr>
+</tbody>
+</table>
+<p style="margin-top:10px;color:var(--muted);font-size:13px">→ 一个"看起来合理"的回答如果只总结结论而没指出 MANEX1A 表位问题、回复 vs 转基因 dystrophin 的混淆、或 R16/17 缺失对 nNOS 招募的力学含义，会被直接判低分——这正是"科学严谨度"的具体化。</p>
+</div>
+
+<h2>⑦ 我的批判性解读（先反驳，再支持）</h2>
+<div class="grid cols-2">
+<div class="card">
+<h3><span class="tag low">先给最强反驳</span></h3>
+<ul>
+<li><b>OpenAI 既出题又考自家模型，存在利益冲突。</b>尽管 LifeSciBench 引入了 173 位外部 PhD 出题、453 位独立复核，但任务分布、评分阈值（70% 即"通过"）、rubric 颗粒度都由 OpenAI 单方设计。其他模型（Anthropic Claude、Google Gemini、Meta、xAI、国内大厂）的对比数据<b>并未公布</b>，使 36.1% 的"领先"难以横向校验。</li>
+<li><b>"专家共识 ≥90%"在前沿/争议性问题上可能压低难度。</b>真正具有学术价值的开放问题，本就少有 90% 共识；过严的入选门槛可能筛掉最具挑战性的真实研究情境，让 benchmark 偏向"教科书化"的疑难题。</li>
+<li><b>Pass rate 是离散指标，对阈值非常敏感。</b>把 70% 设为通过，会把"差 2 分但科学价值很高"的回答粗暴归为 0。论文虽提供 score（连续指标）作为补充，但宣传与报道几乎只引用 pass rate，存在叙事简化。</li>
+<li><b>静态评测 ≠ 真实研究。</b>真正的科研是迭代的——观察结果再回路修正假设。LifeSciBench 自己也承认"不是 live deployment 的替代"。任何"这个分数=能否取代研究员"的引申都是过度解读。</li>
+</ul>
+</div>
+<div class="card">
+<h3><span class="tag high">再给最强支持</span></h3>
+<ul>
+<li><b>它解决了一个真实的方法论缺口。</b>过去的 PubMedQA / MedQA / MMLU-Bio 主要考"是否记得正确答案"，而 LifeSciBench 把"是否漏掉关键 assay 局限"也写进了评分。这是从"考试型 AI"走向"工作型 AI"评估的关键一步。</li>
+<li><b>评分粒度 25 条/任务、覆盖 19,020 条 rubric，让 partial credit 可解释。</b>开发者和监管者能定位"模型在哪一步出错"，而非只看一个聚合数字。</li>
+<li><b>已暴露的失败模式具有工程指导价值：</b>多模态附件理解（图/PDF/序列文件）、长链条数值计算、构建体级精确输出——这三条同时也是 Agentic AI 在科学场景的真实瓶颈，正好与近期 RAG、Tool Use、Coding Agent 等技术栈对应。</li>
+<li><b>独立专家验证数据透明：</b>96.5–98.3% 的真实相关性 / 科学严谨性同意率，是当前主流 benchmark 中少见的高门槛披露。</li>
+</ul>
+</div>
+</div>
+
+<h2>⑧ 对不同读者的"现实操作含义"</h2>
+<table>
+<thead><tr><th>读者</th><th>能从中读出什么</th><th>该做什么</th></tr></thead>
+<tbody>
+<tr><td>制药 / 生物科技研究员</td><td>当前 LLM 适合"起草、汇报、综述、临床转化讨论"；不适合"假设以最终答案准确为前提"的湿实验设计与计算工作。</td><td>把 LLM 用作"会议前 critique 助手"、"FDA 资料 stress‑test"；构建体设计、计算结果必须人复核。</td></tr>
+<tr><td>AI 模型开发者</td><td>最大短板是 <b>多模态附件理解</b> 与 <b>数值/序列精确输出</b>。仅靠通用预训练 + RLHF 难以跨越。</td><td>引入：(a) 工具调用（计算、序列引擎）；(b) 多模态科学文档专用预训练；(c) 验证回路（self‑check, 多代理校验）。</td></tr>
+<tr><td>投资人 / 决策者</td><td>"AI 科学家全自动化"叙事仍然过度乐观。但"AI 辅助 + 专家在环"的 ROI 已经实证。</td><td>关注垂直科学模型 + 评测公司 + 多模态 RAG 工具链，而非纯通用 LLM。</td></tr>
+<tr><td>政策 / 监管</td><td>OpenAI 主动暴露失败模式（包括精确数值、生物风险相关任务），是负责任披露的范例。</td><td>建立"AI 辅助科研"在监管报告中的标准披露格式（哪些步骤由 AI、哪些步骤由人审核）。</td></tr>
+</tbody>
+</table>
+
+<h2>⑨ 与近期同期工作的位置</h2>
+<div class="card">
+<div class="timeline">
+  <div class="item"><div class="t">2026-06-04</div><b>OpenAI · ChatGPT Memory Dreaming</b> ——记忆架构改造，与 LifeSciBench 同属"让模型在长程任务上更可靠"主线。</div>
+  <div class="item"><div class="t">2026-06-10</div><b>Anthropic · Advanced AI Framework</b> ——政策侧：定义 10²⁵ FLOPs 以上模型的治理边界，与 LifeSciBench 的"能力可测量"形成监管闭环。</div>
+  <div class="item"><div class="t">2026-06-12</div><b>DeepMind · From AGI to ASI</b> ——理论侧定义能力等级；LifeSciBench 提供"科学领域"的具体测尺。</div>
+  <div class="item"><div class="t">2026-06-15</div><b>DeepMind · Gemini Deep Think Scientific Research</b> ——18 个真实研究问题，AI 协助达到"可投稿期刊"水平。与 OpenAI 路线形成正面对照（DeepMind 偏数学/CS，OpenAI 偏生命科学）。</div>
+  <div class="item"><div class="t">2026-06-16</div><b>OpenAI · Predicting Model Behavior by Simulating Deployment</b> ——评测前置：发布前预测真实部署行为。</div>
+  <div class="item"><div class="t">2026-06-17</div><b>OpenAI · LifeSciBench + GPT‑Rosalind</b> ——本文主角。</div>
+  <div class="item"><div class="t">2026-06-18</div><b>DeepMind · AI Control Roadmap</b> ——能力越强越需要内置控制；与 benchmark 暴露的失败模式互补。</div>
+</div>
+</div>
+
+<h2>⑩ 局限与不确定性</h2>
+<div class="callout">
+<b>明确说出来：</b>
+<ul style="margin-top:6px">
+<li>本解读所引用的 36.1% / 28.1% 等数字均来自 OpenAI 官方页面与论文 PDF，<b>第三方独立复现尚未公开</b>。置信度：高（来自一手资料）；但跨模型对比的置信度：低。</li>
+<li>论文未公开 Claude / Gemini / Llama 等第三方模型在 LifeSciBench 上的分数。"领先" 仅指 OpenAI 自家两代模型的对比。</li>
+<li>Scientific Communication 子集 n=9，<b>+14.8pp 的提升存在样本量上的解读风险</b>。</li>
+<li>评分阈值 70% 由 OpenAI 设定，更换阈值会改变 pass rate 的绝对数字，但相对趋势预计稳健。</li>
+</ul>
+</div>
+
+<h2>⑪ 一周操作建议（如果你在生命科学/制药/投资行业）</h2>
+<div class="grid cols-3">
+<div class="card">
+<h3>科研团队</h3>
+<ul>
+<li>把 LifeSciBench 中的"FDA pressure‑test"样例当成内部 SOP 模板。</li>
+<li>把 LLM 限定在 Translation / Communication 工作流，<b>不要让它独立产出 CRISPR donor 序列</b>。</li>
+</ul>
+</div>
+<div class="card">
+<h3>AI 工程</h3>
+<ul>
+<li>把"图+表+序列附件"三类 artifact 纳入 RAG/Agent 的回归测试集。</li>
+<li>对 numeric / sequence 输出引入"计算工具兜底 + 自检"。</li>
+</ul>
+</div>
+<div class="card">
+<h3>读者本人</h3>
+<ul>
+<li>下次见到"AI 在医学考试得高分"的标题，先问：是 MMLU 还是 LifeSciBench？</li>
+<li>把 pass rate 与 rubric score 一起看，避免被聚合分数误导。</li>
+</ul>
+</div>
+</div>
+
+<h2>⑫ 信息源与进一步阅读</h2>
+<div class="card">
+<ul>
+<li>OpenAI 官方介绍：<a href="https://openai.com/index/introducing-life-sci-bench/" target="_blank">Introducing LifeSciBench（2026-06-17）</a></li>
+<li>论文 PDF：<a href="https://cdn.openai.com/pdf/b4299379-0a97-4ffa-8b9b-c3fbb299caa9/lifescibench_preprint.pdf" target="_blank">lifescibench_preprint.pdf</a></li>
+<li>MarkTechPost 解读：<a href="https://www.marktechpost.com/2026/06/17/openai-releases-lifescibench-a-750-task-benchmark-grading-ai-models-on-real-life-science-research-with-expert-written-rubric/" target="_blank">750-Task Benchmark Grading AI Models on Real Life-Science Research</a></li>
+<li>TechTimes 报道：<a href="https://www.techtimes.com/articles/318638/20260618/openai-life-science-benchmark-reveals-ai-passes-only-1-3-scientific-research-tasks.htm" target="_blank">AI Passes Only 1 in 3 Scientific Research Tasks</a></li>
+<li>Labcritics 评论：<a href="https://labcritics.com/blog/2026/06/19/lifescibench-openais-hard-new-life-science-benchmark-and-how-gpt-rosalind-stacks-up/" target="_blank">How GPT-Rosalind Stacks Up</a></li>
+<li>同期参考（外部对照）：<a href="https://deepmind.google/blog/accelerating-mathematical-and-scientific-discovery-with-gemini-deep-think/" target="_blank">DeepMind · Gemini Deep Think for Scientific Research</a></li>
+</ul>
+</div>
+
+<div class="footer">
+本页由"每日 AI 论文精读"任务自动生成 · 2026-06-25 · 仅基于公开英文一手资料 · 不构成投资、医疗或法律建议
+</div>
+</div>
+
+<script>
+const ctxW=document.getElementById('workflowChart').getContext('2d');
+new Chart(ctxW,{
+  type:'bar',
+  data:{
+    labels:['Sci. Communication','Translation','Reasoning','Evidence Handling','Validation/Ops','Analysis','Design/Optim./Pred.'],
+    datasets:[
+      {label:'GPT-5.5',data:[56.3,36.8,28,27,26,24,22],backgroundColor:'rgba(34,211,238,.6)',borderRadius:6},
+      {label:'GPT-Rosalind',data:[71.1,57.7,40,38,34,30.3,30.7],backgroundColor:'rgba(124,92,255,.85)',borderRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#cfd6f5'}}},
+    scales:{
+      x:{ticks:{color:'#9aa6c7',autoSkip:false,maxRotation:30,minRotation:0,font:{size:11}},grid:{color:'rgba(255,255,255,.05)'}},
+      y:{beginAtZero:true,max:80,ticks:{color:'#9aa6c7',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.05)'}}
+    }
+  }
+});
+const ctxF=document.getElementById('formatChart').getContext('2d');
+new Chart(ctxF,{
+  type:'bar',
+  data:{
+    labels:['Text-only (text only)','With Artifacts','Numeric Tasks','Sequence/Structure','Construct Generation'],
+    datasets:[{
+      label:'GPT-Rosalind Pass Rate (%)',
+      data:[45.1,28.1,14.8,24.0,27.3],
+      backgroundColor:['#10b981','#f59e0b','#ef4444','#ef4444','#f59e0b'],
+      borderRadius:6
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x+'%'}}},
+    scales:{
+      x:{beginAtZero:true,max:60,ticks:{color:'#9aa6c7',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.05)'}},
+      y:{ticks:{color:'#cfd6f5',font:{size:12}},grid:{display:false}}
+    }
+  }
+});
+</script>
+</body>
+</html>

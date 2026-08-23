@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | Cola DLM</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --panel-2: #edf2f7;
+      --ink: #101418;
+      --muted: #5b6673;
+      --line: #d7e0ea;
+      --blue: #0b63c6;
+      --teal: #0f8f8c;
+      --green: #147a4b;
+      --amber: #b96b16;
+      --red: #b23a48;
+      --violet: #6057c8;
+      --shadow: 0 18px 54px rgba(16, 20, 24, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f1419;
+        --panel: #161d24;
+        --panel-2: #202a34;
+        --ink: #edf2f7;
+        --muted: #a9b4c0;
+        --line: #33414f;
+        --shadow: 0 18px 54px rgba(0, 0, 0, .32);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 24px; }
+    .hero {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+    }
+    .kicker { color: var(--blue); font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    h1 { margin: 12px 0 14px; font-size: clamp(30px, 5vw, 54px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 42px 0 16px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 24px 0 10px; font-size: 19px; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .subtitle { max-width: 850px; color: var(--muted); font-size: 18px; }
+    .meta-grid, .card-grid, .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .card, .metric, .section, .quote, .risk {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .metric { background: var(--panel-2); }
+    .section { margin-top: 18px; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .value { margin-top: 6px; font-size: 15px; font-weight: 700; }
+    .quote {
+      border-left: 5px solid var(--blue);
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--panel-2);
+    }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .pill { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; color: var(--muted); font-size: 13px; background: var(--panel); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      margin: 16px 0 22px;
+      font-size: 14px;
+    }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: var(--panel-2); color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: 0; }
+    .strong { color: var(--green); font-weight: 800; }
+    .warn { color: var(--amber); font-weight: 800; }
+    .bad { color: var(--red); font-weight: 800; }
+    .diagram {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      margin: 18px 0;
+      overflow-x: auto;
+    }
+    .diagram svg { width: 100%; min-width: 760px; height: auto; display: block; }
+    .flow-text { font-size: 15px; font-weight: 800; fill: #101418; }
+    .flow-muted { font-size: 12px; fill: #5b6673; }
+    .term { display: grid; grid-template-columns: 170px 1fr 1fr; gap: 0; border: 1px solid var(--line); border-bottom: 0; }
+    .term > div { padding: 12px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .term > div:last-child { border-right: 0; }
+    .term .name { font-weight: 800; background: var(--panel-2); }
+    .small { color: var(--muted); font-size: 13px; }
+    .sources li { margin-bottom: 8px; }
+    .footer { color: var(--muted); font-size: 12px; margin: 36px 0 10px; }
+    @media (max-width: 780px) {
+      .wrap { padding: 14px; }
+      .hero { padding: 22px; }
+      .meta-grid, .card-grid, .impact-grid { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; }
+      .term > div { border-right: 0; }
+      table { font-size: 13px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div class="kicker">AI每日论文精选 · 2026-05-26</div>
+      <h1>语言模型一定要从左到右写字吗？Cola DLM 给了另一个答案</h1>
+      <p class="subtitle">今日论文：<strong>Continuous Latent Diffusion Language Model</strong>。它来自 ByteDance Seed 等机构，核心问题非常大胆：文本生成不一定要像打字机一样逐字吐出，也可以先在“语义草稿纸”上规划整体意思，再把草稿翻译成文字。</p>
+      <div class="meta-grid">
+        <div class="metric"><div class="label">论文</div><div class="value">Continuous Latent Diffusion Language Model</div></div>
+        <div class="metric"><div class="label">中文理解</div><div class="value">连续潜空间扩散语言模型</div></div>
+        <div class="metric"><div class="label">作者</div><div class="value">Hongcan Guo, Qinyu Zhao, Yian Zhao, Shen Nie, Rui Zhu, Qiushan Guo, Feng Wang, Tao Yang, Hengshuang Zhao, Guoqiang Wei, Yan Zeng</div></div>
+        <div class="metric"><div class="label">机构</div><div class="value">ByteDance Seed, The University of Hong Kong, ANU, Peking University, Renmin University of China</div></div>
+        <div class="metric"><div class="label">发布时间</div><div class="value">2026-05-07 · arXiv:2605.06548</div></div>
+        <div class="metric"><div class="label">平台与代码</div><div class="value"><a href="https://arxiv.org/abs/2605.06548">arXiv</a> · <a href="https://hongcanguo.github.io/Cola-DLM/">项目页</a> · <a href="https://huggingface.co/ByteDance-Seed/Cola-DLM">Hugging Face 模型</a> · <a href="https://github.com/ByteDance-Seed/Cola-DLM">GitHub</a></div></div>
+      </div>
+      <div class="pill-row">
+        <span class="pill">非自回归生成</span>
+        <span class="pill">扩散语言模型</span>
+        <span class="pill">Text VAE</span>
+        <span class="pill">Flow Matching</span>
+        <span class="pill">统一文本与连续模态</span>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>1. 为什么今天选它？</h2>
+      <p>过去十年，大语言模型几乎默认采用“自回归”方式：先写第一个 token，再根据前面所有 token 写下一个 token。它很像打字机，可靠、清晰、容易扩展，但也天然串行：一句话越长，越要一步一步往后排队。</p>
+      <p>Cola DLM 重要的地方不是“又做了一个新模型”，而是重新提出一个底层问题：语言是否必须被当成离散 token 队列来建模？如果文本背后先有更高层的语义结构，模型能不能先学“意思的形状”，再写出具体句子？</p>
+      <div class="card-grid">
+        <div class="card"><div class="label">行业意义</div><p>如果这条路线成熟，未来文本、图像、视频、语音可能更容易被放进同一种“连续生成”框架，而不是每种模态各管各的。</p></div>
+        <div class="card"><div class="label">技术突破</div><p>它把文本压到连续潜空间，用扩散 Transformer 学全局语义，再用解码器还原文字，摆脱纯 token 级逐字生成。</p></div>
+        <div class="card"><div class="label">长期价值</div><p>它像早期 Diffusion 在图像领域的信号：现在还不是产品终局，但可能改变下一代生成模型的工程想象。</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>2. 一句话讲透论文</h2>
+      <div class="quote">Cola DLM 让 AI 先在脑子里形成“整段话的语义草图”，再把草图翻译成文字，而不是从左到右一个字一个字猜。</div>
+      <p>可以把传统语言模型想成边说边想的人：说完前半句，才决定后半句。Cola DLM 更像先打腹稿的人：先知道自己要表达哪几个意思，再选择具体措辞。它并不保证马上比 GPT 式模型更强，但它指出了另一条值得长期跟踪的路。</p>
+    </section>
+
+    <section class="section">
+      <h2>3. 核心贡献拆解</h2>
+      <table>
+        <thead><tr><th>贡献</th><th>它做了什么</th><th>白话理解</th><th>为什么重要</th></tr></thead>
+        <tbody>
+          <tr><td>连续潜空间建模</td><td>先用 Text VAE 把文本映射成连续 latent，再从 latent 还原文本。</td><td>把一句话压成一张“意思地图”，不是只保存一串字。</td><td>让文本进入更接近图像、音频的连续生成世界。</td></tr>
+          <tr><td>扩散先验</td><td>用 block-causal Diffusion Transformer 在潜空间里做 Flow Matching。</td><td>模型学习如何从噪声逐步整理出有意义的语义草稿。</td><td>避免只在 token 表面做去噪，转而学习更高层的语义结构。</td></tr>
+          <tr><td>层次化分工</td><td>把“全局语义组织”和“局部文字实现”拆开。</td><td>先决定文章大意，再决定具体怎么写。</td><td>让系统可以分别改进语义规划、压缩、解码和推理效率。</td></tr>
+          <tr><td>严格对照实验</td><td>与约 2B 参数的自回归模型和 LLaDA 基线比较，覆盖 8 个基准和约 2000 EFLOPs scaling 曲线。</td><td>不是只做概念演示，而是认真问：这条路能不能扩展？</td><td>给“扩散语言模型是否能规模化”提供了更实证的回答。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>4. 工作原理：从“打字机”到“语义草稿纸”</h2>
+      <p>传统大模型像一个极快的打字员：每写一个 token，都要看前面已经写了什么。Cola DLM 的思路更像写作文：先把主题、结构、要点压成一个草稿，再把草稿扩写成完整句子。</p>
+      <div class="diagram">
+        <svg viewBox="0 0 980 400" role="img" aria-label="Cola DLM 工作流程图">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L9,3 L0,6 Z" fill="#5b6673"/></marker>
+          </defs>
+          <rect x="28" y="44" width="180" height="90" rx="8" fill="#eaf2fc" stroke="#91b7df"/>
+          <text x="118" y="78" text-anchor="middle" class="flow-text">原始文本</text>
+          <text x="118" y="104" text-anchor="middle" class="flow-muted">一串离散 token</text>
+          <line x1="208" y1="89" x2="270" y2="89" stroke="#5b6673" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="270" y="44" width="190" height="90" rx="8" fill="#e7f7f3" stroke="#8cc9b8"/>
+          <text x="365" y="78" text-anchor="middle" class="flow-text">Text VAE</text>
+          <text x="365" y="104" text-anchor="middle" class="flow-muted">压缩成连续 latent</text>
+          <line x1="460" y1="89" x2="522" y2="89" stroke="#5b6673" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="522" y="44" width="210" height="90" rx="8" fill="#fff3df" stroke="#ddb36e"/>
+          <text x="627" y="78" text-anchor="middle" class="flow-text">Block-causal DiT</text>
+          <text x="627" y="104" text-anchor="middle" class="flow-muted">在潜空间里整理语义</text>
+          <line x1="732" y1="89" x2="794" y2="89" stroke="#5b6673" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="794" y="44" width="156" height="90" rx="8" fill="#fdecef" stroke="#e59aa5"/>
+          <text x="872" y="78" text-anchor="middle" class="flow-text">条件解码器</text>
+          <text x="872" y="104" text-anchor="middle" class="flow-muted">还原成文字</text>
+
+          <rect x="74" y="214" width="190" height="102" rx="8" fill="#f7f9fb" stroke="#d7e0ea"/>
+          <text x="169" y="250" text-anchor="middle" class="flow-text">GPT 式自回归</text>
+          <text x="169" y="276" text-anchor="middle" class="flow-muted">像排队打字：1 → 2 → 3 → 4</text>
+          <circle cx="112" cy="298" r="10" fill="#0b63c6"/><circle cx="150" cy="298" r="10" fill="#0b63c6"/><circle cx="188" cy="298" r="10" fill="#0b63c6"/><circle cx="226" cy="298" r="10" fill="#0b63c6"/>
+          <line x1="122" y1="298" x2="140" y2="298" stroke="#5b6673" stroke-width="2"/><line x1="160" y1="298" x2="178" y2="298" stroke="#5b6673" stroke-width="2"/><line x1="198" y1="298" x2="216" y2="298" stroke="#5b6673" stroke-width="2"/>
+
+          <rect x="396" y="214" width="220" height="102" rx="8" fill="#f7f9fb" stroke="#d7e0ea"/>
+          <text x="506" y="250" text-anchor="middle" class="flow-text">LLaDA 式离散扩散</text>
+          <text x="506" y="276" text-anchor="middle" class="flow-muted">像完形填空：遮住 token 再补全</text>
+          <rect x="432" y="292" width="26" height="20" rx="3" fill="#0f8f8c"/><rect x="470" y="292" width="26" height="20" rx="3" fill="#d7e0ea"/><rect x="508" y="292" width="26" height="20" rx="3" fill="#0f8f8c"/><rect x="546" y="292" width="26" height="20" rx="3" fill="#d7e0ea"/>
+
+          <rect x="748" y="214" width="190" height="102" rx="8" fill="#f7f9fb" stroke="#d7e0ea"/>
+          <text x="843" y="250" text-anchor="middle" class="flow-text">Cola DLM</text>
+          <text x="843" y="276" text-anchor="middle" class="flow-muted">像先画语义地图再写句子</text>
+          <path d="M793 306 C818 278, 858 330, 894 292" fill="none" stroke="#6057c8" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="793" cy="306" r="7" fill="#0b63c6"/><circle cx="842" cy="304" r="7" fill="#0f8f8c"/><circle cx="894" cy="292" r="7" fill="#147a4b"/>
+        </svg>
+      </div>
+      <h3>三步走</h3>
+      <p><strong>第一步：Text VAE 建立翻译器。</strong>它学习把文本压缩为连续 latent，也学习从 latent 还原文本。白话说，就是训练一套“文字 ↔ 语义草图”的双向转换器。</p>
+      <p><strong>第二步：DiT 学会生成语义草图。</strong>模型不直接在 token 上扩散，而是在连续 latent 空间里学习如何从噪声走向有意义的语义结构。</p>
+      <p><strong>第三步：解码器把草图写成文字。</strong>当 latent 准备好后，条件解码器负责输出具体 token。这样，全局意思和局部措辞被拆成两个相对清晰的任务。</p>
+    </section>
+
+    <section class="section">
+      <h2>5. 与旧方法对比</h2>
+      <table>
+        <thead><tr><th>方法</th><th>生成空间</th><th>生成方式</th><th>优势</th><th>主要问题</th></tr></thead>
+        <tbody>
+          <tr><td>自回归 LLM</td><td>离散 token</td><td>从左到右逐个预测</td><td>成熟、强大、工程生态完整</td><td>串行生成；全局规划常被局部 token 决策牵着走</td></tr>
+          <tr><td>LLaDA 等离散扩散</td><td>带 mask 的离散 token 序列</td><td>反复填空和去噪</td><td>挑战自回归默认路线，可并行补全</td><td>仍主要在 token 观察空间里工作</td></tr>
+          <tr><td>Plaid 类连续 token 表示</td><td>token 对齐的连续表示</td><td>恢复 token 级表示</td><td>引入连续性</td><td>连续性仍贴着 token 表面走</td></tr>
+          <tr><td><strong>Cola DLM</strong></td><td><strong>压缩后的连续 latent</strong></td><td><strong>先建模语义先验，再解码文本</strong></td><td class="strong">把全局语义组织和局部文字实现分离</td><td>当前仍是研究模型，产品能力和速度都未成熟</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>6. 关键术语解释</h2>
+      <div class="term"><div class="name">自回归</div><div>专业解释：用前面的 token 条件化预测下一个 token。</div><div>白话解释：像接龙，每一步都只能接在已经说出口的话后面。</div></div>
+      <div class="term"><div class="name">潜空间 latent space</div><div>专业解释：模型内部用于表示数据高层因素的连续向量空间。</div><div>白话解释：把复杂文本压成“意思坐标”，不是原句本身。</div></div>
+      <div class="term"><div class="name">Text VAE</div><div>专业解释：变分自编码器，用编码器把文本映射到 latent，用解码器重构文本。</div><div>白话解释：一个会压缩和还原文字的翻译器。</div></div>
+      <div class="term"><div class="name">扩散模型</div><div>专业解释：学习从噪声逐步恢复到数据分布的生成模型。</div><div>白话解释：像从一团雾里慢慢显影出图片；Cola DLM 是显影出语义草图。</div></div>
+      <div class="term"><div class="name">Flow Matching</div><div>专业解释：学习一个把噪声分布连续搬运到数据分布的向量场。</div><div>白话解释：不是一步到位，而是学会“从乱到清楚”的路线图。</div></div>
+      <div class="term"><div class="name">EFLOPs</div><div>专业解释：训练计算量单位，约等于 10^18 次浮点运算。</div><div>白话解释：衡量模型训练“烧了多少算力”的电表。</div></div>
+    </section>
+
+    <section class="section">
+      <h2>7. 实验结果解读</h2>
+      <p>论文和项目页报告了四组研究问题：潜空间是否真的有共享语义结构、VAE 与 DiT 是否应该共同演化、扩散过程如何设置、以及在约 2B 参数和约 2000 EFLOPs 训练曲线下能否持续扩展。</p>
+      <table>
+        <thead><tr><th>实验观察</th><th>结果怎么读</th><th>对普通读者意味着什么</th></tr></thead>
+        <tbody>
+          <tr><td>潜空间维度变化会系统性改变最优噪声时间偏移</td><td>这暗示 latent 里不只是 token 的影子，而可能存在更高层的语义组织。</td><td>模型压缩出来的“意思地图”可能真有结构，不只是换个格式存文字。</td></tr>
+          <tr><td>从稳定 VAE 初始化开始，再让 VAE 与 DiT 共同训练，表现最好</td><td>固定 VAE 太僵，从零开始又容易塌；最佳路线是先有基础，再协同进化。</td><td>像先学会记笔记，再边写论文边改进笔记系统。</td></tr>
+          <tr><td>中等 block size、合适噪声 schedule、约 10 到 32 步去噪更有效</td><td>语义粒度不能太碎，也不能太粗；推理步数存在效率甜点。</td><td>这条路线开始有工程参数可调，不只是概念故事。</td></tr>
+          <tr><td>在 8 个 benchmark 上，Cola DLM 最终 Task Average 和后期 scaling 曲线有竞争力</td><td>它不是全方位碾压自回归模型，但证明了“连续 latent 扩散文本模型”不是死路。</td><td>今天还不能替代 ChatGPT，但值得作为下一代架构信号跟踪。</td></tr>
+        </tbody>
+      </table>
+      <div class="diagram">
+        <svg viewBox="0 0 980 360" role="img" aria-label="Cola DLM 实验结论图">
+          <rect x="40" y="48" width="900" height="250" rx="8" fill="#f7f9fb" stroke="#d7e0ea"/>
+          <line x1="110" y1="260" x2="860" y2="260" stroke="#5b6673" stroke-width="2"/>
+          <line x1="110" y1="70" x2="110" y2="260" stroke="#5b6673" stroke-width="2"/>
+          <text x="485" y="320" text-anchor="middle" class="flow-muted">训练计算量增加：约 117 EFLOPs → 2000 EFLOPs</text>
+          <text x="56" y="168" transform="rotate(-90 56 168)" text-anchor="middle" class="flow-muted">任务平均表现</text>
+          <path d="M120 238 C230 222, 350 198, 500 172 C640 150, 735 132, 850 110" fill="none" stroke="#6057c8" stroke-width="5"/>
+          <path d="M120 232 C250 204, 380 186, 520 172 C640 164, 750 158, 850 150" fill="none" stroke="#0b63c6" stroke-width="5"/>
+          <path d="M120 240 C240 215, 370 190, 510 178 C650 168, 760 152, 850 137" fill="none" stroke="#b96b16" stroke-width="5"/>
+          <circle cx="850" cy="110" r="7" fill="#6057c8"/><circle cx="850" cy="150" r="7" fill="#0b63c6"/><circle cx="850" cy="137" r="7" fill="#b96b16"/>
+          <text x="870" y="114" class="flow-text">Cola DLM</text>
+          <text x="870" y="154" class="flow-text">AR</text>
+          <text x="870" y="141" class="flow-text">LLaDA</text>
+          <text x="180" y="92" class="flow-text">重点不是“现在最强”</text>
+          <text x="180" y="118" class="flow-muted">而是后期曲线仍在上升，说明路线有继续放大的可能</text>
+        </svg>
+      </div>
+      <p class="small">注：上图是报告为普通读者重构的趋势图，不是论文原图截图；数值判断以论文和项目页披露的 benchmark/scaling 结论为准。</p>
+    </section>
+
+    <section class="section">
+      <h2>8. 局限性与问题</h2>
+      <div class="card-grid">
+        <div class="risk"><div class="label bad">不是生产级聊天模型</div><p>官方模型卡明确说明：该 checkpoint 主要用于研究，没有 instruction tuning、RLHF 或系统安全对齐，不能当成可靠助手。</p></div>
+        <div class="risk"><div class="label warn">工程生态还早</div><p>自回归模型有成熟的推理引擎、KV cache、服务框架和大量优化。Cola DLM 虽然提供 OpenAI-compatible adapter，但生态还远不够成熟。</p></div>
+        <div class="risk"><div class="label warn">效果还不是全面领先</div><p>公开模型在 Hugging Face 模型卡上给出的平均任务表现仍很有限。它的价值更多是架构证明，而非马上替代现有 LLM。</p></div>
+      </div>
+      <p>还有一个深层问题：文本是否真的总能被压成低维、稳定、可泛化的“语义草图”？论文作者也把这看成需要实验检验的前提，而不是一句口号。小说、法律条款、代码、数学证明对细节的依赖都很强，过度压缩可能会丢失关键含义。</p>
+    </section>
+
+    <section class="section">
+      <h2>9. 产业影响分析</h2>
+      <table>
+        <thead><tr><th>对象</th><th>可能受益</th><th>可能被冲击</th><th>观察指标</th></tr></thead>
+        <tbody>
+          <tr><td>基础模型公司</td><td>获得自回归之外的新 scaling 路线，尤其适合多模态统一建模探索。</td><td>短期不会动摇现有 LLM 主线，因为产品效果和推理生态仍差距明显。</td><td>是否出现更大参数、更强 instruction-tuned 的 latent diffusion LLM。</td></tr>
+          <tr><td>推理引擎与云厂商</td><td>未来可能催生不同于传统 token streaming 的服务模式。</td><td>现有 KV cache、batching、speculative decoding 优化未必直接适用。</td><td>是否出现专门服务 diffusion language model 的高性能引擎。</td></tr>
+          <tr><td>多模态产品</td><td>文本、图像、视频、音频都进入连续空间后，跨模态生成可能更自然。</td><td>如果只是小模型研究原型，短期产品收益有限。</td><td>是否能在统一框架内同时处理文本和连续模态任务。</td></tr>
+          <tr><td>创业者和投资人</td><td>这是一个值得追踪的“架构拐点候选”，类似早期扩散模型之于图像生成。</td><td>容易被“不是从左到右生成”这个口号误导，忽略性能和成本现实。</td><td>看 scaling 曲线、开源生态、推理成本，而不是只看 demo。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section">
+      <h2>10. 延伸阅读</h2>
+      <ul class="sources">
+        <li><a href="https://arxiv.org/abs/2605.06548">Continuous Latent Diffusion Language Model</a>：原始 arXiv 论文。</li>
+        <li><a href="https://hongcanguo.github.io/Cola-DLM/">Cola DLM 项目页</a>：包含方法、实验和可视化说明。</li>
+        <li><a href="https://huggingface.co/ByteDance-Seed/Cola-DLM">ByteDance-Seed/Cola-DLM Hugging Face 模型卡</a>：模型、代码使用、限制和安全说明。</li>
+        <li><a href="https://github.com/ByteDance-Seed/Cola-DLM">Cola-DLM GitHub</a>：官方代码库和 OpenAI-compatible serving adapter。</li>
+        <li><a href="https://arxiv.org/abs/2502.09992">Large Language Diffusion Models</a>：LLaDA 论文，理解扩散语言模型背景的重要前作。</li>
+        <li><a href="https://hongcanguo.github.io/posts/2026-cola-dlm.html">Rethinking Text Modeling: What Cola DLM Actually Is Doing</a>：作者博客，更深入解释为什么 latent 分层建模成立。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>11. 引用来源</h2>
+      <ul class="sources">
+        <li>arXiv:2605.06548, <a href="https://arxiv.org/abs/2605.06548">Continuous Latent Diffusion Language Model</a>。用于论文标题、作者、发布时间、摘要、实验规模和平台信息。</li>
+        <li>Hugging Face Papers, <a href="https://huggingface.co/papers/2605.06548">Continuous Latent Diffusion Language Model</a>。用于交叉验证行业关注度、Paper of the Day 排名、社区讨论和项目链接。</li>
+        <li>Hugging Face Model Card, <a href="https://huggingface.co/ByteDance-Seed/Cola-DLM">ByteDance-Seed/Cola-DLM</a>。用于模型结构、开源权重、评测结果、使用方式和限制说明。</li>
+        <li>官方项目页, <a href="https://hongcanguo.github.io/Cola-DLM/">Cola DLM</a>。用于方法流程、四个研究问题、关键实验结论和 scaling 解释。</li>
+        <li>GitHub, <a href="https://github.com/ByteDance-Seed/Cola-DLM">ByteDance-Seed/Cola-DLM</a>。用于代码开源、仓库状态和工程形态验证。</li>
+        <li>arXiv:2502.09992, <a href="https://arxiv.org/abs/2502.09992">Large Language Diffusion Models</a>。用于扩散语言模型背景对照。</li>
+      </ul>
+    </section>
+
+    <p class="footer">本报告为《AI每日论文精选》2026-05-26 期。内容基于英文原始论文、官方项目页、模型卡、代码仓库与相关论文交叉整理；中文图示为重新设计的解释图，不是原论文截图。</p>
+  </main>
+</body>
+</html>

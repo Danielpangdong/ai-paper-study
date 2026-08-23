@@ -1,0 +1,22 @@
+# 2026-06-18 AI Concept Run Summary
+
+- Run time: 2026-06-18 08:10:15 CST / 2026-06-18T08:10:15+0800.
+- Automation ID: `ai-pdf`.
+- Selected concept: `模型量化（Quantization）`.
+- Rationale: recent concept reports covered `AI工作流（AI Workflow）`, `多Agent系统（Multi-Agent System）`, `AI记忆（AI Memory）`, and `AI工具使用（Tool Use）`; `模型量化` is the next foundational engineering concept because it explains why large models can become cheaper, faster, and easier to deploy after the user already learned inference, KV Cache, and tool-using agents.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/2026-06-18_模型量化（Quantization）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/2026-06-18_模型量化（Quantization）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/chatgpt_quantization_compress.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/chatgpt_quantization_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-18_Quantization/email_body.txt`
+- Visuals: generated ChatGPT Image 2.0 diagrams under `/Users/mac/.codex/generated_images/019ed807-8144-7562-8fe9-a7e9ca5493c1/`; copied the selected compression and workflow Chinese infographics into the report directory. A separate unrelated logistics scene under `/Users/mac/.codex/generated_images/019ed808-6444-7c41-baf9-4a52ce94c2e7/` was inspected and not used.
+- Verification:
+  - `python3 reports/2026-06-18_Quantization/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 9 A4 pages and a ~4.4 MB PDF.
+  - `pdftotext` confirmed readable Chinese text and all required section headings.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed all required sections and two inline base64 image data URIs.
+  - PDF pages were rendered to `rendered/page-*.png`; cover, figure pages, workflow cards, terminology table, misconception page, and final review page were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ed8103e3df174b`.

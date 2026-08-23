@@ -1,0 +1,29 @@
+# Run Summary
+
+- Run time: 2026-07-06 08:11:32 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: Evaluation Metrics（评估指标）
+- Rationale: continue the knowledge path after Embedding, RAG, and Structured Outputs. The prior concepts explain how AI represents meaning, retrieves evidence, and returns structured data; today explains how to judge whether those systems are actually reliable enough for production.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-06_EvaluationMetrics/2026-07-06_EvaluationMetrics（评估指标）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-06_EvaluationMetrics/2026-07-06_EvaluationMetrics（评估指标）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-06_EvaluationMetrics/assets/evaluation_metrics_health_report.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-06_EvaluationMetrics/assets/evaluation_loop.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-06_EvaluationMetrics/html_preview.png`
+- Validation proof:
+  - HTML parsed successfully, required sections present, automatic TOC has 8 links, no `<script>` tags.
+  - PDF is 11 A4 pages, unencrypted, Chromium generated, size 3.8 MB.
+  - `pdftotext` found required headings and terms: `Evaluation Metrics`, `为什么这个概念重要`, `一个直观类比`, `工作原理`, `关键术语解释`, `常见误区`, `复习问题`, `幻觉率`, `召回率`.
+  - `pdfimages -list` found two embedded 1672x941 generated diagrams.
+  - Six source URLs returned HTTP 200.
+- Delivery proof:
+  - Gmail send id: `19f34c387f69f68d`
+  - Sent search: `in:sent subject:"Evaluation Metrics" has:attachment newer_than:1d` returned `19f34c387f69f68d`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject, body, and attached PDF `2026-07-06_EvaluationMetrics（评估指标）.pdf`.
+- Sources:
+  - OpenAI Platform Docs: Evals
+  - OpenAI Platform Docs: Evaluation best practices
+  - Google Machine Learning Crash Course: Classification metrics
+  - scikit-learn User Guide: Model evaluation
+  - scikit-learn API Reference: precision_recall_fscore_support
+  - NIST AI Risk Management Framework

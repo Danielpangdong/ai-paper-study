@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | E-TTS：让机器人在动手前多想几步</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #5b6472;
+      --paper: #f6f7f9;
+      --card: #ffffff;
+      --line: #d9dee7;
+      --blue: #0b5cad;
+      --green: #0b7a53;
+      --gold: #9a6b00;
+      --red: #a33b36;
+      --soft-blue: #eaf3ff;
+      --soft-green: #eaf7f1;
+      --soft-gold: #fff6dc;
+      --soft-red: #fff0ef;
+      --shadow: 0 18px 44px rgba(23, 31, 45, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+    .hero {
+      background:
+        linear-gradient(135deg, rgba(9, 37, 78, 0.95), rgba(10, 89, 145, 0.9)),
+        linear-gradient(90deg, #0f172a, #1d4ed8);
+      color: #fff;
+      padding: 52px 0 34px;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .kicker {
+      display: inline-block;
+      padding: 5px 10px;
+      border: 1px solid rgba(255,255,255,0.32);
+      border-radius: 6px;
+      font-size: 13px;
+      color: #dbeafe;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.08;
+      letter-spacing: 0;
+      max-width: 900px;
+    }
+    .subtitle { font-size: 18px; max-width: 860px; color: #e8f1ff; margin: 0 0 24px; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .meta {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      padding: 14px;
+      min-height: 86px;
+    }
+    .meta b { display: block; font-size: 12px; color: #bfdbfe; margin-bottom: 6px; }
+    .meta span { display: block; font-size: 14px; color: #fff; }
+    main { padding: 28px 0 56px; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 26px;
+      margin: 18px 0;
+      box-shadow: var(--shadow);
+    }
+    h2 { margin: 0 0 14px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 19px; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .lead { font-size: 18px; color: #283241; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+    .card.blue { background: var(--soft-blue); border-color: #c9ddfa; }
+    .card.green { background: var(--soft-green); border-color: #c2ead8; }
+    .card.gold { background: var(--soft-gold); border-color: #f0db9b; }
+    .card.red { background: var(--soft-red); border-color: #f1c5c1; }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 9px;
+      margin: 3px 4px 3px 0;
+      background: #fff;
+    }
+    .one-line {
+      font-size: 22px;
+      line-height: 1.5;
+      padding: 18px 20px;
+      border-left: 5px solid var(--blue);
+      background: var(--soft-blue);
+      border-radius: 8px;
+      margin: 14px 0;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 8px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 11px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #edf2f7; color: #1f2937; }
+    tr.highlight td { background: #f0f7ff; font-weight: 700; }
+    .note { color: var(--muted); font-size: 13px; }
+    .diagram {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 12px;
+      margin: 16px 0 8px;
+      overflow-x: auto;
+    }
+    svg { max-width: 100%; height: auto; display: block; }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .term {
+      display: grid;
+      grid-template-columns: 170px 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-bottom: 0;
+    }
+    .term div { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .term div:nth-child(3n+1) { background: #f3f6fa; font-weight: 700; }
+    .term div:nth-child(3n+2) { background: #fff; }
+    .term div:nth-child(3n) { background: #fbfdff; color: #334155; }
+    .score {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+    }
+    .metric strong { display: block; font-size: 25px; color: var(--blue); line-height: 1.1; }
+    .metric span { color: var(--muted); font-size: 13px; }
+    .sources li { margin: 8px 0; }
+    @media (max-width: 760px) {
+      .hero { padding: 36px 0 26px; }
+      .wrap { padding: 0 14px; }
+      section { padding: 18px; }
+      .meta-grid, .cards, .split, .score { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; }
+      .term div:nth-child(3n+1) { border-top: 1px solid var(--line); }
+      table { font-size: 13px; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="kicker">AI每日论文精选 · 2026-06-27</div>
+      <h1>E-TTS：让机器人在动手前多想几步</h1>
+      <p class="subtitle">今日论文：<strong>E-TTS: A New Embodied Test-Time Scaling Framework for Robotic Manipulation</strong>。它把“推理时多算一会儿”的思想，从写代码、做数学，推进到真实机器人操作。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文平台</b><span>arXiv:2606.27268v1 / cs.RO, cs.AI</span></div>
+        <div class="meta"><b>发布时间</b><span>2026-06-25</span></div>
+        <div class="meta"><b>会议状态</b><span>项目页标注 ECCV 2026</span></div>
+        <div class="meta"><b>核心主题</b><span>具身智能 · 测试时扩展 · VLA 机器人</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="info">
+      <h2>1. 论文基本信息</h2>
+      <div class="cards">
+        <div class="card blue">
+          <h3>论文</h3>
+          <p><strong>英文：</strong>E-TTS: A New Embodied Test-Time Scaling Framework for Robotic Manipulation</p>
+          <p><strong>中文：</strong>E-TTS：一种面向机器人操作的具身测试时扩展框架</p>
+        </div>
+        <div class="card green">
+          <h3>作者与机构</h3>
+          <p>Wen Ye, Peiyan Li, Tingyu Yuan, Yuan Xu, Xiangnan Wu, Chaoyang Zhao, Jing Liu, Nianfeng Liu, Yan Huang, Liang Wang。</p>
+          <p class="note">机构包括中国科学院自动化研究所 NLPR、中国科学院大学、Foundation Model Research Center、FiveAges。</p>
+        </div>
+        <div class="card gold">
+          <h3>链接</h3>
+          <p><a href="https://arxiv.org/abs/2606.27268">arXiv 摘要</a></p>
+          <p><a href="https://arxiv.org/html/2606.27268v1">arXiv HTML</a></p>
+          <p><a href="https://27yw.github.io/E-TTS-Web/">项目页</a></p>
+        </div>
+      </div>
+      <p>
+        这篇论文研究的是一个非常具体但很关键的问题：机器人已经能“看图、听指令、输出动作”，但执行复杂任务时仍常犯低级错误。E-TTS 不重新训练大模型，而是在机器人真正动手前，让它多生成几种“思路 + 动作”方案，再用验证器筛选、反馈、重试。
+      </p>
+    </section>
+
+    <section id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">
+        因为它把 AI 行业正在形成的一个大趋势带进了物理世界：模型能力的提升，不只来自“训练更大的模型”，也来自“在使用时更聪明地搜索、验证和反思”。
+      </p>
+      <div class="cards">
+        <div class="card blue">
+          <h3>行业意义</h3>
+          <p>过去 Test-Time Scaling 最常见于语言模型：多推理几步、多采样几次、多检查答案。E-TTS 把这套思路用于机器人，这意味着未来机器人未必每次升级都要重新收集昂贵真机数据。</p>
+        </div>
+        <div class="card green">
+          <h3>技术突破</h3>
+          <p>它不是只让机器人多试几个动作，而是同时比较“为什么这样做”和“具体怎么动”。这更接近人类做家务：先判断杯子在哪里、手该从哪边伸，再决定动作。</p>
+        </div>
+        <div class="card gold">
+          <h3>长期价值</h3>
+          <p>如果具身智能要走向家庭、仓储、工厂和医疗照护，机器人必须能处理长流程和失败恢复。E-TTS 直接瞄准这个瓶颈。</p>
+        </div>
+      </div>
+      <p>
+        我的判断：这不是“又一个机器人 benchmark 提分论文”。它真正值得关注的地方，是提出了一个产品化直觉：<strong>现实世界里的 AI 不能只会一次性回答，它要能在行动前自查，在失败后修正。</strong>
+      </p>
+    </section>
+
+    <section id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="one-line">E-TTS 本质上是在给机器人加一个“动手前的排练室”：先想几种方案，再请两个裁判检查思路和动作，过关后才真正执行。</div>
+      <p>
+        可以把它想成开车变道。普通模型像新手司机：看到路况，直接打方向。E-TTS 像更谨慎的老司机：先看后视镜，判断旁边车速，预演两三种变道时机，再选择最稳的一种。如果判断不够稳，就继续观察和调整。
+      </p>
+    </section>
+
+    <section id="contributions">
+      <h2>4. 核心贡献拆解</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>问题</th>
+            <th>旧方法通常怎么做</th>
+            <th>E-TTS 怎么改</th>
+            <th>为什么更好</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>机器人动作容易一步错、后面全错</td>
+            <td>当前画面进模型，直接输出动作</td>
+            <td>每一步生成多个“推理 + 动作”候选</td>
+            <td>给系统选择空间，降低一次性犯错概率</td>
+          </tr>
+          <tr>
+            <td>只看动作，不看动作背后的理由</td>
+            <td>主要比较动作轨迹是否合理</td>
+            <td>把 reasoning 和 action 成对评分</td>
+            <td>避免“动作看似顺滑，但目标理解错了”</td>
+          </tr>
+          <tr>
+            <td>长任务需要记住刚才发生了什么</td>
+            <td>过度依赖当前观测</td>
+            <td>引入 history buffer，保存最近的观察、思路和动作</td>
+            <td>机器人能判断“我刚才夹偏了，所以这次要修正”</td>
+          </tr>
+          <tr>
+            <td>错误动作缺少闭环修正</td>
+            <td>置信度不够也可能执行</td>
+            <td>低置信候选触发反馈，再重新采样</td>
+            <td>从“开环执行”变成“闭环迭代”</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        这四点组合起来，形成一个很产品化的框架：不用重训底座 VLA 模型，也不用额外采集大量专家示范，而是在推理阶段加一层“多方案搜索 + 历史记忆 + 验证器裁判 + 反馈重试”。
+      </p>
+    </section>
+
+    <section id="mechanism">
+      <h2>5. 工作原理：机器人版“先排练，再上场”</h2>
+      <p>
+        假设任务是：“把可乐放进抽屉，然后关上抽屉。”普通机器人可能看到可乐和抽屉后直接规划动作；E-TTS 会把任务拆成一连串决策，每一步都先做内部排练。
+      </p>
+      <div class="diagram" role="img" aria-label="E-TTS流程图">
+        <svg viewBox="0 0 980 430" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L9,3 z" fill="#305c91"/>
+            </marker>
+            <style>
+              .box{fill:#fff;stroke:#b8c4d6;stroke-width:2;rx:10}
+              .blue{fill:#eaf3ff;stroke:#6ca7e8}
+              .green{fill:#eaf7f1;stroke:#63be93}
+              .gold{fill:#fff6dc;stroke:#d8ad38}
+              .red{fill:#fff0ef;stroke:#df8981}
+              .txt{font-family:Arial,"Microsoft YaHei",sans-serif;font-size:18px;fill:#152033}
+              .small{font-size:14px;fill:#4b5563}
+              .arrow{stroke:#305c91;stroke-width:2.5;fill:none;marker-end:url(#arrow)}
+            </style>
+          </defs>
+          <rect x="30" y="48" width="155" height="92" class="box blue"/>
+          <text x="108" y="84" text-anchor="middle" class="txt">任务 + 画面</text>
+          <text x="108" y="112" text-anchor="middle" class="small">“把可乐放进抽屉”</text>
+
+          <rect x="235" y="30" width="210" height="128" class="box"/>
+          <text x="340" y="68" text-anchor="middle" class="txt">生成多个候选</text>
+          <text x="340" y="99" text-anchor="middle" class="small">思路A + 动作A</text>
+          <text x="340" y="122" text-anchor="middle" class="small">思路B + 动作B</text>
+
+          <rect x="500" y="30" width="190" height="128" class="box green"/>
+          <text x="595" y="65" text-anchor="middle" class="txt">双验证器评分</text>
+          <text x="595" y="96" text-anchor="middle" class="small">思路是否对？</text>
+          <text x="595" y="120" text-anchor="middle" class="small">动作是否可行？</text>
+
+          <rect x="745" y="48" width="190" height="92" class="box gold"/>
+          <text x="840" y="84" text-anchor="middle" class="txt">选择高置信方案</text>
+          <text x="840" y="112" text-anchor="middle" class="small">达到阈值才执行</text>
+
+          <rect x="230" y="245" width="215" height="110" class="box gold"/>
+          <text x="337" y="282" text-anchor="middle" class="txt">历史缓冲区</text>
+          <text x="337" y="313" text-anchor="middle" class="small">保存最近观察、思路、动作</text>
+          <text x="337" y="337" text-anchor="middle" class="small">像一本短期操作日志</text>
+
+          <rect x="510" y="245" width="210" height="110" class="box red"/>
+          <text x="615" y="282" text-anchor="middle" class="txt">反馈重试</text>
+          <text x="615" y="313" text-anchor="middle" class="small">如果方案不稳</text>
+          <text x="615" y="337" text-anchor="middle" class="small">生成修正建议再采样</text>
+
+          <path d="M185 94 L232 94" class="arrow"/>
+          <path d="M445 94 L497 94" class="arrow"/>
+          <path d="M690 94 L742 94" class="arrow"/>
+          <path d="M835 140 C835 225 705 216 675 245" class="arrow"/>
+          <path d="M510 300 L448 300" class="arrow"/>
+          <path d="M340 245 C340 205 340 184 340 160" class="arrow"/>
+          <path d="M615 245 C615 194 538 179 438 150" class="arrow"/>
+        </svg>
+      </div>
+      <h3>三步白话版</h3>
+      <p><strong>第一步：多想几个方案。</strong>机器人不是只输出一个动作，而是生成多组候选。每组候选都包含一个中间思路和一个实际动作。</p>
+      <p><strong>第二步：让裁判看两件事。</strong>一个裁判看“理由对不对”，另一个裁判看“动作能不能做”。只有理由和动作同时靠谱，才会得高分。</p>
+      <p><strong>第三步：不确定就反馈重来。</strong>如果候选方案不够稳，系统不会急着执行，而是把问题反馈给模型，让它重新生成更合理的方案。</p>
+      <p>
+        这就是 E-TTS 的关键：它不是让机器人“更勇敢”，而是让机器人“更谨慎”。现实机器人最怕的不是慢一点，而是误抓、碰撞、卡住、误解指令。对很多家庭和工厂任务来说，多花几秒钟换来更高成功率，是值得的。
+      </p>
+    </section>
+
+    <section id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term">
+        <div>Test-Time Scaling</div><div>专业解释：在推理阶段增加采样、搜索、验证或计算预算，以提升输出质量。</div><div>白话：考试时不是立刻交卷，而是多验算几遍。</div>
+        <div>Embodied AI</div><div>专业解释：能感知物理环境并通过身体或机器人执行动作的 AI 系统。</div><div>白话：不是只聊天的 AI，而是能“看见、移动、拿东西”的 AI。</div>
+        <div>VLA 模型</div><div>专业解释：Vision-Language-Action，输入视觉和语言，输出机器人动作。</div><div>白话：看画面、听指令，然后告诉机械臂怎么动。</div>
+        <div>History Buffer</div><div>专业解释：保存近期观察、推理和动作的滑动窗口记忆。</div><div>白话：机器人桌边的一张便签纸，记录刚才试过什么、哪里错了。</div>
+        <div>Verifier</div><div>专业解释：用于评估候选推理或候选动作质量的模型。</div><div>白话：裁判，不负责动手，只负责判断方案靠不靠谱。</div>
+        <div>Closed Loop</div><div>专业解释：系统根据反馈持续更新决策，而非一次性开环执行。</div><div>白话：做一步看一步，发现偏了就修正。</div>
+      </div>
+    </section>
+
+    <section id="results">
+      <h2>7. 实验结果怎么读？</h2>
+      <div class="score">
+        <div class="metric"><strong>4</strong><span>基座 VLA 模型：E-CoT、MolmoAct、pi0.5、Embodied-R1</span></div>
+        <div class="metric"><strong>6</strong><span>实验环境：含 SIMPLER、LIBERO、VLAbench、真实世界</span></div>
+        <div class="metric"><strong>+33.14%</strong><span>仿真中最高成功率提升</span></div>
+        <div class="metric"><strong>+26.62%</strong><span>真实机器人实验平均提升</span></div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>实验场景</th>
+            <th>基线</th>
+            <th>E-TTS 后</th>
+            <th>读者应该怎么理解</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SimplerEnv WidowX / E-CoT</td>
+            <td>平均成功率 6.67%</td>
+            <td>39.81%</td>
+            <td>一个原本经常“对不准目标”的策略，经 E-TTS 包装后，变成更会检查空间关系和动作可行性的系统。</td>
+          </tr>
+          <tr>
+            <td>跨环境与跨模型</td>
+            <td>单一动作或朴素 TTS 往往不稳定</td>
+            <td>多个 VLA 模型上均有提升</td>
+            <td>价值不在某个模型调参，而在框架有一定通用性。</td>
+          </tr>
+          <tr class="highlight">
+            <td>真实 Franka 机械臂</td>
+            <td>22.13%</td>
+            <td>48.75%</td>
+            <td>真实世界不是只有仿真好看。这里的提升意味着机器人能在真实物体、真实误差下更稳地完成任务。</td>
+          </tr>
+          <tr>
+            <td>消融实验</td>
+            <td>去掉反馈、历史、动作扩展或推理扩展</td>
+            <td>性能下降</td>
+            <td>论文试图证明：提升不是来自单一技巧，而是“推理、动作、历史、反馈”的组合。</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        最重要的不是某一个数字，而是数字背后的方向：<strong>机器人可以通过推理时的自我检查变得更可靠，而不一定每次都靠重训。</strong>这对真实部署很关键，因为采集机器人数据比抓取网页文本贵得多。
+      </p>
+    </section>
+
+    <section id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="cards">
+        <div class="card red">
+          <h3>延迟成本</h3>
+          <p>多采样、多验证、多反馈一定会增加推理时间。对“必须毫秒级反应”的机器人场景，例如高速避障或手术辅助，这可能不可接受。</p>
+        </div>
+        <div class="card red">
+          <h3>验证器可靠性</h3>
+          <p>如果验证器判断错了，系统会把错误方案当成好方案。E-TTS 把压力从“策略模型”部分转移到了“验证器质量”上。</p>
+        </div>
+        <div class="card red">
+          <h3>真实场景覆盖不足</h3>
+          <p>真实机器人实验已经很有价值，但任务数量和环境复杂度仍有限。家庭和工厂里的长尾情况会更乱。</p>
+        </div>
+      </div>
+      <p>
+        所以，这篇论文还不能证明“通用家务机器人快来了”。更准确的结论是：它展示了一条很可能持续发展的工程路线，让 VLA 模型在部署时通过反思、筛选和纠错获得更高可靠性。
+      </p>
+    </section>
+
+    <section id="industry">
+      <h2>9. 产业影响分析</h2>
+      <div class="split">
+        <div class="card green">
+          <h3>谁会受益？</h3>
+          <p><strong>机器人公司：</strong>可以把 E-TTS 当作推理层外挂，提升已有模型的任务成功率。</p>
+          <p><strong>仓储与制造：</strong>对慢几秒但更稳的任务，比如拣货、装配、整理，价值更高。</p>
+          <p><strong>VLA 基座模型团队：</strong>会推动模型不仅输出动作，还输出可验证的中间推理。</p>
+        </div>
+        <div class="card gold">
+          <h3>谁会被冲击？</h3>
+          <p><strong>只做开环动作模型的方案：</strong>如果无法提供自检和失败恢复，产品化竞争力会下降。</p>
+          <p><strong>纯数据堆叠路线：</strong>未来不是只比谁采集更多机器人数据，也要比谁的推理时控制系统更聪明。</p>
+          <p><strong>单一 benchmark 驱动研发：</strong>真实部署更看重闭环可靠性，而不是静态榜单分数。</p>
+        </div>
+      </div>
+      <p>
+        投资和产品视角下，E-TTS 暗示一个重要方向：具身智能的护城河可能不只在“大模型参数”和“机械臂硬件”，还在<strong>推理时编排系统</strong>。谁能把候选生成、验证器、历史记忆、失败恢复做成稳定平台，谁就更接近可部署机器人。
+      </p>
+    </section>
+
+    <section id="extended">
+      <h2>10. 延伸阅读</h2>
+      <ul class="sources">
+        <li><a href="https://arxiv.org/abs/2606.27268">E-TTS arXiv 摘要页</a>：论文入口、作者、类别、PDF 链接。</li>
+        <li><a href="https://arxiv.org/html/2606.27268v1">E-TTS arXiv HTML</a>：适合快速查看方法、实验和附录结构。</li>
+        <li><a href="https://27yw.github.io/E-TTS-Web/">E-TTS 项目页</a>：含方法图、实验表格和真实机器人任务展示；项目页显示代码 coming soon。</li>
+        <li><a href="https://arxiv.org/abs/2505.13429">MolmoAct</a>：E-TTS 实验中的重要 VLA 基座之一。</li>
+        <li><a href="https://arxiv.org/abs/2504.16054">pi0.5</a>：论文实验中用于长程任务的另一个代表性 VLA 模型。</li>
+        <li><a href="https://libero-project.github.io/">LIBERO</a>：论文使用的机器人操作评测环境之一。</li>
+      </ul>
+    </section>
+
+    <section id="sources">
+      <h2>11. 引用来源</h2>
+      <p class="note">本报告优先使用英文原始信息源，主要依据论文 PDF/HTML、arXiv 元数据和项目页交叉整理。下列事实均来自这些公开来源：</p>
+      <ul class="sources">
+        <li>论文标题、作者、机构、arXiv 编号、发布时间：<a href="https://arxiv.org/abs/2606.27268">arXiv:2606.27268</a> 与论文 PDF 首页。</li>
+        <li>方法概述：reasoning-action joint sampling、history-aware verification、feedback-guided refinement：<a href="https://arxiv.org/html/2606.27268v1">arXiv HTML 方法章节</a>。</li>
+        <li>实验范围：4 个 benchmark、6 个环境、3 种 embodiment、4 个 VLA 模型：<a href="https://27yw.github.io/E-TTS-Web/">E-TTS 项目页</a> 与论文摘要。</li>
+        <li>关键结果：仿真最高 +33.14%，真实机器人 +26.62%，真实 Franka 从 22.13% 到 48.75%：论文摘要、项目页实验部分、PDF 文本抽取。</li>
+        <li>会议状态：项目页 BibTeX 标注 booktitle 为 ECCV；本报告按“项目页标注”处理，而非额外推断录用状态。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

@@ -1,0 +1,29 @@
+# Run Summary
+
+- Run time: 2026-07-07 08:12:31 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: Temperature（采样温度）
+- Rationale: continue the knowledge path after inference, prompt engineering, structured outputs, and evaluation metrics. Temperature explains why the same model can behave more conservatively or more creatively during next-token selection, without implying the model has moods or higher intelligence.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-07_Temperature/2026-07-07_Temperature（采样温度）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-07_Temperature/2026-07-07_Temperature（采样温度）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-07_Temperature/assets/temperature_probability_knob.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-07_Temperature/assets/temperature_generation_pipeline.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-07_Temperature/html_preview.png`
+- Validation proof:
+  - HTML parsed successfully, required sections present, automatic TOC has 8 links, no `<script>` tags.
+  - PDF is 11 A4 pages, unencrypted, Chromium generated, size 3.86 MB.
+  - `pdftotext` found required headings and terms: `Temperature`, `采样温度`, `为什么这个概念重要`, `一个直观类比`, `工作原理`, `关键术语解释`, `常见误区`, `复习问题`, `Softmax`, `top-p`, `不是智商旋钮`.
+  - `pdfimages -list` found two embedded 1672x941 generated diagrams.
+  - Six source URLs returned HTTP 200.
+- Delivery proof:
+  - Gmail send id: `19f39eadabd426f8`
+  - Sent search: `in:sent subject:"Temperature" has:attachment newer_than:1d` returned `19f39eadabd426f8`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject, body, and attached PDF `2026-07-07_Temperature（采样温度）.pdf` at 3,864,579 bytes.
+- Sources:
+  - OpenAI API Reference: Responses create
+  - OpenAI Agents SDK: ModelSettings
+  - Hugging Face Transformers: Text generation parameters
+  - PyTorch Docs: softmax
+  - Anthropic Docs: Model deprecations
+  - Holtzman et al.: The Curious Case of Neural Text Degeneration

@@ -1,0 +1,1342 @@
+                                                  R EINFORCEMENT L EARNING WITHOUT G ROUND -T RUTH
+                                                            S OLUTIONS CAN I MPROVE LLM S
+
+
+                                                     Yingyu Lin1,2 * † Qiyue Gao1 * Nikki Lijing Kuang2 * Xunpeng Huang1 Kun Zhou1
+                                                                  Tongtong Liang1 Zhewei Yao2 Yi-An Ma1‡ Yuxiong He2‡
+                                                                     1
+                                                                       University of California, San Diego 2 Snowflake AI Research
+
+
+
+
+arXiv:2606.27369v1 [cs.LG] 25 Jun 2026
+                                                                                                A BSTRACT
+                                                    Reinforcement Learning with Verifiable Rewards (RLVR) for training LLMs typically rely on ground-
+                                                    truth answers to assign rewards, limiting their applicability to tasks where the ground-truth solution
+                                                    is unknown. We introduce a Ranking-induced VERifiable framework (RiVER) that trains LLMs
+                                                    on score-based optimization tasks without ground-truth solutions, using deterministic execution
+                                                    feedback as continuous-valued supervision. When applying group-relative RL to such continuous
+                                                    rewards, we identify two key challenges: scale dominance, where uncalibrated score magnitudes
+                                                    across test instances distort policy updates, and frequency dominance, where repeatedly sampled
+                                                    suboptimal solutions can outweigh rare but stronger candidates. RiVER addresses these challenges
+                                                    with calibrated reward shaping that uses instance-wise comparisons and emphasizes top-ranked
+                                                    solvers while retaining bounded feedback for other valid solutions. We train on 12 AtCoder Heuristic
+                                                    Contest tasks and evaluate on Algorithm Engineering Benchmark (ALE-Bench), LiveCodeBench,
+                                                    and USACO. RiVER advances Qwen3-8B and GLM-Z1-9B-0414 by 8.9% and 9.4% in ALE rating
+                                                    rank. More importantly, despite training exclusively on score-based tasks without any ground-
+                                                    truth solutions, RiVER also improves the backbones across exact-solution benchmarks such as
+                                                    LiveCodeBench and USACO by an absolute average improvement of 2.4% and 3.5%. By contrast,
+                                                    baselines trained with raw execution scores improve ALE rating but fail to transfer to exact-solution
+                                                    benchmarks. These results suggest that score-based optimization tasks, combined with proper
+                                                    reward calibration, can serve as effective training environments for general coding ability without
+                                                    ground-truth solutions.
+
+                                         1       Introduction
+                                         Reinforcement Learning with Verifiable Rewards (RLVR) has become a central recipe for improving LLM reason-
+                                         ing [Wei et al., 2022, Lambert et al., 2024, Wang et al., 2025a, Kumar et al., 2025, Zhang et al., 2025a]. In mathematics
+                                         and coding, this paradigm has enabled strong post-training results by rewarding outputs that match a known answer or
+                                         pass unit tests. However, the dominant form of RLVR remains closely tied to answer matching. A generated response
+                                         is typically rewarded if it satisfies a binary correctness criterion. This makes RLVR powerful but narrow. Many
+                                         important reasoning and coding tasks do not have a single ground-truth solution. In algorithm design, optimization, and
+                                         planning, there may be many feasible solutions with different qualities, and the optimal solution may be unknown or
+                                         computationally intractable. Such tasks fall outside the standard answer-matching formulation, even though they are
+                                         often still verifiable in a broader sense: candidate solutions can be executed, checked for feasibility, and compared by
+                                         an objective function.
+                                         This paper studies whether ground-truth-free verification can provide an effective training signal for LLMs. We focus on
+                                         open-ended, score-based algorithm-engineering contests, such as AtCoder Heuristic Contests [AtCoder Inc., 2025] and
+                                         Topcoder Marathon Matches [Topcoder]. In these tasks, the policy model must write programs that produce high-scoring
+                                         approximate solutions to complex optimization problems. Unlike answer-matching RLVR, the environment provides
+                                             ∗
+                                               Equal contribution.
+                                             †
+                                               Work done while interning at Snowflake AI Research.
+                                             ‡
+                                               Co-senior authors.
+                                                                   Hidden Test Input                              Gold Output
+ Traditional Answer-Matching Veri cation                                  ′′aabbc′′
+                                                                                                  Gold Code
+                                                                                                              [a : 2, b : 2, c : 1]
+                                                                                                                                                Rényi entropy↓
+                                                                                                              Veri cation: Match?               Group diversity↓
+                                                                                                                                       Reward
+                                                       <think> + CODE Execute [a : 2, b : 2]                             ✗
+               Coding Problem
+                                                                                                                                       1
+         Count Character                               <think> + CODE Execute [a : 2, b : 2, c : 2]
+         Frequency                                                                                                       ✗
+                                   Policy Model                                                                                        0
+                                                                                          [a : 2, b : 2, c : 1]
+                                                                           Execute
+                                                       <think> + CODE                                                    ✓                       Probability
+
+     Group-wise Rank-Induced Veri able                              Hidden Test Input                 NO gold code / gold output needed
+                                                                        A 5 D
+     Environment (Ours)                                                   5 8                            Veri cation:
+                                                                                    9 6
+                                                                                                         • Check Constraints
+                                                                      B                                  • Calculate Objective Function         Rényi entropy↑
+                                                                                8         C
+                                                                                                         • Group-wise standardization           Group diversity↑
+               Coding Problem
+                                                                                                                  • Visit every city
+         Find the shortest tour                        <think> + CODE Execute ATour:
+                                                                                 →B→C→D→A                          exactly once ✓      Reward
+                                                                                                                  • Tour cost = 24
+         that visits every city
+         exactly once and                                                                                         • Visit every city
+                                                       <think> + CODE Execute ATour:
+                                                                                 →C→B→D→A
+                                                                                                                   exactly once ✓
+         returns to the starting                                                                                  • Tour cost = 30
+         city.                     Policy Model
+                                                                           Execute        Tour:
+                                                                                                                  • Visit every city
+                                                       <think> + CODE                     A→C→B→A
+                                                                                                                   exactly once ✗
+                                                                                                                  • Tour cost := ∞               Probability
+
+
+Figure 1: Comparison between traditional answer-matching verification and our group-wise rank-induced verifiable
+environment. Traditional verification relies on gold code or gold outputs and yields sparse binary rewards, while our
+method assigns relative rewards by comparing candidate solutions through constraint checking and objective evaluation,
+ ￼   ￼
+
+
+
+
+          fi
+          fi
+                 ￼   ￼
+
+
+
+
+                                           fi     fi
+
+
+
+
+without requiring ground-truth solutions.
+
+
+no reference program, gold output, or certified optimum. Instead, multiple sampled solvers are executed on the same
+hidden instances; invalid outputs are rejected by constraint checks, and feasible outputs are evaluated by a task-specific
+objective function. The training signal comes from asking which sampled solver performs better under execution, not
+whether it matches a precomputed solution. This turns optimization tasks into a scalable source of verifiable supervision:
+the model need not know an optimal solution, as long as the environment can check feasibility and compare sampled
+candidates.
+Naively using these continuous-valued objective scores for reinforcement learning, however, is not sufficient. Compared
+with binary correctness rewards, score-based feedback is more fine-grained and potentially more informative, since it
+can distinguish different levels of solution quality among feasible candidates. Yet this additional information is not
+automatically suitable for policy-gradient optimization. We identify two key challenges. First, raw objective scores are
+often uncalibrated across hidden instances. Even within the same optimization problem, score magnitudes can vary
+with instance size, graph structure, weight scale, or outliers. Aggregating raw scores across instances can therefore
+make policy updates depend on arbitrary numerical scales rather than robust improvements in solution quality. We
+refer to this effect as scale dominance: instances with larger score ranges dominate the reward signal regardless of
+whether they provide more meaningful learning information. Second, group-relative learning can underemphasize
+rare high-quality discoveries. In open-ended optimization tasks, a rollout group often contains multiple syntactic or
+parametric variants of the same feasible heuristic algorithm. Because group-relative objectives assign credit at the
+level of individual samples, these repeated non-winning variants can collectively contribute more gradient mass than a
+stronger solver that is discovered only once. As a result, the update reflects not only relative solution quality, but also
+the sampling frequency of different behavioral modes. We refer to this mismatch as frequency dominance.
+We propose RiVER, a Ranking-induced VERifiable reinforcement learning framework for training LLMs from
+executable optimization tasks without ground-truth solutions. RiVER converts uncalibrated execution feedback into
+stable policy-gradient signals through two simple design choices. First, it performs instance-wise ranking: for each
+hidden test instance, candidate solvers are compared only against other candidates evaluated on the same instance. This
+removes arbitrary score-scale effects while preserving relative solution quality. Second, RiVER applies winner-heavy
+reward shaping: the best candidate in the group is separated from non-winning candidates, while valid non-winners still
+receive bounded non-binary feedback. This reduces the influence of repeated suboptimal modes and focuses the update
+on the strongest solver discovered within the sampled group.
+This formulation extends RLVR beyond the answer-matching regime. Instead of asking whether a response equals
+a known solution, RiVER asks whether one generated solution is better than another under an executable evaluator.
+
+
+                                                                            2
+The resulting supervision is ground-truth-free, non-binary, and verifiable: it requires no human labels, no reference
+solution, and no optimal answer, yet still provides fine-grained comparisons among sampled candidates. More broadly,
+it suggests that optimization problems can be used not only as target benchmarks, but also as training environments for
+improving general reasoning and coding abilities.
+We instantiate RiVER on AtCoder Heuristic Contest tasks and evaluate its effects on both score-based and exact-solution
+programming benchmarks. Training is performed only on open-ended optimization tasks without ground-truth solutions.
+Nevertheless, RiVER improves performance not only on score-based algorithm engineering evaluation, but also on
+conventional pass/fail coding benchmarks such as LiveCodeBench and USACO. In contrast, baselines that optimize
+raw execution scores improve score-based ratings but fail to transfer consistently to exact-solution benchmarks. These
+results indicate that the benefit does not come merely from exposing the model to more executable feedback; rather,
+proper reward calibration is crucial for turning score-based environments into transferable supervision.
+
+2   Related Work
+Reinforcement Learning for LLM Reasoning Incentivizing LLMs to reason explicitly through multi-step process
+have given rise to large reasoning models(LRMs) that excel on challenging tasks including mathematics [Shao et al.,
+2024, Guo et al., 2025], coding [Huang et al., 2025, Liu et al., 2025, Hui et al., 2024], agentic systems [Wu et al., 2025a,
+Li et al., 2025a]. For tasks with verifiable outcomes, RLVR is a prominent paradigm, optimizing model outputs with
+deterministic rule-based correctness signals. However, prevailing methods [Schulman et al., 2017, Shao et al., 2024, Yu
+et al., 2025] heavily depends on large volumes of in-domain data, limiting applicability in regimes where labeled data is
+insufficient or expensive to collect.
+
+Reward Design and Exploration Long-horizon reasoning in LLMs introduces a challenge for reward design in RL
+due to the sparsity and low informativeness of outcome-level supervision. Binary outcome rewards provide limited
+guidance for attributing the final result to individual reasoning steps in multi-step CoT trajectories and frequently induce
+premature convergence to similar trajectories, resulting in diversity collapse [Yao et al., 2025, Cheng et al., 2025]. Prior
+work has explored step-level supervision through process reward models (PRMs) [Setlur et al., 2024, Zhang et al.,
+2025b, She et al., 2025, Zhang et al., 2024], improved credit assignment mechanisms in single-turn [Wang et al., 2024,
+Jiao et al., 2024, Lightman et al., 2023, Li et al., 2025b] and multi-turn [Wang et al., 2025b, Feng et al., 2025, Xiong
+et al., 2024] settings, as well as entropy-based objectives to encourage exploration [Wang et al., 2025c, Cui et al., 2025,
+Cheng et al., 2025]. Recent work has also investigated improving learning signal quality through adaptive training
+environments, where task difficulty is dynamically adjusted to match model capability in verifiable settings [Zeng et al.,
+2025]. However, these approaches either rely on costly step-level labels or leave the reward signal coarse. Furthermore,
+while relative ranking rewards have been widely studied in reinforcement learning from human feedback (RLHF),
+where models are optimized using pairwise or listwise comparisons between responses, how to incorporate such idea
+into RLVR is underexplored [Rafailov et al., 2023, Li and Li, 2024]. We instead adopt dense relative ranking rewards
+with a co-evolutionary training framework, enabling fine-grained supervision to consistently learn from solution quality
+differences without human labels while preserving exploration and diverse reasoning behaviors.
+
+Reasoning via Optimization In contrast to standard reasoning benchmarks such as question answering or mathemati-
+cal problem solving, optimization tasks requires models to produce feasible solutions while simultaneously maximizing
+solution optimality [Yang et al., 2025a, Fan et al., 2024]. Owing to the computational complexity and evaluation
+challenges, this class of problems has remained relatively underexplored, especially in training-based settings of LLM
+reasoning. Recent efforts have been made to employ LLMs as end-to-end training-based solvers for NP-hard problems
+[Jiang et al., 2024, Li et al., 2025c, Jiang et al., 2025a, Wang et al., 2025d], learning heuristics to improve solution
+quality or feasibility [Yang et al., 2025b, Chen et al., 2025, Ye et al., 2024, Wu et al., 2025b], and integrating LLMs into
+existing optimization pipelines at inference time [Li et al., 2025d]. These methods typically treat optimization as the
+target task and focus on task-specific evaluation metrics. In contrast, our work uses NP-hard optimization problems
+as a training environment for general reasoning rather than an end goal. The algorithmic structure and continuous
+objective signals inherent in optimization naturally provide dense learning signals for RL training, and eventually lead
+to transferable improvements on out-of-domain reasoning tasks.
+
+3   Preliminaries
+Verifiable Rewards Let πθ be a parameterized LLM policy that generates a sequence of tokens o = (o1 , . . . , oT )
+conditioned on a prompt question q, where q sampled uniformly from the training corpus D. RLVR assumes access
+to an outcome-level reward function R : Q × O → R, which assigns a scalar reward to each prompt–response pair
+
+
+                                                             3
+(q, o). In standard verifiable settings, the output of R is typically binary, i.e., R(q, o) ∈ {0, 1} indicating whether the
+generated response satisfies a task-specific verifier such as correctness, successful code execution, or a formal constraint.
+The objective of RLVR is to learn a policy that maximizes the expected reward:
+                                                                                   
+                                        max J(θ) = Eq∼D Eo∼πθ (·|q) [ R(q, o) ] .                                        (1)
+                                           θ
+
+Its gradient can be written as
+                                   ∇θ J(θ) = Eq∼D,o∼πθ (·|q) [R(q, o)∇θ log πθ (o | q)] .                                       (2)
+
+RLVR Algorithms A commonly used RLVR algorithm is Group Relative Policy Optimization (GRPO) [Shao et al.,
+2024], a variant of Proximal Policy Optimization (PPO) [Schulman et al., 2017]. GRPO removes the need for a learned
+value model by estimating advantages from the relative rewards of a group of sampled responses. For each prompt q,
+GRPO samples G responses {oi }G           i=1 from the old policy πθold and assigns each response a group-relative advantage Âi
+based on its reward within the group. In practice, Âi is often obtained by normalizing the response-level rewards across
+the G samples. Its clipped surrogate objective is
+                                                           |oi |
+                                             "     G
+                                                                                                                                          #
+                                               1 X 1 X                                                                             
+JGRPO (θ) = Eq∼D,{oi }G  i=1 ∼πθold (·|q)
+                                                                   min ri,t (θ)Âi , clip ri,t (θ), 1 − ε, 1 + ε Âi − βDKL (πθ ||πref ) ,
+                                               G i=1 |oi | t=1
+                                                                                                                                  (3)
+                    π (o |q,o           )
+where ri,t (θ) := πθθ (oi,ti,t |q,oi,<t
+                                    i,<t )
+                                           is the importance     sampling ratio, ε   controls  the  clipping range, β determines the
+                     old
+strength of KL regularization, and πref denotes a fixed reference policy.
+In this paper, we build on the GRPO framework but replace standard binary or raw-score rewards with rank-induced,
+winner-heavy rewards derived from executable optimization environments. This allows the policy to learn from
+verifiable comparisons among sampled solutions even when no ground-truth answer is available.
+
+Optimization and NP-hardness. An optimization problem asks for a feasible solution that maximizes a task-specific
+objective, or equivalently minimizes a cost. Unlike exact-answer problems, an optimization task may admit many valid
+solutions with different qualities, and the globally optimal solution may be unknown. Many such problems are NP-hard,
+where NP stands for nondeterministic polynomial time: an NP-hard problem is at least as hard as every problem in NP,
+in the sense that a polynomial-time exact algorithm for it would imply polynomial-time algorithms for all NP problems.
+In practice, they are often solved by heuristic algorithms, which aim to produce high-quality feasible solutions within
+limited time but do not guarantee optimality. Although finding an optimal solution may be intractable, checking whether
+a candidate output is feasible and computing its objective value are typically efficient. Therefore, heuristic algorithms
+can be evaluated and compared by their achieved objective scores, even when no optimal ground-truth solution is
+available.
+
+4     Method
+This section describes how RiVER turns ground-truth-free optimization tasks into reinforcement learning signals. For
+each problem, the policy samples a group of executable solvers. Each solver is run on the same hidden test instances
+and evaluated by a deterministic task-specific evaluator. The evaluator does not provide a gold program, gold output, or
+optimal solution; it only checks feasibility and returns an objective value for valid outputs. RiVER then converts these
+objective values into instance-wise ranks and applies winner-heavy reward shaping before optimizing the policy with
+GRPO.
+
+4.1   Ground-truth-free Executable Optimization
+
+A training task consists of a problem prompt q, a deterministic evaluator E, and a set of hidden test instances {Tm }M
+                                                                                                                     m=1 .
+The model generates a response o, which may include intermediate reasoning, but is required to end with a complete
+executable program. We extract this final program as c = Code(o) and execute only c during evaluation. Running c on
+instance Tm produces either a failure or a valid output with a task-specific objective value.
+We denote the validity indicator by v(c, Tm ) ∈ {0, 1}, where v(c, Tm ) = 0 if the program crashes, times out, violates
+output constraints, or produces an invalid format. If v(c, Tm ) = 1, the evaluator returns a task-specific objective value.
+We denote the corresponding objective score by f (c, Tm ), using a unified larger-is-better convention: for maximization
+tasks, f (c, Tm ) is the objective value itself; for minimization tasks, f (c, Tm ) is the negated objective value. Invalid
+executions are handled separately in reward shaping.
+
+
+                                                                 4
+For each prompt q, we sample a group of G candidate responses from the rollout policy, o1 , . . . , oG ∼ πθold (· | q). We
+extract the executable programs from the responses as ci = Code(oi ). We execute each program ci on the same hidden
+instances {Tm }M m=1 . This yields a validity matrix V ∈ {0, 1}
+                                                               G×M
+                                                                    , where Vi,m = v(ci , Tm ). For valid executions,
+we record the corresponding objective score as Fi,m = f (ci , Tm ). For invalid executions, we set Fi,m = −∞ as
+a bookkeeping convention. This gives a raw score matrix F ∈ R̄G×M . The shared hidden instances are important
+because they allow generated programs to be compared under identical evaluation conditions. The supervision signal is
+therefore not whether a program matches a reference answer, but whether it produces better feasible outputs than other
+sampled programs on the same instances.
+For example, in a TSP-style minimization task, a program reads a cost matrix and outputs a tour. The evaluator first
+checks whether the tour visits every city exactly once and whether the program finishes within the time limit. If the
+output is valid, the evaluator computes the tour cost and uses its negation as the objective score. Many programs may be
+valid on the same instance, but they can receive different scores depending on tour quality. This is the key difference
+from exact-answer RLVR: the environment supplies relative solution quality without requiring a ground-truth solution.
+
+4.2   Why Raw Objective Scores Are Not Sufficient
+
+The evaluator score is group-relatively verifiable, but using it directly as a reinforcement learning reward is unstable. A
+                                                                                         1
+                                                                                           PM
+raw-score baseline would first aggregate scores across hidden instances as Riraw = M          m=1 Fi,m , and then compute
+group-relative advantages from {Riraw }G i=1 . This has two  failure modes.
+First, raw objective scores are not calibrated across instances. Even within the same task, objective magnitudes can
+vary with instance size, graph structure, weight scale, or outliers. Directly averaging raw scores can make the reward
+dominated by instances with larger numerical ranges, rather than by robust improvements in relative solution quality.
+For example, an instance whose scores span thousands of points can outweigh another instance whose scores span only
+tens of points, even if the latter better separates good and bad programs. This motivates comparing programs within
+each hidden instance before aggregating feedback across instances.
+Second, group-relative updates can over-reinforce frequent non-winning actions. We illustrate this with a simplified
+one-step policy-gradient toy example. Suppose the sampled group contains one best action x and ny samples of another
+action type y. Here x represents the strongest program discovered in the group, while y represents a frequent but
+non-winning strategy, such as a common heuristic template with minor syntactic or parameter variations. Let Ax  b be
+the advantage of x, and let Āy be the average advantage of the ny samples of type y. Following Eq. (2), and ignoring
+clipping and KL regularization, the update contribution from the rare best action and the aggregate contribution from
+the frequent non-winning action type can be written as
+                              Gx = A bx ∇θ log πθ (x | q), Gy ≈ ny Āy ∇θ log πθ (y | q).                          (4)
+Thus, even if each individual sample of type y receives a smaller advantage than x, the total update mass of y can be
+larger when ny Āy > Abx . Group-relative optimization assigns advantages at the sample level, so a frequently sampled
+suboptimal strategy can receive more aggregate learning signal than a rare but stronger program.
+
+4.3   Rank-induced Winner-heavy Rewards
+
+RiVER constructs rewards in three steps: instance-wise ranking, winner-heavy shaping, and aggregation across hidden
+instances.
+
+Instance-wise ranking. For each hidden instance Tm , we rank the G candidate solvers by their objective scores on
+that instance. Invalid candidates are handled separately and receive the lowest shaped reward. For valid candidates, let
+ri,m ∈ [1, G] denote the rank of solver ci on instance Tm , where smaller rank is better.
+We use average-tie ranking. If a set of tied candidates occupies rank positions i, i + 1, . . . , i + k, then each tied candidate
+receives rank i + k/2. This midrank rule treats tied candidates as occupying the full tied rank interval, rather than
+assigning all of them the most favorable rank. It therefore reduces over-crediting duplicated solutions with identical
+execution scores.
+Because ranks are computed separately for each hidden instance, they are invariant to instance-dependent score scales.
+Any strictly monotone transformation of the objective values on the same instance leaves the ranks unchanged. This
+removes arbitrary score magnitudes while preserving relative solution quality.
+
+Winner-heavy shaping. Instance-wise ranks remove scale dependence, but a uniform rank mapping still treats
+adjacent ranks equally. In open-ended optimization, the most useful signal is often the separation between the best
+
+
+                                                               5
+discovered solver and the rest of the group. We therefore use the following shaped reward for each solver-instance pair:
+                          
+                          −1,                                             if Vi,m = 0,
+                  si,m = 1,                                                if Vi,m = 1 and ri,m = 1,                (5)
+                            clip ((G − 1 − ri,m )/(G − 3), 0, 1) − 0.5, otherwise,
+                          
+
+Thus, an invalid solver receives −1, the best valid solver receives 1, and valid non-winning solvers receive bounded
+graded feedback in [−0.5, 0.5]. Ties are handled by the average-rank rule, so duplicated top-scoring candidates do not
+all receive the same unique-winner credit.
+This shaping keeps useful information among non-winning valid solvers while creating a clear margin between the best
+candidate and the rest. It therefore reduces the chance that repeated suboptimal heuristics dominate the update merely
+because they appear many times in the rollout group.
+                                                                                                          PM
+Aggregation and GRPO update. We average the shaped rewards across hidden instances as s̄i = M −1 m=1 si,m .
+The resulting scalar is used as the sample-level advantage in GRPO, namely A   bi = s̄i . We keep the standard GRPO
+clipped objective and KL regularization from Eq. (3), but replace binary or raw-score rewards with the rank-induced
+winner-heavy advantage defined above. Since s̄i is already bounded by construction, we do not apply an additional
+reward standardization step.
+Overall, RiVER converts executable objective feedback into a reward signal with three properties. It is ground-truth-free
+because it requires no reference solution. It is scale-invariant because candidates are ranked only within the same
+hidden instance. It is winner-focused but non-binary because the best candidate receives a separated reward while valid
+non-winners still provide graded feedback.
+
+5         Experiments
+5.1        Experimental Setup
+
+Training environments. We construct the training set from AtCoder Heuristic Contest (AHC) problems released
+after the ALE-Bench cutoff [Imajuku et al., 2025, AtCoder Inc., 2025], using AHC047–AHC062 as the candidate pool
+(16 tasks total). We exclude 4 tasks incompatible with our one-pass setting and train on the remaining 12 tasks.4 This
+ensures no overlap with ALE-Bench evaluation. Each task contains a problem description, an official evaluator, and a
+test-instance generator. We provide the example prompts in Appendix B.
+
+AHC scoring. Each AHC task is score-based: the official evaluator executes a submitted program and returns a
+real-valued objective score. For each training prompt, we evaluate each candidate solver on 10 hidden test instances and
+treat the scalar outputs as execution fitness. For minimization tasks, we negate the objective so that all tasks follow a
+unified larger-is-better convention. Invalid outputs, runtime errors, and timeouts are treated as failures.
+
+Baselines. We evaluate two high-performing recent open-source reasoning models, Qwen3-8B [Team, 2025] and
+GLM-Z1-9B-0414 [GLM et al., 2024]. For each backbone, we compare the original model with several post-training
+variants that differ in how execution scores are converted into training signals.
+We compare against five reward design variants. Raw-GRPO Shao et al. [2024] applies GRPO directly to raw
+execution scores aggregated over test instances. RS-GRPO replaces standard group normalization with a risk-sensitive
+transform Jiang et al. [2025b], Yuksekgonul et al. [2026]. Raw-Binary converts the aggregated raw score into a
+winner-take-all signal, where the highest-scoring sample receives reward 1 and all others receive 0. Instance-Norm
+normalizes raw scores within each test instance separately, then averages the per-instance advantages across instances.
+Rank-uniform uses the same instance-wise ranking as RiVER but assigns uniformly spaced rewards across all ranks.
+RiVER is our full method, combining instance-wise rank transformation with winner-heavy reward shaping.
+
+Evaluation benchmarks and metrics. We evaluate on two types of benchmarks. For score-based evaluation, we
+use ALE-Bench [Imajuku et al., 2025], a benchmark built from AHC problems that evaluates models on optimization-
+oriented algorithmic tasks without ground-truth solutions. We report Rating, the AtCoder-style aggregate score, and
+Rank %, the percentile rank among human participants induced by that rating, where lower is better. For exact-solution
+evaluation, we use LiveCodeBench v5 and v6 [Jain et al., 2024], and USACO [Shi et al., 2024], where solutions are
+judged by exact test-case correctness. We report the average Pass@1 accuracy across three independent runs for all
+benchmarks.
+      4
+          AHC048–053, AHC055–060.
+
+
+                                                           6
+                         Score-based contests                       Exact-solution benchmarks
+  Model
+                             ALE-Bench              LiveCodeBench v5              LiveCodeBench v6
+                                                                                                             USACO
+                         Rating ↑ Rank % ↓ Easy Med. Hard Avg. Easy Med. Hard Avg.
+  Qwen3-8B                 845         86.4       96.8   62.9    28.8   56.1    96.3   55.6   19.7    49.2     40.4
+   Raw-GRPO                903         82.5       95.9   64.1    29.7   56.7    96.9   58.3   17.9    49.3     40.2
+   RS-GRPO                 904         82.5       95.9   59.6    31.1   55.9    96.1   59.6   20.0    50.5     40.0
+   Raw-Binary              926         80.9       95.9   62.2    27.5   55.1    96.1   55.1   19.6    49.0     41.2
+   Instance-Norm           935         80.1       95.9   62.2    28.8   55.7    96.9   56.4   19.2    49.3     39.6
+   Rank-uniform            960         78.9       96.8   61.5    31.1   56.7    95.4   59.6   17.5    49.1     39.7
+   RiVER                   987         77.5       96.7   67.9    30.2   58.3    96.9   60.3   21.2    51.4     43.3
+                     ∆     +142         -8.9      -0.1    +5.0   +1.4    +2.2   +0.6   +4.7    +1.5   +2.2     +2.9
+
+  GLM-Z1-9B-0414           805         88.2       93.4   57.7    18.6   49.2    95.6   53.3   16.1    46.7     32.4
+   Raw-GRPO                886         83.6       95.1   66.7    20.7   53.3    95.3   52.6   19.6    48.0     32.8
+   RS-GRPO                 916         81.6       94.3   61.5    17.6   50.1    96.1   59.0   17.9    49.3     33.2
+   Raw-Binary              915         81.8       93.5   62.2    24.8   53.3    96.9   57.1   18.3    49.1     32.5
+   Instance-Norm           929         80.6       95.1   64.7    22.5   53.5    94.6   55.1   17.1    47.4     33.1
+   Rank-uniform            931         80.2       92.7   62.8    20.7   51.5    96.9   53.9   18.3    48.2     31.9
+   RiVER                   962         78.8       96.7   64.7    24.3   54.7    97.7   59.0   17.9    49.7     34.3
+                     ∆     +157         -9.4      +3.3    +7.0   +5.7    +5.5   +2.1   +5.7    +1.8   +3.0     +1.9
+
+
+Table 1: Results on score-based and pass/fail programming benchmarks. For score-based contests, we evaluate on
+ALE-Bench and report the rating and rating percentile rank. For exact-solution contests, we evaluate on LiveCodeBench
+v5, LiveCodeBench v6, and USACO. LiveCodeBench results are further broken down by difficulty.
+
+
+Training details. We use AdamW Loshchilov and Hutter [2017] as the optimizer for all runs with learning rate
+1 × 10−6 , KL coefficient 0.001, group size G = 16, and global batch size 64.
+
+5.2   Results and Analysis
+
+Table 1 reports the main results. RiVER improves both backbones on every benchmark even though trained on only
+12 open-ended optimization tasks without ground truth solutions. Specifically, RiVER raises the ALE rating by 142
+points on Qwen3-8B and 157 points on GLM-Z1-9B-0414, and increases performance of the two backbones across
+LCB v5, LCB v6, and USACO, by 2.4 points and 3.5 points respectively on average. RiVER is also the only method
+that improves the Qwen3-8B backbone on all five evaluation metrics, where other raw-score or instance-wise ranking
+baselines have decreased performance on at least one of the exact-solution benchmarks.
+Raw executable score is not calibrated enough to optimize directly. Although raw-score baselines such as Raw-
+GRPO, RS-GRPO, and Raw-Binary increase the ALE rating, the gains fail to transfer to exact-solution coding
+benchmarks. Specifically, they show no consistent gain on LCB v5, LCB v6, and USACO for the stronger Qwen3-8B
+backbone; most either stay flat or drop. This suggests that optimizing raw execution scores is likely teaching the model
+to exploit instance-specific score magnitudes rather than developing transferable coding behavior.
+Instance-wise ranking improves score-based performance but does not transfer without winner-anchored shaping.
+Instance-Norm and Rank-uniform each improve ALE rating but show only trivial gains on exact-solution benchmarks.
+Although neither relies on raw execution score magnitudes, performance gains on LCB and USACO are close to zero or
+even degrade when applied to Qwen3-8B. On the other hand, adding winner-anchored shaping raises ALE by another 27
+points on Qwen3-8B and 31 on GLM-Z1-9B compared to Rank-uniform, and improves the LCB and USACO by 2.4%
+on average. These results suggest that rewarding the winner more than other candidates while still differentiating among
+them, unlike winner-take-all or uniformly spaced rewards, can help develop coding skills that transfer to exact-solution
+tasks.
+
+Difficulty-wise analysis on LiveCodeBench. Among all difficulty levels of LiveCodeBench, RiVER improves for
+both backbones, indicating consistent gains rather than improvements concentrated in a narrow set of problems. The
+gains are largest on medium and hard problems. For instance, on LiveCodeBench v5, Qwen3-8B improves by 5.0% and
+
+
+                                                           7
+                                 ahc048
+                           2.1393e6
+                                                     6000
+                                                                     ahc049            635000
+                                                                                                         ahc050                   1e8      ahc051                             ahc052            1.0 +1e9       ahc053
+                29.5                                                                                                        9.6
+                                                     5000                              630000                                                                  600                              0.5
+                                                                                                                            9.4
+                30.0                                 4000                              625000                               9.2
+                                                                                                                                                               400                              0.0
+                30.5                                 3000                              620000                               9.0
+                                                     2000                                                                   8.8                                200                              0.5
+                                                                                       615000
+                31.0                                                                                                        8.6
+                                                     1000                              610000                                                                                                   1.0
+
+
+
+Best So Far
+                       0    25   50   75 100 125            0   25   50   75 100 125            0   25   50   75 100 125          0   25   50   75 100 125           0   25   50   75 100 125         0   25   50   75 100 125
+                                 ahc055            143400
+                                                                     ahc056                     1e6      ahc057                   1e6      ahc058                             ahc059                           ahc060
+               54000                                                                                                                                                                            300
+                                                                                          4.5                               4.0                              12500
+               53000                               143600                                                                   3.5                              10000
+               52000                                                                      4.0                                                                                                   200
+                                                   143800                                                                   3.0                               7500
+               51000
+                                                                                          3.5                               2.5                               5000
+               50000                               144000                                                                                                                                       100
+               49000                                                                      3.0                               2.0                               2500
+                                                   144200                                                                   1.5
+               48000                                                                                                                                             0                                0
+                                                                                          2.5
+                       0    25   50   75 100 125            0   25   50   75 100 125            0   25   50   75 100 125          0   25   50   75 100 125           0   25   50   75 100 125         0   25   50   75 100 125
+
+
+                                                                                                         Training Step
+                                                                                                      RiVER             Raw-GRPO
+
+                                                            Figure 2: Best-so-far performance across 12 AHC problems.
+
+
+ 1.4% on medium and hard problems, and GLM-Z1-9B by 7.0% and 5.7%. Easy problems show little movement, as
+ base models already exceed 93% accuracy on this subset. The concentration of gains on harder problems suggests that
+ training on open-ended optimization tasks helps the model tackle problems that require more sophisticated reasoning,
+ rather than simply reinforcing skills that models have already mastered.
+
+ 5.3          Case Study
+
+ We present a case study of how reward design affects the solvers discovered during training. We first examine the
+ best-so-far training dynamics across all 12 AHC training problems. For each problem, we evaluate sampled solvers on
+ fixed held-out evaluation instances and track the best score discovered up to each rollout step. As shown in Figure 2,
+ RiVER is competitive across tasks and discovers stronger or earlier best-so-far solvers on 8 problems. This suggests
+ that the benefit of the rank-induced reward is not limited to a single task, but appears across multiple heterogeneous
+ optimization environments.
+ We then perform a qualitative code inspection on AHC057 to understand what kind of solver improvements are induced
+ by training. The task description is provided in Appendix B, and the generated solvers are provided in Appendix C.
+ Before training, the strongest valid base-model rollouts already capture the basic mechanics of AHC057, but use
+ index-based grouping that largely ignores instance geometry. After training, both RiVER and Raw-GRPO shift to static
+ geometric heuristics: they group points by toroidal proximity and connect each group with an MST at t = 0. RiVER is
+ stronger mainly because its grouping rule is more adaptive: it repeatedly adds the point closest to the current group,
+ whereas Raw-GRPO selects points only by distance to a fixed seed. This produces more compact local clusters and
+ lower within-group connection costs.
+
+
+ 6            Discussion: An Information-Theoretic View of Group-Relative Learning Signals
+
+ Our results suggest that score-based optimization tasks are useful not merely because they provide more numerical
+ feedback, but because they expose richer relative distinctions among on-policy samples. In group-relative reinforcement
+ learning, a rollout group is informative only when the sampled responses can be distinguished by the feedback induced
+ by the environment. If all responses in a group receive the same verifier outcome, their relative advantages collapse and
+ the update provides little information about which behavior should be reinforced.
+ We formalize this intuition using a simple notion of feedback resolution. For a prompt q, let o ∼ πθold (· | q) be
+ a sampled response, and let Zq = Φq (o) denote the feedback induced by a deterministic verifier or executable
+ environment. The feedback Zq may be binary, scalar-valued, or vector-valued, depending on the environment. In
+ answer-matching RLVR, Zq often corresponds to a binary correctness signal. In score-based environments, Zq can
+ represent richer information about solution quality.
+
+ Definition 6.1 (Group-relative feedback resolution) Assume the induced feedback distribution is discrete, with pz =
+ P[Zq = z]. For a rollout group of size G > 1, we define the group-relative feedback resolution of prompt q as the
+
+
+                                                                                                                    8
+order-G Rényi entropy [Rényi, 1961]
+                                                                   1      X
+                                    GFRG (q) := HG (Zq ) := −         log   pG
+                                                                             z .
+                                                                  G−1     z
+
+
+This quantity measures how much the environment separates on-policy samples into distinguishable feedback values.
+Binary verifiers have limited feedback resolution, and can be sparse in both low- and high-performance regimes: when
+the policy is weak, many samples may receive the same failure signal; when the policy is already strong, many samples
+may receive the same success signal. In both cases, the group contains limited relative information. By contrast,
+score-based environments can assign multiple feedback levels to different valid or partially valid behaviors, allowing
+group-relative algorithms to compare candidates by relative quality without requiring a reference solution or an optimal
+answer.
+The connection to group-relative learning can be seen through the probability of feedback collision.
+
+Proposition 6.2 (Group feedback collision) Let o1 , . . . , oG be sampled i.i.d. from πθold (· | q), and let Zi = Φq (oi ).
+If the induced feedback distribution is discrete, then
+                                   P[Z1 = · · · = ZG ] = exp (−(G − 1)GFRG (q)) .                                      (6)
+
+Proposition 6.2 shows that higher feedback resolution reduces the probability that an entire rollout group collapses to a
+single feedback value. This explains why richer verifiable environments can provide more useful group-relative learning
+signals than sparse binary verifiers: they are less likely to produce groups in which all samples are indistinguishable
+under the environment feedback. The proof of Proposition 6.2 is given in Appendix A.
+Feedback resolution alone, however, does not make a reward signal reliable. The ablation results show that dense
+score feedback improves optimization-oriented ratings more consistently than it transfers to exact-solution benchmarks,
+suggesting that richness must be paired with calibration. RiVER provides this calibration by converting uncalibrated
+objective values into instance-wise ranks and applying winner-heavy shaping, preserving relative distinctions while
+reducing scale dominance and repeated-mode dominance.
+This view suggests a practical criterion for constructing ground-truth-free RLVR environments. A useful environment
+should be verifiable and able to separate on-policy samples into multiple feedback levels. Score-based optimization
+tasks naturally satisfy this criterion because different candidate behaviors can be compared by objective quality rather
+than by exact answer matching. RiVER exploits this structure by converting rich but uncalibrated feedback into
+stable group-relative learning signals. Together with the results in Section 5, this supports the view that score-based
+optimization tasks can serve as scalable training environments for improving general coding ability without ground-truth
+solutions.
+
+
+7   Conclusion
+
+We presented RiVER, an RL framework for improving LLMs in settings where ground-truth answers or optimal
+solutions are unavailable. Rather than treating verifiability as exact answer matching, RiVER exploits a broader class of
+executable environments in which candidate solutions can be checked for feasibility and compared by objective value.
+Empirically, training on AHC tasks improves performance not only on score-based algorithm engineering benchmarks,
+but also on pass/fail programming benchmarks. These results suggest that moving beyond answer matching toward
+relative, executable, and ground-truth-free verification is a promising direction for scalable RL of LLMs.
+
+
+References
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al. Chain-
+  of-thought prompting elicits reasoning in large language models. Advances in neural information processing systems,
+  35:24824–24837, 2022.
+Nathan Lambert, Jacob Morrison, Valentina Pyatkin, Shengyi Huang, Hamish Ivison, Faeze Brahman, Lester James V
+  Miranda, Alisa Liu, Nouha Dziri, Shane Lyu, et al. Tulu 3: Pushing frontiers in open language model post-training.
+  arXiv preprint arXiv:2411.15124, 2024.
+Zengzhi Wang, Fan Zhou, Xuefeng Li, and Pengfei Liu. Octothinker: Mid-training incentivizes reinforcement learning
+  scaling. arXiv preprint arXiv:2506.20512, 2025a.
+
+
+                                                            9
+Komal Kumar, Tajamul Ashraf, Omkar Thawakar, Rao Muhammad Anwer, Hisham Cholakkal, Mubarak Shah, Ming-
+   Hsuan Yang, Phillip HS Torr, Fahad Shahbaz Khan, and Salman Khan. Llm post-training: A deep dive into reasoning
+   large language models. arXiv preprint arXiv:2502.21321, 2025.
+Charlie Zhang, Graham Neubig, and Xiang Yue. On the interplay of pre-training, mid-training, and rl on reasoning
+   language models. arXiv preprint arXiv:2512.07783, 2025a.
+AtCoder Inc. AtCoder. https://atcoder.jp, 2025.
+Topcoder. Marathon Match Tournament. https://www.topcoder.com/marathon-match-tournament.
+Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li,
+   Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv
+   preprint arXiv:2402.03300, 2024.
+Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu, Shirong Ma, Peiyi Wang,
+   Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint
+   arXiv:2501.12948, 2025.
+Siming Huang, Tianhao Cheng, Jason Klein Liu, Weidi Xu, Jiaran Hao, Liuyihan Song, Yang Xu, Jian Yang, Jiaheng
+   Liu, Chenchen Zhang, et al. Opencoder: The open cookbook for top-tier code large language models. In Proceedings
+   of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages
+   33167–33193, 2025.
+Yifei Liu, Li Lyna Zhang, Yi Zhu, Bingcheng Dong, Xudong Zhou, Ning Shang, Fan Yang, and Mao Yang. rstar-coder:
+   Scaling competitive code reasoning with a large-scale verified dataset. arXiv preprint arXiv:2505.21297, 2025.
+Binyuan Hui, Jian Yang, Zeyu Cui, Jiaxi Yang, Dayiheng Liu, Lei Zhang, Tianyu Liu, Jiajun Zhang, Bowen Yu, Keming
+   Lu, et al. Qwen2. 5-coder technical report. arXiv preprint arXiv:2409.12186, 2024.
+Jialong Wu, Baixuan Li, Runnan Fang, Wenbiao Yin, Liwen Zhang, Zhengwei Tao, Dingchu Zhang, Zekun Xi, Gang Fu,
+   Yong Jiang, et al. Webdancer: Towards autonomous information seeking agency. arXiv preprint arXiv:2505.22648,
+   2025a.
+Kuan Li, Zhongwang Zhang, Huifeng Yin, Liwen Zhang, Litu Ou, Jialong Wu, Wenbiao Yin, Baixuan Li, Zhengwei Tao,
+   Xinyu Wang, et al. Websailor: Navigating super-human reasoning for web agent. arXiv preprint arXiv:2507.02592,
+   2025a.
+John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization
+   algorithms. arXiv preprint arXiv:1707.06347, 2017.
+Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong
+   Liu, Lingjun Liu, et al. Dapo: An open-source llm reinforcement learning system at scale. arXiv preprint
+   arXiv:2503.14476, 2025.
+Jian Yao, Ran Cheng, Xingyu Wu, Jibin Wu, and Kay Chen Tan. Diversity-aware policy optimization for large language
+   model reasoning. arXiv preprint arXiv:2505.23433, 2025.
+Daixuan Cheng, Shaohan Huang, Xuekai Zhu, Bo Dai, Wayne Xin Zhao, Zhenliang Zhang, and Furu Wei. Reasoning
+   with exploration: An entropy perspective. arXiv preprint arXiv:2506.14758, 2025.
+Amrith Setlur, Chirag Nagpal, Adam Fisch, Xinyang Geng, Jacob Eisenstein, Rishabh Agarwal, Alekh Agarwal,
+   Jonathan Berant, and Aviral Kumar. Rewarding progress: Scaling automated process verifiers for llm reasoning.
+   arXiv preprint arXiv:2410.08146, 2024.
+Zhenru Zhang, Chujie Zheng, Yangzhen Wu, Beichen Zhang, Runji Lin, Bowen Yu, Dayiheng Liu, Jingren Zhou,
+   and Junyang Lin. The lessons of developing process reward models in mathematical reasoning. arXiv preprint
+   arXiv:2501.07301, 2025b.
+Shuaijie She, Junxiao Liu, Yifeng Liu, Jiajun Chen, Xin Huang, and Shujian Huang. R-prm: Reasoning-driven process
+   reward modeling. arXiv preprint arXiv:2503.21295, 2025.
+Hanning Zhang, Pengcheng Wang, Shizhe Diao, Yong Lin, Rui Pan, Hanze Dong, Dylan Zhang, Pavlo Molchanov, and
+   Tong Zhang. Entropy-regularized process reward model. arXiv preprint arXiv:2412.11006, 2024.
+Peiyi Wang, Lei Li, Zhihong Shao, Runxin Xu, Damai Dai, Yifei Li, Deli Chen, Yu Wu, and Zhifang Sui. Math-
+   shepherd: Verify and reinforce llms step-by-step without human annotations. In Proceedings of the 62nd Annual
+   Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), pages 9426–9439, 2024.
+Fangkai Jiao, Chengwei Qin, Zhengyuan Liu, Nancy Chen, and Shafiq Joty. Learning planning-based reasoning by
+   trajectories collection and process reward synthesizing. In Proceedings of the 2024 Conference on Empirical Methods
+   in Natural Language Processing, pages 334–350, 2024.
+
+
+                                                         10
+Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harrison Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman,
+  Ilya Sutskever, and Karl Cobbe. Let’s verify step by step. In The Twelfth International Conference on Learning
+  Representations, 2023.
+Yang Li, Zhichen Dong, Yuhan Sun, Weixun Wang, Shaopan Xiong, Yijia Luo, Jiashun Liu, Han Lu, Jiamang Wang,
+  Wenbo Su, et al. Attention illuminates llm reasoning: The preplan-and-anchor rhythm enables fine-grained policy
+  optimization. arXiv preprint arXiv:2510.13554, 2025b.
+Hanlin Wang, Jian Wang, Chak Tou Leong, and Wenjie Li. Steca: Step-level trajectory calibration for llm agent learning.
+  arXiv preprint arXiv:2502.14276, 2025b.
+Lang Feng, Zhenghai Xue, Tingcong Liu, and Bo An. Group-in-group policy optimization for llm agent training. arXiv
+  preprint arXiv:2505.10978, 2025.
+Weimin Xiong, Yifan Song, Xiutian Zhao, Wenhao Wu, Xun Wang, Ke Wang, Cheng Li, Wei Peng, and Sujian Li.
+ Watch every step! llm agent learning via iterative step-level process refinement. arXiv preprint arXiv:2406.11176,
+ 2024.
+Shenzhi Wang, Le Yu, Chang Gao, Chujie Zheng, Shixuan Liu, Rui Lu, Kai Dang, Xionghui Chen, Jianxin Yang,
+  Zhenru Zhang, et al. Beyond the 80/20 rule: High-entropy minority tokens drive effective reinforcement learning for
+  llm reasoning. arXiv preprint arXiv:2506.01939, 2025c.
+Ganqu Cui, Yuchen Zhang, Jiacheng Chen, Lifan Yuan, Zhi Wang, Yuxin Zuo, Haozhan Li, Yuchen Fan, Huayu Chen,
+  Weize Chen, et al. The entropy mechanism of reinforcement learning for reasoning language models. arXiv preprint
+  arXiv:2505.22617, 2025.
+Zhiyuan Zeng, Hamish Ivison, Yiping Wang, Lifan Yuan, Shuyue Stella Li, Zhuorui Ye, Siting Li, Jacqueline He,
+  Runlong Zhou, Tong Chen, et al. Rlve: Scaling up reinforcement learning for language models with adaptive
+  verifiable environments. arXiv preprint arXiv:2511.07317, 2025.
+Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and Chelsea Finn. Direct
+  preference optimization: Your language model is secretly a reward model. Advances in neural information processing
+  systems, 36:53728–53741, 2023.
+Wendi Li and Yixuan Li. Process reward model with q-value rankings. arXiv preprint arXiv:2410.11287, 2024.
+Chang Yang, Ruiyu Wang, Junzhe Jiang, Qi Jiang, Qinggang Zhang, Yanchen Deng, Shuxin Li, Shuyue Hu, Bo Li,
+  Florian T Pokorny, et al. Nondeterministic polynomial-time problem challenge: An ever-scaling reasoning benchmark
+  for llms. arXiv preprint arXiv:2504.11239, 2025a.
+Lizhou Fan, Wenyue Hua, Lingyao Li, Haoyang Ling, and Yongfeng Zhang. Nphardeval: Dynamic benchmark on
+  reasoning ability of large language models via complexity classes. In Proceedings of the 62nd Annual Meeting of the
+  Association for Computational Linguistics (Volume 1: Long Papers), pages 4092–4114, 2024.
+Caigao Jiang, Xiang Shu, Hong Qian, Xingyu Lu, Jun Zhou, Aimin Zhou, and Yang Yu. Llmopt: Learning to define
+  and solve general optimization problems from scratch. arXiv preprint arXiv:2410.13213, 2024.
+Xiaozhe Li, Xinyu Fang, Shengyuan Ding, Linyang Li, Haodong Duan, Qingwen Liu, and Kai Chen. Np-engine:
+  Empowering optimization reasoning in large language models with verifiable synthetic np problems. arXiv preprint
+  arXiv:2510.16476, 2025c.
+Xia Jiang, Yaoxin Wu, Minshuo Li, Zhiguang Cao, and Yingqian Zhang. Large language models as end-to-end
+  combinatorial optimization solvers. arXiv preprint arXiv:2509.16865, 2025a.
+Yuyao Wang, Bowen Liu, Jianheng Tang, Nuo Chen, Yuhan Li, Qifan Zhang, and Jia Li. Graph-r1: Unleashing llm
+  reasoning with np-hard graph problems. arXiv preprint arXiv:2508.20373, 2025d.
+Xianliang Yang, Ling Zhang, Haolong Qian, Lei Song, and Jiang Bian. Heuragenix: Leveraging llms for solving
+  complex combinatorial optimization challenges. arXiv preprint arXiv:2506.15196, 2025b.
+Hongzheng Chen, Yingheng Wang, Yaohui Cai, Hins Hu, Jiajie Li, Shirley Huang, Chenhui Deng, Rongjian Liang,
+  Shufeng Kong, Haoxing Ren, et al. Heurigym: An agentic benchmark for llm-crafted heuristics in combinatorial
+  optimization. arXiv preprint arXiv:2506.07972, 2025.
+Haoran Ye, Jiarui Wang, Zhiguang Cao, Federico Berto, Chuanbo Hua, Haeyeon Kim, Jinkyoo Park, and Guojie
+  Song. Reevo: Large language models as hyper-heuristics with reflective evolution. Advances in neural information
+  processing systems, 37:43571–43608, 2024.
+Xuan Wu, Di Wang, Chunguo Wu, Lijie Wen, Chunyan Miao, Yubin Xiao, and You Zhou. Efficient heuristics generation
+  for solving combinatorial optimization problems using large language models. In Proceedings of the 31st ACM
+  SIGKDD Conference on Knowledge Discovery and Data Mining V. 2, pages 3228–3239, 2025b.
+
+
+                                                         11
+Xijun Li, Jiexiang Yang, Jinghao Wang, Bo Peng, Jianguo Yao, and Haibing Guan. Strcmp: Integrating graph structural
+   priors with language models for combinatorial optimization. arXiv preprint arXiv:2506.11057, 2025d.
+Yuki Imajuku, Kohki Horie, Yoichi Iwata, Kensho Aoki, Naohiro Takahashi, and Takuya Akiba. Ale-bench: A
+   benchmark for long-horizon objective-driven algorithm engineering. arXiv preprint arXiv:2506.09050, 2025.
+Qwen Team. Qwen3 technical report, 2025. URL https://arxiv.org/abs/2505.09388.
+Team GLM, Aohan Zeng, Bin Xu, Bowen Wang, Chenhui Zhang, Da Yin, Diego Rojas, Guanyu Feng, Hanlin Zhao,
+   Hanyu Lai, Hao Yu, Hongning Wang, Jiadai Sun, Jiajie Zhang, Jiale Cheng, Jiayi Gui, Jie Tang, Jing Zhang, Juanzi
+   Li, Lei Zhao, Lindong Wu, Lucen Zhong, Mingdao Liu, Minlie Huang, Peng Zhang, Qinkai Zheng, Rui Lu, Shuaiqi
+   Duan, Shudan Zhang, Shulin Cao, Shuxun Yang, Weng Lam Tam, Wenyi Zhao, Xiao Liu, Xiao Xia, Xiaohan Zhang,
+   Xiaotao Gu, Xin Lv, Xinghan Liu, Xinyi Liu, Xinyue Yang, Xixuan Song, Xunkai Zhang, Yifan An, Yifan Xu,
+   Yilin Niu, Yuantao Yang, Yueyan Li, Yushi Bai, Yuxiao Dong, Zehan Qi, Zhaoyu Wang, Zhen Yang, Zhengxiao Du,
+   Zhenyu Hou, and Zihan Wang. Chatglm: A family of large language models from glm-130b to glm-4 all tools, 2024.
+Yuhua Jiang, Jiawei Huang, Yufeng Yuan, Xin Mao, Yu Yue, Qianchuan Zhao, and Lin Yan. Risk-sensitive rl for
+   alleviating exploration dilemmas in large language models. arXiv preprint arXiv:2509.24261, 2025b.
+Mert Yuksekgonul, Daniel Koceja, Xinhao Li, Federico Bianchi, Jed McCaleb, Xiaolong Wang, Jan Kautz, Yejin Choi,
+   James Zou, Carlos Guestrin, et al. Learning to discover at test time. arXiv preprint arXiv:2601.16175, 2026.
+Naman Jain, King Han, Alex Gu, Wen-Ding Li, Fanjia Yan, Tianjun Zhang, Sida Wang, Armando Solar-Lezama,
+   Koushik Sen, and Ion Stoica. Livecodebench: Holistic and contamination free evaluation of large language models
+   for code, 2024. URL https://arxiv.org/abs/2403.07974.
+Quan Shi, Michael Tang, Karthik Narasimhan, and Shunyu Yao. Can language models solve olympiad programming?,
+   2024. URL https://arxiv.org/abs/2404.10952.
+Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. arXiv preprint arXiv:1711.05101, 2017.
+Alfréd Rényi. On measures of entropy and information. In Proceedings of the fourth Berkeley symposium on
+   mathematical statistics and probability, volume 1: contributions to the theory of statistics, volume 4, pages 547–562.
+   University of California Press, 1961.
+
+
+
+
+                                                          12
+A      Proof of Group Feedback Collision
+Proof of Proposition 6.2 Since o1 , . . . , oG are sampled independently from πθold (· | q), the induced feedback values
+Z1 , . . . , ZG are i.i.d. with P[Zi = z] = pz . Therefore, the event that all sampled responses receive the same feedback
+value can be decomposed over all possible feedback values:
+                                                             X
+                                      P[Z1 = · · · = ZG ] =      P[Z1 = z, . . . , ZG = z].
+                                                           z
+
+By independence,
+                                                                   G
+                                                                   Y
+                                     P[Z1 = z, . . . , ZG = z] =         P[Zi = z] = pG
+                                                                                      z .
+                                                                   i=1
+Thus,                                                                    X
+                                               P[Z1 = · · · = ZG ] =          pG
+                                                                               z .
+                                                                          z
+By Definition 6.1,
+                                                             1      X
+                                            GFRG (q) = −        log   pG
+                                                                       z .
+                                                            G−1     z
+Rearranging gives                         X
+                                               pG
+                                                z = exp (−(G − 1)GFRG (q)) .
+                                           z
+Therefore,
+                                    P[Z1 = · · · = ZG ] = exp (−(G − 1)GFRG (q)) ,
+which proves the claim.                                                                                                  □
+
+B      AHC057 Problem Description and Training Prompt
+This appendix provides the task context used in the AHC057 case study. The training prompt asks the model to
+generate a complete Python solver for an AtCoder Heuristic Contest style optimization problem. Unlike exact-match
+programming tasks, this problem is score-based: many solvers may be valid, but they differ in objective value.
+System Prompt
+
+    You are a top-tier algorithm engineer solving an AtCoder Heuristic Contest style optimization problem.
+    Your goal is to produce a valid, executable, score-seeking Python solver under strict execution limits.
+
+    Output Format:
+    You MUST end your response with a complete, runnable Python code block wrapped in python ... .
+    After you output the final Python code block, do not output anything else.
+
+
+User Prompt
+
+    Problem: Story
+    AtCoder Laboratory is engaged in the development of new molecules. Takahashi, a genius chemist, can freely bond
+    atoms that move around at any timing he chooses to form molecules. However, bonding atoms consumes energy
+    depending on the distance between them, so he wants to create the required number of molecules using as little
+    energy as possible.
+
+    Problem Statement
+    Consider a two-dimensional plane defined by 0 ≤ x < L = 105 and 0 ≤ y < L = 105 . This plane has a toroidal
+    structure, meaning the left and right edges (x = 0 and x = L), as well as the top and bottom edges (y = 0 and
+    y = L), are connected. Any coordinates outside this range are normalized to fall within 0 ≤ x, y < L by taking the
+
+
+                                                            13
+remainder when divided by L for both x and y. For example, the position reached by moving (−20000, 30000)
+from (10000, 90000) is (90000, 20000).
+There are N points on this plane. At time t = 0, the initial position (xi , yi ) (0 ≤ xi , yi < L) and initial velocity
+(vxi , vyi ) (−100 ≤ vxi , vyi ≤ 100) of the i-th point (0 ≤ i < N ) are given as input. In the initial state, each
+point forms an independent connected component.
+At each time t = 0, 1, . . . , T − 1, the following two phases are processed in order: 1. Bonding Phase and 2.
+Movement Phase.
+
+1. Bonding Phase
+At time t, it is possible to bond two points that belong to different connected components. Multiple bonds may be
+performed in the same time step.
+Let (xi , yi ) be the position of point i at time t, and (xj , yj ) be the position of point j at time t. The bonding cost D
+for bonding point i and point j is calculated using the following distance formula:
+                                               q                                            
+                                                     min(L − ∆x, ∆x) 2 + min(L − ∆y, ∆y) 2
+                                                                                       
+                                   D = round                                                     ,
+                                                                                                                          (7)
+                                  ∆x = |xi − xj |,      ∆y = |yi − yj |.
+
+
+When two points are bonded, the velocity of the resulting connected component is updated according to the law of
+conservation of momentum. Suppose that before the bond, point i belongs to connected component A moving at
+velocity (vxA , vyA ), and point j belongs to connected component B moving at velocity (vxB , vyB ). Then, for
+all points belonging to connected components A and B, the velocity (vxnew , vynew ) after bonding is updated as
+follows:
+                                                 |A| × vxA + |B| × vxB
+                                        vxnew =                          ,
+                                                        |A| + |B|
+                                                                                                             (8)
+                                                 |A| × vyA + |B| × vyB
+                                        vynew =                         .
+                                                        |A| + |B|
+
+Here, |A| and |B| denote the number of points in connected components A and B, respectively. After bonding, all
+points in the resulting connected component will move with the same velocity. The positions of the points do not
+change due to bonding. Additionally, the order in which bonds are performed within the same time step does not
+affect the resulting positions, bonding costs, or velocities of the connected components.
+Coordinates and velocities may become fractional, but all computations are performed using double-precision
+floating-point arithmetic.
+
+1. Movement Phase
+The positions of all points in each connected component are updated simultaneously. Let (xi , yi ) be the position of
+point i at time t, and let (vxi , vyi ) be the velocity of the connected component to which point i belongs. Then, the
+position (x′i , yi′ ) of point i at time t + 1 is updated as follows:
+                                                 x′i = (xi + vxi ) mod L,
+                                                                                                                         (9)
+                                                     yi′ = (yi + vyi ) mod L.
+
+Plan the bonds so that at time T , the number of connected components is exactly M , and the size of each connected
+component is exactly K, while minimizing the total bonding cost D.
+
+Example of Bonding and Movement
+The figure above illustrates an example of bonding three points into a single connected component. First, the two
+points at the lower left and lower right are bonded, and their direction of movement changes upward. Next, they are
+bonded with the point moving to the right at the top, and the direction of movement changes to upward-right.
+
+Scoring
+
+
+
+
+                                                                 14
+Let the total bonding cost of all bonds be Dsum . The score for a single test case is calculated as follows. A higher
+score is better.                                                              
+                                                    6           L × (N − M )
+                                Score = round 10 × log2                              .                           (10)
+                                                                   Dsum + 1
+The result will be WA in the following cases:
+
+ • If the output is invalid
+ • If at time T , the number of connected components is not exactly M , or the size of each connected component
+   is not exactly K
+ • If a bond is specified between two points that already belong to the same connected component
+
+There are 150 test cases, and the score of a submission is the total score for each test case. If your submission
+produces an illegal output or exceeds the time limit for some test cases, the submission itself will be judged as WA
+or TLE, and the score of the submission will be zero. The highest score obtained during the contest will determine
+the final ranking, and there will be no system test after the contest. If more than one participant gets the same score,
+they will be ranked in the same place regardless of the submission time.
+
+Benchmark Interface
+In this benchmark, the official contest input is already parsed before your solver is called. Implement the typed
+solve(...)->List[str] signature shown below instead of reading from standard input.
+Solver arguments:
+
+ • point_count: N
+ • time_steps: T
+ • target_components: M
+ • target_component_size: K
+ • torus_size: L
+ • points: the full list of [xi , yi , vxi , vyi ] records
+
+The parsed instance still satisfies the official constraints:
+
+ • The total number of points is N = 300.
+ • The total number of steps is T = 1000.
+ • The target number of connected components is M = 10.
+ • The target size of each connected component is K = 30.
+ • The side length of the space is L = 105 .
+ • Each position satisfies 0 ≤ xi , yi < L.
+ • Each velocity satisfies 100 ≤ vxi , vyi ≤ 100.
+
+Return value:
+
+ • Return the official output as List[str], where each element is one stdout line.
+ • Output exactly point_count - target_components bond operations.
+ • Each output line must contain t i j, meaning that points i and j are bonded at time t.
+ • The evaluator processes bonds in ascending order of time t.
+ • Every output line must satisfy 0 ≤ t < time_steps, 0 ≤ i, j < point_count, and i ̸= j.
+
+Input Generation rand(L, U ): Randomly generates an integer between L and U , inclusive, with uniform
+probability.
+
+Generating Initial Positions
+
+
+
+                                                             15
+For each point i, independently generate
+                                                    xi = rand(0, L − 1),
+                                                                                                                (11)
+                                                    yi = rand(0, L − 1).
+
+Generating Initial Velocities
+For each point i, independently generate
+                                                  vxi = rand(−100, 100),
+                                                                                                                (12)
+                                                  vyi = rand(−100, 100).
+
+Tools (Input generator and visualizer)
+
+ • Web version: This is more powerful than the local version providing animations.
+ • Local version: You need a compilation environment of Rust language.
+ • Pre-compiled binary for Windows: If you are not familiar with the Rust language environment, please use this
+   instead.
+
+Please be aware that sharing visualization results or discussing solutions/ideas during the contest is prohibited.
+
+Benchmark Interface:
+
+ • The official contest input has already been parsed into the typed arguments of the solve(...)->List[str]
+   function shown below.
+ • Use those arguments directly instead of reading from standard input.
+ • Return the solver output as List[str], where each element is one stdout line.
+ • Do not call input(), sys.stdin.read(), or use print-driven main logic.
+
+Constraints:
+
+1. Execution time must be under 5 seconds.
+2. Your code will be scored by the quality of the solution it produces. Higher-quality solutions receive higher
+   rewards.
+3. Use the specific function signature provided below.
+4. The returned output must strictly follow the official output format.
+
+ from typing import List
+
+ def solve(
+     point_count: int,
+     time_steps: int,
+     target_components: int,
+     target_component_size: int,
+     torus_size: int,
+     points: List[List[int]],
+ ) -> List[str]:
+     """
+     Args:
+         point_count: Number of points `N`.
+         time_steps: Total number of time steps `T`.
+         target_components: Required component count `M`.
+         target_component_size: Required component size `K`.
+         torus_size: Side length `L` of the torus.
+         points: `[x_i, y_i, vx_i, vy_i]` records for all points.
+
+     Returns:
+         Output lines exactly as they should appear on stdout.
+         Each element of the returned list is one line.
+     """
+
+
+
+
+                                                                 16
+C     AHC057 Solver Listings
+This appendix lists the representative Python solvers analyzed in the AHC057 case study. Each solver follows
+the interface solve(point_count, time_steps, target_components, target_component_size, torus_size,
+points) -> List[str].
+
+C.1    RiVER-Best Solver
+
+                                             Listing 1: RiVER-best AHC057 solver.
+import math
+from typing import List
+
+def solve(
+    point_count: int,
+    time_steps: int,
+    target_components: int,
+    target_component_size: int,
+    torus_size: int,
+    points: List[List[int]],
+) -> List[str]:
+    def compute_min_distance(x1, y1, x2, y2, L):
+        dx = abs(x1 - x2)
+        dx = min(dx, L - dx)
+        dy = abs(y1 - y2)
+        dy = min(dy, L - dy)
+        return math.sqrt(dx*dx + dy*dy)
+
+      available = list(range(point_count))
+      groups = []
+
+      for _ in range(target_components):
+          if not available:
+              break
+          current_group = [available[0]]
+          available.pop(0)
+          while len(current_group) < target_component_size:
+              min_dist = float('inf')
+              best_idx = -1
+              for candidate in available:
+                  current_min = float('inf')
+                  for point in current_group:
+                      d = compute_min_distance(points[point][0], points[point][1], points[candidate][0], points[candidate][1],
+        torus_size)
+                      if d < current_min:
+                           current_min = d
+                  if current_min < min_dist:
+                      min_dist = current_min
+                      best_idx = candidate
+              if best_idx == -1:
+                  break
+              current_group.append(best_idx)
+              available.remove(best_idx)
+          groups.append(current_group)
+
+      bonds = []
+      for group in groups:
+          edges = []
+          for i in range(len(group)):
+              for j in range(i + 1, len(group)):
+                  p1 = group[i]
+                  p2 = group[j]
+                  x1, y1 = points[p1][0], points[p1][1]
+                  x2, y2 = points[p2][0], points[p2][1]
+                  dx = abs(x1 - x2)
+                  dx = min(dx, torus_size - dx)
+                  dy = abs(y1 - y2)
+                  dy = min(dy, torus_size - dy)
+                  dist = math.sqrt(dx*dx + dy*dy)
+                  edges.append((dist, p1, p2))
+          edges.sort()
+          parent = {node: node for node in group}
+          def find(u):
+              while parent[u] != u:
+
+
+
+                                                                  17
+                 parent[u] = parent[parent[u]]
+                 u = parent[u]
+             return u
+         def union(u, v):
+             root_u = find(u)
+             root_v = find(v)
+             if root_u != root_v:
+                 parent[root_v] = root_u
+         mst_edges = []
+         for dist, u, v in edges:
+             if find(u) != find(v):
+                 union(u, v)
+                 mst_edges.append((u, v))
+         for u, v in mst_edges:
+             bonds.append((0, u, v))
+
+      return [f"0 {u} {v}" for (t, u, v) in bonds]
+
+
+
+
+C.2    Raw-GRPO-Best Solver
+
+                                          Listing 2: Raw-GRPO-best AHC057 solver.
+import math
+from typing import List
+
+def solve(
+    point_count: int,
+    time_steps: int,
+    target_components: int,
+    target_component_size: int,
+    torus_size: int,
+    points: List[List[int]],
+) -> List[str]:
+    """
+    Args:
+        point_count: Number of points `N`.
+        time_steps: Total number of time steps `T`.
+        target_components: Required component count `M`.
+        target_component_size: Required component size `K`.
+        torus_size: Side length `L` of the torus.
+        points: `[x_i, y_i, vx_i, vy_i]` records for all points.
+
+      Returns:
+          Output lines exactly as they should appear on stdout.
+          Each element of the returned list is one line.
+      """
+      if target_components * target_component_size != point_count:
+          return []
+
+      M = target_components
+      K = target_component_size
+      L = torus_size
+
+      remaining_points = list(range(point_count))
+      groups = []
+
+      # Group points into M groups of K points each
+      for _ in range(M):
+          # Select the first point as seed
+          seed = remaining_points[0]
+          group = [seed]
+          remaining_points.pop(0)
+
+         # Select K-1 points closest to the seed
+         for _ in range(K - 1):
+             if not remaining_points:
+                 break
+             min_dist = float('inf')
+             min_idx = -1
+             for idx in remaining_points:
+                 x1, y1 = points[seed][0], points[seed][1]
+                 x2, y2 = points[idx][0], points[idx][1]
+                 dx = abs(x1 - x2)
+                 dx = min(dx, L - dx)
+                 dy = abs(y1 - y2)
+                 dy = min(dy, L - dy)
+                 dist = math.sqrt(dx**2 + dy**2)
+
+
+
+                                                                     18
+                 if dist < min_dist:
+                     min_dist = dist
+                     min_idx = idx
+             if min_idx != -1:
+                 group.append(min_idx)
+                 remaining_points.remove(min_idx)
+         groups.append(group)
+
+      # Function to generate MST edges for a group
+      def generate_mst_edges(group):
+          edges = []
+          for i in range(len(group)):
+              for j in range(i + 1, len(group)):
+                  x1, y1 = points[group[i]][0], points[group[i]][1]
+                  x2, y2 = points[group[j]][0], points[group[j]][1]
+                  dx = abs(x1 - x2)
+                  dx = min(dx, L - dx)
+                  dy = abs(y1 - y2)
+                  dy = min(dy, L - dy)
+                  dist = math.sqrt(dx**2 + dy**2)
+                  edges.append((dist, group[i], group[j]))
+          # Kruskal's algorithm
+          parent = {}
+          for node in group:
+              parent[node] = node
+
+         def find(u):
+             while parent[u] != u:
+                 parent[u] = parent[parent[u]]
+                 u = parent[u]
+             return u
+
+         def union(u, v):
+             root_u = find(u)
+             root_v = find(v)
+             if root_u != root_v:
+                 parent[root_v] = root_u
+                 return True
+             return False
+
+         edges.sort()
+         mst_edges = []
+         for dist, u, v in edges:
+             if find(u) != find(v):
+                 union(u, v)
+                 mst_edges.append((u, v))
+         return mst_edges
+
+      # Collect all bonds
+      bonds = []
+      for group in groups:
+          mst_edges = generate_mst_edges(group)
+          for u, v in mst_edges:
+              bonds.append((0, u, v))
+
+      # Generate output
+      output = []
+      for t, u, v in bonds:
+          output.append(f"{t} {u} {v}")
+      return output
+
+
+
+
+C.3    Qwen3-8B Solver
+
+                                              Listing 3: Qwen3-8B AHC057 solver.
+from typing import List
+
+def solve(
+    point_count: int,
+    time_steps: int,
+    target_components: int,
+    target_component_size: int,
+    torus_size: int,
+    points: List[List[int]],
+) -> List[str]:
+    """
+    Args:
+
+
+
+                                                                  19
+   point_count: Number of points N.
+   time_steps: Total number of time steps T.
+   target_components: Required component count M.
+   target_component_size: Required component size K.
+   torus_size: Side length L of the torus.
+   points: `[x_i, y_i, vx_i, vy_i]` records for all points.
+
+Returns:
+    Output lines exactly as they should appear on stdout.
+    Each element of the returned list is one line.
+"""
+M = target_components
+K = target_component_size
+L = torus_size
+
+# Preassign groups
+groups = [[] for _ in range(M)]
+for i in range(point_count):
+    group = i // K
+    groups[group].append(i)
+
+# Initialize components
+components = []
+for i in range(point_count):
+    x = points[i][0]
+    y = points[i][1]
+    vx = points[i][2]
+    vy = points[i][3]
+    group_id = i // K
+    components.append({
+        'points': [i],
+        'x': x,
+        'y': y,
+        'vx': vx,
+        'vy': vy,
+        'group': group_id
+    })
+
+bonds = []
+
+for time in range(time_steps):
+    # Bonding phase
+    for group_id in range(M):
+        # Collect all components in this group
+        group_components = [c for c in components if c['group'] == group_id]
+        pairs = []
+        for i in range(len(group_components)):
+            for j in range(i + 1, len(group_components)):
+                a = group_components[i]
+                b = group_components[j]
+                dx = abs(a['x'] - b['x'])
+                dy = abs(a['y'] - b['y'])
+                min_dx = min(L - dx, dx)
+                min_dy = min(L - dy, dy)
+                distance = (min_dx**2 + min_dy**2)**0.5
+                pairs.append((distance, a, b))
+        if pairs:
+            # Sort pairs by distance
+            pairs.sort()
+            min_distance, a, b = pairs[0]
+            # Record bond between first point of a and first point of b
+            i = a['points'][0]
+            j = b['points'][0]
+            bonds.append((time, i, j))
+            # Merge a and b
+            new_points = a['points'] + b['points']
+            new_x = a['x']
+            new_y = a['y']
+            new_vx = (a['vx'] * len(a['points']) + b['vx'] * len(b['points'])) / len(new_points)
+            new_vy = (a['vy'] * len(a['points']) + b['vy'] * len(b['points'])) / len(new_points)
+            new_group = a['group']
+            # Update components list
+            new_components = []
+            for c in components:
+                if c is a or c is b:
+                    continue
+                new_components.append(c)
+            new_components.append({
+                'points': new_points,
+                'x': new_x,
+
+
+
+
+                                                              20
+                'y': new_y,
+                'vx': new_vx,
+                'vy': new_vy,
+                'group': new_group
+            })
+            components = new_components
+
+   # Movement phase
+   for c in components:
+       c['x'] = (c['x'] + c['vx']) %
+       c['y'] = (c['y'] + c['vy']) %
+
+# Format the bonds
+bond_output = []
+for t, i, j in bonds:
+    bond_output.append(f"{t} {i} {j}")
+
+return bond_output
+
+
+
+
+                                          21
+

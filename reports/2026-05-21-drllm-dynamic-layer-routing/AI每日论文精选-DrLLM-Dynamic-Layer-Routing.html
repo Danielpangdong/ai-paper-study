@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | Dr.LLM: Dynamic Layer Routing in LLMs</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f6f7f9;
+      --ink: #14171f;
+      --muted: #5e6675;
+      --line: #dfe3ea;
+      --card: #ffffff;
+      --accent: #d92d20;
+      --accent-2: #0b6bcb;
+      --accent-3: #14866d;
+      --soft: #eef2f7;
+      --soft-red: #fff0ee;
+      --soft-blue: #edf5ff;
+      --soft-green: #edf8f4;
+      --shadow: 0 14px 42px rgba(20, 23, 31, .08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111318;
+        --ink: #f4f6fb;
+        --muted: #aeb6c5;
+        --line: #2c313c;
+        --card: #191d25;
+        --soft: #202632;
+        --soft-red: #331b1a;
+        --soft-blue: #142437;
+        --soft-green: #122820;
+        --shadow: 0 14px 42px rgba(0, 0, 0, .28);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.72 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    a { color: var(--accent-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, .8fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 22px;
+    }
+    .panel, .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .hero-main { padding: 28px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+      background: var(--soft);
+    }
+    h1 {
+      margin: 16px 0 12px;
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 34px 0 14px;
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+    p { margin: 0 0 14px; }
+    .subhead { color: var(--muted); font-size: 18px; max-width: 790px; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .meta {
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+      min-height: 76px;
+    }
+    .label { display: block; color: var(--muted); font-size: 12px; margin-bottom: 3px; }
+    .value { font-weight: 700; }
+    .hero-side { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+    .score-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+    .score {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      background: conic-gradient(var(--accent) 0 86%, #9aa3b2 86% 100%);
+    }
+    .score.green { background: conic-gradient(var(--accent-3) 0 84%, #9aa3b2 84% 100%); }
+    .score.blue { background: conic-gradient(var(--accent-2) 0 88%, #9aa3b2 88% 100%); }
+    .section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 18px;
+      box-shadow: var(--shadow);
+    }
+    .grid-3, .grid-2 {
+      display: grid;
+      gap: 14px;
+      margin: 16px 0;
+    }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { box-shadow: none; padding: 16px; }
+    .card.red { background: var(--soft-red); }
+    .card.blue { background: var(--soft-blue); }
+    .card.green { background: var(--soft-green); }
+    .kicker { color: var(--muted); font-size: 13px; font-weight: 700; text-transform: uppercase; }
+    .bigline {
+      padding: 18px;
+      border-left: 5px solid var(--accent);
+      background: var(--soft);
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+    .table-wrap { overflow-x: auto; margin: 16px 0; border: 1px solid var(--line); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; min-width: 720px; background: var(--card); }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: var(--muted); font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .diagram {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      margin: 16px 0;
+    }
+    .diagram svg { display: block; width: 100%; height: auto; }
+    .note {
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .terms {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .term {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--soft);
+    }
+    .term strong { display: block; margin-bottom: 6px; }
+    .sources li { margin-bottom: 8px; }
+    .pill {
+      display: inline-block;
+      margin: 4px 6px 4px 0;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    @media (max-width: 820px) {
+      .hero, .grid-3, .grid-2, .terms, .meta-grid { grid-template-columns: 1fr; }
+      .hero-main, .section { padding: 18px; }
+      table { min-width: 640px; }
+    }
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div class="panel hero-main">
+      <span class="eyebrow">AI每日论文精选 · 2026-05-21</span>
+      <h1>让大模型学会“该省脑子时省脑子，该深想时深想”</h1>
+      <p class="subhead">今日论文：<strong>Dr.LLM: Dynamic Layer Routing in LLMs</strong>。它不是又造一个更大的模型，而是在问一个更接近产品和成本的问题：同一个模型，为什么每个问题都必须走完所有层？</p>
+      <div class="meta-grid">
+        <div class="meta"><span class="label">论文标题</span><span class="value">Dr.LLM: Dynamic Layer Routing in LLMs</span></div>
+        <div class="meta"><span class="label">中文标题</span><span class="value">Dr.LLM：大语言模型中的动态层路由</span></div>
+        <div class="meta"><span class="label">作者 / 机构</span><span class="value">Ahmed Heakl、Martin Gubri、Salman Khan、Sangdoo Yun、Seong Joon Oh；Parameter Lab、MBZUAI、NAVER AI Lab、University of Tubingen、Tubingen AI Center</span></div>
+        <div class="meta"><span class="label">发布时间 / 平台</span><span class="value">2025-10-14 arXiv；2026-01-26 ICLR 2026 Poster；2026-05-18 arXiv v2</span></div>
+      </div>
+      <p>
+        <span class="pill"><a href="https://arxiv.org/abs/2510.12773">arXiv</a></span>
+        <span class="pill"><a href="https://openreview.net/forum?id=3ow7tq0O3l">OpenReview</a></span>
+        <span class="pill"><a href="https://openreview.net/pdf?id=3ow7tq0O3l">PDF</a></span>
+        <span class="pill"><a href="https://github.com/parameterlab/dr-llm">GitHub</a></span>
+      </p>
+    </div>
+    <aside class="panel hero-side">
+      <div class="score-row"><div class="score">86</div><div><strong>长期价值</strong><br><span class="label">指向未来模型推理的核心问题：计算预算如何按难度分配。</span></div></div>
+      <div class="score-row"><div class="score green">84</div><div><strong>产业落地</strong><br><span class="label">冻结底座、加小路由器，理论上更容易接入已有模型。</span></div></div>
+      <div class="score-row"><div class="score blue">88</div><div><strong>认知突破</strong><br><span class="label">把 Transformer 的“固定深度流水线”改成“按题调度计算”。</span></div></div>
+      <div class="note">一句判断：这篇论文值得读，因为它把“更强推理”与“更低推理成本”放进同一个问题里，而不是简单地用更多参数硬堆。</div>
+    </aside>
+  </section>
+
+  <section id="why" class="section">
+    <h2>2. 为什么今天选它？</h2>
+    <p>普通用户看到 AI 回答时，只会感觉它“快”或“慢”。但在模型内部，每个 token 通常都要穿过完整的 Transformer 层。一个简单问题和一个复杂数学题，都像被安排走同一条生产线、做同样多的工序。</p>
+    <p>Dr.LLM 关注的正是这个浪费：简单问题可能不需要所有层，困难问题反而可能需要某些层多想一次。它给每一层加一个很小的路由器，让模型在推理时选择跳过、执行或重复某一层。更重要的是，它不需要改动原始大模型权重，而是通过离线搜索找出好路线，再训练小路由器学会这些路线。</p>
+    <div class="grid-3">
+      <div class="card red"><span class="kicker">行业意义</span><h3>推理成本会决定产品边界</h3><p>当 AI Agent、长上下文和多轮任务变多，真正昂贵的不只是训练，而是每天海量推理。</p></div>
+      <div class="card blue"><span class="kicker">技术突破</span><h3>从固定深度到动态深度</h3><p>模型不再像电梯每层都停，而是根据问题难度决定哪些层必须经过。</p></div>
+      <div class="card green"><span class="kicker">长期价值</span><h3>预算感会进入模型架构</h3><p>未来模型可能不只追求更大，还会追求“把计算花在最值得的地方”。</p></div>
+    </div>
+  </section>
+
+  <section id="one-line" class="section">
+    <h2>3. 一句话讲透论文</h2>
+    <div class="bigline">Dr.LLM 本质上是在给大模型每一层配一个“调度员”：简单题少走几道工序，难题让关键工序再加工一次。</div>
+    <p>如果把 Transformer 想成一座 32 层办公楼，传统模型每个问题都从 1 楼走到 32 楼。Dr.LLM 的想法是：有些问题到 18 楼就够了，有些问题在 26 楼需要多开一次会。关键不是“少算就好”，而是“算得刚刚好”。</p>
+  </section>
+
+  <section id="contrib" class="section">
+    <h2>4. 核心贡献拆解</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>贡献</th><th>它做了什么</th><th>解决的老问题</th><th>为什么更好</th></tr></thead>
+        <tbody>
+          <tr><td>每层路由器</td><td>给冻结的 LLM 每个 Transformer block 配一个轻量 MLP，决定 skip、execute 或 repeat。</td><td>传统模型每个输入都走固定层数。</td><td>简单输入可少算，困难输入可把局部计算加深。</td></tr>
+          <tr><td>离线 MCTS 监督</td><td>用 Monte Carlo Tree Search 搜索好路径，再把这些路径作为训练标签。</td><td>直接在线搜索太慢，生产推理不可用。</td><td>训练时慢慢找，推理时由路由器一次决定。</td></tr>
+          <tr><td>不改底座权重</td><td>冻结 LLaMA、Qwen 等基础模型，只训练很小的路由器。</td><td>许多动态深度方法需要重新训练或改架构。</td><td>更像给已有模型加外挂机制，工程迁移成本更低。</td></tr>
+          <tr><td>长文本稳定路由</td><td>用 windowed mean pooling 汇总隐藏状态，避免直接看全部 token 太重。</td><td>长上下文下路由信号不稳定、开销容易变大。</td><td>把一长段内容分窗平均，像先看每页摘要再决定下一步。</td></tr>
+          <tr><td>兼顾准确率与效率</td><td>在 ARC、DART 上平均提升准确率并减少执行层数，OOD 任务平均准确率仅小幅下降。</td><td>很多加速方法会牺牲准确率。</td><td>论文把“省算力”和“别变笨”作为同一个优化目标。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 390" role="img" aria-label="Dr.LLM 核心架构图">
+        <rect width="980" height="390" fill="#ffffff"/>
+        <text x="36" y="44" font-size="24" font-weight="700" fill="#14171f">Dr.LLM：每一层都有一个小调度员</text>
+        <rect x="54" y="104" width="160" height="74" rx="8" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="86" y="135" font-size="17" font-weight="700" fill="#14171f">输入问题</text>
+        <text x="82" y="160" font-size="13" fill="#5e6675">简单 / 中等 / 困难</text>
+        <path d="M214 141 L292 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow1)"/>
+        <rect x="304" y="84" width="118" height="112" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="334" y="122" font-size="15" font-weight="700" fill="#14171f">第 1 层</text>
+        <rect x="328" y="144" width="70" height="28" rx="5" fill="#fff0ee" stroke="#d92d20"/>
+        <text x="344" y="163" font-size="12" fill="#14171f">Router</text>
+        <path d="M422 141 L482 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow1)"/>
+        <rect x="494" y="84" width="118" height="112" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="524" y="122" font-size="15" font-weight="700" fill="#14171f">第 n 层</text>
+        <rect x="518" y="144" width="70" height="28" rx="5" fill="#edf8f4" stroke="#14866d"/>
+        <text x="534" y="163" font-size="12" fill="#14171f">Router</text>
+        <path d="M612 141 L672 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow1)"/>
+        <rect x="684" y="84" width="118" height="112" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="714" y="122" font-size="15" font-weight="700" fill="#14171f">第 L 层</text>
+        <rect x="708" y="144" width="70" height="28" rx="5" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="724" y="163" font-size="12" fill="#14171f">Router</text>
+        <path d="M802 141 L868 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow1)"/>
+        <rect x="872" y="104" width="70" height="74" rx="8" fill="#edf8f4" stroke="#14866d"/>
+        <text x="890" y="135" font-size="16" font-weight="700" fill="#14171f">输出</text>
+        <rect x="242" y="258" width="130" height="54" rx="8" fill="#fff0ee" stroke="#d92d20"/>
+        <text x="287" y="291" font-size="14" fill="#14171f">跳过</text>
+        <rect x="426" y="258" width="130" height="54" rx="8" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="471" y="291" font-size="14" fill="#14171f">执行</text>
+        <rect x="610" y="258" width="130" height="54" rx="8" fill="#edf8f4" stroke="#14866d"/>
+        <text x="655" y="291" font-size="14" fill="#14171f">重复</text>
+        <text x="320" y="344" font-size="15" fill="#5e6675">路由器只做三选一：少算、正常算、再算一次。</text>
+        <defs><marker id="arrow1" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#14171f"/></marker></defs>
+      </svg>
+    </div>
+  </section>
+
+  <section id="how" class="section">
+    <h2>5. 工作原理：深入浅出</h2>
+    <p>可以把 Dr.LLM 想成医院分诊系统。传统模型像让所有病人都走同样的全套检查：挂号、验血、CT、核磁、专家会诊，一个不少。Dr.LLM 则先看病情摘要：感冒病人不必做核磁，复杂病例可以让专家多看一遍。</p>
+    <div class="grid-2">
+      <div class="card"><h3>步骤 1：离线找好路线</h3><p>论文用 MCTS 对训练题目进行路径搜索：某层跳过会不会还答对？某层重复一次会不会更准？这一步很贵，但只在训练数据生成阶段做。</p></div>
+      <div class="card"><h3>步骤 2：把路线变成标签</h3><p>每一层得到一个标签：0 表示跳过，1 表示执行，2 表示重复一次。这些标签就是路由器的老师。</p></div>
+      <div class="card"><h3>步骤 3：训练小路由器</h3><p>底座模型权重冻结，只训练每层旁边的小 MLP。它读取上一层隐藏状态的窗口摘要，然后预测三种动作。</p></div>
+      <div class="card"><h3>步骤 4：推理时不再搜索</h3><p>用户真正使用模型时，路由器直接给出动作。推理不需要 MCTS，所以能落到实际服务链路。</p></div>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 430" role="img" aria-label="MCTS 训练到路由器推理流程图">
+        <rect width="980" height="430" fill="#ffffff"/>
+        <text x="36" y="42" font-size="24" font-weight="700" fill="#14171f">从“慢慢找路”到“快速带路”</text>
+        <rect x="70" y="100" width="180" height="82" rx="8" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="108" y="132" font-size="17" font-weight="700" fill="#14171f">训练题目</text>
+        <text x="98" y="158" font-size="13" fill="#5e6675">ARC / DART 等</text>
+        <path d="M250 141 L338 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow2)"/>
+        <rect x="350" y="92" width="220" height="98" rx="8" fill="#fff0ee" stroke="#d92d20"/>
+        <text x="398" y="126" font-size="17" font-weight="700" fill="#14171f">离线 MCTS 搜索</text>
+        <text x="386" y="154" font-size="13" fill="#5e6675">试很多 skip / execute / repeat 路径</text>
+        <path d="M570 141 L658 141" stroke="#14171f" stroke-width="2" marker-end="url(#arrow2)"/>
+        <rect x="670" y="100" width="220" height="82" rx="8" fill="#edf8f4" stroke="#14866d"/>
+        <text x="714" y="132" font-size="17" font-weight="700" fill="#14171f">路径标签</text>
+        <text x="704" y="158" font-size="13" fill="#5e6675">每层一个动作标签</text>
+        <path d="M780 182 L780 246" stroke="#14171f" stroke-width="2" marker-end="url(#arrow2)"/>
+        <rect x="638" y="254" width="284" height="86" rx="8" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="706" y="288" font-size="17" font-weight="700" fill="#14171f">训练小路由器</text>
+        <text x="690" y="314" font-size="13" fill="#5e6675">底座冻结；只训练 router 参数</text>
+        <path d="M638 298 L520 298" stroke="#14171f" stroke-width="2" marker-end="url(#arrow2)"/>
+        <rect x="286" y="254" width="230" height="86" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="344" y="288" font-size="17" font-weight="700" fill="#14171f">线上推理</text>
+        <text x="322" y="314" font-size="13" fill="#5e6675">不再搜索，路由器直接决策</text>
+        <text x="70" y="382" font-size="15" fill="#5e6675">关键点：MCTS 像教练慢慢复盘比赛，router 像球员上场时凭训练习惯快速决策。</text>
+        <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#14171f"/></marker></defs>
+      </svg>
+    </div>
+  </section>
+
+  <section id="terms" class="section">
+    <h2>6. 关键术语解释</h2>
+    <div class="terms">
+      <div class="term"><strong>Transformer Layer</strong><p>专业解释：Transformer 模型中的一个计算块，通常包含注意力、前馈网络和残差连接。白话解释：像工厂流水线上的一道加工工序。</p></div>
+      <div class="term"><strong>Dynamic Layer Routing</strong><p>专业解释：根据输入状态动态决定某层是否执行或重复。白话解释：不是每个问题都走同一条楼梯，而是按难度选择路线。</p></div>
+      <div class="term"><strong>MCTS</strong><p>专业解释：Monte Carlo Tree Search，用模拟探索不同决策路径并挑选高回报路线。白话解释：像下棋前推演很多种走法，再选最可能赢的走法。</p></div>
+      <div class="term"><strong>Hidden State</strong><p>专业解释：模型每层内部对当前输入的向量表示。白话解释：模型读到这里时脑子里的临时理解。</p></div>
+      <div class="term"><strong>Windowed Mean Pooling</strong><p>专业解释：把长序列分成多个窗口，对每个窗口隐藏状态取平均，形成紧凑摘要。白话解释：不逐字看整本书，而是先看每章摘要。</p></div>
+      <div class="term"><strong>Focal Loss</strong><p>专业解释：让模型在类别不平衡时更关注难分、少见类别的损失函数。白话解释：班上大多数答案都是“执行”，老师会额外提醒它别忽略少数“跳过”和“重复”。</p></div>
+      <div class="term"><strong>KV Cache</strong><p>专业解释：推理时缓存注意力里的 Key/Value，避免重复计算旧 token。白话解释：已经查过的资料放在便签里，下次不用重新翻书。</p></div>
+      <div class="term"><strong>Out-of-Domain Generalization</strong><p>专业解释：在训练领域之外的任务上仍保持效果。白话解释：只在数学和逻辑题上练过，换到常识、考试、问答也别突然失灵。</p></div>
+    </div>
+  </section>
+
+  <section id="results" class="section">
+    <h2>7. 实验结果解读</h2>
+    <p>这篇论文最值得关注的不是某一个榜单分数，而是它同时展示了三件事：准确率可以提高，执行层数可以减少，路由器的额外开销很小。换句话说，它在挑战一个常见假设：省算力就一定会变笨。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>实验发现</th><th>论文中的数字</th><th>结果意味着什么</th></tr></thead>
+        <tbody>
+          <tr><td>推理更省</td><td>论文报告在 1k-token 生成中，Dr.LLM 将生成时间降低 15.3%，路由器开销低于 1%。</td><td>如果这类方法成熟，大规模 API 服务可以在不换底座的情况下降低成本。</td></tr>
+          <tr><td>准确率也能提高</td><td>ARC 与 DART 上，六个模型平均提升 +2.25 个百分点，并平均少执行 5.0 层。</td><td>路由不是单纯删层，而是在把“多算”和“少算”分配给更合适的位置。</td></tr>
+          <tr><td>最好案例更明显</td><td>论文贡献项称最高 +4.0 个百分点，并在该案例中节省 11.0 层。</td><td>某些任务里，固定层数确实不是最优路线。</td></tr>
+          <tr><td>迁移能力尚可</td><td>在 MMLU、GSM8k、AIME、TruthfulQA、SQuADv2、GPQA、PIQA、AGIEval 等 OOD 任务上平均仅下降 0.85 个百分点。</td><td>路由器学到的不只是某个数据集技巧，而可能是模型层之间更通用的冗余模式。</td></tr>
+          <tr><td>训练数据不大</td><td>路由器由 4K 条 MCTS 生成路径监督训练；MCTS 离线评估约 961k 次 forward pass。</td><td>线上推理轻，但训练前的数据生成不免费，需要一次性投入。</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="diagram">
+      <svg viewBox="0 0 980 390" role="img" aria-label="Dr.LLM 实验结果可视化">
+        <rect width="980" height="390" fill="#ffffff"/>
+        <text x="36" y="42" font-size="24" font-weight="700" fill="#14171f">结果不是“少算一点”，而是“把计算挪到更有用的地方”</text>
+        <text x="90" y="104" font-size="16" fill="#5e6675">生成时间降低</text>
+        <rect x="90" y="128" width="700" height="42" rx="6" fill="#edf5ff"/>
+        <rect x="90" y="128" width="482" height="42" rx="6" fill="#0b6bcb"/>
+        <text x="594" y="156" font-size="18" font-weight="700" fill="#14171f">15.3%</text>
+        <text x="90" y="214" font-size="16" fill="#5e6675">平均准确率提升</text>
+        <rect x="90" y="238" width="700" height="42" rx="6" fill="#edf8f4"/>
+        <rect x="90" y="238" width="252" height="42" rx="6" fill="#14866d"/>
+        <text x="362" y="266" font-size="18" font-weight="700" fill="#14171f">+2.25%p</text>
+        <text x="90" y="320" font-size="16" fill="#5e6675">平均少执行层数</text>
+        <rect x="90" y="344" width="700" height="28" rx="6" fill="#fff0ee"/>
+        <rect x="90" y="344" width="438" height="28" rx="6" fill="#d92d20"/>
+        <text x="548" y="366" font-size="18" font-weight="700" fill="#14171f">5.0 层</text>
+      </svg>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>对比对象</th><th>传统做法</th><th>Dr.LLM 做法</th><th>读者该抓住的重点</th></tr></thead>
+        <tbody>
+          <tr><td>简单问题</td><td>完整走完所有层。</td><td>部分中间层可跳过。</td><td>省下的计算可能就是未来更便宜的 AI 服务。</td></tr>
+          <tr><td>困难问题</td><td>仍然每层只走一次。</td><td>少数层可以重复一次。</td><td>模型获得局部“再想一下”的机会。</td></tr>
+          <tr><td>部署方式</td><td>常需要重训、改架构或在线搜索。</td><td>冻结底座，只训练路由器；推理时无需搜索。</td><td>更接近可插拔优化，而不是重造模型。</td></tr>
+          <tr><td>工程风险</td><td>路径固定，行为更可预测。</td><td>路径动态，需验证延迟、缓存和 batch 行为。</td><td>研究很有吸引力，生产还要看系统集成。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="limits" class="section">
+    <h2>8. 局限性与问题</h2>
+    <div class="grid-2">
+      <div class="card red"><h3>离线搜索成本不低</h3><p>论文的 4K 路径来自大量 MCTS forward pass。它把成本从线上移到线下，不等于完全免费。</p></div>
+      <div class="card red"><h3>主要验证仍在中小开源模型</h3><p>实验覆盖 LLaMA-3.2 3B/8B 与 Qwen-2.5 3B/7B。是否能稳定迁移到更大闭源模型，还需要更多证据。</p></div>
+      <div class="card red"><h3>动态路径会影响服务系统</h3><p>batching、KV cache、GPU kernel 调度、延迟尾部都可能被动态执行路径影响。论文称兼容 KV cache，但生产系统仍需单独压测。</p></div>
+      <div class="card red"><h3>少数动作很难学</h3><p>论文指出 execute 标签超过 90%，skip 与 repeat 很少。路由器要在不平衡标签里学到真正有用的少数动作。</p></div>
+      <div class="card red"><h3>准确率平均下降仍需解释</h3><p>OOD 平均只下降 0.85 个百分点很小，但不同任务、不同用户容忍度不同。医疗、金融等场景不能只看平均值。</p></div>
+      <div class="card red"><h3>重复层不是万能推理</h3><p>让某层多算一次，和真正的长链规划、工具调用、外部验证不是一回事。它提升的是模型内部计算调度，不等于解决所有推理失败。</p></div>
+    </div>
+  </section>
+
+  <section id="industry" class="section">
+    <h2>9. 产业影响分析</h2>
+    <p>如果 Dr.LLM 这类方向继续发展，AI 产品会多出一个新旋钮：不是只选模型大小、上下文长度、温度，而是选择“这次回答愿意花多少层计算”。这会直接影响 API 成本、延迟、移动端部署、企业私有化和 Agent 长任务。</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>角色</th><th>可能受益</th><th>可能被冲击</th></tr></thead>
+        <tbody>
+          <tr><td>模型 API 平台</td><td>可以按任务难度分配推理预算，降低平均成本。</td><td>现有固定模型规格定价可能变得粗糙。</td></tr>
+          <tr><td>Agent 产品</td><td>简单步骤快跑，关键步骤深算，长任务成本更可控。</td><td>需要更复杂的监控，防止省算力导致关键错误。</td></tr>
+          <tr><td>端侧 AI</td><td>设备算力有限，动态跳层有助于在手机或本地机器上运行。</td><td>动态控制会增加实现和验证难度。</td></tr>
+          <tr><td>芯片与推理框架</td><td>新需求会推动动态计算图、条件执行、路由友好 kernel。</td><td>只为固定形状优化的推理栈会遇到适配压力。</td></tr>
+          <tr><td>企业采购者</td><td>可按“任务难度-成本-准确率”做更细的 SLA。</td><td>评估不再只看模型名，还要看路由策略和预算策略。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="diagram">
+      <svg viewBox="0 0 980 420" role="img" aria-label="产业影响路径">
+        <rect width="980" height="420" fill="#ffffff"/>
+        <text x="36" y="44" font-size="24" font-weight="700" fill="#14171f">产业路径：推理预算变成产品能力</text>
+        <rect x="70" y="108" width="180" height="90" rx="8" fill="#edf5ff" stroke="#0b6bcb"/>
+        <text x="112" y="145" font-size="17" font-weight="700" fill="#14171f">固定模型</text>
+        <text x="96" y="172" font-size="14" fill="#5e6675">同一深度，同一成本</text>
+        <path d="M250 153 L344 153" stroke="#14171f" stroke-width="2" marker-end="url(#arrow3)"/>
+        <rect x="350" y="108" width="200" height="90" rx="8" fill="#fff0ee" stroke="#d92d20"/>
+        <text x="398" y="145" font-size="17" font-weight="700" fill="#14171f">动态层路由</text>
+        <text x="384" y="172" font-size="14" fill="#5e6675">按题目难度分配计算</text>
+        <path d="M550 153 L644 153" stroke="#14171f" stroke-width="2" marker-end="url(#arrow3)"/>
+        <rect x="650" y="108" width="230" height="90" rx="8" fill="#edf8f4" stroke="#14866d"/>
+        <text x="716" y="145" font-size="17" font-weight="700" fill="#14171f">预算感 AI</text>
+        <text x="688" y="172" font-size="14" fill="#5e6675">快答 / 深答 / 省电 / 高精度</text>
+        <rect x="126" y="274" width="180" height="70" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="168" y="316" font-size="15" fill="#14171f">低延迟客服</text>
+        <rect x="400" y="274" width="180" height="70" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="448" y="316" font-size="15" fill="#14171f">长任务 Agent</text>
+        <rect x="674" y="274" width="180" height="70" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/>
+        <text x="724" y="316" font-size="15" fill="#14171f">端侧模型</text>
+        <path d="M708 198 C640 232 314 236 216 274" stroke="#14866d" stroke-width="2" fill="none"/>
+        <path d="M760 198 C706 234 560 238 490 274" stroke="#14866d" stroke-width="2" fill="none"/>
+        <path d="M806 198 C836 232 790 244 764 274" stroke="#14866d" stroke-width="2" fill="none"/>
+        <defs><marker id="arrow3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#14171f"/></marker></defs>
+      </svg>
+    </div>
+  </section>
+
+  <section id="old-new" class="section">
+    <h3>补充：与旧方法对比</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>方法</th><th>核心思路</th><th>优点</th><th>主要代价</th><th>Dr.LLM 的差异</th></tr></thead>
+        <tbody>
+          <tr><td>LayerSkip</td><td>训练模型具备早退和自投机解码能力。</td><td>推理可加速，Meta 已开源相关模型。</td><td>通常需要训练配方或微调支持。</td><td>Dr.LLM 尝试 retrofit 冻结底座，并允许重复层。</td></tr>
+          <tr><td>Mixture-of-Depths</td><td>在 token 维度动态分配深度计算。</td><td>计算预算可控，训练时学会选择 token。</td><td>需要模型训练阶段进入架构设计。</td><td>Dr.LLM 在层级别控制整段输入的路径。</td></tr>
+          <tr><td>CoLa</td><td>把预训练层当模块，用搜索构造每个样本的层链。</td><td>思路接近动态路径。</td><td>在线搜索昂贵，且搜索依赖标签判断正确路径。</td><td>Dr.LLM 把搜索放到离线，用路由器替代线上搜索。</td></tr>
+          <tr><td>剪枝 / 早退</td><td>删掉部分层或提前输出。</td><td>概念直接，部署相对清楚。</td><td>容易牺牲准确率或需要校准。</td><td>Dr.LLM 同时有跳过和重复，能把计算重新分配。</td></tr>
+          <tr><td>MoE</td><td>在专家模块之间路由 token。</td><td>扩大容量而不全量激活。</td><td>通常需要大规模训练和复杂并行。</td><td>Dr.LLM 不是选专家，而是在同一模型层深度上调度。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="mental-model" class="section">
+    <h3>补充：一个更好的理解框架</h3>
+    <p>不要把 Dr.LLM 理解成“又一种剪枝”。剪枝更像把工厂某些机器拆掉；Dr.LLM 更像给工厂装了排班系统。机器还在，但每张订单可以决定哪些机器跳过、哪些机器正常用、哪些机器需要返工一次。</p>
+    <div class="diagram">
+      <svg viewBox="0 0 980 360" role="img" aria-label="Dr.LLM 理解框架">
+        <rect width="980" height="360" fill="#ffffff"/>
+        <text x="36" y="42" font-size="24" font-weight="700" fill="#14171f">从“固定流水线”到“按订单排班”</text>
+        <rect x="70" y="110" width="210" height="92" rx="8" fill="#fff0ee" stroke="#d92d20"/>
+        <text x="118" y="148" font-size="17" font-weight="700" fill="#14171f">固定流水线</text>
+        <text x="98" y="176" font-size="14" fill="#5e6675">每个问题都走所有层</text>
+        <path d="M280 156 C366 80 504 80 590 156" stroke="#14171f" stroke-width="2" fill="none" marker-end="url(#arrow4)"/>
+        <rect x="590" y="110" width="320" height="92" rx="8" fill="#edf8f4" stroke="#14866d"/>
+        <text x="646" y="148" font-size="17" font-weight="700" fill="#14171f">按订单排班</text>
+        <text x="632" y="176" font-size="14" fill="#5e6675">简单题跳过，难题重复，底座不变</text>
+        <rect x="188" y="258" width="120" height="46" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/><text x="218" y="287" font-size="14" fill="#14171f">更省</text>
+        <rect x="348" y="258" width="120" height="46" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/><text x="378" y="287" font-size="14" fill="#14171f">更准</text>
+        <rect x="508" y="258" width="120" height="46" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/><text x="538" y="287" font-size="14" fill="#14171f">可插拔</text>
+        <rect x="668" y="258" width="120" height="46" rx="8" fill="#f6f7f9" stroke="#9aa3b2"/><text x="698" y="287" font-size="14" fill="#14171f">需验证</text>
+        <defs><marker id="arrow4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#14171f"/></marker></defs>
+      </svg>
+    </div>
+  </section>
+
+  <section id="reading" class="section">
+    <h2>10. 延伸阅读</h2>
+    <ul class="sources">
+      <li><a href="https://arxiv.org/abs/2510.12773">Dr.LLM: Dynamic Layer Routing in LLMs</a>，arXiv 摘要页。</li>
+      <li><a href="https://openreview.net/forum?id=3ow7tq0O3l">Dr.LLM OpenReview 页面</a>，ICLR 2026 Poster、作者、关键词与摘要。</li>
+      <li><a href="https://openreview.net/pdf?id=3ow7tq0O3l">Dr.LLM PDF</a>，包含方法、MCTS 算法、实验表格与附录分析。</li>
+      <li><a href="https://github.com/parameterlab/dr-llm">parameterlab/dr-llm GitHub</a>，官方代码仓库与使用说明。</li>
+      <li><a href="https://arxiv.org/abs/2404.16710">LayerSkip: Enabling Early Exit Inference and Self-Speculative Decoding</a>，理解早退推理的重要背景。</li>
+      <li><a href="https://arxiv.org/abs/2404.02258">Mixture-of-Depths: Dynamically allocating compute in transformer-based language models</a>，理解动态深度计算的相关方向。</li>
+      <li><a href="https://huggingface.co/papers/2507.07996">Skip a Layer or Loop it? Test-Time Depth Adaptation of Pretrained LLMs</a>，与 CoLa / chain-of-layers 思路相关。</li>
+      <li><a href="https://www.codesota.com/recent_papers">CodeSOTA Recent Papers Calendar</a>，用于交叉观察 2026-05-20 附近 AI 论文趋势。</li>
+    </ul>
+  </section>
+
+  <section id="sources" class="section">
+    <h2>11. 引用来源</h2>
+    <ul class="sources">
+      <li>arXiv:2510.12773 摘要页：提交日期、2026-05-18 v2 修订、作者、主题分类、核心实验数字。</li>
+      <li>OpenReview: Dr.LLM 页面：ICLR 2026 Poster 状态、关键词、发布时间、作者信息与摘要。</li>
+      <li>OpenReview PDF：方法细节、MCTS 路径生成、4K 监督样本、961k forward pass、15.3% 生成时间下降、路由器开销低于 1%、平均 +2.25%p 与少 5 层等数据。</li>
+      <li>parameterlab/dr-llm GitHub：代码发布日期、支持模型、数据生成、训练、评估命令、训练参数与路由器参数说明。</li>
+      <li>LayerSkip arXiv：早退推理与自投机解码背景。</li>
+      <li>Mixture-of-Depths arXiv / Hugging Face Papers：按 token 动态分配 Transformer 计算的相关研究背景。</li>
+      <li>CoLa / Chain-of-Layers 相关论文页面：预训练层跳过或循环的测试时深度适配背景。</li>
+      <li>CodeSOTA Recent Papers：2026-05-20 动态层路由被列为当日高信号系统方向之一。</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

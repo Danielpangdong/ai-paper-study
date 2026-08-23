@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AI每日精读 · 2026-08-10 · DeepAgent</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--accent:#38bdf8;--accent2:#a78bfa;--good:#34d399;--warn:#fbbf24;--bad:#f87171;--text:#e2e8f0;--muted:#94a3b8;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#0f172a,#1e1b4b);color:var(--text);line-height:1.7;padding:32px 16px;min-height:100vh}
+.container{max-width:960px;margin:0 auto}
+.header{background:linear-gradient(135deg,#0284c7,#7c3aed);padding:32px;border-radius:16px;margin-bottom:24px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.header .tag{display:inline-block;background:rgba(255,255,255,.2);padding:4px 12px;border-radius:20px;font-size:12px;margin-bottom:12px}
+.header h1{font-size:28px;margin-bottom:8px;line-height:1.4}
+.header .meta{color:#e0e7ff;font-size:14px}
+.card{background:var(--card);border-radius:12px;padding:24px;margin-bottom:20px;border-left:4px solid var(--accent)}
+.card h2{color:var(--accent);font-size:20px;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card h3{color:var(--accent2);font-size:16px;margin:16px 0 8px}
+.card p{margin-bottom:12px;color:var(--text)}
+.card ul{margin-left:20px;color:var(--text)}
+.card li{margin-bottom:8px}
+.tldr{background:linear-gradient(135deg,#065f46,#064e3b);border-left-color:var(--good)}
+.tldr h2{color:#6ee7b7}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.metric{background:rgba(56,189,248,.1);padding:16px;border-radius:8px;border:1px solid rgba(56,189,248,.3)}
+.metric .label{font-size:12px;color:var(--muted);margin-bottom:6px}
+.metric .value{font-size:18px;font-weight:600;color:var(--accent)}
+.arch{background:#0f172a;padding:20px;border-radius:8px;font-family:monospace;font-size:13px;overflow-x:auto;margin:12px 0;border:1px solid #334155}
+.flow{display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:8px;margin:20px 0}
+.flow-box{background:linear-gradient(135deg,#1e40af,#6d28d9);padding:12px 16px;border-radius:8px;font-size:13px;text-align:center;flex:1;min-width:120px}
+.arrow{color:var(--accent);font-size:20px}
+.term{background:rgba(167,139,250,.15);padding:2px 8px;border-radius:4px;color:var(--accent2);font-weight:500;font-size:14px}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.pros,.cons{padding:16px;border-radius:8px}
+.pros{background:rgba(52,211,153,.1);border:1px solid var(--good)}
+.cons{background:rgba(248,113,113,.1);border:1px solid var(--bad)}
+.pros h4{color:var(--good);margin-bottom:8px}
+.cons h4{color:var(--bad);margin-bottom:8px}
+.confidence{display:inline-block;padding:2px 8px;border-radius:4px;font-size:12px;margin-left:8px}
+.high{background:var(--good);color:#000}
+.med{background:var(--warn);color:#000}
+.low{background:var(--bad);color:#000}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:32px;padding:16px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+@media (max-width:640px){.pros-cons{grid-template-columns:1fr}.header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+  <span class="tag">📅 2026-08-10 · AI 每日精读</span>
+  <h1>DeepAgent：端到端"深度推理型 Agent"，让大模型自己发现工具、折叠记忆</h1>
+  <div class="meta">来源：arXiv 2510.21618 · 中国人民大学 NLPIR · 精选自当日高影响力工作</div>
+</div>
+
+<div class="card tldr">
+  <h2>⚡ 一句话总结（TL;DR）</h2>
+  <p>DeepAgent 把"思考 → 找工具 → 调工具 → 记忆压缩"合并成<strong>同一个连续的推理过程</strong>，不再依赖 ReAct 那种硬编码工作流；并用一种叫 <span class="term">ToolPO</span> 的强化学习方法，把奖励信号精细分配到"调用工具的那几个 token"，在 8 个 benchmark 上稳定超过基线。</p>
+</div>
+
+<div class="card">
+  <h2>🎯 它想解决什么问题</h2>
+  <p>今天主流的 Agent 框架（ReAct、AutoGPT、function-calling pipeline）都有两个隐痛：</p>
+  <ul>
+    <li><strong>流程是写死的</strong>：思考→行动→观察，循环固定，模型没有"全局自主权"，遇到没见过的任务就崩。</li>
+    <li><strong>长任务会"记忆爆炸"</strong>：几十步之后，上下文里堆满历史 observation，噪声大，错误会滚雪球。</li>
+  </ul>
+  <p>再加一个训练层面的痛点：教模型用工具时，传统 RL 只在<em>最后</em>给一个粗颗粒奖励，模型搞不清到底是哪一次工具调用救了它、又是哪一次坑了它。</p>
+</div>
+
+<div class="card">
+  <h2>🧩 核心方法（三件套）</h2>
+
+  <h3>1. 端到端"深度推理"循环</h3>
+  <div class="flow">
+    <div class="flow-box">自主思考</div><span class="arrow">→</span>
+    <div class="flow-box">工具发现</div><span class="arrow">→</span>
+    <div class="flow-box">动作执行</div><span class="arrow">→</span>
+    <div class="flow-box">记忆折叠</div>
+  </div>
+  <p>四步不是固定 pipeline，而是模型在同一个 reasoning trace 里自己决定何时切换——这一点跟 OpenAI o 系、DeepSeek-R1 的"long CoT"思路一脉相承，但加了工具轴。</p>
+
+  <h3>2. 自主记忆折叠（Autonomous Memory Folding）</h3>
+  <p>把历史交互压缩进三块结构化记忆：</p>
+  <div class="grid">
+    <div class="metric"><div class="label">Episodic Memory</div><div class="value">情景记忆</div><p style="font-size:12px;color:var(--muted);margin-top:4px">整段任务的关键事件</p></div>
+    <div class="metric"><div class="label">Working Memory</div><div class="value">工作记忆</div><p style="font-size:12px;color:var(--muted);margin-top:4px">当前子目标 & 中间变量</p></div>
+    <div class="metric"><div class="label">Tool Memory</div><div class="value">工具记忆</div><p style="font-size:12px;color:var(--muted);margin-top:4px">哪些 API 好用/坑</p></div>
+  </div>
+  <p>通俗理解：像人做长项目时会把厚厚的会议记录整理成"要点纪要 + 待办清单 + 踩坑笔记"，而不是每次都从头翻聊天记录。</p>
+
+  <h3>3. ToolPO：把奖励精确打到"工具调用 token"上</h3>
+  <p><span class="term">Tool-call Advantage Attribution</span>：不是给整条轨迹一个笼统的 reward，而是识别出"调用工具的那几个 token"，只对它们做优势归因。同时用 <strong>LLM 模拟的 API</strong> 训练，绕开真实 API 慢/贵/不稳定的问题。</p>
+</div>
+
+<div class="card">
+  <h2>📊 实验结果</h2>
+  <p>在 8 个 benchmark 上稳定超越基线，覆盖两大类：</p>
+  <ul>
+    <li><strong>通用工具使用</strong>：ToolBench、API-Bank、TMDB、Spotify、ToolHop</li>
+    <li><strong>下游应用</strong>：ALFWorld（家庭任务）、WebShop（网购）、GAIA（通用助手）、HLE（Humanity's Last Exam）</li>
+  </ul>
+  <p>两种设定都拿下：<em>labeled tool</em>（明确告诉它有哪些工具）和 <em>open-set retrieval</em>（自己去一个大工具库里检索）——后者更接近真实场景。</p>
+  <p style="color:var(--muted);font-size:13px">⚠️ 具体数字论文摘要未列出，需查正文表格。<span class="confidence med">置信度：中</span></p>
+</div>
+
+<div class="card">
+  <h2>⚖️ 最强反驳 & 局限</h2>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>✅ 亮点</h4>
+      <ul style="font-size:14px">
+        <li>把"工具"当一等公民塞进 CoT，方向对</li>
+        <li>记忆折叠解决了长任务的现实痛点</li>
+        <li>ToolPO 的细粒度信用分配理论上更 sample-efficient</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>⚠️ 值得怀疑</h4>
+      <ul style="font-size:14px">
+        <li><strong>LLM 模拟 API 有分布 gap</strong>：模拟器给的返回值太"干净"，真实 API 会有超时、格式漂移、429</li>
+        <li>ToolBench/API-Bank 早已被过拟合，成绩说明力打折</li>
+        <li>没和 Anthropic MCP+Claude、OpenAI function-calling agent 这些商用系统做端到端对比</li>
+        <li>"自主记忆折叠"是否会丢关键低频信息，摘要没给消融</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🛠 对你有什么用（实操层面）</h2>
+  <ul>
+    <li><strong>做 Agent 产品的人</strong>：可以借鉴"三层记忆 + 折叠"思路，别再无脑塞全历史到 context——现在 200K context 也扛不住 50 步真实交互。</li>
+    <li><strong>做 RL 训练的人</strong>：Tool-call 级别的 advantage attribution 是个可复用 trick，不一定非用 PPO 变体，DPO 上也能类比。</li>
+    <li><strong>做评测的人</strong>：ToolBench 分数别再当金标准，优先看 GAIA / HLE / open-set retrieval 场景。</li>
+    <li><strong>普通用户视角</strong>：这类研究成熟后，一年内你会看到 Claude/GPT 的 agent 在多步任务（比如"帮我订整个东京 7 天行程"）里错误率显著下降。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>📌 术语快解（写给非科研背景）</h2>
+  <ul>
+    <li><span class="term">Agent</span>：能自己拆任务、调工具、执行多步的大模型系统，不是单轮问答。</li>
+    <li><span class="term">ReAct</span>：2022 年的经典范式，Reasoning + Acting 交替进行，是目前多数 agent 的默认写法。</li>
+    <li><span class="term">RL / PPO</span>：强化学习/近端策略优化，用"奖励"教模型什么行为好。</li>
+    <li><span class="term">Advantage Attribution</span>：给"每个动作"打一个"比平均好多少"的分，用来指导梯度更新。</li>
+    <li><span class="term">Open-set tool retrieval</span>：工具库有几千个，模型得自己搜出该用哪个，而不是给它一份短清单。</li>
+  </ul>
+</div>
+
+<div class="card">
+  <h2>🔗 原文与代码</h2>
+  <ul>
+    <li>论文：<a href="https://arxiv.org/abs/2510.21618" target="_blank">arxiv.org/abs/2510.21618</a></li>
+    <li>代码 & Demo：<a href="https://github.com/RUC-NLPIR/DeepAgent" target="_blank">github.com/RUC-NLPIR/DeepAgent</a></li>
+  </ul>
+  <p style="color:var(--muted);font-size:13px;margin-top:12px">⚠️ 说明：本次精读基于官方 arXiv 摘要 + 已公开信息。摘要之外的数字（如 SOTA 具体百分点）需查论文正文，本文未编造。</p>
+</div>
+
+<div class="footer">
+  由每日 AI 精读任务自动生成 · 2026-08-10<br>
+  今日候选来源：arXiv、DeepMind Blog、Anthropic Research、OpenAI Research、Import AI Newsletter
+</div>
+
+</div>
+</body>
+</html>

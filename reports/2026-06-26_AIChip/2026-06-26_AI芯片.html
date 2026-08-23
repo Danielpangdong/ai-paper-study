@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-26_AI芯片：为什么大模型离不开专用算力？</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #4b5563;
+      --quiet: #64748b;
+      --paper: #ffffff;
+      --soft: #f8fafc;
+      --line: #dbe5ef;
+      --blue: #123a69;
+      --cyan: #0f8b8d;
+      --green: #0f766e;
+      --amber: #b45309;
+      --rose: #be123c;
+      --shadow: 0 18px 55px rgba(15, 23, 42, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: #e5edf5;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+
+    .page {
+      width: min(100%, 1040px);
+      margin: 0 auto;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      padding: 64px 72px 54px;
+      overflow: hidden;
+      color: #f8fafc;
+      background:
+        linear-gradient(135deg, rgba(7, 22, 45, 0.96), rgba(13, 55, 91, 0.92) 46%, rgba(7, 101, 109, 0.86)),
+        radial-gradient(circle at 76% 26%, rgba(125, 211, 252, 0.28), transparent 34%),
+        #0f172a;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent 90%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 820px;
+    }
+
+    .date {
+      color: rgba(226, 232, 240, 0.84);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 28px 0 18px;
+      font-size: clamp(44px, 7vw, 72px);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      margin: 0;
+      color: #bae6fd;
+      font-size: 27px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .core-line {
+      max-width: 820px;
+      margin: 34px 0 0;
+      padding: 22px 26px;
+      border: 1px solid rgba(186, 230, 253, 0.38);
+      background: rgba(15, 23, 42, 0.32);
+      border-radius: 8px;
+      color: #ecfeff;
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 34px;
+    }
+
+    .hero-badges span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      color: #dff9ff;
+      background: rgba(255, 255, 255, 0.08);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hero-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 48px;
+    }
+
+    .chip-node {
+      min-height: 118px;
+      padding: 16px;
+      border: 1px solid rgba(186, 230, 253, 0.28);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .chip-node strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #ffffff;
+      font-size: 18px;
+    }
+
+    .chip-node span {
+      color: rgba(226, 232, 240, 0.86);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    main {
+      padding: 54px 72px 76px;
+    }
+
+    .toc {
+      margin: 0 0 48px;
+      padding: 28px 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    .toc h2 {
+      margin-top: 0;
+      font-size: 25px;
+    }
+
+    .toc ol {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 26px;
+      margin: 0;
+      padding-left: 22px;
+    }
+
+    .toc a {
+      color: var(--blue);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    section {
+      margin: 0 0 58px;
+      break-inside: avoid;
+    }
+
+    h2 {
+      margin: 0 0 18px;
+      color: var(--blue);
+      font-size: 32px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 30px 0 12px;
+      color: #0f172a;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    p {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    strong { color: #0f172a; }
+
+    .lead {
+      color: #334155;
+      font-size: 21px;
+      font-weight: 650;
+      line-height: 1.6;
+    }
+
+    .note {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border-left: 5px solid var(--cyan);
+      background: #ecfeff;
+      color: #164e63;
+      border-radius: 0 8px 8px 0;
+      font-weight: 650;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 24px 0 4px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin: 22px 0 6px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 18px;
+      break-inside: avoid;
+    }
+
+    .card h3,
+    .card h4 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 19px;
+      line-height: 1.35;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 16.5px;
+      line-height: 1.62;
+    }
+
+    .figure {
+      margin: 28px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      break-inside: avoid;
+    }
+
+    .figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .figcaption {
+      padding: 12px 16px 15px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+      background: #f8fafc;
+      border-top: 1px solid var(--line);
+    }
+
+    .steps {
+      counter-reset: step;
+      display: grid;
+      gap: 14px;
+      margin: 22px 0;
+    }
+
+    .step {
+      position: relative;
+      min-height: 94px;
+      padding: 16px 18px 16px 76px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      width: 40px;
+      height: 40px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: var(--cyan);
+      font-weight: 800;
+    }
+
+    .step h3 {
+      margin: 0 0 6px;
+      font-size: 19px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16.5px;
+    }
+
+    .compare {
+      width: 100%;
+      margin: 24px 0;
+      border-collapse: collapse;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .compare th,
+    .compare td {
+      padding: 13px 15px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .compare th {
+      color: #0f172a;
+      background: #eef6ff;
+      font-weight: 800;
+    }
+
+    .compare tr:last-child td { border-bottom: 0; }
+
+    .term-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .term {
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .term b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-size: 18px;
+    }
+
+    .term p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16.5px;
+    }
+
+    .term p + p { margin-top: 5px; }
+
+    .wrong {
+      border-left: 5px solid var(--rose);
+      background: #fff7f8;
+    }
+
+    .right {
+      border-left: 5px solid var(--green);
+      background: #f0fdfa;
+    }
+
+    .summary-box {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+      counter-reset: summary;
+    }
+
+    .summary-line {
+      position: relative;
+      padding: 16px 18px 16px 58px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .summary-line::before {
+      counter-increment: summary;
+      content: counter(summary);
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--blue);
+      font-size: 15px;
+    }
+
+    .questions {
+      margin: 18px 0 0;
+      padding-left: 22px;
+    }
+
+    .questions li {
+      margin: 12px 0;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .sources {
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+
+    .sources a {
+      color: var(--blue);
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+
+    .sources li {
+      margin: 7px 0;
+      color: var(--muted);
+      font-size: 14.5px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 760px) {
+      .page { box-shadow: none; }
+      .hero { min-height: auto; padding: 42px 24px 38px; }
+      .hero-map,
+      .grid-2,
+      .grid-3,
+      .toc ol { grid-template-columns: 1fr; }
+      main { padding: 34px 24px 54px; }
+      h1 { font-size: 46px; }
+      h2 { font-size: 27px; }
+      .subtitle { font-size: 22px; }
+      .core-line { font-size: 18px; }
+      p, .questions li { font-size: 17px; }
+    }
+
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    @media print {
+      html { background: #fff; }
+      body { background: #fff; }
+      .page {
+        width: 100%;
+        box-shadow: none;
+      }
+      .hero {
+        min-height: 257mm;
+        padding: 24mm 18mm 18mm;
+        break-after: page;
+      }
+      main { padding: 0 0 8mm; }
+      .toc { break-after: page; }
+      section {
+        margin-bottom: 12mm;
+        break-inside: auto;
+      }
+      h2 { break-after: avoid; }
+      .figure,
+      .card,
+      .step,
+      .term,
+      .summary-line {
+        break-inside: avoid;
+      }
+      .hero-map { margin-top: 32mm; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="hero">
+      <div class="hero-content">
+        <div class="date">2026-06-26 · AI每日深度科普</div>
+        <h1>AI芯片</h1>
+        <p class="subtitle">为什么大模型离不开专用算力？</p>
+        <p class="core-line">核心一句话：AI芯片的本质，是把大模型里海量、重复、可以并行的小计算，用专门设计的硬件高效做完。</p>
+        <div class="hero-badges">
+          <span>高中生友好</span>
+          <span>中央厨房类比</span>
+          <span>训练与推理</span>
+          <span>显存与带宽</span>
+        </div>
+        <div class="hero-map" aria-label="AI芯片知识地图">
+          <div class="chip-node"><strong>算得快</strong><span>大量矩阵乘法同时进行，不是一颗核心慢慢排队。</span></div>
+          <div class="chip-node"><strong>搬得快</strong><span>权重和Token要在显存与计算核心之间高速流动。</span></div>
+          <div class="chip-node"><strong>连得快</strong><span>超大模型常要多颗芯片协作，互联网络很关键。</span></div>
+          <div class="chip-node"><strong>用得省</strong><span>同样的回答，如果更省电、更便宜，就能服务更多人。</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <nav class="toc" aria-label="目录">
+        <h2>目录</h2>
+        <ol>
+          <li><a href="#why">为什么这个概念重要？</a></li>
+          <li><a href="#analogy">一个直观类比</a></li>
+          <li><a href="#how">工作原理</a></li>
+          <li><a href="#terms">关键术语解释</a></li>
+          <li><a href="#case">一个真实应用案例</a></li>
+          <li><a href="#mistakes">常见误区</a></li>
+          <li><a href="#summary">3句话总结</a></li>
+          <li><a href="#questions">复习问题</a></li>
+        </ol>
+      </nav>
+
+      <section id="why">
+        <h2>1. 为什么这个概念重要？</h2>
+        <p class="lead">如果说大模型是“会思考的城市”，AI芯片就是这座城市的发电站、道路和工厂。没有足够合适的芯片，大模型可以写在论文里，却很难每天服务几亿次请求。</p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>它解决的问题：算不过来</h3>
+            <p>大模型不是靠一句“灵感”生成答案，而是在每一步里做海量数字计算。普通CPU很灵活，但像让一个全能老师同时批改百万份相似作业，效率不够。</p>
+          </div>
+          <div class="card">
+            <h3>行业离不开它：成本决定普及</h3>
+            <p>同一个模型，如果回答一次要花很多电和时间，它就只能给少数人用。AI芯片让训练更可行，让推理更便宜，决定AI能不能进入搜索、办公、客服、汽车和手机。</p>
+          </div>
+          <div class="card">
+            <h3>它改变的东西：AI从实验变成基础设施</h3>
+            <p>过去我们谈“软件吞噬世界”。今天，大模型能否落地，常常取决于数据中心能不能稳定提供算力、显存、网络、散热和电力。</p>
+          </div>
+        </div>
+        <p class="note">一个现实判断：AI竞争不只是“谁的模型更聪明”，也包括“谁能用更少成本、更低延迟，把聪明模型服务给更多用户”。</p>
+      </section>
+
+      <section id="analogy">
+        <h2>2. 一个直观类比：AI芯片像中央厨房</h2>
+        <p>想象一家城市级外卖平台。每天中午，几百万份“番茄炒蛋盖饭”同时下单。你不能让一个厨师按顺序一份一份做，因为队伍会排到晚上。</p>
+        <p>更合理的办法是建一个中央厨房：总厨负责调度，很多灶台同时开火，旁边有高速仓库不断送来食材，传送带把半成品送到下一个工位。AI芯片做的事情很像这个系统。</p>
+        <figure class="figure">
+          <img src="ai_chip_kitchen_analogy.png" alt="AI芯片像中央厨房：CPU调度，GPU/TPU/NPU并行计算，HBM高速仓库，互联网络连接">
+          <figcaption>图解1：CPU像总调度，GPU/TPU/NPU像很多并行工位，HBM像离灶台很近的高速仓库，互联网络像传送带。</figcaption>
+        </figure>
+        <table class="compare">
+          <thead>
+            <tr>
+              <th>中央厨房里</th>
+              <th>AI系统里</th>
+              <th>直觉理解</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>总厨</td>
+              <td>CPU</td>
+              <td>负责安排流程、处理杂事、协调系统，但不适合独自做海量重复计算。</td>
+            </tr>
+            <tr>
+              <td>成百上千个灶台</td>
+              <td>GPU、TPU、NPU</td>
+              <td>擅长把相似的小计算分给大量计算单元同时完成。</td>
+            </tr>
+            <tr>
+              <td>离厨房很近的食材仓库</td>
+              <td>HBM显存</td>
+              <td>模型权重和中间结果要快速取用，仓库太远就会拖慢整条线。</td>
+            </tr>
+            <tr>
+              <td>传送带与分拣系统</td>
+              <td>芯片互联与网络</td>
+              <td>多颗芯片一起工作时，数据交换速度会影响整体效率。</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="how">
+        <h2>3. 工作原理：AI芯片到底在忙什么？</h2>
+        <p class="lead">大模型看起来在“读文字、写文字”，底层其实在做三件朴素的事：把词变成数字，把数字矩阵反复相乘，再把结果变回下一个Token。</p>
+        <figure class="figure">
+          <img src="ai_chip_data_flow.png" alt="AI芯片数据流：模型权重和输入Token进入HBM显存，再到矩阵计算核心，训练更新参数，推理输出下一个Token">
+          <figcaption>图解2：推理时，模型权重和输入Token不断从显存进入计算核心，算出下一个Token；很多时候，真正的瓶颈不是“不会算”，而是“数据搬得不够快”。</figcaption>
+        </figure>
+        <div class="steps">
+          <div class="step">
+            <h3>第一步：文字先变成数字</h3>
+            <p>“今天下雨吗？”会先被切成Token，再变成一串向量。芯片处理的不是汉字本身，而是这些数字表示。</p>
+          </div>
+          <div class="step">
+            <h3>第二步：模型权重从显存取出来</h3>
+            <p>模型权重像一本超大的菜谱。每生成一个Token，都要查很多页菜谱，所以显存容量和带宽非常重要。</p>
+          </div>
+          <div class="step">
+            <h3>第三步：大量矩阵计算同时执行</h3>
+            <p>神经网络很多层都可以看成矩阵乘法、点积、加法和激活函数。GPU/TPU/NPU的优势，就是把这些相似计算并行展开。</p>
+          </div>
+          <div class="step">
+            <h3>第四步：输出下一个Token</h3>
+            <p>大模型不是一次写完整篇文章，而是先预测下一个Token，再把它放回上下文里，继续预测下一个。</p>
+          </div>
+          <div class="step">
+            <h3>第五步：多用户请求排队调度</h3>
+            <p>真实服务里不是一个人在问问题，而是很多人同时请求。系统要批处理、排队、缓存、负载均衡，才能做到又快又省。</p>
+          </div>
+        </div>
+
+        <h3>训练和推理有什么不同？</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h3>训练：像学生反复刷题</h3>
+            <p>训练时，模型看大量样本，算出答案，和标准答案比较，再通过反向传播调整参数。这需要巨量算力、长时间运行和多芯片协作。</p>
+          </div>
+          <div class="card">
+            <h3>推理：像考场快速作答</h3>
+            <p>推理时，模型参数通常固定，目标是尽快响应用户。它更关心延迟、吞吐、显存占用、KV Cache和单位Token成本。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="terms">
+        <h2>4. 关键术语解释</h2>
+        <div class="term-list">
+          <div class="term">
+            <b>GPU（图形处理器）</b>
+            <p>专业解释：一种拥有大量并行计算单元的处理器，常用于图形渲染、科学计算和深度学习。</p>
+            <p>白话解释：它像很多工人一起做相似的活，特别适合大模型里重复的数字计算。</p>
+          </div>
+          <div class="term">
+            <b>TPU / NPU</b>
+            <p>专业解释：面向机器学习或神经网络推理/训练优化的专用或半专用加速器。</p>
+            <p>白话解释：它们像为AI厨房定制的专用灶台，不一定什么菜都能做，但做AI这类菜更顺手。</p>
+          </div>
+          <div class="term">
+            <b>矩阵乘法（Matrix Multiplication）</b>
+            <p>专业解释：深度学习中全连接层、注意力计算、卷积等操作的重要基础计算形式。</p>
+            <p>白话解释：模型把很多数字表格不断相乘，从里面提取规律，决定下一步怎么回答。</p>
+          </div>
+          <div class="term">
+            <b>HBM（高带宽显存）</b>
+            <p>专业解释：靠近计算芯片、带宽很高的显存技术，用于快速供给模型权重和中间数据。</p>
+            <p>白话解释：它像建在灶台旁边的高速仓库，食材送得越快，厨师越不容易空等。</p>
+          </div>
+          <div class="term">
+            <b>带宽（Bandwidth）</b>
+            <p>专业解释：单位时间内能搬运的数据量，是影响大模型训练和推理性能的重要指标。</p>
+            <p>白话解释：路越宽，货车越多，数据越不容易堵在路上。</p>
+          </div>
+          <div class="term">
+            <b>延迟（Latency）</b>
+            <p>专业解释：从请求发出到得到响应所需的时间，推理服务尤其关注。</p>
+            <p>白话解释：你问AI一句话，它多久开始回答、多久答完，这就是用户能感受到的速度。</p>
+          </div>
+          <div class="term">
+            <b>吞吐（Throughput）</b>
+            <p>专业解释：系统单位时间内能处理的请求数或Token数。</p>
+            <p>白话解释：一家餐厅一分钟能出多少份餐，不只看单份快不快，也看能不能批量处理。</p>
+          </div>
+          <div class="term">
+            <b>低精度计算（FP16 / BF16 / INT8 等）</b>
+            <p>专业解释：用更少位数表示数字，以降低存储和计算成本，同时尽量保持模型效果。</p>
+            <p>白话解释：有些场景不需要用“精确到小数点后很多位”的尺子，粗一点反而更快更省。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="case">
+        <h2>5. 一个真实应用案例：ChatGPT类产品如何用AI芯片服务用户？</h2>
+        <p>当你在聊天框输入“帮我写一封请假邮件”，背后并不是一台电脑从头想。更接近下面这个流程：</p>
+        <div class="steps">
+          <div class="step">
+            <h3>请求进入服务器</h3>
+            <p>系统先做安全检查、路由和排队，把请求分配给合适的推理集群。</p>
+          </div>
+          <div class="step">
+            <h3>模型权重常驻显存</h3>
+            <p>为了避免每次都从硬盘慢慢读取，模型的主要权重会尽量放在GPU/TPU/NPU附近的显存里。</p>
+          </div>
+          <div class="step">
+            <h3>计算核心预测Token</h3>
+            <p>芯片不断读取权重和上下文，做矩阵计算，输出下一个Token的概率分布，再选择要写出的Token。</p>
+          </div>
+          <div class="step">
+            <h3>系统边算边返回</h3>
+            <p>你看到文字一个字一个字出现，是因为模型在连续生成Token。好的芯片和调度系统能降低等待感。</p>
+          </div>
+          <div class="step">
+            <h3>成本被摊到每个Token</h3>
+            <p>云厂商和AI公司关心“每生成100万Token要花多少钱”。这就是为什么芯片、显存和推理优化会直接影响产品价格。</p>
+          </div>
+        </div>
+        <p class="note">所以，AI芯片不是离普通人很远的“硬件新闻”。它会影响你能不能用到更便宜、更快、更长上下文、更稳定的AI服务。</p>
+      </section>
+
+      <section id="mistakes">
+        <h2>6. 常见误区</h2>
+        <div class="grid-2">
+          <div class="card wrong">
+            <h3>误区一：AI芯片越贵，模型一定越聪明</h3>
+            <p>芯片提供的是“计算能力”，不是自动带来“理解能力”。模型架构、数据质量、训练方法、对齐策略同样重要。</p>
+          </div>
+          <div class="card right">
+            <h3>正确理解</h3>
+            <p>好芯片像好厨房。它能让好厨师更快做菜，但不会把坏菜谱自动变成美食。</p>
+          </div>
+          <div class="card wrong">
+            <h3>误区二：GPU只是“显卡”，和AI关系不大</h3>
+            <p>早期GPU为图形而生，但它的并行计算特点正好适合深度学习。今天的数据中心GPU已经是AI基础设施的核心组件。</p>
+          </div>
+          <div class="card right">
+            <h3>正确理解</h3>
+            <p>名字叫“图形处理器”，但现代GPU早已是通用并行计算平台，深度学习只是其中最重要的应用之一。</p>
+          </div>
+          <div class="card wrong">
+            <h3>误区三：只要算力够，AI回答就会无限快</h3>
+            <p>推理还会被显存带宽、网络、排队、上下文长度、KV Cache、批处理策略限制。</p>
+          </div>
+          <div class="card right">
+            <h3>正确理解</h3>
+            <p>餐厅不是灶台越多就一定越快。如果食材配送、传菜、点单系统堵住，顾客还是要等。</p>
+          </div>
+          <div class="card wrong">
+            <h3>误区四：训练芯片和推理芯片是同一件事</h3>
+            <p>训练更像长期大规模学习，推理更像高并发服务。两者都需要算力，但优化目标不同。</p>
+          </div>
+          <div class="card right">
+            <h3>正确理解</h3>
+            <p>训练看重总算力、稳定性和多芯片协作；推理更看重延迟、吞吐、显存效率和单位成本。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary">
+        <h2>7. 3句话总结</h2>
+        <div class="summary-box">
+          <div class="summary-line">AI芯片之所以重要，是因为大模型本质上需要反复做海量矩阵计算，普通通用计算方式不够高效。</div>
+          <div class="summary-line">真正的瓶颈常常不只是“算得快”，还包括“数据搬得快、芯片连得快、能耗压得低”。</div>
+          <div class="summary-line">理解AI芯片，就能理解为什么大模型竞争同时是模型、数据、软件、硬件和能源的综合竞争。</div>
+        </div>
+      </section>
+
+      <section id="questions">
+        <h2>8. 复习问题</h2>
+        <ol class="questions">
+          <li>为什么GPU/TPU/NPU比CPU更适合大模型里的大量矩阵计算？请用“中央厨房”的类比解释。</li>
+          <li>如果一颗芯片算得很快，但显存带宽很低，为什么大模型推理仍然可能很慢？</li>
+          <li>训练和推理都需要AI芯片，但它们优化的目标有什么不同？请各举一个现实指标。</li>
+        </ol>
+      </section>
+
+      <section class="sources" id="sources">
+        <h2>资料依据</h2>
+        <ul>
+          <li>NVIDIA Deep Learning Performance: <a href="https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html">Matrix Multiplication Background User's Guide</a></li>
+          <li>NVIDIA Deep Learning Performance: <a href="https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html">GPU Performance Background User's Guide</a></li>
+          <li>Google Cloud Documentation: <a href="https://docs.cloud.google.com/tpu/docs/intro-to-tpu">Introduction to Cloud TPU</a> 与 <a href="https://docs.cloud.google.com/tpu/docs/system-architecture-tpu-vm">TPU architecture</a></li>
+          <li>AWS Documentation: <a href="https://docs.aws.amazon.com/dlami/latest/devguide/trainium.html">Recommended Trainium Instances</a> 与 <a href="https://docs.aws.amazon.com/dlami/latest/devguide/inferentia.html">Recommended Inferentia Instances</a></li>
+          <li>AMD: <a href="https://www.amd.com/en/products/accelerators/instinct.html">AMD Instinct Accelerators</a></li>
+        </ul>
+      </section>
+    </main>
+  </article>
+</body>
+</html>

@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-29_思维链（Chain-of-Thought）</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #526173;
+      --quiet: #718096;
+      --line: #d8e2ea;
+      --paper: #ffffff;
+      --soft: #f6f9fc;
+      --navy: #102a55;
+      --teal: #087f83;
+      --amber: #a45f08;
+      --red: #b42318;
+      --green: #176b4d;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #eef3f7;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.76;
+    }
+
+    .wrap { max-width: 1080px; margin: 0 auto; }
+
+    .cover {
+      min-height: 100vh;
+      padding: 58px 26px 42px;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 58%, #f2faf7 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 840;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 1020px;
+      margin: 18px 0 14px;
+      color: var(--ink);
+      font-size: clamp(42px, 6vw, 74px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h1 span { color: var(--navy); }
+
+    .subtitle {
+      max-width: 920px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.35;
+      font-weight: 720;
+    }
+
+    .core {
+      max-width: 980px;
+      margin-top: 28px;
+      padding: 18px 22px;
+      border: 1px solid #bae6fd;
+      border-left: 8px solid var(--navy);
+      border-radius: 8px;
+      background: #f0f9ff;
+      color: var(--navy);
+      font-size: 20px;
+      font-weight: 840;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .cover-card {
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .95);
+      padding: 18px;
+    }
+
+    .cover-card b {
+      display: block;
+      color: var(--teal);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .cover-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.66;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--navy);
+      font-weight: 760;
+      text-decoration: none;
+    }
+
+    main { padding: 34px 26px 80px; }
+
+    section {
+      max-width: 1080px;
+      margin: 0 auto 28px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--ink);
+      font-size: 32px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 6px;
+      color: var(--navy);
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    p { margin: 12px 0; font-size: 18px; }
+
+    .lead {
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 720;
+    }
+
+    figure {
+      margin: 20px 0 8px;
+      break-inside: avoid;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    figcaption {
+      margin-top: 8px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step-card {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 14px;
+      min-height: 142px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      break-inside: avoid;
+    }
+
+    .step-num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: var(--navy);
+      color: white;
+      font-weight: 900;
+    }
+
+    .step-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .callout {
+      margin: 18px 0;
+      padding: 16px 18px;
+      border: 1px solid #bddce7;
+      border-left: 7px solid var(--teal);
+      border-radius: 8px;
+      background: #f0fdfa;
+    }
+
+    .callout strong { color: var(--teal); }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0 0;
+    }
+
+    .compare-card {
+      min-height: 150px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      break-inside: avoid;
+    }
+
+    .compare-card b {
+      display: block;
+      color: var(--teal);
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+
+    .compare-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 15.5px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 12px;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef6ff;
+      color: var(--navy);
+      text-align: left;
+      font-weight: 850;
+    }
+
+    td:nth-child(1) {
+      width: 22%;
+      color: var(--navy);
+      font-weight: 820;
+    }
+
+    ul, ol { padding-left: 24px; }
+    li { margin: 9px 0; font-size: 18px; }
+
+    .mistake-list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mistake-list li {
+      margin: 0;
+      padding: 14px 16px;
+      border: 1px solid #f0c7c2;
+      border-radius: 8px;
+      background: #fff7f6;
+    }
+
+    .mistake-list strong { color: var(--red); }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .summary-card {
+      min-height: 150px;
+      border: 1px solid var(--line);
+      border-top: 6px solid var(--teal);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fbfffe;
+    }
+
+    .summary-card b {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-size: 18px;
+    }
+
+    .quiz li {
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+    }
+
+    .source-list a {
+      color: var(--navy);
+      font-weight: 760;
+      text-decoration: none;
+      border-bottom: 1px solid #aac7dc;
+    }
+
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 24px 26px 44px;
+      color: var(--quiet);
+      font-size: 13px;
+    }
+
+    @media (max-width: 760px) {
+      .cover-grid, .steps, .compare, .summary-grid { grid-template-columns: 1fr; }
+      section { padding: 22px; }
+      h2 { font-size: 27px; }
+      p, li { font-size: 17px; }
+      table { font-size: 14px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .cover { min-height: auto; height: 297mm; padding: 22mm 18mm; page-break-after: always; }
+      main { padding: 0; }
+      section {
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        padding: 16mm 18mm;
+        page-break-after: always;
+      }
+      section:last-of-type { page-break-after: auto; }
+      .toc a, .cover-card, .step-card, .compare-card, .summary-card, .quiz li, .mistake-list li { break-inside: avoid; }
+      h1 { font-size: 58px; }
+      h2 { font-size: 29px; }
+      p, li { font-size: 16px; }
+      footer { display: none; }
+      a { color: inherit; text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover">
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-29</div>
+      <h1>思维链 <span>Chain-of-Thought</span></h1>
+      <p class="subtitle">为什么 AI 遇到复杂问题时，也需要“先写草稿，再交卷”？</p>
+      <div class="core">核心一句话：思维链的本质，是让 AI 把复杂问题拆成一串中间步骤，从“直接猜答案”变成“先推理、再回答”。</div>
+
+      <div class="cover-grid">
+        <div class="cover-card">
+          <b>它解决什么</b>
+          <p>复杂问题常常不是一步到位。思维链让模型先整理条件、分解问题、检查结论，减少“看一眼就答”的粗糙判断。</p>
+        </div>
+        <div class="cover-card">
+          <b>它改变什么</b>
+          <p>AI 从像“背答案的学生”，逐渐变成像“会写解题过程的学生”，更适合数学、代码、分析、规划等任务。</p>
+        </div>
+        <div class="cover-card">
+          <b>它不是什么</b>
+          <p>思维链不是魔法，也不等于真正理解。步骤写得很顺，不代表每一步都正确，仍然需要事实、工具和验证。</p>
+        </div>
+      </div>
+
+      <nav class="toc" aria-label="目录">
+        <a href="#why">1. 为什么重要</a>
+        <a href="#analogy">2. 一个直观类比</a>
+        <a href="#how">3. 工作原理</a>
+        <a href="#terms">4. 关键术语</a>
+        <a href="#case">5. 真实应用案例</a>
+        <a href="#mistakes">6. 常见误区</a>
+        <a href="#summary">7. 三句话总结</a>
+        <a href="#quiz">8. 复习问题</a>
+        <a href="#sources">9. 来源与说明</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="why">
+      <h2>1. 为什么这个概念重要？</h2>
+      <p class="lead">因为很多真实问题不是“知道一个事实”就能回答，而是要经过几步推理。</p>
+      <p>如果你问 AI：“小明买了 3 盒铅笔，每盒 12 支，送给同学 8 支，还剩多少支？”一个模型可以直接猜“28”，也可以先算 3 × 12 = 36，再算 36 - 8 = 28。答案一样，但第二种方式更可靠，因为中间过程能暴露错误。</p>
+      <p>这就是思维链的价值：它把一个大问题拆成可检查的小环节。对数学题、合同分析、代码调试、旅行规划、医学问诊初筛、客服流程判断来说，中间步骤往往比最后一句答案更重要。</p>
+      <p>AI 行业离不开它，是因为大模型的能力正在从“语言补全”走向“复杂任务处理”。当 AI 要做计划、调用工具、写代码、检查证据时，它不能只会说一个漂亮结论，还要有一条相对清楚的推理路线。</p>
+      <div class="callout"><strong>直觉判断：</strong>如果问题可以一眼回答，思维链帮助不大；如果问题需要算、比、查、排除、规划，思维链就开始变重要。</div>
+    </section>
+
+    <section id="analogy">
+      <h2>2. 一个直观类比：考试时先写草稿</h2>
+      <p>想象一个高中生做数学大题。老师不是只看最后答案，还要看解题过程。为什么？因为过程能说明这个学生是否真的理解：条件有没有抄错，公式有没有用对，中间计算有没有漏掉。</p>
+      <p>思维链就像 AI 的“草稿纸”。普通回答像学生直接写“答案是 42”；思维链回答像学生先写：“题目给了三个条件，先算总量，再减去消耗，最后检查单位。”</p>
+      <p>这并不是让 AI 变成有意识的人，而是让它在生成答案前，多走一段“把问题说清楚”的路径。它像 GPS 导航：直接告诉你“到达目的地”没有意义，真正有用的是“先上高架，再转主路，最后右转”。路线清楚，出错时也更容易发现。</p>
+      <figure>
+        <img src="chain_of_thought_comparison.png" alt="思维链图解：直接给答案与分步推理的对比">
+        <figcaption>图1：思维链把“大问题”拆成可检查的小问题，核心直觉是“先写草稿，再交卷”。</figcaption>
+      </figure>
+    </section>
+
+    <section id="how">
+      <h2>3. 工作原理：AI 怎么“分步想”？</h2>
+      <p class="lead">最简化地说，思维链不是额外装了一个“逻辑芯片”，而是让模型生成更长、更有结构的中间文本。</p>
+      <div class="steps">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div>
+            <h3>读题：先抓住条件</h3>
+            <p>模型先识别题目里有哪些已知信息、约束和目标。像学生审题，先把“已知”和“要求”圈出来。</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div>
+            <h3>拆题：把大问题变小</h3>
+            <p>复杂任务被拆成几个子问题。比如“要不要投资一家公司”，可以拆成行业、财务、竞争、风险四部分。</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div>
+            <h3>推理：一步接一步</h3>
+            <p>模型按顺序写出中间判断。前一步的结果会影响后一步，就像搭积木，下面歪了，上面也会歪。</p>
+          </div>
+        </div>
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div>
+            <h3>检查：看是否自洽</h3>
+            <p>模型可以检查单位、数字、前后矛盾和遗漏条件。但这种检查不是绝对可靠，仍需要外部事实和工具验证。</p>
+          </div>
+        </div>
+      </div>
+
+      <figure>
+        <img src="chain_of_thought_workflow.png" alt="思维链工作流：输入层、推理层、输出层与常见风险">
+        <figcaption>图2：思维链通常包含输入条件、中间步骤、最终答案；它提升可解释性，但不能自动消灭错误。</figcaption>
+      </figure>
+
+      <p>研究上，经典的 Chain-of-Thought Prompting 论文发现：给大模型展示几个“带中间步骤的例子”，可以明显改善算术、常识和符号推理任务。后续 Zero-shot-CoT 研究进一步发现，哪怕只是提示模型“让我们一步一步思考”，也可能让模型释放出更强的多步推理能力。</p>
+      <p>现代“推理模型”则把这件事做得更系统：模型会消耗额外的 reasoning tokens 来处理复杂问题。这些内部推理并不总是原样展示给用户，有些系统只返回总结后的推理说明，以减少误用和泄露风险。</p>
+    </section>
+
+    <section id="terms">
+      <h2>4. 关键术语解释</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>术语</th>
+            <th>专业解释</th>
+            <th>白话解释</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>思维链 Chain-of-Thought</td>
+            <td>让模型在最终答案前生成一系列中间推理步骤的提示或推理方式。</td>
+            <td>让 AI 先写草稿，把“为什么这么答”拆开说。</td>
+          </tr>
+          <tr>
+            <td>中间步骤</td>
+            <td>从输入到输出之间的推理片段、计算过程、假设和判断。</td>
+            <td>像做题时的每一行演算，不只是最后答案。</td>
+          </tr>
+          <tr>
+            <td>Zero-shot-CoT</td>
+            <td>不提供示范样例，只用一句分步思考提示来诱导模型推理。</td>
+            <td>不先教例题，只提醒 AI：“慢一点，一步一步来。”</td>
+          </tr>
+          <tr>
+            <td>Reasoning Tokens</td>
+            <td>推理模型用于内部思考、规划和尝试多种解法的生成 token。</td>
+            <td>AI 在幕后用掉的“草稿纸字数”，可能看不见，但会占成本和上下文空间。</td>
+          </tr>
+          <tr>
+            <td>自我一致性</td>
+            <td>让模型生成多条推理路径，再比较多个结果是否趋同。</td>
+            <td>像多做几遍同一道题，如果几次都算到同一答案，信心会更高。</td>
+          </tr>
+          <tr>
+            <td>验证器 Verifier</td>
+            <td>用于检查候选答案或推理路径是否正确的模型、规则或外部工具。</td>
+            <td>像老师批改草稿，专门找哪一步错了。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="case">
+      <h2>5. 一个真实应用案例：AI 编程助手如何修 bug</h2>
+      <p>假设你让 AI 编程助手修复一个登录页 bug：“用户输入正确密码后仍然被踢回登录页。”如果模型直接改代码，很可能只是在某个文件里乱试。</p>
+      <p>更好的做法是使用思维链式流程：</p>
+      <ol>
+        <li>先复述现象：正确密码后仍跳回登录页，说明认证成功与会话保持之间可能断裂。</li>
+        <li>列出可能原因：cookie 没写入、token 过期、前端路由守卫误判、后端 session 配置错误。</li>
+        <li>逐项验证：看网络请求、响应头、浏览器存储、服务端日志和路由逻辑。</li>
+        <li>提出最小修复：只改证据指向的那一处，而不是全局重构。</li>
+        <li>运行测试：确认登录成功、刷新页面仍保持登录、错误密码仍被拒绝。</li>
+      </ol>
+      <p>这就是思维链在工程里的实际价值：它不是为了让答案显得更长，而是把“猜测”变成“可检查的排查路线”。在客服、财务分析、法律检索、医疗辅助、投研问答中，道理相同：先把证据和判断路径摆出来，再给结论。</p>
+    </section>
+
+    <section id="mistakes">
+      <h2>6. 常见误区</h2>
+      <ul class="mistake-list">
+        <li><strong>误区一：思维链越长，答案越正确。</strong><br>不一定。长推理可能只是更长的错误。真正重要的是步骤是否必要、证据是否可靠、结论是否能被验证。</li>
+        <li><strong>误区二：AI 写出推理过程，就说明它真的像人一样思考。</strong><br>不能这么理解。思维链是模型生成的文本和内部计算过程，不等于人类意识，也不等于真正理解。</li>
+        <li><strong>误区三：把完整思维链都展示给用户总是更好。</strong><br>不一定。完整内部推理可能冗长、含有错误尝试，也可能暴露安全敏感信息。很多产品更适合展示“关键理由”或“推理摘要”。</li>
+        <li><strong>误区四：思维链能解决幻觉。</strong><br>不能。它能让错误更容易被发现，但如果基础事实错了，分步推理仍然会在错误事实上继续前进。</li>
+        <li><strong>误区五：所有问题都需要思维链。</strong><br>不需要。问“北京今天星期几”这种直接问题，用长推理反而浪费。复杂计算、规划、排查、权衡才更适合。</li>
+      </ul>
+    </section>
+
+    <section id="summary">
+      <h2>7. 总结：3句话讲清核心认知</h2>
+      <div class="summary-grid">
+        <div class="summary-card">
+          <b>第一句话</b>
+          <p>思维链让 AI 在回答前先写“草稿”，把复杂问题拆成一串中间步骤。</p>
+        </div>
+        <div class="summary-card">
+          <b>第二句话</b>
+          <p>它最适合数学、代码、分析、规划、排查这类需要多步判断的问题。</p>
+        </div>
+        <div class="summary-card">
+          <b>第三句话</b>
+          <p>思维链提高可检查性，但不能保证正确；事实、工具和验证仍然不可缺。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>8. 复习问题</h2>
+      <ol class="quiz">
+        <li>为什么“直接给答案”和“先写中间步骤”在简单问题上差别不大，但在复杂问题上差别很大？请用考试草稿纸类比解释。</li>
+        <li>如果 AI 在合同审查里写出一长串看似合理的推理，你还需要检查哪些东西，才能判断它是否可靠？</li>
+        <li>为什么很多产品不直接展示模型的完整内部思维链，而是展示“关键理由”或“推理摘要”？这样做有什么好处和代价？</li>
+      </ol>
+    </section>
+
+    <section id="sources">
+      <h2>9. 来源与说明</h2>
+      <p>本文面向非技术读者，采用生活化类比解释，事实依据主要来自以下英文一手资料和研究论文：</p>
+      <ul class="source-list">
+        <li><a href="https://arxiv.org/abs/2201.11903">Wei et al., Chain-of-Thought Prompting Elicits Reasoning in Large Language Models, arXiv:2201.11903</a></li>
+        <li><a href="https://research.google/blog/language-models-perform-reasoning-via-chain-of-thought/">Google Research: Language Models Perform Reasoning via Chain of Thought</a></li>
+        <li><a href="https://arxiv.org/abs/2205.11916">Kojima et al., Large Language Models are Zero-Shot Reasoners, arXiv:2205.11916</a></li>
+        <li><a href="https://developers.openai.com/api/docs/guides/reasoning">OpenAI API Docs: Reasoning models</a></li>
+        <li><a href="https://platform.claude.com/docs/en/build-with-claude/extended-thinking">Anthropic Claude Platform Docs: Extended thinking</a></li>
+      </ul>
+      <p>阅读边界：思维链可以提升复杂任务的可解释性和成功率，但不同模型、不同任务、不同产品策略会影响“是否展示推理过程”以及“展示到什么程度”。本文不把思维链等同于人类意识，也不把分步文字当作正确性的证明。</p>
+    </section>
+  </main>
+
+  <footer>© 2026 AI每日深度科普 · 本文面向非技术读者，用生活化方式解释 AI 核心概念。</footer>
+</body>
+</html>

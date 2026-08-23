@@ -1,0 +1,28 @@
+# Run Summary
+
+- Run time: 2026-07-04 08:10:23 CST
+- Automation: 每日AI概念精讲HTML (`ai-pdf`)
+- Selected concept: RAG（检索增强生成）
+- Rationale: continue the knowledge path after Embedding by explaining how semantic retrieval becomes a practical open-book question-answering system for enterprise knowledge, AI search, and customer-service assistants.
+- Built artifacts:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-04_RAG/2026-07-04_RAG（检索增强生成）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-04_RAG/2026-07-04_RAG（检索增强生成）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-04_RAG/assets/rag_open_book_labeled.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-07-04_RAG/assets/rag_pipeline_labeled.png`
+- Validation proof:
+  - HTML parsed successfully, required sections present, automatic TOC has 8 links, no `<script>` tags.
+  - PDF is 9 A4 pages, unencrypted, Chromium generated, size 3.6 MB.
+  - `pdftotext` found required headings, common misconceptions, and review questions.
+  - `pdfimages -list` found two large embedded generated diagrams.
+  - Six source URLs returned HTTP 200.
+- Delivery proof:
+  - Gmail send id: `19f2a75d02785b57`
+  - Sent search: `in:sent subject:"RAG" has:attachment newer_than:1d` returned `19f2a75d02785b57`.
+  - Readback confirmed recipients `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`, subject, body, and attached PDF `2026-07-04_RAG（检索增强生成）.pdf`.
+- Sources:
+  - Lewis et al., Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
+  - OpenAI Cookbook: Question answering using embeddings-based search
+  - OpenAI Cookbook: Retrieval augmented generation using Elasticsearch and OpenAI
+  - Microsoft Learn: RAG and Generative AI - Azure AI Search
+  - Microsoft Learn: Retrieval augmented generation and indexes
+  - Google Cloud: What is Retrieval-Augmented Generation?

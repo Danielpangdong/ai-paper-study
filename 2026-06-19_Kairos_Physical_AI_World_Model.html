@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选：Kairos 与物理 AI 的世界模型栈</title>
+  <style>
+    :root {
+      --ink: #111317;
+      --muted: #5f6673;
+      --paper: #f6f7f9;
+      --card: #ffffff;
+      --line: #d7dce3;
+      --blue: #1769ff;
+      --cyan: #00a8c6;
+      --green: #0f8f70;
+      --red: #c94747;
+      --gold: #b7791f;
+      --graphite: #242933;
+      --soft-blue: #eaf1ff;
+      --soft-green: #e9f7f2;
+      --soft-gold: #fff6df;
+      --shadow: 0 18px 50px rgba(31, 38, 54, .10);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 22px 64px; }
+    .hero {
+      background:
+        linear-gradient(130deg, rgba(17,19,23,.74), rgba(17,19,23,.34)),
+        radial-gradient(circle at 78% 18%, rgba(0,168,198,.34), transparent 32%),
+        linear-gradient(180deg, #e7ebf0, #f8f9fb 58%, #eef1f5);
+      min-height: 540px;
+      color: white;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.07) 1px, transparent 1px);
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.08));
+    }
+    .hero-visual {
+      position: absolute;
+      right: -40px;
+      bottom: -36px;
+      width: min(720px, 82vw);
+      opacity: .92;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      width: min(920px, 100%);
+      margin: 0 auto;
+      padding: 72px 22px 54px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border: 1px solid rgba(255,255,255,.36);
+      background: rgba(255,255,255,.12);
+      border-radius: 6px;
+      font-size: 13px;
+      color: rgba(255,255,255,.9);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin: 22px 0 14px;
+      max-width: 760px;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1.05;
+      letter-spacing: 0;
+      font-weight: 760;
+    }
+    .subtitle {
+      max-width: 720px;
+      margin: 0;
+      font-size: clamp(17px, 2.2vw, 22px);
+      color: rgba(255,255,255,.88);
+    }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 30px;
+      max-width: 880px;
+    }
+    .meta {
+      border-left: 3px solid rgba(255,255,255,.7);
+      padding: 8px 12px;
+      background: rgba(255,255,255,.10);
+      border-radius: 4px;
+    }
+    .meta b { display: block; font-size: 12px; color: rgba(255,255,255,.68); font-weight: 600; }
+    .meta span { display: block; font-size: 14px; color: white; }
+
+    section { margin-top: 34px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 16px;
+      font-size: 26px;
+      line-height: 1.25;
+      font-weight: 760;
+    }
+    .num {
+      min-width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: inline-grid;
+      place-items: center;
+      color: white;
+      background: var(--graphite);
+      font-size: 14px;
+    }
+    .lead {
+      font-size: 18px;
+      color: #2f3540;
+      max-width: 880px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 5px;
+      background: var(--soft-blue);
+      color: #174ea6;
+      font-size: 12px;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .score-card h3, .card h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+    .score-card p, .card p { margin: 0; color: #3b424d; }
+    .quote {
+      border-left: 4px solid var(--blue);
+      background: #f2f6ff;
+      padding: 18px 20px;
+      border-radius: 6px;
+      font-size: 21px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+    .explain {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .viz {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    svg text {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 13px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #eef2f7;
+      color: #2d3542;
+      font-weight: 760;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .good { color: var(--green); font-weight: 760; }
+    .warn { color: var(--gold); font-weight: 760; }
+    .risk { color: var(--red); font-weight: 760; }
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+    .term {
+      display: grid;
+      grid-template-columns: 180px 1fr 1fr;
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      margin-bottom: 10px;
+    }
+    .term div { padding: 13px 14px; border-right: 1px solid var(--line); }
+    .term div:last-child { border-right: 0; }
+    .term b { color: var(--graphite); }
+    .footer {
+      margin-top: 36px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .source-list li { margin-bottom: 8px; }
+
+    @media (max-width: 780px) {
+      .hero { min-height: 600px; }
+      .hero-visual { width: 110vw; right: -45vw; opacity: .62; }
+      .meta-grid, .grid-2, .grid-3, .explain { grid-template-columns: 1fr; }
+      .term { grid-template-columns: 1fr; }
+      .term div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .term div:last-child { border-bottom: 0; }
+      .wrap { padding: 0 16px 48px; }
+      h1 { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <svg class="hero-visual" viewBox="0 0 760 500" role="img" aria-label="机器人世界模型示意图">
+      <defs>
+        <linearGradient id="arm" x1="0" x2="1">
+          <stop offset="0" stop-color="#ffffff" stop-opacity=".95"/>
+          <stop offset="1" stop-color="#cfd7e2" stop-opacity=".72"/>
+        </linearGradient>
+        <linearGradient id="blueLine" x1="0" x2="1">
+          <stop offset="0" stop-color="#9fd8ff"/>
+          <stop offset="1" stop-color="#1769ff"/>
+        </linearGradient>
+      </defs>
+      <rect x="20" y="330" width="690" height="70" rx="10" fill="#111317" opacity=".42"/>
+      <rect x="78" y="290" width="120" height="54" rx="8" fill="#ffffff" opacity=".45"/>
+      <rect x="120" y="262" width="38" height="38" rx="4" fill="#1769ff" opacity=".78"/>
+      <rect x="590" y="267" width="64" height="64" rx="7" fill="#ffffff" opacity=".28" stroke="#fff"/>
+      <rect x="610" y="288" width="30" height="30" rx="3" fill="#1769ff" opacity=".72"/>
+      <g opacity=".72">
+        <rect x="205" y="58" width="126" height="260" rx="16" fill="#fff" opacity=".18" stroke="#fff"/>
+        <rect x="300" y="66" width="126" height="260" rx="16" fill="#fff" opacity=".16" stroke="#fff"/>
+        <rect x="395" y="76" width="126" height="260" rx="16" fill="#fff" opacity=".14" stroke="#fff"/>
+        <rect x="490" y="88" width="126" height="260" rx="16" fill="#fff" opacity=".12" stroke="#fff"/>
+      </g>
+      <path d="M118 259 C194 207, 277 195, 365 212 S533 251, 625 292" fill="none" stroke="url(#blueLine)" stroke-width="5"/>
+      <g fill="#fff">
+        <circle cx="118" cy="259" r="7"/>
+        <circle cx="272" cy="201" r="7"/>
+        <circle cx="430" cy="221" r="7"/>
+        <circle cx="625" cy="292" r="7"/>
+      </g>
+      <path d="M74 259 L126 160 L180 177 L139 274 Z" fill="url(#arm)" opacity=".9"/>
+      <path d="M154 174 L285 160 L299 205 L171 220 Z" fill="url(#arm)" opacity=".82"/>
+      <path d="M284 163 L394 206 L378 248 L284 206 Z" fill="url(#arm)" opacity=".74"/>
+      <circle cx="126" cy="160" r="28" fill="#1f2530" stroke="#fff" stroke-width="6"/>
+      <circle cx="284" cy="183" r="26" fill="#1f2530" stroke="#fff" stroke-width="6"/>
+      <circle cx="389" cy="228" r="24" fill="#1f2530" stroke="#fff" stroke-width="5"/>
+      <path d="M396 242 L421 286 M382 246 L382 291 M368 239 L345 278" stroke="#e9eef6" stroke-width="8" stroke-linecap="round"/>
+    </svg>
+    <div class="hero-content">
+      <div class="eyebrow">AI每日论文精选 · 2026-06-19 · Physical AI / World Model</div>
+      <h1>Kairos：让机器人先在“内心小剧场”里试一遍</h1>
+      <p class="subtitle">今天精选的不是一篇“又一个视频生成模型”论文，而是一套面向物理 AI 的世界模型栈：学习世界、记住世界、再把预测变成真实动作。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文</b><span>Kairos: A Native World Model Stack for Physical AI</span></div>
+        <div class="meta"><b>作者</b><span>Kairos Team, Fei Wang, Shan You 等 24 位作者</span></div>
+        <div class="meta"><b>平台</b><span>arXiv 2606.16533 · Hugging Face Daily Papers</span></div>
+        <div class="meta"><b>日期</b><span>arXiv v1: 2026-06-15；v2: 2026-06-16</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2 class="section-title"><span class="num">1</span>标题区</h2>
+      <div class="card">
+        <div class="grid-2">
+          <div>
+            <p><span class="pill">英文标题</span>Kairos: A Native World Model Stack for Physical AI</p>
+            <p><span class="pill">中文理解</span>Kairos：面向物理 AI 的原生世界模型栈</p>
+            <p><span class="pill">机构</span>论文署名为 Kairos Team；官方仓库由 kairos-agi 维护，并指向 Kairos Platform / ACE Robotics 生态。</p>
+            <p><span class="pill">链接</span><a href="https://arxiv.org/abs/2606.16533">arXiv</a> · <a href="https://github.com/kairos-agi/kairos-sensenova">GitHub</a> · <a href="https://huggingface.co/papers/2606.16533">Hugging Face Papers</a></p>
+          </div>
+          <div>
+            <p><span class="pill">会议/平台</span>arXiv 技术报告；Hugging Face 2026-06-18 提交，进入当日论文榜。</p>
+            <p><span class="pill">模型规模</span>官方仓库展示 4B 系列模型，含通用、机器人、蒸馏和 720P 版本。</p>
+            <p><span class="pill">一句判断</span>这篇论文值得读，因为它把“世界模型”从漂亮视频推进到机器人可用的闭环基础设施。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">2</span>为什么今天选它？</h2>
+      <div class="grid-3">
+        <div class="card score-card">
+          <h3>它押中下一条大主线</h3>
+          <p>过去两年 AI 的主舞台是语言和代码。现在 NVIDIA Cosmos、Google Genie、机器人公司融资和物理 AI 生态都在指向同一个方向：AI 不只要会说，还要会预测现实世界会怎样变化。</p>
+        </div>
+        <div class="card score-card">
+          <h3>它不是单点技巧</h3>
+          <p>Kairos 同时处理三个问题：数据怎么学、长期状态怎么记、实际部署怎么跑。单独看每点都不陌生，但把它们做成一套可运行栈，才是今天值得关注的地方。</p>
+        </div>
+        <div class="card score-card">
+          <h3>它直面“机器人落地”</h3>
+          <p>机器人不能像聊天机器人那样慢慢想。夹杯子、避障、开门都需要低延迟闭环。Kairos 把边缘部署和低延迟当成模型设计的一部分，而不是论文结尾的工程优化。</p>
+        </div>
+      </div>
+      <p class="lead">我的筛选结论：Kairos 的长期价值在于，它把“世界模型”重新定义成一种物理 AI 操作系统雏形。它未必就是最终赢家，但它代表了一个越来越清晰的产业判断：未来的机器人需要先在模型里预演世界，再在现实中行动。</p>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">3</span>一句话讲透论文</h2>
+      <div class="quote">Kairos 想做的是：给机器人一个能看懂物理、记住过程、提前模拟后果的大脑，让它动手前先在脑中试错。</div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">4</span>核心贡献拆解</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>贡献</th>
+            <th>它解决什么问题</th>
+            <th>白话解释</th>
+            <th>为什么更好</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>跨具身数据课程</b><br>Cross-Embodiment Data Curriculum</td>
+            <td>网络视频很多但没有动作，机器人数据有动作但规模小。</td>
+            <td>像教小孩：先看世界，再学人怎么做，最后自己上手练。</td>
+            <td>避免把所有数据倒进锅里乱炖，让模型从“看热闹”逐步变成“能行动”。</td>
+          </tr>
+          <tr>
+            <td><b>统一理解-生成-预测架构</b></td>
+            <td>旧方法常把视频生成、视觉理解、动作控制分成多个模块。</td>
+            <td>不是三个部门互相发邮件，而是一个团队同时看、想、预测、行动。</td>
+            <td>减少模块之间的语义断裂，让未来状态和动作轨迹在同一套表示里协同。</td>
+          </tr>
+          <tr>
+            <td><b>混合线性时间注意力</b></td>
+            <td>长视频、长任务容易忘前面的关键信息，传统注意力成本又太高。</td>
+            <td>近处用放大镜，中距离用望远镜，远处用一本持续更新的备忘录。</td>
+            <td>论文声称用局部窗口、稀疏扩张窗口和线性记忆分工，降低长期滚动预测的误差积累。</td>
+          </tr>
+          <tr>
+            <td><b>部署感知协同设计</b></td>
+            <td>世界模型如果跑不快，就不能进入真实机器人闭环。</td>
+            <td>不是造一辆只能在展厅开的概念车，而是从一开始就考虑能不能上路。</td>
+            <td>官方结果显示 4B 模型在多项速度和显存指标上明显优于更大的基线模型。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">5</span>工作原理：深入浅出</h2>
+      <div class="explain">
+        <div>
+          <p class="lead">如果把机器人想成一个新员工，Kairos 的训练路线像一套入职体系。</p>
+          <p><b>第一阶段：看世界。</b>它先看海量开放世界视频，学习“水会流、球会滚、物体会挡住视线、碰撞会改变运动”。这相当于先建立常识。</p>
+          <p><b>第二阶段：看人怎么做。</b>它再学习人类操作、第一视角动作和任务分解，知道“拿杯子不是瞬移，而是靠近、抓握、抬起、移动”。</p>
+          <p><b>第三阶段：自己预测动作后果。</b>最后它学习机器人交互数据，把“如果我这样动，下一秒会发生什么”与可执行动作接起来。</p>
+          <p>这就是论文最重要的直觉：真正有用的物理 AI 不能只会生成一段看起来合理的视频，它必须知道动作会改变世界。</p>
+        </div>
+        <div class="viz">
+          <svg viewBox="0 0 720 430" role="img" aria-label="Kairos 三阶段学习流程">
+            <rect width="720" height="430" fill="#ffffff"/>
+            <text x="34" y="42" font-size="24" font-weight="760" fill="#111317">Kairos 的学习路线：从旁观者到行动者</text>
+            <g>
+              <rect x="36" y="86" width="180" height="250" rx="8" fill="#eaf1ff" stroke="#b9caff"/>
+              <text x="60" y="126" font-size="20" font-weight="760" fill="#174ea6">1 看世界</text>
+              <text x="60" y="166" font-size="15" fill="#2f3540">开放世界视频</text>
+              <text x="60" y="195" font-size="15" fill="#2f3540">物理现象</text>
+              <text x="60" y="224" font-size="15" fill="#2f3540">环境变化</text>
+              <circle cx="126" cy="282" r="38" fill="#1769ff" opacity=".16"/>
+              <path d="M96 282 C120 235, 160 243, 154 282 C148 323, 111 319, 96 282Z" fill="none" stroke="#1769ff" stroke-width="5"/>
+            </g>
+            <g>
+              <rect x="270" y="86" width="180" height="250" rx="8" fill="#fff6df" stroke="#f0d28a"/>
+              <text x="294" y="126" font-size="20" font-weight="760" fill="#8a5a10">2 学行为</text>
+              <text x="294" y="166" font-size="15" fill="#2f3540">人类操作视频</text>
+              <text x="294" y="195" font-size="15" fill="#2f3540">第一视角</text>
+              <text x="294" y="224" font-size="15" fill="#2f3540">任务步骤</text>
+              <path d="M326 300 L326 252 L386 252 L386 300" fill="none" stroke="#b7791f" stroke-width="6" stroke-linecap="round"/>
+              <circle cx="326" cy="246" r="11" fill="#b7791f"/>
+              <circle cx="386" cy="246" r="11" fill="#b7791f"/>
+            </g>
+            <g>
+              <rect x="504" y="86" width="180" height="250" rx="8" fill="#e9f7f2" stroke="#9bd7c5"/>
+              <text x="528" y="126" font-size="20" font-weight="760" fill="#0f765f">3 去行动</text>
+              <text x="528" y="166" font-size="15" fill="#2f3540">机器人交互</text>
+              <text x="528" y="195" font-size="15" fill="#2f3540">未来状态</text>
+              <text x="528" y="224" font-size="15" fill="#2f3540">动作轨迹</text>
+              <path d="M552 292 C590 244, 640 244, 648 292" fill="none" stroke="#0f8f70" stroke-width="6"/>
+              <rect x="565" y="292" width="62" height="34" rx="5" fill="#0f8f70" opacity=".22" stroke="#0f8f70"/>
+            </g>
+            <path d="M224 212 L262 212" stroke="#5f6673" stroke-width="3" marker-end="url(#arrow)"/>
+            <path d="M458 212 L496 212" stroke="#5f6673" stroke-width="3" marker-end="url(#arrow)"/>
+            <defs>
+              <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" fill="#5f6673"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+      </div>
+
+      <div class="viz" style="margin-top:16px;">
+        <svg viewBox="0 0 960 420" role="img" aria-label="混合时间记忆架构示意图">
+          <rect width="960" height="420" fill="#ffffff"/>
+          <text x="34" y="42" font-size="24" font-weight="760" fill="#111317">混合时间记忆：近处看细节，远处记因果</text>
+          <line x1="80" y1="290" x2="880" y2="290" stroke="#242933" stroke-width="2"/>
+          <g fill="#242933">
+            <circle cx="120" cy="290" r="7"/><circle cx="210" cy="290" r="7"/><circle cx="300" cy="290" r="7"/>
+            <circle cx="390" cy="290" r="7"/><circle cx="480" cy="290" r="7"/><circle cx="570" cy="290" r="7"/>
+            <circle cx="660" cy="290" r="7"/><circle cx="750" cy="290" r="7"/><circle cx="840" cy="290" r="7"/>
+          </g>
+          <text x="94" y="326" font-size="13" fill="#5f6673">t-8</text><text x="204" y="326" font-size="13" fill="#5f6673">t-6</text>
+          <text x="294" y="326" font-size="13" fill="#5f6673">t-4</text><text x="474" y="326" font-size="13" fill="#5f6673">现在</text>
+          <text x="654" y="326" font-size="13" fill="#5f6673">t+4</text><text x="834" y="326" font-size="13" fill="#5f6673">t+8</text>
+          <rect x="415" y="110" width="150" height="66" rx="8" fill="#eaf1ff" stroke="#9ebaff"/>
+          <text x="443" y="137" font-size="16" font-weight="760" fill="#174ea6">局部窗口</text>
+          <text x="435" y="161" font-size="13" fill="#2f3540">看清眼前动作</text>
+          <path d="M450 178 C462 220, 472 250, 480 286" fill="none" stroke="#1769ff" stroke-width="3"/>
+          <path d="M530 178 C518 220, 502 250, 490 286" fill="none" stroke="#1769ff" stroke-width="3"/>
+          <rect x="190" y="104" width="170" height="76" rx="8" fill="#fff6df" stroke="#f0d28a"/>
+          <text x="217" y="133" font-size="16" font-weight="760" fill="#8a5a10">扩张窗口</text>
+          <text x="212" y="158" font-size="13" fill="#2f3540">隔几帧看一次节奏</text>
+          <path d="M270 184 C310 220, 390 240, 480 286" fill="none" stroke="#b7791f" stroke-width="3" stroke-dasharray="8 7"/>
+          <rect x="640" y="104" width="190" height="76" rx="8" fill="#e9f7f2" stroke="#9bd7c5"/>
+          <text x="667" y="133" font-size="16" font-weight="760" fill="#0f765f">线性全局记忆</text>
+          <text x="665" y="158" font-size="13" fill="#2f3540">保留远处因果线索</text>
+          <path d="M730 184 C670 226, 580 253, 480 286" fill="none" stroke="#0f8f70" stroke-width="3"/>
+          <rect x="354" y="348" width="252" height="44" rx="8" fill="#242933"/>
+          <text x="388" y="376" font-size="16" font-weight="760" fill="#fff">目标：长任务里少忘、少漂移、跑得快</text>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">6</span>关键术语解释</h2>
+      <div class="term">
+        <div><b>World Model</b><br>世界模型</div>
+        <div>专业解释：学习环境状态随时间和动作变化的模型，用来预测未来观察、物理动态或动作后果。</div>
+        <div>白话解释：像人脑里的小剧场。你还没把杯子推下桌，就能想象它会掉下去。</div>
+      </div>
+      <div class="term">
+        <div><b>Physical AI</b><br>物理 AI</div>
+        <div>专业解释：面向机器人、自动驾驶、工业自动化等真实物理环境的智能系统。</div>
+        <div>白话解释：不是只在屏幕上聊天，而是能在现实世界里看、动、改正。</div>
+      </div>
+      <div class="term">
+        <div><b>VLA</b><br>视觉-语言-动作模型</div>
+        <div>专业解释：把图像、语言指令映射到机器人动作的模型范式。</div>
+        <div>白话解释：你说“把蓝色方块放到右边”，它看见桌面后直接输出机械臂该怎么动。</div>
+      </div>
+      <div class="term">
+        <div><b>WAM</b><br>世界-动作模型</div>
+        <div>专业解释：同时建模环境动态和动作演化，预测未来状态与可执行动作。</div>
+        <div>白话解释：不只告诉手往哪动，还会想“这样动以后桌面会变成什么样”。</div>
+      </div>
+      <div class="term">
+        <div><b>Linear Attention</b><br>线性注意力</div>
+        <div>专业解释：把长序列注意力计算从接近二次复杂度降到线性或近线性复杂度。</div>
+        <div>白话解释：传统方法像全班每个人都互相聊天；线性注意力像用班长汇总关键信息，长任务更省算力。</div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">7</span>实验结果解读</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>实验</th>
+            <th>Kairos 结果</th>
+            <th>怎么理解</th>
+            <th>注意事项</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>RoboTwin 2.0 双臂操作</td>
+            <td><span class="good">平均成功率 96.1</span>，与最强对手处于同一梯队。</td>
+            <td>说明世界-动作联合建模对复杂双臂任务有帮助，尤其是长期规划和执行稳定性。</td>
+            <td>仍是 benchmark；真实工厂环境会有传感器、硬件磨损、异常物体等更多噪声。</td>
+          </tr>
+          <tr>
+            <td>LIBERO-Plus 泛化</td>
+            <td>Kairos-joint 平均 <span class="good">90.8</span>，高于表中 VLA/WAM 基线。</td>
+            <td>它在摄像头、语言、光照、背景、噪声、布局扰动下表现更稳。</td>
+            <td>泛化不等于开放世界通用，仍取决于任务分布和微调数据。</td>
+          </tr>
+          <tr>
+            <td>WorldModelBench Robot</td>
+            <td>4B 模型总分 <span class="good">9.30</span>，超过多项更大模型。</td>
+            <td>小模型也可能在物理一致性上胜出，关键不是只堆参数，而是架构和数据课程是否匹配任务。</td>
+            <td>部分基线为论文团队复现实验，横向比较需等第三方复现。</td>
+          </tr>
+          <tr>
+            <td>VideoPHY 物理常识</td>
+            <td>平均分 <span class="good">45.55</span>，略高于 Cosmos-Predict2.5-14B。</td>
+            <td>在“物体、液体、碰撞、运动”这类视频物理判断上有优势，但领先幅度不是压倒性。</td>
+            <td>45.55 本身也说明物理视频生成还远未成熟。</td>
+          </tr>
+          <tr>
+            <td>部署效率</td>
+            <td>官方仓库展示 4B 模型在 720P/5s A800 设置下显存 23.5GB、复杂度 2.3 PFlops；相对部分大模型速度优势明显。</td>
+            <td>这对机器人很关键：如果“想象未来”要几分钟，它就无法实时抓东西。</td>
+            <td>硬件、实现和评测设置会影响结论，真实边缘部署还需工程验证。</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">读数方式：不要只看“第一名”。更重要的是 Kairos 用 4B 规模在物理一致性、动作预测和部署速度之间做了一个相对均衡的取舍。</p>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">8</span>局限性与问题</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3 class="risk">1. 数据护城河可能不可复制</h3>
+          <p>论文强调大量内部数据、分层标签和清洗流水线。对普通团队而言，最难复刻的可能不是模型代码，而是高质量物理交互数据。</p>
+        </div>
+        <div class="card">
+          <h3 class="risk">2. Benchmark 不等于真实世界</h3>
+          <p>真实机器人会遇到光照突变、磨损、遮挡、软物体、人员干扰和安全约束。论文结果证明方向有潜力，但不能直接等同于“通用机器人已经解决”。</p>
+        </div>
+        <div class="card">
+          <h3 class="risk">3. 物理一致性仍有天花板</h3>
+          <p>VideoPHY 分数领先但绝对值不高，说明“生成看起来像物理”与“真正可靠遵守物理”之间仍有距离。</p>
+        </div>
+        <div class="card">
+          <h3 class="risk">4. 安全验证更复杂</h3>
+          <p>一旦模型直接影响机器人动作，错误不再只是生成一段坏文本，而可能带来设备损坏、人身风险和责任归属问题。</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">9</span>产业影响分析</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>对象</th>
+            <th>可能受益</th>
+            <th>可能被冲击</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>机器人公司</td>
+            <td>用世界模型生成训练数据、做离线预演、提升长任务稳定性。</td>
+            <td>只靠人工示教和规则控制的路线会越来越吃力。</td>
+          </tr>
+          <tr>
+            <td>自动驾驶/工业仿真</td>
+            <td>更便宜地模拟罕见场景，减少真实采集成本。</td>
+            <td>传统仿真工具如果不接入生成式世界模型，迭代速度可能落后。</td>
+          </tr>
+          <tr>
+            <td>云与芯片厂商</td>
+            <td>训练和推理都需要 GPU、边缘计算、数据管线和模拟平台。</td>
+            <td>只有语言模型推理优化能力的基础设施厂商会被迫补齐视频和机器人栈。</td>
+          </tr>
+          <tr>
+            <td>AI 产品经理</td>
+            <td>未来产品从“聊天界面”走向“可预演的操作界面”：先模拟，再执行，再反馈。</td>
+            <td>纯文本 agent 如果无法连接真实环境状态，会在物理任务上被新范式替代。</td>
+          </tr>
+          <tr>
+            <td>投资研究者</td>
+            <td>可关注三类资产：世界模型、机器人数据采集、低延迟边缘部署。</td>
+            <td>仅靠“人形外观”讲故事的机器人项目，若没有数据和模型闭环，估值基础会变脆弱。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">10</span>延伸阅读</h2>
+      <ul class="source-list">
+        <li><a href="https://arxiv.org/abs/2606.16533">Kairos: A Native World Model Stack for Physical AI</a>：原始 arXiv 页面。</li>
+        <li><a href="https://github.com/kairos-agi/kairos-sensenova">kairos-agi/kairos-sensenova</a>：官方代码、模型版本、快速开始和 benchmark 表。</li>
+        <li><a href="https://huggingface.co/papers/2606.16533">Hugging Face Paper Page</a>：社区提交页与趋势信号。</li>
+        <li><a href="https://www.nvidia.com/en-us/ai/cosmos/">NVIDIA Cosmos</a>：物理 AI 世界基础模型平台，理解产业背景很有价值。</li>
+        <li><a href="https://deepmind.google/models/genie/">Google DeepMind Genie</a>：交互式世界模型方向的代表项目。</li>
+        <li><a href="https://arxiv.org/abs/2501.03575">Cosmos World Foundation Model Platform for Physical AI</a>：NVIDIA 2025 年技术报告，可与 Kairos 对照阅读。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title"><span class="num">11</span>引用来源</h2>
+      <div class="card">
+        <ol class="source-list">
+          <li>arXiv: <a href="https://arxiv.org/abs/2606.16533">Kairos: A Native World Model Stack for Physical AI</a>，用于论文标题、作者、发布时间、摘要、方法和实验数据。</li>
+          <li>arXiv HTML: <a href="https://arxiv.org/html/2606.16533v1">Kairos HTML version</a>，用于核对 CEDC、Hybrid Linear Temporal Attention、RoboTwin、LIBERO-Plus、VideoPHY 等细节。</li>
+          <li>GitHub: <a href="https://github.com/kairos-agi/kairos-sensenova">Official code for world model Kairos 3.0</a>，用于模型版本、开源状态、部署和效率表。</li>
+          <li>Hugging Face: <a href="https://huggingface.co/papers/2606.16533">Kairos paper page</a> 与 <a href="https://huggingface.co/papers/trending">Trending Papers</a>，用于社区关注度和趋势信号。</li>
+          <li>NVIDIA: <a href="https://nvidianews.nvidia.com/news/nvidia-launches-cosmos-3-the-open-frontier-foundation-model-for-physical-ai">Cosmos 3 announcement</a> 与 <a href="https://www.nvidia.com/en-us/ai/cosmos/">Cosmos platform page</a>，用于物理 AI 与世界模型产业背景。</li>
+          <li>Google DeepMind: <a href="https://deepmind.google/models/genie/">Genie model page</a>，用于交互式世界模型背景对照。</li>
+        </ol>
+        <p class="note">说明：本文没有使用中文二手解读作为核心依据；中文内容为基于英文原始资料和官方材料的解释性重构。</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p><b>编辑判断：</b>Kairos 还不是“通用机器人”的终点，但它把世界模型从生成视频推进到可部署的物理 AI 闭环。对普通读者来说，最该记住的一点是：下一代 AI 的关键能力，可能不是回答问题，而是在行动前预测现实会怎样变化。</p>
+      <p>生成时间：2026-06-19 · 文件：2026-06-19_Kairos_Physical_AI_World_Model.html</p>
+    </footer>
+  </main>
+</body>
+</html>

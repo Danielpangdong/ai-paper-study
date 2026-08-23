@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI每日论文精选 | Qwen-VLA：让机器人从会看见，走向会动手</title>
+  <style>
+    :root {
+      --ink:#101828;
+      --muted:#667085;
+      --line:#d0d5dd;
+      --soft:#f6f8fb;
+      --card:#ffffff;
+      --blue:#1d4ed8;
+      --cyan:#0891b2;
+      --green:#047857;
+      --amber:#b45309;
+      --red:#b42318;
+      --violet:#6d28d9;
+      --slate:#344054;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      color:var(--ink);
+      background:#edf1f6;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      line-height:1.72;
+    }
+    .page { max-width:980px; margin:0 auto; background:#fff; }
+    header {
+      padding:42px 28px 30px;
+      color:#fff;
+      background:
+        linear-gradient(135deg, rgba(13,21,38,.98), rgba(20,83,92,.90)),
+        radial-gradient(circle at 82% 18%, rgba(56,189,248,.38), transparent 36%);
+    }
+    .kicker { margin:0 0 14px; color:#a5f3fc; font-size:13px; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(28px,5vw,48px); line-height:1.12; letter-spacing:0; }
+    .subtitle { margin:18px 0 0; max-width:820px; color:#e0f2fe; font-size:18px; }
+    .meta-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:28px; }
+    .meta { border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.08); border-radius:8px; padding:12px 14px; }
+    .meta b { display:block; color:#a5f3fc; font-size:12px; margin-bottom:4px; }
+    .meta span,.meta a { color:#fff; font-size:14px; word-break:break-word; }
+    a { color:var(--blue); text-decoration:none; }
+    a:hover { text-decoration:underline; }
+    main { padding:30px 28px 52px; }
+    section { padding:24px 0; border-bottom:1px solid var(--line); }
+    section:last-child { border-bottom:0; }
+    h2 { margin:0 0 16px; font-size:25px; line-height:1.25; letter-spacing:0; }
+    h3 { margin:18px 0 8px; font-size:18px; }
+    p { margin:0 0 14px; }
+    .lead { font-size:18px; color:#263447; }
+    .cards { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin:18px 0; }
+    .card { border:1px solid var(--line); border-radius:8px; background:var(--card); padding:16px; }
+    .card b { display:block; margin-bottom:8px; }
+    .card p { color:var(--muted); font-size:14px; margin:0; }
+    .quote { margin:18px 0; border-left:4px solid var(--cyan); background:#ecfeff; padding:16px 18px; font-size:20px; line-height:1.55; font-weight:700; }
+    table { width:100%; border-collapse:collapse; margin:18px 0; border:1px solid var(--line); font-size:14px; }
+    th,td { padding:11px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { text-align:left; background:#f2f4f7; color:#243044; }
+    tr:last-child td { border-bottom:0; }
+    .tag { display:inline-block; padding:3px 9px; border-radius:999px; font-size:12px; background:#e0f2fe; color:#075985; margin:0 6px 6px 0; }
+    .figure { margin:18px 0; border:1px solid var(--line); border-radius:8px; background:#fbfdff; padding:14px; overflow-x:auto; }
+    .caption { color:var(--muted); font-size:13px; margin-top:8px; }
+    svg { max-width:100%; height:auto; display:block; }
+    .note { border:1px solid #fed7aa; border-radius:8px; background:#fff7ed; padding:14px 16px; color:#7c2d12; }
+    .risk { border:1px solid #fecaca; border-radius:8px; background:#fef2f2; padding:14px 16px; color:#7f1d1d; }
+    .source-list li { margin-bottom:8px; }
+    @media (max-width:760px) {
+      header,main { padding-left:18px; padding-right:18px; }
+      .meta-grid,.cards { grid-template-columns:1fr; }
+      table { font-size:13px; }
+      th,td { padding:9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <p class="kicker">AI每日论文精选 · 2026-05-30</p>
+      <h1>Qwen-VLA：让机器人从会看见，走向会动手</h1>
+      <p class="subtitle">这篇论文重要，不是因为它又刷新了一个机器人榜单，而是因为它把“看图说话的大模型”推进到“看见世界、理解指令、输出连续动作”的统一具身模型。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文标题</b><span>Qwen-VLA: Unifying Vision-Language-Action Modeling across Tasks, Environments, and Robot Embodiments</span></div>
+        <div class="meta"><b>中文标题</b><span>Qwen-VLA：跨任务、环境与机器人形态的统一视觉-语言-动作模型</span></div>
+        <div class="meta"><b>作者</b><span>Qwen Team</span></div>
+        <div class="meta"><b>机构</b><span>Qwen Team；论文以团队名发布</span></div>
+        <div class="meta"><b>发布时间与平台</b><span>arXiv:2605.30280v1；2026-05-28 提交，2026-05-29 页面发布；cs.RO；Hugging Face Daily Papers</span></div>
+        <div class="meta"><b>链接</b><a href="https://arxiv.org/abs/2605.30280">arXiv</a><span> · </span><a href="https://qwen.ai/blog?id=qwenvla">官方博客</a><span> · </span><a href="https://github.com/QwenLM/Qwen-VLA">GitHub</a><span> · </span><a href="https://huggingface.co/papers/2605.30280">Hugging Face</a></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>1. 为什么今天选它？</h2>
+        <p class="lead">过去几年，大模型学会了读图、聊天、写代码。但机器人真正需要的是另一种能力：看见眼前环境，听懂人类目标，然后把目标变成真实世界里的动作。Qwen-VLA 正是在补这块拼图。</p>
+        <div class="cards">
+          <div class="card"><b>技术突破</b><p>它把操作、导航和轨迹预测统一成一个 action-and-trajectory prediction 框架，而不是为每种机器人单独训练一个模型。</p></div>
+          <div class="card"><b>长期价值</b><p>如果成立，具身智能可能走向类似语言模型的路线：先大规模预训练，再针对具体机器人和任务对齐。</p></div>
+          <div class="card"><b>产业意义</b><p>仓储、制造、家庭服务、自动驾驶和机器人开发平台都会受影响，因为“换一个机器人就重训一套系统”的成本会下降。</p></div>
+        </div>
+        <p>今天没有选择 minWM，是因为它和昨天的 Gamma-World 同属世界模型方向，主题重复度较高；也没有选择单一 Agent 安全或检索论文，因为 Qwen-VLA 的问题更基础：AI 如何真正从“理解世界”走向“改造世界”。</p>
+        <p>它值得普通人关注，是因为这类模型决定了未来机器人是不是只能在实验室完成固定动作，还是能像新员工一样理解环境、适应工具、学习流程。</p>
+      </section>
+
+      <section id="one-line">
+        <h2>2. 一句话讲透论文</h2>
+        <div class="quote">Qwen-VLA 本质上是在训练一个机器人“大脑”：它不仅知道你说的“把杯子放进篮子”是什么意思，还能把这句话翻译成机械臂下一秒该怎么动。</div>
+        <p>可以把它想成一个实习生。普通视觉语言模型像一个会看监控、会描述现场的人；Qwen-VLA 想成为能上手干活的人。它看见桌子、杯子、篮子和机械臂位置后，不只是回答“桌上有一个杯子”，而是生成一串连续控制动作。</p>
+      </section>
+
+      <section id="contribution">
+        <h2>3. 核心贡献拆解</h2>
+        <table>
+          <thead><tr><th>贡献</th><th>论文做了什么</th><th>白话理解</th><th>为什么更好</th></tr></thead>
+          <tbody>
+            <tr><td>统一 VLA 模型</td><td>以 Qwen3.5-4B 视觉语言模型为骨干，接入 DiT flow-matching 动作解码器。</td><td>前半部分负责看懂世界，后半部分负责把理解变成动作。</td><td>避免每个任务、每台机器人都从零训练一个孤立模型。</td></tr>
+            <tr><td>多形态机器人提示</td><td>用 embodiment-aware prompt 描述机器人平台、手臂数量、控制频率和动作格式。</td><td>先告诉模型“你今天开的是什么机器”。</td><td>同一个模型可以适配 WidowX、ALOHA、Franka、移动机器人等不同身体。</td></tr>
+            <tr><td>异构数据联合预训练</td><td>混合机器人操作、人类第一视角视频、导航轨迹、合成仿真、视觉语言数据等。</td><td>让模型既看过人怎么做事，也看过机器人怎么执行。</td><td>提升跨场景、跨物体、跨背景、跨任务的泛化能力。</td></tr>
+            <tr><td>分阶段训练</td><td>先做 text-to-action DiT 预训练，再做多模态继续预训练、SFT 和 RL。</td><td>先让动作解码器学“动作语感”，再让它看着画面干活。</td><td>减少随机初始化动作头拖累已有视觉语言能力的问题。</td></tr>
+            <tr><td>跨任务验证</td><td>同时评测机器人操作、真实 ALOHA、视觉语言导航、静态 OOD 和动态 DOMINO。</td><td>不是只会桌面抓取，还要会走路、会泛化、会应对动态物体。</td><td>更接近“通用具身基础模型”的评估方式。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mechanism">
+        <h2>4. 工作原理：从看懂，到动手</h2>
+        <p>Qwen-VLA 的关键不是把机器人数据塞进大模型这么简单。它把“视觉、语言、身体、动作”拆成一个清晰流水线：先看图和读指令，再读取当前机器人形态，最后用动作解码器生成未来一小段动作。</p>
+        <div class="figure">
+          <svg viewBox="0 0 930 390" role="img" aria-label="Qwen-VLA 工作流程图">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 0 L10 5 L0 10 z" fill="#0891b2"/>
+              </marker>
+              <style>
+                .box{fill:#fff;stroke:#cbd5e1;stroke-width:2}
+                .blue{fill:#eff6ff;stroke:#60a5fa}
+                .cyan{fill:#ecfeff;stroke:#22d3ee}
+                .green{fill:#ecfdf5;stroke:#34d399}
+                .amber{fill:#fffbeb;stroke:#f59e0b}
+                .violet{fill:#f5f3ff;stroke:#a78bfa}
+                .t{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+                .s{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#475569}
+                .arrow{stroke:#0891b2;stroke-width:3;fill:none;marker-end:url(#arrow)}
+              </style>
+            </defs>
+            <rect x="24" y="55" width="174" height="96" rx="12" class="box blue"/>
+            <text x="66" y="88" class="t">观察世界</text>
+            <text x="44" y="118" class="s">相机画面、场景物体</text>
+            <text x="44" y="140" class="s">当前任务上下文</text>
+            <rect x="250" y="55" width="174" height="96" rx="12" class="box cyan"/>
+            <text x="292" y="88" class="t">理解指令</text>
+            <text x="270" y="118" class="s">“把杯子放进篮子”</text>
+            <text x="270" y="140" class="s">目标、对象、空间关系</text>
+            <rect x="476" y="55" width="174" height="96" rx="12" class="box amber"/>
+            <text x="510" y="88" class="t">读取身体</text>
+            <text x="496" y="118" class="s">几只手臂、动作格式</text>
+            <text x="496" y="140" class="s">频率、控制约定</text>
+            <rect x="702" y="55" width="174" height="96" rx="12" class="box green"/>
+            <text x="738" y="88" class="t">生成动作</text>
+            <text x="722" y="118" class="s">DiT 动作解码器</text>
+            <text x="722" y="140" class="s">输出连续 action chunk</text>
+            <rect x="250" y="245" width="174" height="90" rx="12" class="box violet"/>
+            <text x="293" y="278" class="t">执行反馈</text>
+            <text x="270" y="308" class="s">真实或仿真机器人运动</text>
+            <rect x="476" y="245" width="174" height="90" rx="12" class="box blue"/>
+            <text x="510" y="278" class="t">继续观察</text>
+            <text x="496" y="308" class="s">下一帧再决策</text>
+            <path d="M198 103 H250" class="arrow"/>
+            <path d="M424 103 H476" class="arrow"/>
+            <path d="M650 103 H702" class="arrow"/>
+            <path d="M789 151 C785 220 632 246 610 246" class="arrow"/>
+            <path d="M476 290 H424" class="arrow"/>
+          </svg>
+          <div class="caption">重构图示：Qwen-VLA 把视觉、语言、机器人身体说明和连续动作解码串成一条统一链路。</div>
+        </div>
+        <h3>关键直觉一：机器人也需要“自我介绍”</h3>
+        <p>人类拿起筷子、剪刀、方向盘时，会自然调整动作方式。模型没有这种身体常识，所以论文把机器人形态写进提示词：这是单臂还是双臂？动作是末端执行器位姿还是关节角？控制频率是多少？这就像上岗前先告诉员工：你今天操作的是叉车、机械臂还是扫地机。</p>
+        <h3>关键直觉二：动作不是一个词，而是一段连续轨迹</h3>
+        <p>语言模型一次输出一个 token，但机器人动作是一串高频连续值。Qwen-VLA 用 DiT 风格的 flow-matching 动作解码器生成 action chunk。白话说，它不是只喊一句“去抓杯子”，而是给出未来一小段时间每个关节和夹爪该怎么动。</p>
+        <div class="figure">
+          <svg viewBox="0 0 930 360" role="img" aria-label="模型结构对比">
+            <style>
+              .panel{fill:#fff;stroke:#cbd5e1;stroke-width:2}
+              .old{fill:#f8fafc;stroke:#94a3b8}
+              .new{fill:#ecfeff;stroke:#22d3ee}
+              .mid{fill:#fffbeb;stroke:#f59e0b}
+              .txt{font:700 19px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+              .sm{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#475569}
+              .line{stroke:#94a3b8;stroke-width:2}
+            </style>
+            <rect x="36" y="48" width="360" height="240" rx="14" class="panel old"/>
+            <text x="78" y="88" class="txt">旧路线：专门模型</text>
+            <rect x="78" y="118" width="120" height="48" rx="8" class="old"/><text x="94" y="148" class="sm">抓取模型</text>
+            <rect x="228" y="118" width="120" height="48" rx="8" class="old"/><text x="244" y="148" class="sm">导航模型</text>
+            <rect x="78" y="194" width="120" height="48" rx="8" class="old"/><text x="94" y="224" class="sm">双臂模型</text>
+            <rect x="228" y="194" width="120" height="48" rx="8" class="old"/><text x="244" y="224" class="sm">动态模型</text>
+            <text x="78" y="268" class="sm">像每个岗位都招一个新人。</text>
+            <rect x="534" y="48" width="360" height="240" rx="14" class="panel new"/>
+            <text x="576" y="88" class="txt">Qwen-VLA：统一模型</text>
+            <rect x="598" y="118" width="232" height="54" rx="10" class="mid"/><text x="640" y="151" class="sm">Qwen3.5 视觉语言骨干</text>
+            <line x1="714" y1="172" x2="714" y2="197" class="line"/>
+            <rect x="598" y="198" width="232" height="54" rx="10" class="new"/><text x="641" y="231" class="sm">DiT 连续动作解码器</text>
+            <text x="588" y="268" class="sm">像一个员工学会开多种工具。</text>
+          </svg>
+          <div class="caption">重构图示：旧路线偏“每个机器人一套系统”；Qwen-VLA 试图走“统一大脑 + 身体说明 + 动作解码”的路线。</div>
+        </div>
+      </section>
+
+      <section id="terms">
+        <h2>5. 关键术语解释</h2>
+        <table>
+          <thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead>
+          <tbody>
+            <tr><td>VLA</td><td>Vision-Language-Action，将视觉观察、语言指令和动作输出统一建模。</td><td>让 AI 既会看、会听懂，也会动手。</td></tr>
+            <tr><td>Embodiment</td><td>智能体或机器人具体的身体形态、传感器、执行器和控制接口。</td><td>同样是“拿杯子”，人手、机械臂、夹爪做法都不同。</td></tr>
+            <tr><td>DiT</td><td>Diffusion Transformer，用 Transformer 结构做扩散/flow-matching 生成。</td><td>一个擅长生成连续轨迹的“动作作曲器”。</td></tr>
+            <tr><td>Flow Matching</td><td>学习从噪声流向目标数据分布的连续变换路径。</td><td>从一团乱线，逐步整理成可执行动作曲线。</td></tr>
+            <tr><td>Action Chunk</td><td>一次预测未来多个时间步的动作序列。</td><td>不是下一秒只迈一步，而是提前给出一小段动作计划。</td></tr>
+            <tr><td>SFT</td><td>Supervised Fine-Tuning，用示范样本训练模型按任务输出。</td><td>看标准操作录像，学会基本动作。</td></tr>
+            <tr><td>RL</td><td>Reinforcement Learning，通过成功/失败奖励进一步优化策略。</td><td>做对了给分，做错了扣分，让机器人更会完成任务。</td></tr>
+            <tr><td>OOD</td><td>Out-of-Distribution，测试模型在训练分布外的对象、背景、位置或任务。</td><td>考试不只考练习册原题，而是换桌子、换杯子、换说法。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="results">
+        <h2>6. 实验结果解读</h2>
+        <p>这篇论文最值得看的不是单个榜单第一，而是一个更大的信号：一个统一模型在多个机器人、多个任务族上接近甚至超过专门模型。</p>
+        <table>
+          <thead><tr><th>实验问题</th><th>论文数字</th><th>这意味着什么</th></tr></thead>
+          <tbody>
+            <tr><td>统一模型能否做桌面操作？</td><td>Qwen-VLA-Instruct 在 LIBERO 达到 97.9%，Simpler-WidowX 达到 73.7%，RoboTwin-Easy/Hard 达到 86.1%/87.2%。</td><td>一个 generalist policy 没有明显牺牲单任务能力，甚至超过多数 specialist。</td></tr>
+            <tr><td>预训练有没有用？</td><td>真实 ALOHA 上，从头训练平均成功率 48.5%；从 Qwen-VLA-Base 微调达到 83.6%。</td><td>大规模具身预训练不是装饰，它显著降低真实机器人学习门槛。</td></tr>
+            <tr><td>换背景、换物体、换指令能否稳住？</td><td>ALOHA OOD 平均成功率 76.9%，比 π0.5 高 35.4 个百分点。</td><td>它更像在学“任务规律”，而不只是记住训练桌面。</td></tr>
+            <tr><td>会不会导航？</td><td>R2R Val-Unseen OSR 69.0、SR 57.5；RxR Val-Unseen SR 59.6、SPL 47.8。</td><td>操作和导航可以放进同一个模型训练，不必完全割裂。</td></tr>
+            <tr><td>动态物体能否零样本处理？</td><td>DOMINO 动态操作零样本成功率 26.6%，Manipulation Score 39.5。</td><td>分数不算高，但在未针对动态操作微调的情况下超过多种强基线，说明统一轨迹预训练有价值。</td></tr>
+          </tbody>
+        </table>
+        <div class="figure">
+          <svg viewBox="0 0 930 390" role="img" aria-label="Qwen-VLA 关键结果柱状图">
+            <style>
+              .axis{stroke:#98a2b3;stroke-width:2}
+              .label{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#344054}
+              .value{font:700 14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#101828}
+              .bar1{fill:#94a3b8}
+              .bar2{fill:#22c55e}
+              .bar3{fill:#38bdf8}
+              .bar4{fill:#f59e0b}
+              .title{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+            </style>
+            <text x="34" y="34" class="title">关键成功率：不是只会一个任务，而是跨任务保持强表现</text>
+            <line x1="76" y1="318" x2="870" y2="318" class="axis"/>
+            <rect x="100" y="45" width="86" height="273" class="bar2"/><text x="112" y="38" class="value">97.9%</text><text x="100" y="346" class="label">LIBERO</text>
+            <rect x="230" y="112" width="86" height="206" class="bar3"/><text x="242" y="105" class="value">73.7%</text><text x="207" y="346" class="label">Simpler-WidowX</text>
+            <rect x="360" y="77" width="86" height="241" class="bar2"/><text x="372" y="70" class="value">86.1%</text><text x="348" y="346" class="label">RoboTwin-E</text>
+            <rect x="490" y="74" width="86" height="244" class="bar2"/><text x="502" y="67" class="value">87.2%</text><text x="478" y="346" class="label">RoboTwin-H</text>
+            <rect x="620" y="103" width="86" height="215" class="bar4"/><text x="632" y="96" class="value">76.9%</text><text x="610" y="346" class="label">ALOHA OOD</text>
+            <rect x="750" y="243" width="86" height="75" class="bar1"/><text x="762" y="236" class="value">26.6%</text><text x="742" y="346" class="label">DOMINO 零样本</text>
+          </svg>
+          <div class="caption">重构图示：DOMINO 是动态零样本任务，难度更高，因此低分并不等于弱；它更像压力测试。</div>
+        </div>
+      </section>
+
+      <section id="comparison">
+        <h2>7. 与旧方法对比</h2>
+        <table>
+          <thead><tr><th>路线</th><th>代表思路</th><th>优势</th><th>问题</th><th>Qwen-VLA 的变化</th></tr></thead>
+          <tbody>
+            <tr><td>专门机器人策略</td><td>为某个机械臂、某个场景、某类任务单独训练。</td><td>在窄场景里稳定。</td><td>换机器人或换任务成本很高。</td><td>用身体提示和统一动作接口让一个模型覆盖多种形态。</td></tr>
+            <tr><td>视觉语言模型</td><td>强在识别、描述、推理和问答。</td><td>理解世界能力强。</td><td>不会直接输出可执行连续控制。</td><td>在 VLM 上接 DiT 动作头，把理解接到动作。</td></tr>
+            <tr><td>世界模型</td><td>预测未来视频或状态。</td><td>适合模拟和规划。</td><td>不一定直接解决真实控制。</td><td>更偏 action policy，直接生成机器人动作和导航轨迹。</td></tr>
+            <tr><td>RT-2/OpenVLA 类 VLA</td><td>把网络知识和视觉输入迁移到机器人控制。</td><td>打开了 VLA 路线。</td><td>跨任务、跨身体和轨迹统一仍有限。</td><td>把操作、导航、轨迹、异构身体和分阶段训练放进同一框架。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="limits">
+        <h2>8. 局限性与问题</h2>
+        <div class="risk">
+          <p><b>不要把它理解成“通用机器人已经解决”。</b> 论文自己也强调：具身动作数据仍远少于视觉语言数据，长尾物体、真实接触、长期任务和失败恢复仍是难题。</p>
+        </div>
+        <table>
+          <thead><tr><th>限制</th><th>现实含义</th><th>为什么重要</th></tr></thead>
+          <tbody>
+            <tr><td>真实动作数据不足</td><td>机器人数据昂贵、慢、危险，无法像文本互联网一样海量收集。</td><td>没有足够真实交互，模型可能在不常见物体或复杂环境中失效。</td></tr>
+            <tr><td>联合训练有权衡</td><td>操作、导航、视觉问答放在一起训练，可能互相干扰。</td><td>一个模型什么都学，可能在某些纯视觉或导航任务上略有回退。</td></tr>
+            <tr><td>长周期任务仍开放</td><td>多数评测还是短任务或 benchmark。</td><td>家庭整理、仓库拣选、装配维修都需要多步计划、记忆和纠错。</td></tr>
+            <tr><td>缺少触觉和力反馈</td><td>当前默认更依赖视觉和动作轨迹。</td><td>拧瓶盖、插线、折叠、抓软物体都离不开接触感知。</td></tr>
+            <tr><td>安全责任更高</td><td>动作模型会驱动物理设备。</td><td>一旦误判，不是答错题，而是可能撞坏物体或伤人。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="industry">
+        <h2>9. 产业影响分析</h2>
+        <p>如果 Qwen-VLA 这条路线继续扩展，机器人行业可能从“每个客户现场做项目”走向“通用模型 + 机器人身体适配 + 场景数据微调”。这会改变产品、成本和竞争格局。</p>
+        <div class="cards">
+          <div class="card"><b>谁会受益</b><p>机器人平台公司、仓储物流、制造自动化、家庭服务、仿真数据公司、具身 AI 开发工具。</p></div>
+          <div class="card"><b>谁会被冲击</b><p>只靠手写规则、窄场景调参、单一机械臂项目交付的传统机器人方案。</p></div>
+          <div class="card"><b>新的竞争点</b><p>高质量真实数据、仿真到现实迁移、动作安全评估、机器人操作系统和部署闭环。</p></div>
+        </div>
+        <p>对产品经理来说，它的启发是：未来机器人产品的核心不只是硬件参数，而是模型能否适配多身体、多任务、多环境。对投资人来说，真正稀缺的可能不是某个机械结构，而是可规模化收集、清洗、回放和评测的具身数据闭环。</p>
+        <p>对普通读者来说，最直观的理解是：大模型正在从“屏幕里的助手”向“现实世界里的操作系统”移动。Qwen-VLA 是这条迁移路线上值得标记的一步。</p>
+      </section>
+
+      <section id="takeaway">
+        <h2>10. 今天应该记住什么？</h2>
+        <div class="note">
+          <p><b>第一，机器人智能的关键不是会聊天，而是能把语言变成可靠动作。</b></p>
+          <p><b>第二，未来机器人可能像大模型一样走预训练路线：</b>先吸收大量机器人、人类视频、导航和仿真数据，再用少量场景数据对齐。</p>
+          <p><b>第三，统一模型不是万能，但它改变了工程范式：</b>从“为每台机器写一套脑子”，走向“一个脑子适配多种身体”。</p>
+        </div>
+      </section>
+
+      <section id="further">
+        <h2>11. 延伸阅读与引用来源</h2>
+        <ul class="source-list">
+          <li><a href="https://arxiv.org/abs/2605.30280">Qwen-VLA: Unifying Vision-Language-Action Modeling across Tasks, Environments, and Robot Embodiments</a>，arXiv:2605.30280v1，2026-05-28。</li>
+          <li><a href="https://arxiv.org/pdf/2605.30280">Qwen-VLA PDF</a>，本文实验数字、训练流程、局限性均基于论文原文整理。</li>
+          <li><a href="https://qwen.ai/blog?id=qwenvla">Qwen-VLA 官方博客</a>，用于交叉核对项目定位和官方说明。</li>
+          <li><a href="https://github.com/QwenLM/Qwen-VLA">QwenLM/Qwen-VLA GitHub</a>，用于核对开源入口。</li>
+          <li><a href="https://huggingface.co/papers/2605.30280">Hugging Face Daily Papers: Qwen-VLA</a>，用于核对社区收录与发布日期。</li>
+          <li><a href="https://arxiv.org/abs/2406.09246">OpenVLA: An Open-Source Vision-Language-Action Model</a>，相关 VLA 路线背景。</li>
+          <li><a href="https://robotics-transformer2.github.io/">RT-2: Vision-Language-Action Models Transfer Web Knowledge to Robotic Control</a>，早期 VLA 代表工作背景。</li>
+        </ul>
+        <p class="caption">本报告为《AI每日论文精选》2026-05-30 期。内容基于英文原始论文、官方博客、GitHub 与英文社区页面交叉整理；中文图示为重新设计的解释图，不是论文截图。</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

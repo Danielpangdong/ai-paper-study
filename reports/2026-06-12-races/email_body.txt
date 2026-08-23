@@ -1,0 +1,7 @@
+今天精选的论文是《Verifiable Environments Are LEGO Bricks: Recursive Composition for Reasoning Generalization》。
+
+它提出的 RACES 把可验证训练环境当作“积木”：只要一个环境的输出能接上另一个环境的输入，就能自动组合成更复杂的新训练任务。
+
+这可能意味着，未来提升 AI 推理能力不只是继续堆更多题库，而是构建可复用、可组合、可验证的训练环境工厂。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者、产品经理、投资研究者和 AI 从业者阅读。

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日AI论文精读 · 2026-06-11 · 为生物学智能体铺路（Anthropic）</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#151b24; --panel2:#1b2230; --line:#2a3242;
+    --fg:#e6edf3; --muted:#9aa7b8; --accent:#7cc4ff; --accent2:#ffb86b;
+    --good:#3fb950; --warn:#d29922; --bad:#f85149; --pill:#243049;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    line-height:1.7; font-size:15.5px;}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 22px 80px}
+  header.hero{
+    background:radial-gradient(1200px 360px at 20% 0%, rgba(124,196,255,.18), transparent 60%),
+               radial-gradient(900px 280px at 100% 0%, rgba(255,184,107,.12), transparent 60%),
+               linear-gradient(180deg, #131a26, #0f141d);
+    border:1px solid var(--line); border-radius:18px; padding:28px 28px 22px; margin-bottom:24px;
+  }
+  .crumbs{color:var(--muted);font-size:13px;letter-spacing:.3px}
+  h1{font-size:30px;line-height:1.3;margin:6px 0 8px}
+  h2{font-size:22px;margin:34px 0 12px;border-left:4px solid var(--accent);padding-left:12px}
+  h3{font-size:17px;margin:22px 0 8px;color:#cfe2ff}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .pill{background:var(--pill);color:#cfe2ff;border:1px solid #2c3b5c;
+        padding:4px 10px;border-radius:999px;font-size:12.5px}
+  .pill.warn{background:#3a2a14;color:#ffd9a8;border-color:#5c4427}
+  .pill.good{background:#103a1d;color:#b6f0c5;border-color:#1f5a32}
+  .grid{display:grid;gap:16px}
+  .grid.cards{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .grid.two{grid-template-columns:1.1fr .9fr}
+  @media (max-width:880px){.grid.cards{grid-template-columns:repeat(2,1fr)}.grid.two{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .stat{font-size:28px;font-weight:700;color:#fff;letter-spacing:.3px}
+  .stat .unit{font-size:14px;color:var(--muted);font-weight:500;margin-left:4px}
+  .label{color:var(--muted);font-size:13px;margin-top:4px}
+  .tldr{background:linear-gradient(180deg,#172033,#121925);border:1px solid #2a3a5a;
+        border-radius:14px;padding:18px 18px 6px;margin-top:6px}
+  .tldr ul{margin:6px 0 10px 18px;padding:0}
+  .tldr li{margin:4px 0}
+  .quote{border-left:3px solid var(--accent2);background:#1a1a14;
+         padding:10px 14px;border-radius:8px;color:#f5e6cf;margin:10px 0;font-size:14.5px}
+  .chartbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .chartbox h4{margin:0 0 8px;font-size:14px;color:#cfe2ff;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+  th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:#cfe2ff;background:#172033}
+  .ok{color:var(--good);font-weight:600}.bad{color:var(--bad);font-weight:600}.warn{color:var(--warn);font-weight:600}
+  .conf{display:inline-block;padding:1px 7px;border-radius:999px;font-size:12px;font-weight:600}
+  .conf.h{background:#0f3a1d;color:#9be0ad}
+  .conf.m{background:#3a2a14;color:#ffcd91}
+  .conf.l{background:#3a1518;color:#ffb3b8}
+  .conf.u{background:#2b2f3a;color:#cfd4e0}
+  .kv{display:grid;grid-template-columns:140px 1fr;gap:8px 14px;font-size:14px}
+  .kv .k{color:var(--muted)}
+  footer{margin-top:36px;color:var(--muted);font-size:12.5px;border-top:1px dashed var(--line);padding-top:18px}
+  .lvl{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .lvl .bar{flex:1;height:8px;background:#1f2735;border-radius:6px;overflow:hidden}
+  .lvl .bar > div{height:100%;background:linear-gradient(90deg,#7cc4ff,#3fb950)}
+  details{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:8px 0}
+  details > summary{cursor:pointer;font-weight:600;color:#cfe2ff}
+  code,kbd{background:#1d2533;border:1px solid #2a3242;border-radius:6px;padding:1px 6px;font-size:13px;color:#e8f0ff}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .toc a{background:#1a2436;border:1px solid #2b3a55;border-radius:8px;padding:6px 10px;color:#cfe2ff;font-size:13px}
+  .toc a:hover{background:#22324d;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="crumbs">每日 AI 精读 · 2026 年 6 月 11 日（周四）· 信息源：英文原文</div>
+    <h1>为生物学智能体「铺路」：当 AI 撞上人类专属的数据库</h1>
+    <div class="meta">
+      <span class="pill">机构：Anthropic（Science 团队）</span>
+      <span class="pill">作者：Laura Luebbert 等</span>
+      <span class="pill">发布日期：2026-06-08</span>
+      <span class="pill warn">类型：白皮书 + 基准 + 工具</span>
+      <span class="pill good">配套 Preprint：arXiv 2606.06749</span>
+    </div>
+    <div class="toc">
+      <a href="#tldr">一图速览</a>
+      <a href="#why">为什么挑这一篇</a>
+      <a href="#bg">背景：智能体跑不动生物数据库</a>
+      <a href="#bench">VirBench 基准</a>
+      <a href="#case">病例：埃博拉疫情案例</a>
+      <a href="#fix">方法：gget virus 确定性层</a>
+      <a href="#results">实验结果</a>
+      <a href="#takeaway">核心启示</a>
+      <a href="#limits">局限与置信度</a>
+      <a href="#sources">来源</a>
+    </div>
+  </header>
+
+  <section id="tldr" class="tldr">
+    <h3 style="margin-top:0">TL;DR · 一句话总结</h3>
+    <p>当前最强的科研智能体（Claude Opus 4.7、GPT-5.5 等）在「从 NCBI Virus 检索病毒序列」这种基础任务上，准确率从 16.9% 到 91.3% 不等，且同一问题三次问会给出三组不同答案；瓶颈不在「推理」，而在<strong>数据库本身没有为智能体设计</strong>。作者发布 VirBench（120 道题、40 种病原体）作为基准，并以确定性检索层 <code>gget virus</code> 把所有模型拉到 90%+，GPT-5.5 达 99.7%。</p>
+    <ul>
+      <li>关键论点（高置信）：科学智能体的瓶颈正从「模型能力」迁移到「为智能体设计的基础设施」。</li>
+      <li>关键证据（高置信）：在埃博拉疫情案例中，Sonnet 4 三次跑同一查询返回 106 / 15 / 5 条序列（期望 266），把疫情最近共同祖先时间（TMRCA）算错到 1922 年。</li>
+      <li>关键解法（高置信）：把工作流中的「检索」剥离给确定性工具，让模型只负责创造性推理。</li>
+      <li>开放问题（中置信）：当模型足够强，<code>gget virus</code> 这类「中间件」是否会被吞并？作者认为短期不会，因为可审计性、成本与可重复性仍重要。</li>
+    </ul>
+  </section>
+
+  <h2 id="why">📌 为什么今天挑这一篇</h2>
+  <div class="grid two">
+    <div class="card">
+      <div class="kv">
+        <div class="k">时效</div><div>2026-06-08 发布，距今 3 天，是当周 Anthropic Research 最新一篇。</div>
+        <div class="k">研究价值</div><div>提出新基准 VirBench + 新工具 gget virus，可直接复现，附 arXiv 预印本。</div>
+        <div class="k">代表性</div><div>正好反映 2026 年 AI4Science 主流叙事：模型已够强，瓶颈是基础设施。</div>
+        <div class="k">高风险场景</div><div>真实疫情（DRC 邦迪布焦埃博拉病毒，2026-05）作为案例，落点明确。</div>
+        <div class="k">对手案例</div><div>同时对比了 6 个前沿系统（Claude / GPT / Biomni / Edison），可横向比较。</div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">候选与本次取舍</h3>
+      <table>
+        <tr><th>候选</th><th>来源</th><th>取舍</th></tr>
+        <tr><td>Paving the way for agents in biology</td><td>Anthropic</td><td class="ok">✓ 入选（最新、有基准、有真实病例）</td></tr>
+        <tr><td>Making Claude a chemist (NMR)</td><td>Anthropic, 6-5</td><td>方法相似，但样本量小（n=20），暂列备选</td></tr>
+        <tr><td>Accelerating Mathematical & Scientific Discovery with Gemini Deep Think</td><td>DeepMind, 2-11</td><td>更早、影响力大，已被广泛解读</td></tr>
+        <tr><td>Evaluating CoT Monitorability</td><td>OpenAI, 2025-12</td><td>时间偏旧</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h2 id="bg">🧬 背景：智能体走不通生物数据库</h2>
+  <p>作者用一个比喻把问题点透：</p>
+  <div class="quote">「用 AI agent 跑生物数据库，像在一座古城里开车——街道是为行人设计的，再漂亮也没法跑现代车。软件世界本来就是为汽车（agent）铺的高速路：版本管理、API、包管理器。生物学没有。」</div>
+  <p>同样是「数据」，生物数据的现实是：</p>
+  <ul>
+    <li><strong>分散</strong>：NCBI Virus 本质是 GenBank、RefSeq、INSDC、Pathoplexus 等多个底层资源的「门户」。</li>
+    <li><strong>过滤逻辑只活在 Web 界面里</strong>：浏览器一键的筛选，程序化几乎不可能复现。</li>
+    <li><strong>含义依赖语境</strong>：同一字段在不同库里语义不同，需要专家「默会知识」。</li>
+    <li><strong>错一个小细节就翻车</strong>：用错基因组版本、混淆 RefSeq/GenBank、漏掉 segment，下游结论全错。</li>
+  </ul>
+  <p>这一节其实在重申 Karpathy 在「<em>Software in the era of AI</em>」演讲里的核心观点：「The code was the easiest part! Most of the work was in the browser, clicking things.」 作者把它平移到生物学：<strong>不止软件该为 agent 重写，生物数据库也该为 agent 重写</strong>。</p>
+
+  <h2 id="bench">📊 VirBench：第一个面向「生物数据检索」的智能体基准</h2>
+  <div class="grid cards">
+    <div class="card"><div class="stat">120<span class="unit">道查询</span></div><div class="label">覆盖真实研究情境</div></div>
+    <div class="card"><div class="stat">40<span class="unit">种病原体</span></div><div class="label">含 SARS-CoV-2 / 流感 / HIV / 埃博拉</div></div>
+    <div class="card"><div class="stat">6<span class="unit">个智能体系统</span></div><div class="label">Claude / GPT / Biomni / Edison</div></div>
+    <div class="card"><div class="stat">3<span class="unit">次重复</span></div><div class="label">考核可重复性（reproducibility）</div></div>
+  </div>
+
+  <h3>示例查询（原文复刻）</h3>
+  <div class="quote">「检索 NCBI 中 TaxID 3052462（Orthoebolavirus zairense, ZEBOV）的病毒序列：宿主为人；样本采集地为非洲；采集时间在 2014-01-01 至 2014-06-20 之间；最小长度 15,200 碱基；最大 1,900 个 N；排除实验室传代样本。」</div>
+  <p>对生物学专家来说这是 30 秒就能拍好的需求；对当前 agent 而言，它需要：拼接 REST / Datasets / E-utilities 三套 API、分页拉数据、本地再过滤、跨库 reconcile 标识符——任何一步漏掉，最终数据集都「看起来对，其实错」。</p>
+
+  <h2 id="case">🧪 真实病例：埃博拉疫情的「检索一致性」灾难</h2>
+  <p>2026-05-14，刚果（金）的 INRB Kinshasa 实验室确诊 8 例邦迪布焦埃博拉病毒病；截至 5-29，WHO 报告 1,000+ 例疑似 / 确诊，200+ 例死亡。研究者拿到首批基因组后，要回答三个问题：</p>
+  <ol>
+    <li>这次的病毒与历史毒株差多少？</li>
+    <li>现有诊断试剂还能检出吗？</li>
+    <li>现有疗法是否仍有效？</li>
+  </ol>
+  <p>作者把上面的查询丢给 Claude Sonnet 4，<strong>三次跑出三个答案</strong>，且都不是 266：</p>
+
+  <div class="grid two">
+    <div class="chartbox">
+      <h4>同一查询的三次返回（期望 266 条序列）</h4>
+      <canvas id="ebolaRuns" height="170"></canvas>
+    </div>
+    <div class="chartbox">
+      <h4>TMRCA（最近共同祖先时间）严重偏移</h4>
+      <canvas id="tmrca" height="170"></canvas>
+      <p class="label" style="margin:6px 2px 0">手工策划数据集得到 2014-01，与文献吻合；agent 数据集分别得到 1922 / 2014-04 / 缺失，<strong>把疫情起源推前了 92 年</strong>。</p>
+    </div>
+  </div>
+
+  <p>这不仅是数字偏移问题——下游临床决策（如 maftivimab、MBP134 单抗对当前流行毒株是否仍覆盖）会被「看似合理」的错误数据集直接误导。</p>
+
+  <h2 id="fix">🛠 方法：把不确定性挪出 agent —— gget virus 确定性检索层</h2>
+  <p>核心思路非常工程：<strong>不要让 LLM 自己拼 API，而是给它一把已经把 NCBI Virus 全部网页过滤语义复现好的 Python 函数</strong>。</p>
+  <div class="grid two">
+    <div class="card">
+      <h3 style="margin-top:0">gget virus 做了什么</h3>
+      <ul>
+        <li>统一调度 REST、Datasets、E-utilities 三种底层 API。</li>
+        <li>把「只活在 Web 界面里」的筛选逻辑，搬到本地确定性执行。</li>
+        <li>处理大结果集分批拉取，避免「中途截断」。</li>
+        <li>跨库（GenBank 等）补全元数据，再做过滤。</li>
+        <li>输出标准化、可被人和机器读，附完整日志可审计。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">这背后的设计哲学</h3>
+      <p>「我们希望模型在『提假设、设计实验、推机制』时有创造力；但底层（标识符、schema、坐标系、元数据约定、检索路径）必须<strong>无聊地可靠</strong>。」</p>
+      <p>对应业界一个更宽的概念：<strong>context engine</strong> —— 围绕 agent 构建的可靠数据中间层。其他代表：ToolUniverse、Edison Robin、Biomni 等。</p>
+    </div>
+  </div>
+
+  <h2 id="results">📈 实验结果：从「看天吃饭」到「逼近确定性」</h2>
+  <div class="grid two">
+    <div class="chartbox">
+      <h4>VirBench 准确率：使用 vs 不使用 gget virus（数字基于 Anthropic 发布的柱状图近似读取）</h4>
+      <canvas id="virbench" height="260"></canvas>
+      <p class="label" style="margin:6px 2px 0">注：原文柱状图未直接给出数字，本图据原图视觉位置估读，仅用于趋势展示。原文给出的明确数字为「6 个模型未加 gget virus 时准确率范围 16.9%–91.3%；加上后所有模型 &gt; 90%；GPT-5.5 峰值 99.7%」。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">关键发现</h3>
+      <ul>
+        <li><strong>模型选择不再决定一切</strong>：加了 gget virus 后，模型间差距大幅收敛——便宜模型也能跑出可靠结果。</li>
+        <li><strong>误差模式有规律</strong>：偏少 → 大结果集中途断流；偏多 → 过滤条件用错；尤其在 Influenza A、HIV-1、SARS-CoV-2 这类「记录爆炸」的病毒上最明显。</li>
+        <li><strong>当 filter ≥ 3-4 条时性能骤降</strong>：复杂语义检索是 agent 当前能力上限附近的任务。</li>
+        <li><strong>GPT-5.5 自发使用工具</strong>：360 次跑里有一次，模型在没被显式提示的情况下自己调用了 gget virus —— 这也是该题唯一答对的运行。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>横向对比（裸 agent vs +gget virus）</h3>
+  <table>
+    <tr><th>系统</th><th>裸 agent 平均准确率（原文给出范围）</th><th>+gget virus</th><th>可重复性</th></tr>
+    <tr><td>Claude Sonnet 4</td><td>原文范围 16.9% – 91.3% 中</td><td class="ok">&gt; 90%</td><td>三次显著不同</td></tr>
+    <tr><td>Claude Opus 4.7</td><td>位于范围上端</td><td class="ok">&gt; 90%</td><td>明显改善</td></tr>
+    <tr><td>Biomni OSS（基于 Sonnet 4）</td><td>偏低</td><td class="ok">&gt; 90%</td><td>明显改善</td></tr>
+    <tr><td>Edison Analysis</td><td>原文未单列数值</td><td class="ok">&gt; 90%</td><td>明显改善</td></tr>
+    <tr><td>GPT-5.2-pro</td><td>原文未单列数值</td><td class="ok">&gt; 90%</td><td>明显改善</td></tr>
+    <tr><td>GPT-5.5</td><td>位于范围上端</td><td class="ok">99.7%（峰值）</td><td>近乎确定性</td></tr>
+  </table>
+  <p class="label">⚠ 上表中各模型未加工具时的具体准确率原文未在网页内逐条披露，需查 arXiv 预印本 <a href="https://arxiv.org/pdf/2606.06749" target="_blank">2606.06749</a> 的完整表格。</p>
+
+  <h2 id="takeaway">💡 核心启示（写给从业者）</h2>
+  <div class="grid two">
+    <div class="card">
+      <h3 style="margin-top:0">对 AI4Science 团队</h3>
+      <ul>
+        <li>不要把 LLM 当「全栈科学家」用；把可形式化的环节抽出来做确定性工具。</li>
+        <li>评估一个科研 agent，光看 benchmark 平均分不够，还要看「同题三次复测」的方差。</li>
+        <li>「能跑」≠「能上线」：可审计性 + 可重复性是上下游协作的硬门槛。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">对数据库 / SaaS 维护者</h3>
+      <ul>
+        <li>把网页里的筛选语义对外暴露为 API；元数据字段做明确文档化。</li>
+        <li>设计「机器优先」的输出：稳定的 schema、可追溯的日志、可复现的查询参数。</li>
+        <li>承认「agent 是新的大型用户」，并把它列进 SLA。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">对模型评测</h3>
+      <ul>
+        <li>VirBench 暴露了一类此前被忽视的失败模式：<strong>知识没错，但拿不到正确数据</strong>。</li>
+        <li>建议把「带工具 / 不带工具」拆成两个独立分数发布。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">最强反方观点（作者自己也提了）</h3>
+      <p>「如果模型继续按当前曲线变强，agent 自己就能搞定 messy 的门户，<code>gget virus</code> 这类中间件不会被淘汰吗？」</p>
+      <p>作者承认有可能，但 push back：即便 agent 能跑，「<strong>每次都让 agent 临场重造一遍</strong>」在<em>成本、延迟、可审计性、可信度</em>上都不划算。这条反驳成立，但需要后续 1–2 年再观察。</p>
+    </div>
+  </div>
+
+  <h2 id="limits">⚠ 局限、置信度与可证伪点</h2>
+  <table>
+    <tr><th>论点</th><th>类型</th><th>置信度</th><th>说明 / 可证伪条件</th></tr>
+    <tr>
+      <td>当前 SOTA agent 在生物数据检索上不可靠（16.9% – 91.3%、3 次不一致）</td>
+      <td>事实</td><td><span class="conf h">高</span></td>
+      <td>有 VirBench + 公开数字支撑；若未来 GPT-6 / Claude Opus 5 直接破局，则该结论的「时效性」失效，但当前数据成立。</td>
+    </tr>
+    <tr>
+      <td>gget virus 加上后准确率普遍 &gt; 90%，GPT-5.5 99.7%</td>
+      <td>事实</td><td><span class="conf h">高</span></td>
+      <td>由原文配图与文字共同支撑，可在 arXiv 预印本里查到详细分数表。</td>
+    </tr>
+    <tr>
+      <td>「瓶颈是基础设施而非推理」</td>
+      <td>推断</td><td><span class="conf m">中</span></td>
+      <td>逻辑链有说服力；但 VirBench 只覆盖<em>检索</em>类任务，不能直接外推到「设计实验、解读结果」。</td>
+    </tr>
+    <tr>
+      <td>「未来仍需要 context engine 这类中间件」</td>
+      <td>观点</td><td><span class="conf m">中</span></td>
+      <td>论证基于「可审计性 / 成本」假设；若 agent 推理便宜到几乎免费且可解释性提升，则该假设动摇。</td>
+    </tr>
+    <tr>
+      <td>具体疫情 TMRCA 数字（2014-01 vs 1922 vs 2014-04）</td>
+      <td>事实</td><td><span class="conf h">高</span></td>
+      <td>对应原文配图与正文描述；TMRCA 的「2014-01」与已发表论文置信区间（2014-01-27 至 2014-03-14）一致。</td>
+    </tr>
+    <tr>
+      <td>VirBench 各模型「未加工具」逐条准确率</td>
+      <td>事实</td><td><span class="conf u">未知 / 待查</span></td>
+      <td>博客只给了 16.9% – 91.3% 的范围；逐模型逐题数据需查 arXiv preprint。</td>
+    </tr>
+  </table>
+
+  <h3>本文未覆盖的开放问题</h3>
+  <ul>
+    <li>当查询同时跨越多个生物领域（基因组 + 蛋白结构 + 文献），gget 风格的「专用工具」是否要被升级为可组合的协议？</li>
+    <li>这种基础设施投资如何分摊给学界？商业公司主导是否会带来新的「锁定」？</li>
+    <li>VirBench 是否会迅速被「针对性训练」而失去信号？（同 SWE-bench、AIME 的命运。）</li>
+  </ul>
+
+  <h2 id="sources">🔗 来源（建议进一步阅读英文原文）</h2>
+  <ul>
+    <li>主文（博客）：<a href="https://www.anthropic.com/research/agents-in-biology" target="_blank">Paving the way for agents in biology — Anthropic, 2026-06-08</a></li>
+    <li>配套预印本：<a href="https://arxiv.org/pdf/2606.06749" target="_blank">Nasri et al., 2026 (arXiv 2606.06749)</a></li>
+    <li>相关文：<a href="https://www.anthropic.com/research/making-claude-a-chemist" target="_blank">Making Claude a chemist — Anthropic, 2026-06-05</a></li>
+    <li>背景参考：<a href="https://www.youtube.com/watch?v=LCEmiRjPEtQ" target="_blank">Andrej Karpathy — Software in the era of AI（演讲）</a></li>
+    <li>埃博拉疫情数据共享：<a href="https://virological.org/t/initial-genomes-from-may-2026-bundibugyo-virus-disease-outbreak-in-the-democratic-republic-of-the-congo-and-uganda/1032" target="_blank">Initial Bundibugyo virus genomes — Virological.org, 2026-05</a></li>
+  </ul>
+
+  <footer>
+    生成时间：2026-06-11 · 数据来源仅限英文原始资料；可视化中数值标注的若为「视觉估读」，请以原文及 preprint 中的精确表格为准。<br>
+    本报告由「每日 AI 论文解读」计划自动生成，仅为研究学习用途，不构成医疗 / 投资建议。
+  </footer>
+</div>
+
+<script>
+const palette = {
+  blue:'#7cc4ff', orange:'#ffb86b', green:'#3fb950', red:'#f85149',
+  grey:'#586676', muted:'#9aa7b8'
+};
+Chart.defaults.color = '#cfd6e0';
+Chart.defaults.borderColor = '#2a3242';
+Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif';
+
+// 三次重复的 Ebola 查询返回条数
+new Chart(document.getElementById('ebolaRuns'), {
+  type:'bar',
+  data:{
+    labels:['期望值', 'Run 1', 'Run 2', 'Run 3'],
+    datasets:[{
+      label:'返回序列数',
+      data:[266, 106, 15, 5],
+      backgroundColor:[palette.green, palette.orange, palette.red, palette.red],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true, plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>` ${c.parsed.y} 条`}}
+    },
+    scales:{y:{beginAtZero:true, title:{display:true,text:'序列条数'}}}
+  }
+});
+
+// TMRCA
+new Chart(document.getElementById('tmrca'), {
+  type:'bar',
+  data:{
+    labels:['手工策划 (≈真值)', 'Sonnet 4 Run 1', 'Sonnet 4 Run 2', 'Sonnet 4 Run 3'],
+    datasets:[{
+      label:'推断的起源年份',
+      data:[2014.05, 2014.30, 1922, 2014.0],   // run2 极端外推
+      backgroundColor:[palette.green, palette.orange, palette.red, palette.muted],
+      borderRadius:6
+    }]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>{
+        const v = c.parsed.y;
+        if (v < 2000) return ` 推断起源：${Math.round(v)} 年（严重偏移）`;
+        const year = Math.floor(v);
+        const month = Math.round((v - year) * 12);
+        return ` 推断起源：${year}-${String(month).padStart(2,'0')}`;
+      }}}
+    },
+    scales:{
+      y:{
+        min:1900, max:2030, title:{display:true, text:'TMRCA 推断年份'},
+        ticks:{stepSize:20}
+      }
+    }
+  }
+});
+
+// VirBench summary chart (visual estimation only; preprint has exact numbers)
+new Chart(document.getElementById('virbench'), {
+  type:'bar',
+  data:{
+    labels:['Claude Sonnet 4','Claude Opus 4.7','Biomni OSS','Edison Analysis','GPT-5.2-pro','GPT-5.5'],
+    datasets:[
+      {
+        label:'裸 agent（估读）',
+        data:[20, 78, 30, 55, 80, 88],
+        backgroundColor:'#c75b5b', borderRadius:6
+      },
+      {
+        label:'+ gget virus（原文：>90%，GPT-5.5 99.7%）',
+        data:[93, 96, 92, 95, 97, 99.7],
+        backgroundColor:'#3fb950', borderRadius:6
+      }
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{
+      legend:{position:'bottom'},
+      tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y}%`}}
+    },
+    scales:{y:{beginAtZero:true, max:100, title:{display:true,text:'平均准确率（%）'}}}
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+今天精选的论文是 Distributed Attacks in Persistent-State AI Control，来自 Constellation Astra Fellowship、Imperial College London 与 UK AI Security Institute。
+
+一句话推荐理由：
+它指出 coding agent 进入真实工程后，风险不再只是“一次输出是否安全”，而是 AI 可以在同一个持久代码库里，把隐藏目标拆成多次看似正常的 PR。
+
+这可能会重塑企业部署 Codex、Claude Code、Copilot 类工具时的安全审查方式。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者阅读。

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文日报 · 2026-06-17 · DiffusionGemma 深度解读</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --bg2:#0f172a;
+    --card:#111a33;
+    --line:#1f2a48;
+    --text:#e6edf7;
+    --muted:#9aa7c2;
+    --accent:#7dd3fc;
+    --accent2:#a78bfa;
+    --warn:#fbbf24;
+    --bad:#f87171;
+    --good:#34d399;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:radial-gradient(1200px 800px at 10% -10%,#1e293b 0%,var(--bg) 60%);
+    color:var(--text);font:15px/1.7 -apple-system,BlinkMacSystemFont,"Helvetica Neue","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 24px 80px}
+  header{
+    border:1px solid var(--line);background:linear-gradient(135deg,#0b1020 0%,#172554 100%);
+    border-radius:20px;padding:28px 28px 22px;margin-bottom:24px;position:relative;overflow:hidden;
+  }
+  header::after{content:"";position:absolute;right:-40px;top:-40px;width:220px;height:220px;
+    background:radial-gradient(closest-side,rgba(167,139,250,.35),transparent);filter:blur(10px)}
+  .eyebrow{font-size:12px;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+  h1{font-size:30px;margin:8px 0 6px;line-height:1.25}
+  .sub{color:var(--muted);font-size:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{background:#0b1430;border:1px solid var(--line);padding:5px 10px;border-radius:999px;font-size:12px;color:#cbd5e1}
+  .chip.warn{border-color:#7c5b13;color:var(--warn)}
+  .chip.good{border-color:#185b40;color:var(--good)}
+  .chip.bad{border-color:#7f1d1d;color:var(--bad)}
+  section.card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:22px 24px;margin-bottom:18px;
+  }
+  h2{font-size:20px;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+  h2::before{content:"";width:6px;height:18px;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:3px}
+  h3{font-size:16px;margin:16px 0 8px;color:#cdd9ee}
+  p{margin:8px 0}
+  ul{padding-left:22px;margin:8px 0}
+  li{margin:6px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:780px){.grid2,.grid3{grid-template-columns:1fr}}
+  .stat{
+    background:#0b1430;border:1px solid var(--line);border-radius:14px;padding:14px;
+  }
+  .stat .num{font-size:24px;font-weight:700;color:var(--accent)}
+  .stat .lab{font-size:12px;color:var(--muted);margin-top:4px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}
+  th{color:#9bb0d6;font-weight:600;background:#0b1430}
+  tr:hover td{background:#0d1838}
+  .bar{position:relative;background:#0b1430;border:1px solid var(--line);border-radius:8px;height:22px;overflow:hidden;margin:4px 0}
+  .bar > span{display:block;height:100%;border-radius:6px}
+  .bar .lbl{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px;font-size:12px;color:#e2e8f0}
+  .b-diff{background:linear-gradient(90deg,#a78bfa,#7dd3fc)}
+  .b-base{background:linear-gradient(90deg,#34d399,#fde68a)}
+  .b-gpt{background:linear-gradient(90deg,#f472b6,#fb923c)}
+  .callout{border-left:4px solid var(--accent);background:#0e1a3a;padding:12px 14px;border-radius:8px;margin:12px 0}
+  .callout.warn{border-left-color:var(--warn);background:#231a0a}
+  .callout.bad{border-left-color:var(--bad);background:#240f0f}
+  .callout.good{border-left-color:var(--good);background:#0c1f17}
+  code{background:#0b1430;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:#fbbf24}
+  pre{background:#0b1430;border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto;font-size:13px}
+  .flow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin:14px 0}
+  .step{
+    background:#0e1a3a;border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:150px;
+    text-align:center;position:relative
+  }
+  .step .t{font-size:12px;color:var(--accent);letter-spacing:1px}
+  .step .d{font-size:13px;margin-top:4px;color:#dbeafe}
+  .arrow{color:var(--accent);font-size:20px}
+  .conf{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;margin-left:6px;font-weight:600}
+  .c-h{background:#0c1f17;color:var(--good);border:1px solid #185b40}
+  .c-m{background:#231a0a;color:var(--warn);border:1px solid #7c5b13}
+  .c-l{background:#240f0f;color:var(--bad);border:1px solid #7f1d1d}
+  .footer{color:var(--muted);font-size:12px;text-align:center;margin-top:24px}
+  a{color:var(--accent)}
+  .canvas-demo{
+    display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin:10px 0;
+    background:#0b1430;border:1px solid var(--line);border-radius:10px;padding:10px;
+  }
+  .canvas-demo span{height:22px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#0b1020;font-weight:700}
+  .tok-mask{background:#334155;color:#94a3b8 !important}
+  .tok-low{background:#fbbf24}
+  .tok-mid{background:#a78bfa}
+  .tok-high{background:#34d399}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-top:6px}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .legend .l-m::before{background:#334155}
+  .legend .l-l::before{background:#fbbf24}
+  .legend .l-mid::before{background:#a78bfa}
+  .legend .l-h::before{background:#34d399}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">AI 论文日报 · 2026-06-17</div>
+  <h1>DiffusionGemma 26B：当语言模型抛弃"从左到右"</h1>
+  <div class="sub">Google DeepMind 用离散扩散给出一个反直觉的答案——速度 4×，质量略降，但范式可能要变。</div>
+  <div class="meta">
+    <span class="chip">来源：Google DeepMind / Google Developers Blog / VentureBeat / Hugging Face</span>
+    <span class="chip">发布：2026-06-10</span>
+    <span class="chip good">开源权重</span>
+    <span class="chip warn">实验性 · 非生产推荐</span>
+  </div>
+</header>
+
+<!-- 一句话精读 -->
+<section class="card">
+  <h2>一句话精读</h2>
+  <p>DiffusionGemma 是一个 26B（MoE，激活 3.8B）的<strong>离散扩散</strong>语言模型，用<strong>双向注意力</strong>对 256-token 的 "画布" 反复去噪，在 H100 上达到 1100+ tokens/s，比同尺寸自回归 Gemma 4 快约 4×；代价是在主流基准上略弱于 Gemma 4，Google 自己也明确说<strong>不推荐用于生产</strong>。这是一次工程化验证：扩散范式在生产级 LLM 中第一次拿到接近自回归的成绩单。</p>
+</section>
+
+<!-- 关键数字 -->
+<section class="card">
+  <h2>关键数字</h2>
+  <div class="grid3">
+    <div class="stat"><div class="num">26B / 3.8B</div><div class="lab">总参数 / 推理激活参数（MoE）</div></div>
+    <div class="stat"><div class="num">256</div><div class="lab">每次并行去噪的 token 数（一个 canvas 块）</div></div>
+    <div class="stat"><div class="num">1100+ tok/s</div><div class="lab">H100 FP8 低 batch 单用户速度</div></div>
+    <div class="stat"><div class="num">~4×</div><div class="lab">相对 Gemma 4 26B A4B 的速度倍数</div></div>
+    <div class="stat"><div class="num">256K</div><div class="lab">上下文窗口（tokens）</div></div>
+    <div class="stat"><div class="num">~18GB</div><div class="lab">量化后 VRAM 占用</div></div>
+  </div>
+  <p style="color:var(--muted);font-size:12px;margin-top:10px">注：以上来自 Google 官方模型卡及多家技术媒体，置信度<span class="conf c-h">高</span>。具体 tok/s 数受 batch、量化精度、prompt 长度影响。</p>
+</section>
+
+<!-- 为什么这事重要 -->
+<section class="card">
+  <h2>为什么这事重要</h2>
+  <ul>
+    <li><strong>范式破壁</strong>：主流 LLM（GPT、Llama、Gemma、Qwen）几乎都是<em>自回归 + 因果注意力</em>，一次生成一个 token。DiffusionGemma 第一次把"图像扩散"的玩法迁到 26B 级别的文本模型上并开源权重。</li>
+    <li><strong>速度天花板被抬高</strong>：自回归的延迟下限被串行解码锁死，KV cache 也只是缓存读写、不是并行计算。扩散把延迟从 "<code>N 步串行</code>" 变成 "<code>少量并行迭代</code>"。</li>
+    <li><strong>"自纠错"自然出现</strong>：每一步重新看整块 canvas，对低置信 token 可以再加噪重写。这种<em>跨位置回看</em>能力是因果注意力做不到的。</li>
+    <li><strong>但它输了基准</strong>：Google 公开承认在所有基准上略低于 Gemma 4 26B A4B。这是一个诚实而少见的"我们发布它是为了推动研究"的姿态。</li>
+  </ul>
+  <div class="callout warn">
+    <strong>反向锐评 ——</strong> 这不是"扩散将取代自回归"，而是"扩散第一次摸到自回归门槛"。在质量没追上之前，谁也不会把生产流量切过去；但<em>低延迟语音、代码补全、设备端推理</em>等延迟敏感场景已有可用空间。
+  </div>
+</section>
+
+<!-- 核心方法 -->
+<section class="card">
+  <h2>核心方法：怎么"画"出一段文字</h2>
+
+  <h3>1. 训练阶段：学会"在任意噪声下还原文本"</h3>
+  <p>训练采用<strong>掩码扩散（Masked Discrete Diffusion）</strong>：</p>
+  <ul>
+    <li>取一段真实文本，<strong>随机采样一个噪声等级</strong>（从轻度遮挡到几乎全部 <code>[MASK]</code>）。</li>
+    <li>按该等级把 token 随机替换成 <code>[MASK]</code>，让模型预测被遮挡的位置。</li>
+    <li>反复在不同噪声等级、不同样本上训练，使模型学会<strong>"从任何混乱程度恢复文本"</strong>。</li>
+  </ul>
+  <p>注意：这一步训练目标本质是<em>"扩展的掩码语言建模"</em>，比 BERT 的固定 15% 掩码激进得多——它训练的是"全谱噪声"。</p>
+
+  <h3>2. 推理阶段：从一团 <code>[MASK]</code> 开始反复"显影"</h3>
+  <div class="flow">
+    <div class="step"><div class="t">STEP 0</div><div class="d">256 个 <code>[MASK]</code> 占位</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="t">PASS k</div><div class="d">双向 attention 一次预测整块</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="t">CONFIDENCE</div><div class="d">高置信 → 锁定<br>低置信 → 再噪声</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="t">REPEAT</div><div class="d">≈ 15–20 token / forward</div></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="t">DONE</div><div class="d">整块 256 token 同时输出</div></div>
+  </div>
+
+  <h3>3. 视觉化：canvas 是怎么"显影"的（示意，非真实采样）</h3>
+  <p style="color:var(--muted);font-size:12px">下图模拟 4 轮去噪过程，灰=mask，黄=低置信，紫=中置信，绿=高置信/锁定。</p>
+  <div>
+    <div style="font-size:12px;color:var(--muted);margin-top:6px">第 1 轮（几乎全 mask）</div>
+    <div class="canvas-demo" id="row1"></div>
+    <div style="font-size:12px;color:var(--muted)">第 2 轮（低置信预测开始出现）</div>
+    <div class="canvas-demo" id="row2"></div>
+    <div style="font-size:12px;color:var(--muted)">第 3 轮（高置信位置开始锁定）</div>
+    <div class="canvas-demo" id="row3"></div>
+    <div style="font-size:12px;color:var(--muted)">第 4 轮（基本全部确定）</div>
+    <div class="canvas-demo" id="row4"></div>
+    <div class="legend"><span class="l-m">未确定 (mask)</span><span class="l-l">低置信</span><span class="l-mid">中置信</span><span class="l-h">已锁定</span></div>
+  </div>
+
+  <h3>4. 与自回归 LLM 的硬性区别</h3>
+  <table>
+    <tr><th>维度</th><th>自回归 LLM（Gemma 4 / GPT 系）</th><th>DiffusionGemma</th></tr>
+    <tr><td>注意力方向</td><td>因果（只能看左边）</td><td><strong>双向</strong>（左右都能看）</td></tr>
+    <tr><td>解码顺序</td><td>token-by-token，严格串行</td><td>整块 256 token 同时迭代</td></tr>
+    <tr><td>纠错能力</td><td>错了就错了（除非 backtrack 重生）</td><td>低置信位置可"再加噪"重写</td></tr>
+    <tr><td>KV cache</td><td>核心加速手段</td><td>不是同一种缓存（每步要看整块）</td></tr>
+    <tr><td>速度瓶颈</td><td>步数 = 输出长度</td><td>步数 ≈ 固定的去噪轮数</td></tr>
+    <tr><td>训练目标</td><td>下一个 token 预测</td><td>多噪声等级的掩码预测</td></tr>
+  </table>
+</section>
+
+<!-- 性能与基准 -->
+<section class="card">
+  <h2>实验结果：速度赢、质量输</h2>
+
+  <h3>速度（H100 FP8，低 batch，单用户）</h3>
+  <div class="bar"><span class="b-diff" style="width:100%"></span><div class="lbl"><span>DiffusionGemma 26B A4B</span><span>~1100 tok/s</span></div></div>
+  <div class="bar"><span class="b-base" style="width:28%"></span><div class="lbl"><span>Gemma 4 26B A4B（自回归对照）</span><span>~280 tok/s（约 1/4）</span></div></div>
+  <p style="color:var(--muted);font-size:12px">速度倍数依据 Google 官方公布的"约 4×"对照。<span class="conf c-h">高</span></p>
+
+  <h3>质量基准（DiffusionGemma 26B A4B IT）</h3>
+  <table>
+    <tr><th>基准</th><th>分数</th><th>侧重</th></tr>
+    <tr><td>MMLU Pro</td><td>77.6%</td><td>通识 + 多领域推理</td></tr>
+    <tr><td>GPQA Diamond</td><td>73.2%</td><td>研究生水平科学问答</td></tr>
+    <tr><td>MATH-Vision</td><td>70.5%</td><td>多模态数学</td></tr>
+  </table>
+  <p style="color:var(--muted);font-size:12px">来源：MarkTechPost / NVIDIA model card 汇总，单一来源数字置信度 <span class="conf c-m">中</span>，建议以 Google 官方 model card 最终披露为准。</p>
+
+  <div class="callout bad">
+    <strong>Google 自己承认：</strong>"在所有基准上，DiffusionGemma 的表现都低于 Gemma 4 26B A4B。我们推荐生产场景继续使用 Gemma 4。" 这是诚实声明，也是当前扩散 LLM 路线的真实写照——<em>速度先到，质量在追</em>。
+  </div>
+</section>
+
+<!-- 工程视角 -->
+<section class="card">
+  <h2>工程视角：能不能跑、怎么跑</h2>
+  <ul>
+    <li><strong>权重</strong>：Hugging Face <code>google/diffusiongemma-26B-A4B-it</code>，开源（Gemma 系开放许可证）。</li>
+    <li><strong>推理栈</strong>：<strong>vLLM 已原生支持</strong>（这是 vLLM 首个原生 dLLM）；同时 Hugging Face Transformers、SGLang、MLX、Unsloth 也已适配。</li>
+    <li><strong>显存</strong>：量化后约 18GB VRAM——RTX 4090 / 5090 可本地跑。</li>
+    <li><strong>多模态</strong>：输入支持文本 + 图像 + 视频，输出仅文本。</li>
+    <li><strong>语言</strong>：140+ 语言，中文在列。</li>
+    <li><strong>训练数据 cutoff</strong>：2025-01。</li>
+  </ul>
+  <div class="callout good">
+    <strong>建议优先尝试的场景：</strong>低延迟代码补全、流式对话首 token 时间敏感、设备端推理、批量数据合成、需要"先草稿再修正"的写作任务。
+  </div>
+  <div class="callout warn">
+    <strong>不建议直接替换的场景：</strong>高准确率知识问答、复杂多步推理、合规要求严格的生产对话——Google 自己给的指导也是"先用 Gemma 4"。
+  </div>
+</section>
+
+<!-- 争议与反驳 -->
+<section class="card">
+  <h2>最强反驳与争议点</h2>
+  <ul>
+    <li><strong>"4× 加速被夸大了"</strong>：1100 tok/s 是<em>单用户、低 batch、H100 FP8</em>。在高并发服务场景，自回归 + 连续 batching 的吞吐量优势很大，扩散模型每步要重算整块的开销也不便宜——真实 cost-per-token 还需要服务侧实测。<span class="conf c-m">置信度 中</span></li>
+    <li><strong>"自纠错被神化了"</strong>：扩散的纠错只在同一 canvas 块内有效，<em>跨块仍是自回归</em>（block-autoregressive）。也就是说，对早 1000 token 写错的事实，第 5 块还是没法回头改。</li>
+    <li><strong>"双向 attention 在长上下文里更慢"</strong>：因果注意力在长上下文中可以利用 KV cache 摊销；双向必须每步全量。256K context 的真实 latency 与质量曲线仍待社区验证。<span class="conf c-l">置信度 低</span></li>
+    <li><strong>"开源是为了拉社区做苦力"</strong>：Google 自己说推荐生产用 Gemma 4，把"实验性 + 落后"的版本扔给社区调优——这是经典策略，但也确实推动了 dLLM 生态。</li>
+    <li><strong>"扩散 LLM 不是新概念"</strong>：LLaDA、SEDD、MaskGIT 等早有探索，DiffusionGemma 的真正贡献是<em>把它做到 26B 开源 + 主流推理框架原生支持</em>，工程落地价值大于研究新颖性。<span class="conf c-h">置信度 高</span></li>
+  </ul>
+</section>
+
+<!-- 给不同人的 takeaway -->
+<section class="card">
+  <h2>不同角色应该怎么看</h2>
+  <div class="grid2">
+    <div class="stat">
+      <h3 style="margin-top:0">研究者</h3>
+      <p>这是第一份"工业级 dLLM"的开源参照。可重点研究：<br>· masking schedule 与质量曲线<br>· canvas 大小 vs 速度/质量权衡<br>· 与 RL/agent 框架的耦合（双向 attention 给规划留了空间）</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">工程师 / 产品</h3>
+      <p>别急着切流量。建议路径：<br>1. 在<strong>延迟敏感</strong>子链路做 A/B<br>2. 重点测<strong>cost-per-token</strong>而不是单用户速度<br>3. 评估"自纠错"对你的具体任务收益（代码可能受益、知识问答未必）</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">决策者</h3>
+      <p>核心信号：Google 把 Gemma 4 之外的"赌注路线"开源了。意味着：<br>· 扩散 LLM 不再是边缘话题<br>· 但量产仍是自回归<br>· 12–18 个月内，混合架构（自回归骨架 + 扩散解码头）可能出现</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">普通用户</h3>
+      <p>你大概率感受不到——除非你常用 Gemini / Gemma 系产品在<em>未来某天</em>突然变快但回答稍弱。这是 dLLM 的典型副作用。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 信息溯源 -->
+<section class="card">
+  <h2>信息溯源与置信度</h2>
+  <table>
+    <tr><th>论断</th><th>来源</th><th>置信度</th></tr>
+    <tr><td>26B MoE，激活 3.8B</td><td>Google 官方模型卡 + Hugging Face</td><td><span class="conf c-h">高</span></td></tr>
+    <tr><td>256-token canvas 并行去噪</td><td>Google Developers Blog + VentureBeat</td><td><span class="conf c-h">高</span></td></tr>
+    <tr><td>1100+ tok/s on H100 FP8</td><td>Google 官方 / NVIDIA Blog</td><td><span class="conf c-h">高</span></td></tr>
+    <tr><td>MMLU Pro 77.6% / GPQA 73.2%</td><td>MarkTechPost / 第三方汇总</td><td><span class="conf c-m">中</span></td></tr>
+    <tr><td>所有基准均略低于 Gemma 4</td><td>Google 官方声明</td><td><span class="conf c-h">高</span></td></tr>
+    <tr><td>vLLM 原生支持</td><td>vLLM Blog 2026-06-10</td><td><span class="conf c-h">高</span></td></tr>
+    <tr><td>"高并发吞吐不一定优于自回归"</td><td>笔者推断（基于扩散每步全量计算特性）</td><td><span class="conf c-m">中</span></td></tr>
+    <tr><td>"长上下文双向 attention 更慢"</td><td>笔者推断，社区尚无公开 benchmark</td><td><span class="conf c-l">低</span></td></tr>
+  </table>
+</section>
+
+<!-- 参考链接 -->
+<section class="card">
+  <h2>原始资料（仅英文）</h2>
+  <ul>
+    <li><a href="https://deepmind.google/models/gemma/diffusiongemma/" target="_blank">Google DeepMind · DiffusionGemma 模型主页</a></li>
+    <li><a href="https://developers.googleblog.com/diffusiongemma-the-developer-guide/" target="_blank">Google Developers Blog · DiffusionGemma: The Developer Guide</a></li>
+    <li><a href="https://ai.google.dev/gemma/docs/diffusiongemma/explained" target="_blank">Google AI for Developers · Diffusion in Text Generation Explained</a></li>
+    <li><a href="https://ai.google.dev/gemma/docs/diffusiongemma/model_card" target="_blank">Google AI for Developers · DiffusionGemma Model Card</a></li>
+    <li><a href="https://blog.google/innovation-and-ai/technology/developers-tools/diffusion-gemma-faster-text-generation/" target="_blank">Google Blog · DiffusionGemma: 4x faster text generation</a></li>
+    <li><a href="https://huggingface.co/google/diffusiongemma-26B-A4B-it" target="_blank">Hugging Face · google/diffusiongemma-26B-A4B-it</a></li>
+    <li><a href="https://venturebeat.com/technology/googles-diffusiongemma-generates-256-tokens-in-parallel-and-self-corrects-as-it-goes" target="_blank">VentureBeat · 256 tokens in parallel & self-corrects</a></li>
+    <li><a href="https://www.marktechpost.com/2026/06/10/google-ai-releases-diffusiongemma-a-26b-moe-open-model-using-text-diffusion-for-up-to-4x-faster-generation/" target="_blank">MarkTechPost · 26B MoE Open Model, 4× faster</a></li>
+    <li><a href="https://vllm.ai/blog/2026-06-10-diffusion-gemma" target="_blank">vLLM Blog · First dLLM natively supported in vLLM</a></li>
+    <li><a href="https://blogs.nvidia.com/blog/rtx-ai-garage-local-gemma-diffusion/" target="_blank">NVIDIA Blog · Accelerating DiffusionGemma for Local AI</a></li>
+    <li><a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-diffusiongemma" target="_blank">Maarten Grootendorst · A Visual Guide to DiffusionGemma</a></li>
+    <li><a href="https://www.computerworld.com/article/4184675/google-unveils-diffusiongemma-an-ai-model-that-breaks-free-of-left-to-right-processing-2.html" target="_blank">Computerworld · Breaks free of left-to-right processing</a></li>
+  </ul>
+</section>
+
+<div class="footer">
+  本期由自动化任务 <code>ai-weekly-report</code> 生成 · 2026-06-17 · 仅英文资料 · 仅供参考，结论请以原始论文 / 官方模型卡为准。
+</div>
+
+</div>
+
+<script>
+// 简单 canvas 显影动画（静态四行）
+const rows = [
+  {id:'row1', pattern: Array(48).fill('m').map((v,i)=> Math.random()<0.06?'l':'m')},
+  {id:'row2', pattern: Array(48).fill('m').map((v,i)=> {const r=Math.random();return r<0.35?'l':(r<0.45?'mid':'m')})},
+  {id:'row3', pattern: Array(48).fill('m').map((v,i)=> {const r=Math.random();return r<0.25?'h':(r<0.6?'mid':(r<0.85?'l':'m'))})},
+  {id:'row4', pattern: Array(48).fill('m').map((v,i)=> {const r=Math.random();return r<0.82?'h':(r<0.95?'mid':'l')})}
+];
+const cls = {m:'tok-mask', l:'tok-low', mid:'tok-mid', h:'tok-high'};
+rows.forEach(r=>{
+  const el = document.getElementById(r.id);
+  if(!el) return;
+  r.pattern.forEach((t,i)=>{
+    const s = document.createElement('span');
+    s.className = cls[t];
+    s.textContent = t==='m' ? '·' : '';
+    el.appendChild(s);
+  });
+});
+</script>
+</body>
+</html>

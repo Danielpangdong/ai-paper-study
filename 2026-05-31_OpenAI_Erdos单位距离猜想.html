@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>每日AI论文精读 · 2026-05-31｜OpenAI 推翻 Erdős 80 年单位距离猜想</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#121933; --panel2:#1a2247; --text:#e9ecf7;
+    --muted:#9aa3c7; --accent:#7c9cff; --accent2:#22d3ee; --warn:#f59e0b;
+    --good:#10b981; --bad:#ef4444; --line:#2a3360;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#070b1a 0%,#0b1020 60%);color:var(--text);
+       font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",Segoe UI,Roboto,sans-serif;
+       line-height:1.7;}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+  .tag{display:inline-block;background:rgba(124,156,255,.15);color:var(--accent);
+       border:1px solid rgba(124,156,255,.35);padding:3px 10px;border-radius:999px;
+       font-size:12px;letter-spacing:.5px;margin-right:8px}
+  h1{font-size:30px;line-height:1.3;margin:14px 0 6px}
+  h2{font-size:22px;margin:36px 0 12px;padding-left:12px;border-left:4px solid var(--accent)}
+  h3{font-size:17px;margin:22px 0 8px;color:#cbd5ff}
+  .sub{color:var(--muted);font-size:14px}
+  .meta{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;color:var(--muted);font-size:13px}
+  .meta span{background:var(--panel);padding:5px 10px;border-radius:6px;border:1px solid var(--line)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:14px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media (max-width:720px){.grid2,.grid3{grid-template-columns:1fr}}
+  .kpi{background:var(--panel2);border-radius:12px;padding:14px 16px;border:1px solid var(--line)}
+  .kpi .v{font-size:22px;font-weight:700;color:var(--accent2)}
+  .kpi .l{color:var(--muted);font-size:12px;margin-top:4px}
+  .quote{border-left:3px solid var(--accent2);background:rgba(34,211,238,.06);
+         padding:10px 14px;border-radius:6px;color:#d6efff;margin:10px 0;font-style:italic}
+  .quote .who{display:block;margin-top:6px;color:var(--muted);font-style:normal;font-size:12px}
+  table{width:100%;border-collapse:collapse;margin:8px 0}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;vertical-align:top}
+  th{color:#cbd5ff;background:#161e3d}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}
+  .p-high{background:rgba(16,185,129,.18);color:#5eead4;border:1px solid rgba(16,185,129,.4)}
+  .p-mid{background:rgba(245,158,11,.18);color:#fcd34d;border:1px solid rgba(245,158,11,.4)}
+  .p-low{background:rgba(239,68,68,.18);color:#fda4af;border:1px solid rgba(239,68,68,.4)}
+  ul{padding-left:20px}
+  li{margin:4px 0}
+  a{color:var(--accent);text-decoration:none;border-bottom:1px dotted var(--accent)}
+  a:hover{color:var(--accent2);border-color:var(--accent2)}
+  .formula{background:#0e1430;border:1px dashed #3b4585;border-radius:8px;padding:12px;
+           font-family:"SF Mono",Consolas,Monaco,monospace;color:#dbe4ff;font-size:14px;overflow-x:auto}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  footer{margin-top:40px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:18px}
+  .warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.35);
+        color:#fde68a;padding:10px 14px;border-radius:8px;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div>
+    <span class="tag">每日精读 · Daily AI Paper Brief</span>
+    <span class="tag" style="color:#22d3ee;border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.1)">2026-05-31</span>
+    <span class="tag" style="color:#10b981;border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.1)">AI for Math</span>
+  </div>
+
+  <h1>AI 首次自主推翻一个重大数学猜想：OpenAI 模型攻破 Erdős 单位距离猜想</h1>
+  <div class="sub">An AI Milestone — 通用推理模型给出反例，将 80 年悬而未决的几何上下界推进到 n<sup>1+δ</sup></div>
+
+  <div class="meta">
+    <span>来源：OpenAI 官方公告（2026-05-20）</span>
+    <span>第三方解读：Understanding AI（Kai Williams, 2026-05-28）</span>
+    <span>问题提出者：Paul Erdős（1946）</span>
+    <span>独立验证：Tim Gowers、Daniel Litt、Jacob Tsimerman 等</span>
+    <span>领域：离散几何 / 代数数论 / LLM 推理</span>
+  </div>
+
+  <div class="warn" style="margin-top:14px">
+    <b>置信度提示：</b> 关于"AI 自主完成证明"、构造涉及"高维格 + 代数整数"、Sawin 改进到 δ=0.014 等技术细节，来自 OpenAI 公告与 Kai Williams 在 Understanding AI 的解读（<span class="pill p-mid">中-高</span>）。Nature/arXiv 原文中具体证明步骤本解读未逐行核对；建议读者点击下方"原始链接"自行查阅原始 PDF。
+  </div>
+
+  <h2>1 · 一句话精读</h2>
+  <div class="card">
+    OpenAI 一台内部"通用推理模型"，用 <b>algebraic number theory（代数数论）</b> 中的工具，
+    构造了一类新的点集排列，<b>推翻</b> 了 Paul Erdős 1946 年提出的"单位距离上界猜想"。
+    人类数学家 Will Sawin 在此基础上将下界明确化为 <b>n<sup>1.014</sup></b>，
+    与目前最好的上界 <b>n<sup>1.333</sup></b> 之间仍有差距，问题并未完全闭合。
+    <br><br>
+    这是<b>首次有 AI 系统独立给出一个重要公开猜想的解答</b>（菲尔兹奖得主 Tim Gowers 语），但本质上仍是"对 Erdős 经典构造的高超扩展"，并非全新数学技术——它放大了 AI 在"知识广度 + 暴力枚举证明路径"上的相对优势。
+  </div>
+
+  <h2>2 · 关键数字</h2>
+  <div class="grid3">
+    <div class="kpi"><div class="v">80 年</div><div class="l">问题悬而未决的时间（1946 → 2026）</div></div>
+    <div class="kpi"><div class="v">n<sup>1.014</sup></div><div class="l">AI 给出的新下界（Sawin 改进版）</div></div>
+    <div class="kpi"><div class="v">n<sup>1.333</sup></div><div class="l">当前已知最好上界（仍是未解决部分）</div></div>
+    <div class="kpi"><div class="v">~50%</div><div class="l">在最大 token 预算下模型一次性解出的成功率</div></div>
+    <div class="kpi"><div class="v">3+ 位</div><div class="l">独立审稿的顶级数学家（Gowers / Litt / Tsimerman 等）</div></div>
+    <div class="kpi"><div class="v">2 天</div><div class="l">Google 紧接其后宣布 AI 解出 9 个 Erdős 公开问题</div></div>
+  </div>
+
+  <h2>3 · 问题是什么：单位距离问题</h2>
+  <div class="card">
+    <p>在 2D 平面上放 <b>n 个点</b>，问其中有多少对点的距离<b>恰好等于 1</b>？随着 n 增大，最大值的增长速率是什么？</p>
+    <p>Erdős 用下面这个朴素策略给出<b>下界构造</b>：把点排成一个网格，把网格间距取得"恰到好处"（与某个 c<sup>2</sup> 上有许多整数对 (a,b) 满足 a²+b²=c²），就能让单位圆上落到许多网格点。例如：</p>
+    <div class="formula">c² = 25 → (3,4)(4,3)(0,5)... 12 个邻居<br>c² = 65 → (1,8)(4,7)... 16 个邻居</div>
+
+    <h3>下方 SVG：5 个点上的单位距离演示</h3>
+    <svg viewBox="0 0 600 240" width="100%" style="background:#0e1430;border:1px solid var(--line);border-radius:8px">
+      <!-- 5 points -->
+      <g stroke="#3b4585" stroke-width="1" fill="none">
+        <line x1="60" y1="200" x2="180" y2="200"/>
+        <line x1="60" y1="200" x2="120" y2="100"/>
+        <line x1="60" y1="200" x2="240" y2="100"/>
+        <line x1="60" y1="200" x2="300" y2="200"/>
+        <line x1="180" y1="200" x2="120" y2="100"/>
+        <line x1="180" y1="200" x2="240" y2="100"/>
+        <line x1="180" y1="200" x2="300" y2="200"/>
+        <line x1="120" y1="100" x2="240" y2="100"/>
+        <line x1="120" y1="100" x2="300" y2="200"/>
+        <line x1="240" y1="100" x2="300" y2="200"/>
+      </g>
+      <!-- highlight unit-distance pairs (3 of them) -->
+      <g stroke="#22d3ee" stroke-width="3" fill="none">
+        <line x1="60" y1="200" x2="240" y2="100"/>
+        <line x1="180" y1="200" x2="120" y2="100"/>
+        <line x1="120" y1="100" x2="240" y2="100"/>
+      </g>
+      <g fill="#7c9cff">
+        <circle cx="60" cy="200" r="6"/>
+        <circle cx="180" cy="200" r="6"/>
+        <circle cx="300" cy="200" r="6"/>
+        <circle cx="120" cy="100" r="6"/>
+        <circle cx="240" cy="100" r="6"/>
+      </g>
+      <g fill="#e9ecf7" font-size="13" font-family="monospace">
+        <text x="48" y="220">A</text>
+        <text x="172" y="220">B</text>
+        <text x="296" y="220">D</text>
+        <text x="110" y="92">C</text>
+        <text x="232" y="92">E</text>
+      </g>
+      <g fill="#9aa3c7" font-size="12">
+        <text x="360" y="120">蓝点：5 个点</text>
+        <text x="360" y="140">细线：10 对距离</text>
+        <text x="360" y="160" fill="#22d3ee">青线：恰好 3 对距离 = 1</text>
+        <text x="360" y="195" fill="#cbd5ff">问题：n 变大时，</text>
+        <text x="360" y="212" fill="#cbd5ff">这种"=1 的对数"最多能多快增长？</text>
+      </g>
+    </svg>
+  </div>
+
+  <h2>4 · 80 年悬案：上界与下界的鸿沟</h2>
+  <div class="card">
+    <p>Erdős 用 Jacobi 二平方和定理证明：网格下界增长率为 <b>n · exp(c·log n / log log n)</b>，仅略快于 n。<br>
+       同时他用图论给出上界，但这个上界增长得远快于他自己构造的下界。<br>
+       他<b>猜想真值更靠近下界</b>——即 <b>n<sup>1+o(1)</sup></b>——意思是，任意 ε>0，最终都小于 n<sup>1+ε</sup>。
+    </p>
+
+    <h3>SVG：增长率示意（对数刻度）</h3>
+    <svg viewBox="0 0 600 280" width="100%" style="background:#0e1430;border:1px solid var(--line);border-radius:8px">
+      <g stroke="#2a3360" stroke-width="1">
+        <line x1="60" y1="240" x2="560" y2="240"/>
+        <line x1="60" y1="40" x2="60" y2="240"/>
+      </g>
+      <g fill="#9aa3c7" font-size="11">
+        <text x="50" y="255" text-anchor="end">n</text>
+        <text x="540" y="255">大 n</text>
+        <text x="55" y="38" text-anchor="end">log U(n)</text>
+      </g>
+      <!-- lower bound (Erdős grid) -->
+      <path d="M60,235 Q300,210 560,150" stroke="#10b981" stroke-width="3" fill="none"/>
+      <text x="280" y="210" fill="#10b981" font-size="12">Erdős 网格下界 ≈ n · 微超对数</text>
+      <!-- AI new lower bound -->
+      <path d="M60,235 Q300,180 560,90" stroke="#22d3ee" stroke-width="3" fill="none" stroke-dasharray="6,4"/>
+      <text x="300" y="135" fill="#22d3ee" font-size="12">★ AI 新下界 ≥ n^1.014</text>
+      <!-- upper bound -->
+      <path d="M60,230 Q300,120 560,55" stroke="#f59e0b" stroke-width="3" fill="none"/>
+      <text x="320" y="80" fill="#f59e0b" font-size="12">现存上界 ≈ n^1.333（未变）</text>
+      <!-- Erdős conjecture region -->
+      <text x="80" y="200" fill="#fda4af" font-size="11">Erdős 猜想曾认为真值 ≈ n^(1+o(1))，落在绿线附近</text>
+    </svg>
+    <div class="legend" style="margin-top:6px">
+      <span><i style="background:#10b981"></i>Erdős 1946 下界</span>
+      <span><i style="background:#22d3ee"></i>AI 新下界（Sawin 量化为 n<sup>1.014</sup>）</span>
+      <span><i style="background:#f59e0b"></i>已知上界 n<sup>1.333</sup></span>
+    </div>
+  </div>
+
+  <h2>5 · AI 是怎么做到的</h2>
+  <div class="card">
+    <p>OpenAI 公告本身没有完整释出推理细节。综合官方与 Williams 的解读，AI 的关键招数是：</p>
+    <ol>
+      <li><b>跳出二维网格</b>：在<b>高维空间</b>中构造一个更复杂的格点集，再投影到二维平面。</li>
+      <li><b>用代数整数代替普通整数</b>：让格点的"邻居数（距离=1 的对数）"在投影后能塞进更密。</li>
+      <li><b>桥接两个看似无关的领域</b>：把离散几何问题转化为代数数论问题——这是绝大多数研究"几何 Erdős 问题"的数学家不会主动涉足的子领域。</li>
+    </ol>
+    <p>结果：对无限多个 n，可以构造出 ≥ n<sup>1+δ</sup> 对单位距离，其中 δ 为某正常数。原始 AI 证明<b>没有给出 δ 的显式数值</b>；普林斯顿 Will Sawin 随后将其改进并证明 <b>δ ≥ 0.014</b>。</p>
+
+    <h3>SVG：证明流程的"角色分工"</h3>
+    <svg viewBox="0 0 720 220" width="100%" style="background:#0e1430;border:1px solid var(--line);border-radius:8px">
+      <defs>
+        <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#7c9cff"/>
+        </marker>
+      </defs>
+      <g font-size="13" fill="#e9ecf7" text-anchor="middle">
+        <rect x="20" y="30" width="160" height="60" rx="10" fill="#1a2247" stroke="#7c9cff"/>
+        <text x="100" y="55">OpenAI 通用推理</text>
+        <text x="100" y="75">模型（内部版）</text>
+
+        <rect x="220" y="30" width="160" height="60" rx="10" fill="#1a2247" stroke="#22d3ee"/>
+        <text x="300" y="55">给出反例构造</text>
+        <text x="300" y="75">+ 完整证明草稿</text>
+
+        <rect x="420" y="30" width="170" height="60" rx="10" fill="#1a2247" stroke="#10b981"/>
+        <text x="505" y="55">外部数学家审稿</text>
+        <text x="505" y="75">Gowers / Litt / Tsimerman</text>
+
+        <rect x="220" y="130" width="160" height="60" rx="10" fill="#1a2247" stroke="#f59e0b"/>
+        <text x="300" y="155">Will Sawin 改写 +</text>
+        <text x="300" y="175">量化为 δ=0.014</text>
+
+        <rect x="420" y="130" width="170" height="60" rx="10" fill="#1a2247" stroke="#ef4444"/>
+        <text x="505" y="155">问题仍未完全闭合</text>
+        <text x="505" y="175">上界 n^1.333 待降</text>
+      </g>
+      <g stroke="#7c9cff" stroke-width="2" fill="none">
+        <line x1="180" y1="60" x2="220" y2="60" marker-end="url(#ah)"/>
+        <line x1="380" y1="60" x2="420" y2="60" marker-end="url(#ah)"/>
+        <line x1="300" y1="90" x2="300" y2="130" marker-end="url(#ah)"/>
+        <line x1="380" y1="160" x2="420" y2="160" marker-end="url(#ah)"/>
+      </g>
+    </svg>
+  </div>
+
+  <h2>6 · 顶级数学家怎么说</h2>
+  <div class="card">
+    <div class="quote">"对单位距离问题的解答无疑是 AI 数学领域的里程碑。"
+      <span class="who">— Tim Gowers，菲尔兹奖得主</span></div>
+    <div class="quote">"这是我第一次见到一个由 AI 自主产生、其本身就让我兴奋的结果，而不是仅作为'某种趋势的领先指标'。"
+      <span class="who">— Daniel Litt，多伦多大学</span></div>
+    <div class="quote">"我自己也短暂考虑过类似思路去反驳猜想，但那类技术'非常耗时且经常做不出来'，所以我放弃了。"
+      <span class="who">— Jacob Tsimerman，多伦多大学</span></div>
+    <div class="quote">"如果 AI 能想出这种证明，那数学家可能很快就要失业了。"<br>—— 但次日他得知是<b>反证</b>而非正面证明后："这让我大大松了口气。"
+      <span class="who">— Tim Gowers 的两段反应</span></div>
+  </div>
+
+  <h2>7 · 这件事到底意味着什么 / 不意味着什么</h2>
+  <div class="card">
+    <table>
+      <tr><th>角度</th><th>评估</th><th>置信度</th></tr>
+      <tr><td>首例 AI 自主解决重要公开猜想</td>
+          <td>是。是 LLM 推理模型在数学领域的里程碑节点。</td>
+          <td><span class="pill p-high">高</span></td></tr>
+      <tr><td>AI 是否引入了"全新数学工具"</td>
+          <td>否。它对已有的代数数论 + Erdős 构造做了高超的组合与扩展，而非开宗立派。</td>
+          <td><span class="pill p-high">高</span></td></tr>
+      <tr><td>是否完全终结了单位距离问题</td>
+          <td>否。下界 n<sup>1.014</sup> 与上界 n<sup>1.333</sup> 之间的差距仍是开放问题。</td>
+          <td><span class="pill p-high">高</span></td></tr>
+      <tr><td>是否预示"数学家被替代"</td>
+          <td>短中期不会。结果仍需要人类审稿、改写、量化、扩展（Sawin 等）。Gowers 推测 AI 在"建立理论 / 提出有趣问题"上很快也会变强。</td>
+          <td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>是否仅靠"通用模型 + 算力"，没有专门数学训练</td>
+          <td>OpenAI 声称该模型是<b>通用推理模型</b>而非数学专用模型；但也披露在最大 token 预算下成功率约 50%——意味着需要大量并行尝试。</td>
+          <td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>是否独立可复现</td>
+          <td>密歇根博士后 Xiao Ma 报告：<b>公开版 GPT-5.5 在给予"小提示"后</b>也能反驳猜想，提示当前公开模型的潜力可能被严重低估。</td>
+          <td><span class="pill p-mid">中（来自一条 X 推文，未同行评议）</span></td></tr>
+    </table>
+  </div>
+
+  <h2>8 · 放在 2026 年的 AI for Math 时间线里</h2>
+  <div class="card">
+    <ul>
+      <li><b>2023</b> — LLM 还在算术上挣扎。</li>
+      <li><b>2024–2025</b> — LLM 开始横扫高中数学竞赛（AIME / IMO 风格）。</li>
+      <li><b>2025-11</b> — DeepMind <b>AlphaEvolve</b> 在 67 个数学优化问题中超过部分既有文献（含 Terence Tao 评估的论文）。</li>
+      <li><b>2026-01</b> — 剑桥本科生 Kevin Barreto 首次用 GPT-5.2 / Harmonic Aristotle 自主解决一个 Erdős 问题。</li>
+      <li><b>2026-05-20</b> — <b>本周主角</b>：OpenAI 内部模型反驳 Erdős 单位距离上界猜想。</li>
+      <li><b>2026-05-22</b> — Google 宣布其 AI 系统解出 <b>9 个</b>开放 Erdős 问题，其中两个开放了 50 年以上（arXiv 2605.22763）。</li>
+      <li><b>2026-05-19</b> — 同期 DeepMind <b>Co-Scientist</b> Nature 论文发布：多智能体 AI 在生命科学中加速假设生成，是另一条"AI 协作做科学"的主线。</li>
+    </ul>
+  </div>
+
+  <h2>9 · 对从业者的可操作启示</h2>
+  <div class="card">
+    <ul>
+      <li><b>方法论上</b>：在难题攻坚中，"<b>把问题翻译到一个看似无关的子领域</b>"是 AI 模型当前最大的红利点——它具备人类难以企及的跨学科知识广度。</li>
+      <li><b>资源策略</b>：50% 的一次性成功率意味着<b>大规模并行 + 验证管线</b>比"单次精炼"更重要；这与 AlphaEvolve 的演化式调用一致。</li>
+      <li><b>验证 ≠ 信任</b>：AI 给出"证明草稿"后，<b>人类形式化 / 同行评议 / 显式量化</b>仍是闭环必备一步（Sawin 的 δ=0.014 即为关键补完）。</li>
+      <li><b>风险信号</b>：如果"通用模型 + 提示"已能反驳 80 年猜想（Xiao Ma 报告），意味着<b>大量低悬果实正在公开模型中等待被发现</b>，研究端和产品端都值得快速复跑 Erdős 这类问题集。</li>
+    </ul>
+  </div>
+
+  <h2>10 · 反方与未解</h2>
+  <div class="card">
+    <ul>
+      <li>这是<b>反证</b>而非正面证明，技术上接近"Erdős 构造的高级扩展"，<b>未引入全新数学技术</b>——所以并未把"AI 能做新数学"这件事推到极致。</li>
+      <li>n<sup>1.014</sup> 与 n<sup>1.333</sup> 之间巨大鸿沟仍待消除；上界几十年没动。</li>
+      <li>"通用模型"概念尚不透明：OpenAI 未公开模型架构、训练数据是否含 Erdős 文献集、运行成本与算力档位。</li>
+      <li>独立可复现性：除 Xiao Ma 的一条简报外，目前缺乏第三方在公开权重模型上的可复现实验。</li>
+    </ul>
+  </div>
+
+  <h2>11 · 原始链接（建议精读顺序）</h2>
+  <div class="card">
+    <ol>
+      <li><a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/" target="_blank">OpenAI 官方公告（2026-05-20）</a></li>
+      <li><a href="https://cdn.openai.com/pdf/74c24085-19b0-4534-9c90-465b8e29ad73/unit-distance-remarks.pdf" target="_blank">外部数学家审稿意见 PDF（Gowers, Litt, Tsimerman 等）</a></li>
+      <li><a href="https://arxiv.org/pdf/2605.20579" target="_blank">Will Sawin：将下界量化为 n^1.014（arXiv 2605.20579）</a></li>
+      <li><a href="https://www.understandingai.org/p/openais-milestone-math-breakthrough" target="_blank">Understanding AI · Kai Williams 的技术解读（强烈推荐）</a></li>
+      <li><a href="https://arxiv.org/pdf/2605.22763v1" target="_blank">Google：AI 解决 9 个开放 Erdős 问题（arXiv 2605.22763）</a></li>
+      <li><a href="https://www.nature.com/articles/s41586-026-10644-y" target="_blank">同期相关：DeepMind Co-Scientist Nature 论文（多智能体科学发现）</a></li>
+      <li><a href="https://deepmind.google/blog/co-scientist-a-multi-agent-ai-partner-to-accelerate-research/" target="_blank">DeepMind Co-Scientist 博客（2026-05-19）</a></li>
+    </ol>
+  </div>
+
+  <footer>
+    本报告由 Cowork 自动定时任务生成。资料仅来自上述英文权威源；中文呈现为我方解读，技术细节涉及代数数论的部分基于二手解读，建议结合原始 PDF 校读。<br>
+    生成时间：2026-05-31（北京时间）。
+  </footer>
+</div>
+</body>
+</html>

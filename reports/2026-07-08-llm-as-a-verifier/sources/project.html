@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="LLM-as-a-Verifier: A General-Purpose Verification Framework. We identify verification as a new scaling axis for LLMs, providing fine-grained, training-free feedback for agentic tasks across coding, robotics, and medical domains.">
+  <meta name="keywords" content="LLM, Verification, Verifier, LLM-as-a-Judge, Reward Model, Agents, Test-Time Scaling, Reinforcement Learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>LLM-as-a-Verifier</title>
+
+  <link rel="icon" type="image/png" href="./figures/hq.png">
+  <link rel="shortcut icon" type="image/png" href="./figures/hq.png">
+  <link rel="apple-touch-icon" href="./figures/hq.png">
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script>window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},svg:{fontCache:'global'}};</script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/chart.umd.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <style>
+    .publication-authors a,
+    .publication-authors a:visited,
+    .publication-authors a:active {
+      color: #8C1515 !important;
+      text-decoration: none;
+    }
+    .publication-authors a:hover {
+      color: #B83A3A !important;
+      text-decoration: underline;
+    }
+    .axis-card {
+      background: #fff;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      padding: 22px 22px;
+      height: 100%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .axis-card h4 {
+      color: #8C1515;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 1.05em;
+    }
+    .axis-card p { font-size: 0.92em; color: #444; margin: 0; }
+    html { scroll-behavior: smooth; }
+    [id] { scroll-margin-top: 72px; }
+    .topnav { position: sticky; top: 0; z-index: 30; background: rgba(255,255,255,0.96); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-bottom: 1px solid #ececec; }
+    .topnav .topnav-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 8px 28px; }
+    .topnav a.navlink { color: #333; text-decoration: none; font-weight: 600; font-size: 1rem; transition: color 0.15s; }
+    .topnav a.navlink:hover { color: #b1040e; }
+    @media (max-width: 600px) {
+      .topnav .topnav-inner { padding: 6px 14px; }
+      .topnav .navlinks { gap: 16px !important; font-size: 0.9rem; }
+      .topnav img { height: 22px !important; }
+    }
+
+    /* ---- Polaris-style hero ---- */
+    .hero-flow {
+      position: relative; overflow: hidden;
+      padding: 56px 48px 40px 48px;
+      border-radius: 28px; margin-bottom: 30px;
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.10);
+    }
+    .hero-flow::before { content:""; position:absolute; width:600px; height:600px; top:-250px; left:-150px;
+      background: radial-gradient(circle, rgba(177,4,14,0.10) 0%, rgba(177,4,14,0) 70%);
+      animation: orbFlow1 25s ease-in-out infinite; z-index:0; pointer-events:none; }
+    .hero-flow::after { content:""; position:absolute; width:500px; height:500px; bottom:-200px; right:-100px;
+      background: radial-gradient(circle, rgba(0,19,77,0.06) 0%, rgba(0,19,77,0) 70%);
+      animation: orbFlow2 30s ease-in-out infinite; z-index:0; pointer-events:none; }
+    .hero-flow > * { position:relative; z-index:1; }
+    .hero-flow .hero-orb { position:absolute; width:450px; height:450px; top:40%; right:10%; transform:translateY(-50%);
+      background: radial-gradient(circle, rgba(177,4,14,0.05) 0%, rgba(177,4,14,0) 70%);
+      animation: orbFlow3 28s ease-in-out infinite; z-index:0; pointer-events:none; }
+    .hero-text { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:62px; font-weight:600;
+      letter-spacing:-0.03em; line-height:1.03; margin-bottom:16px; text-align:center; color:#1a1a1a; }
+    .hero-text .accent { color:#b1040e; }
+    .sub-hero-text { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:22px; font-weight:400;
+      margin:0 auto 28px auto; line-height:1.5; text-align:center; color:#4a4a4a; max-width:700px; }
+    .hero-pill-row { display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+    .hero-pill { font-family:'Fira Code',monospace; font-size:11px; font-weight:500; padding:9px 16px; border-radius:100px;
+      background: rgba(177,4,14,0.08); border:1px solid rgba(177,4,14,0.22); color:#b1040e; animation: pillPopIn 0.5s ease both; }
+    .hero-pill:nth-child(1){animation-delay:.1s} .hero-pill:nth-child(2){animation-delay:.2s} .hero-pill:nth-child(3){animation-delay:.3s}
+    .authors { font-size:16px; color:#4a4a4a; line-height:2; margin:0 0 18px 0; text-align:center; }
+    .authors a { color:inherit; text-decoration:none; transition:color .2s ease; }
+    .authors a:hover { color:#b1040e; }
+    .authors sup { font-size:10px; color:#7a7a7a; margin-left:1px; }
+    .authors .affiliation { display:block; font-size:13px; color:#7a7a7a; margin-top:10px; }
+    .authors .affiliation sup { font-size:9px; margin-right:2px; }
+    .hero-actions { display:flex; justify-content:center; gap:14px; flex-wrap:wrap; }
+    .cta { font-weight:600; font-size:14px; text-decoration:none; padding:12px 24px; border-radius:12px;
+      border:1px solid rgba(0,0,0,0.1); color:#1a1a1a; background:transparent; transition:all .25s ease;
+      display:inline-flex; align-items:center; }
+    .cta.primary { background:#b1040e; border-color:#b1040e; color:#fff; }
+    .cta.dark { background:#1a1a1a; border-color:#1a1a1a; color:#fff; }
+    .cta:hover { transform:translateY(-2px); box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .cta.primary:hover { box-shadow:0 12px 32px rgba(177,4,14,0.30); }
+    .cta.dark:hover { background:#000; border-color:#000; }
+    .hero-actions.secondary { margin-top:14px; }
+    .cta.install { font-family:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace; font-weight:500;
+      background:#b1040e; border-color:#b1040e; color:#fff; cursor:pointer; gap:10px; }
+    .cta.install:hover { box-shadow:0 12px 32px rgba(177,4,14,0.30); }
+    .cta.install .prompt { color:rgba(255,255,255,0.7); font-weight:700; }
+    .cta.install .copy-icon { opacity:.75; }
+    .cta.install.copied .copy-icon { opacity:1; color:#eaffea; }
+    .cta.outline-red { background:#fff; border-color:#b1040e; color:#b1040e; }
+    .cta.outline-red:hover { background:#fff5f5; box-shadow:0 12px 32px rgba(177,4,14,0.18); }
+    .cta.agent { background:#3f3f3f; border-color:#3f3f3f; color:#fff; }
+    .cta.agent:hover { background:#2e2e2e; border-color:#2e2e2e; box-shadow:0 12px 32px rgba(0,0,0,0.22); }
+    .cta.slack { background:#fff; border-color:#e3e3e0; color:#000; }
+    .cta.slack:hover { background:#f7f7f5; border-color:#d5d5d0; box-shadow:0 12px 32px rgba(46,45,41,0.12); }
+    @media (max-width:768px){ .hero-text{font-size:38px;} .sub-hero-text{font-size:18px;} .hero-flow{padding:36px 24px 28px;} }
+
+    @keyframes orbFlow1 { 0%,100%{transform:translate(0,0);} 25%{transform:translate(80px,40px);} 50%{transform:translate(120px,-20px);} 75%{transform:translate(40px,60px);} }
+    @keyframes orbFlow2 { 0%,100%{transform:translate(0,0);} 25%{transform:translate(-60px,-50px);} 50%{transform:translate(-100px,30px);} 75%{transform:translate(-30px,-40px);} }
+    @keyframes orbFlow3 { 0%,100%{transform:translateY(-50%) translate(0,0);} 33%{transform:translateY(-50%) translate(-50px,70px);} 66%{transform:translateY(-50%) translate(40px,-50px);} }
+    @keyframes pillPopIn { 0%{opacity:0; transform:scale(0.8) translateY(10px);} 100%{opacity:1; transform:scale(1) translateY(0);} }
+
+    /* Floating wave footer (Polaris-style) */
+    .hero-waves { position:relative; width:100%; height:64px; margin-top:22px; margin-bottom:-12px; overflow:hidden; opacity:0.75; }
+    .waves-svg { width:100%; height:100%; display:block; }
+    .wave-parallax use { animation: waveShift 16s cubic-bezier(0.55,0.5,0.45,0.5) infinite; }
+    .wave-parallax use:nth-child(1){ animation-delay:-2s; animation-duration:16s; }
+    .wave-parallax use:nth-child(2){ animation-delay:-4s; animation-duration:14s; }
+    .wave-parallax use:nth-child(3){ animation-delay:-6s; animation-duration:20s; }
+    .wave-parallax use:nth-child(4){ animation-delay:-8s; animation-duration:18s; }
+    @keyframes waveShift { 0%{transform:translate3d(-90px,0,0);} 50%{transform:translate3d(20px,0,0);} 100%{transform:translate3d(-90px,0,0);} }
+
+    /* ---- Polaris-style boxes ---- */
+    .card-surface { background:#ffffff; border:1px solid rgba(0,0,0,0.06); border-radius:24px; padding:32px; box-shadow:0 8px 24px rgba(0,0,0,0.08); transition:all .3s ease; }
+    .card-surface:hover { box-shadow:0 16px 48px rgba(0,0,0,0.10); }
+    .tldr-label { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:13px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color:#b1040e; margin-bottom:16px; text-align:center; }
+    .tagline { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:28px; font-weight:500; letter-spacing:-0.02em; color:#1a1a1a; display:block; margin:0 0 20px 0; position:relative; }
+    .tagline::after { content:''; display:block; width:100%; height:3px; background:linear-gradient(90deg,#b1040e 0%, rgba(177,4,14,0.15) 40%, transparent 100%); border-radius:2px; margin-top:14px; }
+    @media (max-width:768px){ .tagline{ font-size:24px; } }
+    .subtitle { display:flex; align-items:center; gap:11px; font-family:'Space Grotesk',-apple-system,sans-serif; font-size:16px; font-weight:600; color:#1a1a1a; margin:0 0 16px 0; }
+    .subtitle::before { content:''; width:22px; height:3px; border-radius:2px; background:linear-gradient(90deg,#b1040e 0%, rgba(177,4,14,0.35) 100%); flex:0 0 auto; }
+
+    /* ---- "How does it work?" designed band ---- */
+    .how-band { position:relative; overflow:hidden; text-align:center; padding:50px 32px; border-radius:24px;
+      background:linear-gradient(135deg,#ffffff 0%, #fbf3f4 100%); border:1px solid rgba(177,4,14,0.12);
+      box-shadow:0 10px 30px rgba(154,31,54,0.06); }
+    .how-band > * { position:relative; z-index:1; }
+    .how-band.api-band { background:linear-gradient(135deg,#ffffff 0%, #f2f5fb 100%); border-color:rgba(0,19,77,0.10); box-shadow:0 10px 30px rgba(31,54,120,0.06); }
+    .how-orb { position:absolute; border-radius:50%; pointer-events:none; z-index:0; }
+    .how-orb-1 { width:280px; height:280px; top:-130px; left:-90px; background:radial-gradient(circle, rgba(177,4,14,0.10) 0%, rgba(177,4,14,0) 70%); animation:orbFlow1 24s ease-in-out infinite; }
+    .how-orb-2 { width:320px; height:320px; bottom:-160px; right:-100px; background:radial-gradient(circle, rgba(0,19,77,0.07) 0%, rgba(0,19,77,0) 70%); animation:orbFlow2 28s ease-in-out infinite; }
+    .how-eyebrow { font-family:'Fira Code',monospace; font-size:12px; font-weight:600; letter-spacing:0.16em; color:#b1040e; margin-bottom:14px; }
+    .sec-eyebrow { display:inline-block; font-family:'Fira Code',monospace; font-size:11px; font-weight:600; letter-spacing:0.16em; text-transform:uppercase; color:#b1040e; background:rgba(177,4,14,0.08); border:1px solid rgba(177,4,14,0.22); border-radius:999px; padding:4px 12px; margin-bottom:12px; }
+    .how-title { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:34px; font-weight:700; letter-spacing:-0.02em; color:#1a1a1a; margin:0; line-height:1.15; }
+    .how-intro { font-family:'Inter',-apple-system,sans-serif; font-size:15px; color:#666; max-width:700px; margin:16px auto 0; line-height:1.65; }
+    @media (max-width:768px){ .how-title{ font-size:26px; } .how-band{ padding:38px 22px; } }
+    .how-list { list-style:none; max-width:780px; margin:22px auto 0; padding:0; }
+    .how-list li { font-family:'Inter',-apple-system,sans-serif; font-size:15px; color:#333; line-height:1.6; padding:11px 0 11px 32px; position:relative; border-bottom:1px solid rgba(0,0,0,0.06); }
+    .how-list li:last-child { border-bottom:none; }
+    .how-list li::before { content:'\2192'; position:absolute; left:4px; top:10px; color:#b1040e; font-weight:700; font-size:16px; }
+
+    /* ---- Prompt / code box ---- */
+    .prompt-box { font-family:'Fira Code',ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; line-height:1.6;
+      color:#2a2a2a; background:#f7f7f6; border:1px solid rgba(0,0,0,0.08); border-left:3px solid #b1040e;
+      border-radius:10px; padding:16px 18px; white-space:pre-wrap; text-align:left; margin:18px auto 0; max-width:880px; overflow-x:auto; }
+    .prompt-box .ph { color:#b1040e; }
+    /* ---- API-in-a-few-lines cards ---- */
+    .api-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin:22px 0 0; max-width:none; width:100%; }
+    @media (max-width:820px){ .api-grid { grid-template-columns:1fr; } }
+    .api-card { background:#ffffff; border:1px solid rgba(0,0,0,0.07); border-radius:18px; padding:22px 22px 20px; text-align:left; box-shadow:0 8px 24px rgba(0,0,0,0.06); transition:transform .25s ease, box-shadow .25s ease; display:flex; flex-direction:column; }
+    .api-card:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,0.10); }
+    .api-name { font-family:'Fira Code',monospace; font-size:15px; font-weight:600; color:#b1040e; margin-bottom:4px; }
+    .api-name .mod { color:#9a9a9a; font-weight:500; }
+    .api-tag { font-family:'Space Grotesk',-apple-system,sans-serif; font-size:13px; font-weight:600; color:#1a1a1a; margin-bottom:12px; }
+    .api-desc { font-family:'Inter',-apple-system,sans-serif; font-size:13px; color:#666; line-height:1.55; margin:12px 0 0; }
+    .api-code { font-family:'Fira Code',ui-monospace,Menlo,Consolas,monospace; font-size:11px; line-height:1.75;
+      color:#e6e6e6; background:#0f1115; border-radius:10px; padding:13px 14px; white-space:pre; overflow-x:auto; }
+    .api-code .k { color:#ff7b72; } .api-code .fn { color:#79c0ff; } .api-code .cm { color:#7a828e; } .api-code .s { color:#a5d6ff; }
+    .eq-box { text-align:center; margin:18px auto; max-width:880px; }
+    .mini-table-wrap { overflow-x:auto; margin:16px auto 0; }
+    .mini-table { width:100%; max-width:620px; margin:0 auto; border-collapse:collapse; font-family:'Inter',-apple-system,sans-serif; font-size:13.5px; color:#333; }
+    .mini-table caption { caption-side:top; font-size:12px; color:#7a7a7a; margin-bottom:8px; font-style:italic; }
+    .mini-table th, .mini-table td { border:1px solid rgba(0,0,0,0.09); padding:8px 16px; text-align:center; white-space:nowrap; }
+    .mini-table thead th { background:#f7f7f6; color:#1a1a1a; font-weight:600; }
+    .mini-table td:first-child, .mini-table th:first-child { text-align:left; }
+    .mini-table .hl { color:#b1040e; font-weight:700; }
+    .mini-table.lefttab th, .mini-table.lefttab td { text-align:left; }
+    .table-head { font-family:'Space Grotesk',-apple-system,sans-serif; font-weight:700; font-size:15px; color:#1a1a1a; margin:22px 0 10px; }
+    .table-head .th-note { font-weight:400; color:#777; font-size:13px; }
+
+    /* ---- Collapsible subsections ---- */
+    .sub-accordion { border:1px solid rgba(0,0,0,0.09); border-radius:12px; background:#fff; margin:12px 0; box-shadow:0 1px 4px rgba(0,0,0,0.03); overflow:hidden; }
+    .sub-accordion > summary { list-style:none; cursor:pointer; display:flex; align-items:center; gap:11px; padding:16px 20px;
+      font-family:'Space Grotesk',-apple-system,sans-serif; font-size:16px; font-weight:600; color:#1a1a1a; transition:background .15s; }
+    .sub-accordion > summary:hover { background:rgba(177,4,14,0.03); }
+    .sub-accordion > summary::-webkit-details-marker { display:none; }
+    .sub-accordion > summary::before { content:''; width:22px; height:3px; border-radius:2px; background:linear-gradient(90deg,#b1040e 0%, rgba(177,4,14,0.35) 100%); flex:0 0 auto; }
+    .sub-accordion > summary::after { content:'\25B8'; margin-left:auto; color:#b1040e; display:inline-block; transition:transform .2s ease; }
+    .sub-accordion[open] > summary::after { transform:rotate(90deg); }
+    .sub-accordion .acc-body { padding:2px 20px 18px; }
+
+    /* ---- Two-stage pipeline illustration ---- */
+    .flow2 { display:flex; align-items:stretch; justify-content:center; gap:8px; flex-wrap:wrap; margin:18px 0 4px; }
+    .flow-box { flex:1 1 0; min-width:180px; max-width:280px; background:#fff; border:1px solid rgba(0,0,0,0.10); border-radius:14px; padding:18px 16px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.04); display:flex; flex-direction:column; justify-content:center; }
+    .flow-box.accent { border-top:3px solid #b1040e; }
+    .flow-icon { font-size:24px; line-height:1; margin-bottom:8px; }
+    .flow-title { font-family:'Space Grotesk',-apple-system,sans-serif; font-weight:700; font-size:14px; color:#1a1a1a; }
+    .flow-sub { font-family:'Inter',-apple-system,sans-serif; font-size:12px; color:#7a7a7a; line-height:1.4; margin-top:5px; }
+    .flow-arrow { display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:70px; color:#b1040e; }
+    .flow-arrow .ar { font-size:22px; font-weight:700; line-height:1; }
+    .flow-arrow .arlbl { font-family:'Fira Code',monospace; font-size:9.5px; color:#8a8a8a; margin-top:4px; max-width:84px; line-height:1.3; }
+    @media (max-width:680px){ .flow2{ flex-direction:column; align-items:stretch; } .flow-box{ max-width:none; } .flow-arrow{ transform:rotate(90deg); min-width:0; height:34px; } }
+
+    /* ---- Left section-progress nav (Polaris-style) ---- */
+    .side-nav { position:fixed; left:26px; top:50%; transform:translateY(-50%); z-index:25; display:flex; flex-direction:column; gap:17px; padding-left:6px;
+      opacity:0; pointer-events:none; transition:opacity .4s ease, transform .4s ease; }
+    .side-nav.visible { opacity:1; pointer-events:auto; }
+    .side-nav::before { content:''; position:absolute; left:11px; top:5px; bottom:5px; width:2px; background:#e8e8e8; border-radius:2px; }
+    .side-nav a { position:relative; display:flex; align-items:center; gap:13px; text-decoration:none; color:#a6a6a6;
+      font-family:'Inter',-apple-system,sans-serif; font-size:11.5px; font-weight:600; letter-spacing:0.02em; transition:color .2s; }
+    .side-nav a .dot { width:9px; height:9px; border-radius:50%; background:#fff; border:2px solid #cfcfcf; transition:all .22s ease; flex:0 0 auto; z-index:1; }
+    .side-nav a .lbl { white-space:nowrap; opacity:0.5; transition:opacity .2s, transform .2s; }
+    .side-nav a:hover { color:#b1040e; }
+    .side-nav a:hover .lbl { opacity:1; }
+    .side-nav a:hover .dot { border-color:#b1040e; }
+    .side-nav a.active { color:#b1040e; }
+    .side-nav a.active .lbl { opacity:1; }
+    .side-nav a.active .dot { background:#b1040e; border-color:#b1040e; box-shadow:0 0 0 4px rgba(177,4,14,0.14); }
+    @media (max-width:1180px){ .side-nav { display:none; } }
+    /* ---- Top nav bar (appears on scroll) ---- */
+    .top-nav { position:fixed; top:0; left:0; right:0; z-index:40; background:#ffffff;
+      backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border-bottom:1px solid rgba(0,0,0,0.06);
+      transform:translateY(-100%); opacity:0; pointer-events:none; transition:transform .35s ease, opacity .35s ease; }
+    .top-nav.visible { transform:translateY(0); opacity:1; pointer-events:auto; }
+    .top-nav .tn-inner { box-sizing:content-box; max-width:960px; margin:0 auto; padding:11px 24px; display:flex; align-items:center; justify-content:space-between; }
+    .top-nav .tn-logo img { height:28px; width:auto; display:block; opacity:0.78; }
+    .top-nav .tn-links { display:flex; align-items:center; gap:32px; }
+    .top-nav .tn-links a { display:inline-flex; align-items:center; gap:7px; text-decoration:none; font-family:'Space Grotesk',-apple-system,sans-serif; font-size:14px; font-weight:600; color:#3a3a3a; transition:color .2s; }
+    .top-nav .tn-links a:hover { color:#b1040e; }
+    .top-nav .tn-links a svg { flex:0 0 auto; opacity:.8; transition:opacity .2s; }
+    .top-nav .tn-links a:hover svg { opacity:1; }
+    @media (max-width:600px){ .top-nav .tn-inner{ padding:8px 24px; } .top-nav .tn-logo img{ height:24px; } .top-nav .tn-links{ gap:18px; } .top-nav .tn-links a{ font-size:13px; } }
+    .tldr-caption { font-family:'Inter',-apple-system,sans-serif; color:#7a7a7a; font-size:14px; line-height:1.7; max-width:860px; margin:18px auto 0 auto; }
+    .tldr-caption strong { color:#4a4a4a; }
+    .stat-card { background:#f7f7f6; border:1px solid rgba(0,0,0,0.06); border-radius:20px; padding:28px 14px; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:all .3s ease; position:relative; overflow:hidden; text-align:center; height:100%; }
+    .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(135deg,#b1040e 0%,#e26d77 100%); }
+    .stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+    .stat-card .stat-num { font-size:1.7rem; font-weight:800; color:#b1040e; line-height:1; }
+    .stat-card .stat-name { font-size:0.82rem; font-weight:600; color:#333; margin-top:8px; line-height:1.25; white-space:nowrap; }
+
+    /* ---- Progress-tracking animated viewer ---- */
+    .pt-legend { display:flex; align-items:center; gap:16px; flex-wrap:wrap; margin-bottom:12px; font-family:'Inter',sans-serif; font-size:12px; }
+    .pt-leg { display:inline-flex; align-items:center; gap:6px; font-weight:600; }
+    .pt-leg::before { content:''; width:16px; height:3px; border-radius:2px; display:inline-block; }
+    .pt-leg-success { color:#1aa260; } .pt-leg-success::before { background:#1aa260; }
+    .pt-leg-failed { color:#b1040e; } .pt-leg-failed::before { background:#b1040e; }
+    .pt-task { color:#8a8a8a; font-style:italic; margin-left:auto; }
+    .pt-chart-wrap { position:relative; width:100%; height:360px; }
+    .pt-controls { display:flex; align-items:center; gap:14px; margin-top:16px; }
+    .pt-play { width:40px; height:36px; border-radius:9px; border:1px solid rgba(177,4,14,0.3); background:rgba(177,4,14,0.08); color:#b1040e; cursor:pointer; font-size:14px; transition:background .15s; }
+    .pt-play:hover { background:rgba(177,4,14,0.16); }
+    .pt-scrub { flex:1; accent-color:#b1040e; cursor:pointer; }
+    .pt-steplabel { font-family:'Fira Code',monospace; font-size:12px; color:#7a7a7a; min-width:96px; text-align:right; }
+    .pt-captions { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:18px; }
+    .pt-cap { font-family:'Inter',sans-serif; font-size:13px; line-height:1.55; color:#4a4a4a; background:#f7f7f6; border:1px solid rgba(0,0,0,0.06); border-radius:12px; padding:12px 14px; }
+    .pt-cap-tag { display:inline-block; font-size:10px; font-weight:700; letter-spacing:0.08em; padding:2px 7px; border-radius:6px; margin-right:8px; vertical-align:1px; }
+    .pt-tag-success { color:#1aa260; background:rgba(26,162,96,0.10); border:1px solid rgba(26,162,96,0.3); }
+    .pt-tag-failed { color:#b1040e; background:rgba(177,4,14,0.08); border:1px solid rgba(177,4,14,0.3); }
+    @media (max-width:600px){ .pt-captions{ grid-template-columns:1fr; } .pt-task{ margin-left:0; flex-basis:100%; } .pt-chart-wrap{ height:300px; } }
+
+    /* ---- Robotics video + synced chart ---- */
+    .rb-grid { display:grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap:20px; align-items:start; }
+    .rb-col { display:flex; flex-direction:column; gap:10px; }
+    .rb-colhead { display:flex; align-items:center; gap:10px; min-height:24px; font-family:'Inter',sans-serif; font-size:14px; color:#1a1a1a; flex-wrap:wrap; }
+    .rb-video-wrap { background:#000; border-radius:14px; overflow:hidden; display:flex; align-items:center; justify-content:center; height:300px; }
+    .rb-video-wrap video { width:100%; height:100%; display:block; object-fit:cover; object-position:center 40%; }
+    .rb-chart-wrap { position:relative; width:100%; height:320px; }
+    .rb-label { position:absolute; left:50%; bottom:12px; transform:translateX(-50%) translateY(6px);
+      max-width:90%; padding:7px 14px; border-radius:999px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600;
+      color:#fff; background:rgba(177,4,14,0.92); box-shadow:0 4px 14px rgba(0,0,0,0.3); white-space:nowrap;
+      opacity:0; transition:opacity .25s ease, transform .25s ease; pointer-events:none; }
+    .rb-label.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .rb-label.rb-label-ok { background:rgba(26,162,96,0.92); }
+    @media (max-width:768px){ .rb-grid{ grid-template-columns:1fr; } .rb-chart-wrap{ height:280px; } .rb-label{ font-size:11px; white-space:normal; text-align:center; } }
+  </style>
+</head>
+
+<body>
+
+<nav class="top-nav" id="topNav" style="display:none;">
+  <div class="tn-inner">
+  <a class="tn-logo" href="#top"><img src="./figures/logo.png" alt="LLM-as-a-Verifier"></a>
+  <div class="tn-links">
+    <a href="https://github.com/llm-as-a-verifier/llm-as-a-verifier" target="_blank">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      Code
+    </a>
+    <a href="https://llm-as-a-verifier.com/docs/" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h11a3 3 0 0 1 3 3v15l-4.5-2.5L9 21V6a1 1 0 0 0-1-1H4V3zm16 3a1 1 0 0 0-1-1v14.2l1 .55V6z"/></svg>
+      Documentation
+    </a>
+    <a href="https://join.slack.com/t/llm-as-a-verifier/shared_invite/zt-3utx6oe8m-86ACBqtPGfsOnpOoMJQwng" target="_blank">
+      <svg width="15" height="15" viewBox="0 0 24 24"><path fill="#E01E5A" d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313z"/><path fill="#36C5F0" d="M8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312z"/><path fill="#2EB67D" d="M18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312z"/><path fill="#ECB22E" d="M15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+      Slack
+    </a>
+  </div>
+  </div>
+</nav>
+
+<nav class="side-nav">
+  <a href="#overview" data-target="overview"><span class="dot"></span><span class="lbl">Overview</span></a>
+  <a href="#results" data-target="results"><span class="dot"></span><span class="lbl">Results</span></a>
+  <a href="#api" data-target="api"><span class="dot"></span><span class="lbl">API</span></a>
+  <a href="#motivation" data-target="motivation"><span class="dot"></span><span class="lbl">Motivation</span></a>
+  <a href="#methodology" data-target="methodology"><span class="dot"></span><span class="lbl">Methodology</span></a>
+  <a href="#analysis" data-target="analysis"><span class="dot"></span><span class="lbl">Analysis</span></a>
+  <a href="#experiments" data-target="experiments"><span class="dot"></span><span class="lbl">Experiments</span></a>
+  <a href="#appendix" data-target="appendix"><span class="dot"></span><span class="lbl">Appendix</span></a>
+</nav>
+
+<span id="top"></span>
+
+<section class="hero teaser" id="overview" style="padding-top: 2.5rem; padding-bottom: 0.5rem;">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-left" style="margin-top: 0; margin-bottom: 0;">
+      <div class="column is-full-width" style="padding-top: 0; padding-bottom: 0;">
+        <div class="hero-flow">
+          <div class="hero-orb" aria-hidden="true"></div>
+          <div class="hero-text"><span class="accent">LLM-as-a-Verifier</span></div>
+          <div class="sub-hero-text">A General-Purpose Verification Framework</div>
+          <div class="hero-pill-row">
+            <span class="hero-pill">Any Modality</span>
+            <span class="hero-pill">Many Applications</span>
+            <span class="hero-pill">Verification Scaling</span>
+          </div>
+          <div class="authors">
+            <a href="https://jackyk02.github.io/" target="_blank">Jacky Kwok</a><sup>1</sup>,
+            <a href="https://www.linkedin.com/in/shulu-li" target="_blank">Shulu Li</a><sup>2</sup>,
+            <a href="https://pranavatreya.github.io/" target="_blank">Pranav Atreya</a><sup>2</sup>,
+            <a href="https://yuejiangliu.github.io/" target="_blank">Yuejiang Liu</a><sup>1</sup>,
+            <a href="https://www.linkedin.com/in/jiangyx" target="_blank">Yixing Jiang</a><sup>1</sup>,<br>
+            <a href="https://ai.stanford.edu/~cbfinn/" target="_blank">Chelsea Finn</a><sup>1</sup>,
+            <a href="https://research.nvidia.com/person/marco-pavone" target="_blank">Marco Pavone</a><sup>1,3</sup>,
+            <a href="https://people.eecs.berkeley.edu/~istoica/" target="_blank">Ion Stoica</a><sup>2</sup>,
+            <a href="https://www.azaliamirhoseini.com/" target="_blank">Azalia Mirhoseini</a><sup>1</sup>
+            <span class="affiliation">
+              <sup>1</sup>Stanford University&nbsp;&nbsp;&nbsp;<sup>2</sup>UC Berkeley&nbsp;&nbsp;&nbsp;<sup>3</sup>NVIDIA Research
+            </span>
+            <span class="affiliation" style="margin-top:6px; display:none;">Email: <a href="mailto:jackykwok@stanford.edu" style="color:inherit;">jackykwok@stanford.edu</a></span>
+          </div>
+          <div class="hero-actions">
+            <a class="cta primary" href="https://arxiv.org/abs/2607.05391" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px; margin-right:6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h5v7h7v9H6z"/></svg>
+              Read the paper
+            </a>
+            <a class="cta dark" href="https://github.com/llm-as-a-verifier/llm-as-a-verifier" target="_blank">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-3px; margin-right:6px;"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              Code
+            </a>
+            <a class="cta" href="https://github.com/llm-as-a-verifier/TurboAgent" target="_blank">
+              <img src="./media/logos/claude_white.png" alt="" style="height:1em; width:auto; margin-right:6px; filter: invert(1);">
+              Claude Code Plugin
+            </a>
+            <a class="cta slack" href="https://join.slack.com/t/llm-as-a-verifier/shared_invite/zt-3utx6oe8m-86ACBqtPGfsOnpOoMJQwng" target="_blank" style="display:none;">
+              <svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align:-2px; margin-right:6px;"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313z"/><path d="M8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312z"/><path d="M18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312z"/><path d="M15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+              Slack
+            </a>
+          </div>
+          <div class="hero-actions" style="margin-top:14px; display:none;">
+            <button class="cta install" type="button" onclick="(function(b){navigator.clipboard&&navigator.clipboard.writeText('pip install llm-verifier');b.classList.add('copied');setTimeout(function(){b.classList.remove('copied')},1500);})(this)" aria-label="Copy pip install command">
+              <span class="prompt">$</span>
+              <span>pip install llm-verifier</span>
+              <svg class="copy-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            </button>
+            <a class="cta outline-red" href="https://llm-as-a-verifier.com/docs/" target="_blank">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px; margin-left:-8px; margin-right:13px;"><path d="M4 3h11a3 3 0 0 1 3 3v15l-4.5-2.5L9 21V6a1 1 0 0 0-1-1H4V3zm16 3a1 1 0 0 0-1-1v14.2l1 .55V6z"/></svg>
+              Documentation
+            </a>
+          </div>
+          <div class="hero-waves" aria-hidden="true">
+            <svg class="waves-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+              <defs><path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path></defs>
+              <g class="wave-parallax">
+                <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(177,4,14,0.22)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(177,4,14,0.14)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(0,19,77,0.12)"></use>
+                <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(177,4,14,0.20)"></use>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="tagline">Overview</div>
+        <div class="card-surface">
+          <img src="./figures/llmoverview.png" alt="LLM-as-a-Verifier overview" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <p class="tldr-caption has-text-centered">
+          We present <strong>LLM-as-a-Verifier</strong>, a general-purpose framework that provides fine-grained feedback for any modality without requiring additional training. By leveraging the full distribution of scoring-token logits, our method captures evaluation uncertainty and enables verification to scale along three dimensions: <em>score granularity</em>, <em>repeated evaluation</em>, and <em>criteria decomposition</em>. The resulting fine-grained feedback can be used for test-time scaling, progress tracking, and reinforcement learning.
+        </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline" id="results">Test-Time Scaling</div>
+          <div class="card-surface">
+            <img src="./figures/SOTA.png" alt="State-of-the-art across domains" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            <strong>LLM-as-a-Verifier</strong> achieves state-of-the-art performance across coding, robotics, and medical domains: Terminal-Bench V2 (86.5%), SWE-Bench Verified (78.2%), RoboRewardBench (87.4%), and MedAgentBench (73.3%).
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline">Reinforcement Learning</div>
+          <div class="card-surface">
+            <img src="./figures/combined_libero_math.png" alt="RL sample efficiency" style="width: 100%; max-width: 1000px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            <strong>LLM-as-a-Verifier</strong> as a dense reward signal improves the sample efficiency of both off-policy and on-policy RL algorithms. On LIBERO, LLM-as-a-Verifier achieves &asymp;&nbsp;1.8&times; higher sample efficiency than sparse reward baselines when fine-tuning a &pi;<sub>0</sub> policy with SAC. On the MATH reasoning benchmark, it achieves &asymp;&nbsp;1.1&times; higher sample efficiency when fine-tuning Qwen3-8B with GRPO.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline">Progress Tracking (Coding)</div>
+          <div class="card-surface">
+            <div class="pt-legend">
+              <span class="pt-leg pt-leg-success">SUCCESS</span>
+              <span class="pt-leg pt-leg-failed">FAILED</span>
+              <span class="pt-task">Task: <code>pytorch-model-cli</code> &mdash; run MNIST inference &middot; Terminus-2 &middot; Gemini&nbsp;2.5&nbsp;Pro</span>
+            </div>
+            <div class="pt-chart-wrap"><canvas id="ptChart"></canvas></div>
+            <div class="pt-controls">
+              <button id="ptPlay" class="pt-play" aria-label="Play">&#9654;</button>
+              <input id="ptScrub" class="pt-scrub" type="range" min="1" max="10" step="1" value="10">
+              <span id="ptStepLabel" class="pt-steplabel">step 10/10</span>
+            </div>
+            <div class="pt-captions">
+              <div class="pt-cap"><span class="pt-cap-tag pt-tag-success">SUCCESS</span><span id="ptCapSuccess"></span></div>
+              <div class="pt-cap"><span class="pt-cap-tag pt-tag-failed">FAILED</span><span id="ptCapFailed"></span></div>
+            </div>
+          </div>
+          <p class="tldr-caption has-text-centered">
+            We observe a strong correlation between the chronological progression of code generation steps and the scores from <strong>LLM-as-a-Verifier</strong>. The successful trajectory of the <code>pytorch-model-cli</code> task follows a coherent sequence of events&mdash;<em>Read <code>model.py</code> &rarr; Install g++ compiler &rarr; Install CPU-only torch &rarr; Update <code>hidden_dim</code> &rarr; DONE</em> and exhibits consistently increasing verifier scores. In contrast, the failed trajectory is characterized by erroneous behaviors&mdash;it unnecessarily installs the large <code>torchvision</code> package, which exhausts the available disk space and hits a compilation error&mdash;resulting in significantly lower scores.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline">Progress Tracking (Robotics)</div>
+          <div class="card-surface">
+            <div class="rb-grid">
+              <div class="rb-col">
+                <div class="rb-colhead" style="justify-content:center; color:#b1040e;">Task:&nbsp;Corn onto Plate</div>
+                <div class="rb-video-wrap" style="position:relative;">
+                  <video id="rbVideo" muted playsinline loop autoplay preload="auto">
+                    <source src="./media/robotics/corn_on_plate.mp4" type="video/mp4">
+                  </video>
+                  <div id="rbLabel" class="rb-label"></div>
+                </div>
+              </div>
+              <div class="rb-col">
+                <div class="rb-colhead"><span class="pt-leg pt-leg-failed" style="color:#b1040e; margin-left:44px;">LLM-as-a-Verifier</span><span class="pt-task" style="margin-left:auto;">RoboRewardBench &middot; Qwen&nbsp;3.6</span></div>
+                <div class="rb-chart-wrap"><canvas id="rbChart"></canvas></div>
+              </div>
+            </div>
+            <div class="pt-controls">
+              <button id="rbPlay" class="pt-play" aria-label="Play/Pause">&#10073;&#10073;</button>
+              <input id="rbScrub" class="pt-scrub" type="range" min="0" max="1000" step="1" value="0">
+              <span id="rbTime" class="pt-steplabel">frame 1</span>
+            </div>
+          </div>
+          <p class="tldr-caption has-text-centered">
+<strong>LLM-as-a-Verifier</strong> generates a smooth, temporally aligned progress signal over the course of robot rollout while remaining robust to failure modes such as incorrect intent or imprecise grasping. The example above illustrates the &ldquo;Corn on Plate&rdquo; task from the RoboRewardBench-OOD dataset.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 4rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline" id="api" style="display:flex; align-items:center; flex-wrap:wrap; gap:14px;">Three Simple APIs <code style="font-family:'SF Mono',Menlo,Consolas,monospace; font-size:0.6em; font-weight:500; color:#1a1a1a; background:#f7f7f5; border:1px solid #e3e3e0; border-radius:8px; padding:0.4em 0.7em; letter-spacing:0; white-space:nowrap;"><span style="color:#b1040e; font-weight:600; margin-right:0.5em;">$</span>pip install llm-verifier</code></div>
+          <div class="api-grid">
+            <div class="api-card">
+              <div class="api-name"><span class="mod">llm_verifier.</span>select</div>
+              <div class="api-tag">🏆 Best-of-N selection</div>
+              <div class="api-code"><span class="k">from</span> llm_verifier <span class="k">import</span> select
+best = <span class="fn">select</span>(task, cands)</div>
+              <p class="api-desc">Score N candidates and return the best one &mdash; test-time scaling in a single call.</p>
+            </div>
+            <div class="api-card">
+              <div class="api-name"><span class="mod">llm_verifier.</span>compare</div>
+              <div class="api-tag">⚖️ Pairwise comparison</div>
+              <div class="api-code"><span class="k">from</span> llm_verifier <span class="k">import</span> compare
+best = <span class="fn">compare</span>(task, a, b)</div>
+              <p class="api-desc">Directly score two candidates head-to-head with fine-grained preferences.</p>
+            </div>
+            <div class="api-card">
+              <div class="api-name"><span class="mod">llm_verifier.</span>track</div>
+              <div class="api-tag">📈 Progress tracking</div>
+              <div class="api-code"><span class="k">from</span> llm_verifier <span class="k">import</span> track
+scores = <span class="fn">track</span>(task, traj)</div>
+              <p class="api-desc">Get a temporally aligned progress score over a rollout for monitoring or RL.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 0.5rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="how-band">
+            <div class="how-orb how-orb-1" aria-hidden="true"></div>
+            <div class="how-orb how-orb-2" aria-hidden="true"></div>
+            <div id="how" class="how-title">How does <span style="color:#b1040e;">LLM-as-a-Verifier</span> work?</div>
+            <p class="how-intro">The key idea behind it is simple</p>
+            <ul class="how-list">
+              <li>Use fine-grained scoring granularity (e.g., 1&ndash;20 instead of the standard 1&ndash;5 scale)</li>
+              <li>Take the expectation over the full logprob distribution of score tokens</li>
+              <li>Scale repeated evaluation and criteria decomposition</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 0.5rem; display: none;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-five-fifths">
+          <div class="card-surface">
+          <div id="abstract" style="font-family:'Fira Code',monospace; font-size:17px; font-weight:600; letter-spacing:0.04em; color:#1a1a1a; margin-bottom:14px; display:none;">TL;DR</div>
+          <div class="content has-text-justified" style="font-family:'Inter',-apple-system,sans-serif; color:#4a4a4a; font-size:15px; line-height:1.7;">
+            <p>
+              Scaling pre-training, post-training, and test-time compute have become the central paradigms for improving the capabilities of large language models (LLMs). In this work, we identify verification—the ability to determine the correctness of a solution—as a new scaling axis. To unlock this and demonstrate its effectiveness, we introduce LLM-as-a-Verifier, a general-purpose verification framework that provides fine-grained feedback for agentic tasks without requiring additional training. Unlike standard LM judges that prompt LLMs to produce discrete scores for candidate solutions, LLM-as-a-Verifier computes the expectation over the distribution of scoring-token logits to generate continuous scores. This probabilistic formulation substantially reduces tie rates when comparing complex solutions and enables verification to scale along multiple dimensions: (1) score granularity, (2) repeated evaluation, and (3) criteria decomposition. To make verification scaling practical, we further introduce a cost-efficient ranking algorithm for selecting the best solution among candidates using the preference probabilities derived from the verifier's continuous scores. LLM-as-a-Verifier achieves state-of-the-art performance on Terminal-Bench V2 (86.5%), SWE-Bench Verified (78.2%), RoboRewardBench (87.4%), and MedAgentBench (73.3%). Beyond verification, the fine-grained signals can serve as a proxy for estimating task progress, enabling safe deployment of agents; we provide extensions for Claude Code and Codex. Finally, we show that LLM-as-a-Verifier can be used as a dense reward signal for RL, improving the sample efficiency of SAC and GRPO on robotics and mathematical reasoning benchmarks.
+            </p>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="hero teaser" style="padding-top: 1rem; padding-bottom: 0.5rem; display: none;">
+  <div class="container" style="max-width: 1400px;">
+    <div class="columns is-centered" style="margin-bottom: 0;">
+      <div class="column is-full">
+        <div class="columns is-mobile is-justify-content-space-between" style="gap: 0;">
+          <div class="column is-one-quarter" style="padding: 26px;">
+            <div class="stat-card">
+              <div class="stat-num">86.5%</div>
+              <div class="stat-name">Terminal-Bench V2</div>
+            </div>
+          </div>
+          <div class="column is-one-quarter" style="padding: 26px;">
+            <div class="stat-card">
+              <div class="stat-num">78.2%</div>
+              <div class="stat-name">SWE-Bench Verified</div>
+            </div>
+          </div>
+          <div class="column is-one-quarter" style="padding: 26px;">
+            <div class="stat-card">
+              <div class="stat-num">87.4%</div>
+              <div class="stat-name">RoboRewardBench</div>
+            </div>
+          </div>
+          <div class="column is-one-quarter" style="padding: 26px;">
+            <div class="stat-card">
+              <div class="stat-num">73.3%</div>
+              <div class="stat-name">MedAgentBench</div>
+            </div>
+          </div>
+        </div>
+        <p class="has-text-centered" style="max-width: 820px; margin: 24px auto 0 auto; font-size: 1.05em; color: #555;">
+          We present LLM-as-a-Verifier, a general-purpose framework that provides fine-grained feedback for any modality without requiring additional training. By leveraging the full distribution of scoring-token logits, our method captures evaluation uncertainty and enables verification to scale along three dimensions: <em>score granularity</em>, <em>repeated evaluation</em>, and <em>criteria decomposition</em> &mdash; <strong style="color: #b1040e;">achieving SOTA across coding, robotics, and medical domains.</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Overall results -->
+  
+
+  <!-- Progress tracking -->
+  
+
+  <!-- RL -->
+  
+
+  <!-- Motivation -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="sec-eyebrow">Motivation</div>
+          <div class="tagline" id="motivation" style="font-size:22px;">Generation is Not the Bottleneck — Verification Is</div>
+          <div class="card-surface">
+            <img src="./figures/motivation.png" alt="Generation vs. verification" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            The key finding is that most agents already &ldquo;know&rdquo; how to solve the tasks. On Terminal-Bench, if you repeatedly sample 100 trajectories per task, they can <strong>outperform Claude Mythos</strong> and nearly solve the entire benchmark. But the problem is that they don't know which one is correct, particularly when dealing with long-horizon tasks. While standard LLM-as-a-Judge can be used here, they fail to provide sufficiently fine-grained feedback. When comparing complex solutions, judges often assign the same score, resulting in a tie and failing to discriminate between them. Coarse scoring leads to <strong>27% ties</strong> on Terminal-Bench V2.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Method -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="sec-eyebrow">Methodology</div>
+          <div class="tagline" id="methodology" style="font-size:22px;">Fine-Grained Reward Estimation</div>
+          <div class="card-surface" style="display:none;">
+            <img src="./figures/method.png" alt="Method" style="width: 100%; max-width: 1000px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption" style="max-width:880px; text-align:left;">
+            <!-- Let \(V_{\text{score}} = \{v_1, \ldots, v_G\}\) denote an ordered set of tokens representing discrete score levels. -->Given a task prompt \(x\), a language model \(p_\theta\), a criterion \(c\), and two candidate trajectories \(\tau_i\) and \(\tau_j\), we construct scoring prompts and obtain their conditional distributions \(p_{\theta}(v \mid x,c,\tau_i)\) and \(p_{\theta}(v \mid x, c, \tau_j)\) by extracting the logprobs from <code>&lt;score_A&gt;</code> and <code>&lt;score_B&gt;</code> tags using the following prompt:
+          </p>
+          <div class="prompt-box">You are an expert <span class="ph">[domain]</span> reviewer. You will see a task description and two trajectories.
+
+Evaluation Criteria: <span class="ph">[domain specific criteria]</span>
+
+Task: <span class="ph">{task prompt}</span>
+Trajectory A: <span class="ph">{A}</span>   Trajectory B: <span class="ph">{B}</span>
+
+Carefully analyze each trajectory, then provide your final scores:
+
+&lt;score_A&gt; <span class="ph">INTEGER_1_TO_20</span> &lt;/score_A&gt;
+&lt;score_B&gt; <span class="ph">INTEGER_1_TO_20</span> &lt;/score_B&gt;
+
+Rating Rules: Rate correctness on a 1&ndash;20 scale based on evaluation criteria (1 = incorrect, 10 = borderline, 20 = correct)
+
+Note: We use a letter-based scale instead of digits to enable logprob extraction for granularity scaling.</div>
+          <p class="tldr-caption" style="max-width:880px; text-align:left; margin-top:16px;">
+            Rather than collapsing each distribution to a single discrete score, we approximate the reward of a trajectory as:
+          </p>
+          <div class="eq-box">
+            \[ R(x, \tau) = \frac{1}{CK} \sum_{c=1}^{C} \sum_{k=1}^{K} \sum_{g=1}^{G} p_{\theta}(v_g \mid x, c, \tau)\,\phi(v_g) \]
+          </div>
+          <p class="tldr-caption" style="max-width:880px; text-align:left;">
+            where \(C\) is the number of evaluation criteria, \(K\) is the number of repeated verifications, \(G\) is the number of score tokens (granularity level), \(p_{\theta}(v_g \mid x, c, \tau)\) is the probability assigned by model \(\theta\) to score token \(v_g\), and \(\phi(v_g)\) maps each score token to a scalar value.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline" style="font-size:22px;">Probabilistic Pivot Tournament (PPT)</div>
+          <div class="card-surface">
+            <img src="./figures/pivot_tournament.png" alt="Probabilistic Pivot Tournament" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            To select the best of \(N\) candidates under a constrained verification budget, PPT compares each candidate against a small set of \(k \ll N\) pivots, cutting cost from \(\mathcal{O}(N^2)\) to \(\mathcal{O}(Nk)\).
+          </p>
+          <div style="max-width:900px; margin:16px auto 0; text-align:left;">
+            <p class="tldr-caption" style="max-width:none; margin:8px 0;"><strong>(1)&nbsp;Candidates:</strong> the candidate pool \(\{\tau_1,\dots,\tau_N\}\) to be ranked.</p>
+            <p class="tldr-caption" style="max-width:none; margin:8px 0;"><strong>(2)&nbsp;Ring pass:</strong> a random Hamiltonian cycle scores the \(N\) adjacent pairs so every candidate appears once in the &ldquo;A&rdquo; slot and once in &ldquo;B&rdquo;, canceling the model's positional bias.</p>
+            <p class="tldr-caption" style="max-width:none; margin:8px 0;"><strong>(3)&nbsp;Pivot selection:</strong> candidates are ranked by their ring-pass scores \(w_{(i)}\), and the top-\(k\) candidates form the pivot set \(\mathcal{P}\).</p>
+            <p class="tldr-caption" style="max-width:none; margin:8px 0;"><strong>(4)&nbsp;Pivot tournament:</strong> every <em>non-pivot&ndash;vs&ndash;pivot</em> and <em>pivot&ndash;vs&ndash;pivot</em> pair is scored with the fine-grained reward estimation above, concentrating the budget on uncertain top candidates and cutting cost from \(\mathcal{O}(N^2)\) to \(\mathcal{O}(Nk)\).</p>
+            <p class="tldr-caption" style="max-width:none; margin:8px 0;"><strong>(5)&nbsp;Selection:</strong> comparisons are aggregated into weight \(w_i\) and count \(c_i\); the candidate with the highest normalized \(w_i/c_i\) is returned.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three scaling axes -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="sec-eyebrow">Analysis</div>
+          <div class="tagline" id="analysis" style="font-size:22px;">Verification as a New Scaling Axis</div>
+          <div class="card-surface">
+            <img src="./figures/granularity.png" alt="Verification scaling" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            We find that verification accuracy consistently improves as we scale across multiple dimensions: (1) the granularity of score tokens, (2) the number of repeated evaluations, and (3) the decomposition of evaluation criteria.
+          </p>
+          <div class="columns" style="margin-top: 14px; display:none;">
+            <div class="column">
+              <div class="axis-card">
+                <h4>① Score Granularity</h4>
+                <p>Finer score tokens give the decoder a finer space to project the model's belief, improving separation between correct and incorrect solutions. Accuracy rises from <strong>73.1% (G=1) to 77.5% (G=20)</strong>.</p>
+              </div>
+            </div>
+            <div class="column">
+              <div class="axis-card">
+                <h4>② Repeated Evaluation</h4>
+                <p>Averaging <em>K</em> independent evaluations is a Monte&nbsp;Carlo estimator whose variance shrinks as O(1/K), averaging out per-pass noise. Accuracy rises from <strong>74.7% (K=1) to 77.4% (K=16)</strong>.</p>
+              </div>
+            </div>
+            <div class="column">
+              <div class="axis-card">
+                <h4>③ Criteria Decomposition</h4>
+                <p>Replacing a monolithic rubric with an ensemble of simpler sub-criteria (Specification, Output, Errors) reduces prompt bias. Any single criterion reaches 75.2–76.4%; the ensemble reaches <strong>78.3%</strong>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Granularity scaling -->
+  <section class="section" style="padding-top: 0.15rem; padding-bottom: 0.15rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <details class="sub-accordion" open><summary>What drives granularity scaling?</summary><div class="acc-body">
+          <p class="tldr-caption" style="max-width:880px; text-align:left;">
+            <strong>Better separation between positive and negative solutions.</strong> To isolate why finer granularity improves verification, we decompose the pairwise score gap between correct (\(s_c\)) and incorrect (\(s_i\)) trajectories into a signal and a noise component. We define the signal-to-noise ratio as below, where \(\mathbb{E}(s_c-s_i)\) captures how strongly the verifier prefers the correct trajectory over the incorrect one (<em>signal strength</em>), and the denominator, \(\mathrm{Var}(s_c - s_i)\), captures how inconsistent that preference is across pairs (<em>noise</em>).
+          </p>
+          <div class="eq-box">
+            \[ \mathrm{SNR}(G) = \frac{\mathbb{E}[s_c - s_i]}{\sqrt{\mathrm{Var}(s_c - s_i)}} \]
+          </div>
+          <div class="mini-table-wrap">
+            <table class="mini-table">
+              <caption>Signal-to-noise ratio grows with the number of scoring tokens \(G\) (Terminal-Bench V2, \(k{=}16\)).</caption>
+              <thead><tr><th>Granularity \(G\)</th><th>1</th><th>4</th><th>16</th><th>20</th></tr></thead>
+              <tbody><tr><td>SNR (k=16)</td><td>0.775</td><td>0.786</td><td>0.797</td><td class="hl">0.799</td></tr></tbody>
+            </table>
+          </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Case study: query-optimize (large section) -->
+  
+
+  <!-- Repeated evaluation -->
+  <section class="section" style="padding-top: 0.15rem; padding-bottom: 0.15rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <details class="sub-accordion"><summary>What drives repeated evaluation?</summary><div class="acc-body">
+          <p class="tldr-caption" style="max-width:900px; text-align:left;">
+            <strong>Variance reduction.</strong> LLM-as-a-Verifier <img src="./figures/robot.png" alt="" style="height:1.15em; vertical-align:-0.25em;"> consistently <strong>outperforms LLM-as-a-Judge</strong> <img src="./figures/judge.png" alt="" style="height:1.05em; vertical-align:-0.2em;">, achieving <strong>77.4%</strong> verification accuracy while eliminating ties entirely across all repeated verification budgets. Even at \(k = 16\), where repeated verification reduces judge ties, the verifier still maintains <strong>7.2%</strong> higher accuracy.
+          </p>
+          <div class="card-surface" style="margin-top:16px;">
+            <img src="./figures/judge_vs_verifier.png" alt="Verifier vs Judge: accuracy and tie rate across repeated evaluations" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Criteria decomposition -->
+  <section class="section" style="padding-top: 0.15rem; padding-bottom: 0.15rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <details class="sub-accordion"><summary>What drives criteria decomposition?</summary><div class="acc-body">
+          <p class="tldr-caption" style="max-width:880px; text-align:left;">
+            <strong>Complexity reduction.</strong> Granularity and repeated evaluation both assume the rubric itself is adequate. In long-horizon agentic tasks, a judgment like &ldquo;is this trajectory correct?&rdquo; conflates several logically distinct factors, and a verifier asked a compound question often latches onto whichever factor is most salient in the prompt. We instead replace the single monolithic rubric with an ensemble over \(C\) simpler sub-criteria. For code-agent trajectories we decompose correctness into three factors that are each easier to verify &mdash; <strong>Specification</strong> (all task requirements satisfied), <strong>Output</strong> (final output format matches the expected result), and <strong>Errors</strong> (no failure signals in logs and tool outputs) &mdash; and average the expected scores across criteria. Any single criterion alone reaches 75.2&ndash;76.4% accuracy; their ensemble reaches <strong>78.3%</strong>.
+          </p>
+          <div class="card-surface" style="margin-top:16px;">
+            <img src="./figures/criteria_scaling_plot.png" alt="Criteria decomposition scaling" style="width: 100%; max-width: 1000px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 0.15rem; padding-bottom: 0.15rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <details class="sub-accordion"><summary>Case Study: Terminal-Bench</summary><div class="acc-body">
+          <p class="tldr-caption" style="max-width:880px; text-align:left;">
+            To concretely illustrate how scaling granularity to \(G{=}20\) and our probabilistic formulation sharpen the verifier's signal, we analyze a representative trajectory pair from the <code>query-optimize</code> task on Terminal-Bench&nbsp;V2. The agent is given a slow SQL query and asked to produce an equivalent optimized version; both candidates run faster, but only one validates equivalence against the canonical database. Over 100 repeated evaluations, a discrete 1&ndash;5 judge collapses these nuanced assessments into ties (88/100). Taking the expectation over the <em>same</em> 5-point distribution eliminates ties entirely and ranks the correct trajectory higher in 69/100 runs; scaling granularity to \(G{=}20\) sharpens the signal further, ranking it strictly higher in <strong>77/100</strong> runs.
+          </p>
+          <div class="mini-table-wrap">
+            <table class="mini-table" style="max-width:820px;">
+              <thead><tr><th>Method</th><th>correct &gt; incorrect ✅</th><th>correct = incorrect ⚖️</th><th>correct &lt; incorrect ❌</th></tr></thead>
+              <tbody>
+                <tr><td>Judge (discrete, G=5)</td><td>12/100</td><td>88/100</td><td>0/100</td></tr>
+                <tr><td>Verifier (continuous, G=5)</td><td>69/100</td><td>0/100</td><td>31/100</td></tr>
+                <tr><td><strong>Verifier (continuous, G=20)</strong></td><td class="hl">77/100</td><td>0/100</td><td>23/100</td></tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Judge vs Verifier (redundant with "Why repeated evaluation?" above — hidden) -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem; display: none;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="subtitle">Verifier (Continuous) vs. Judge (Discrete)</div>
+          <div class="card-surface">
+            <img src="./figures/judge_vs_verifier.png" alt="Judge vs Verifier" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            <strong>Left:</strong> The verifier achieves 74.7% at <em>k</em>=1 and improves to 77.5% at <em>k</em>=16, consistently outperforming the discrete judge across all evaluation budgets. A single-pass verifier already beats a heavily ensembled judge.
+            <strong>Right:</strong> The judge produces ties in 26.7% of comparisons at <em>k</em>=1 due to coarse discrete scoring, while the continuous verifier yields <strong>zero ties</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pivot Tournament -->
+  
+
+  <!-- Logit-restricted frontier models -->
+  
+
+  <!-- Test-Time Scaling Results -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="sec-eyebrow">Experiments</div>
+          <div class="tagline" id="experiments" style="font-size:22px;">Test-Time Scaling Results</div>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">Per-Benchmark Performance</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              Across challenging benchmarks such as Terminal-Bench V2, SWE-Bench Verified, and MedAgentBench, <strong>LLM-as-a-Verifier</strong> outperforms frontier models including Claude Opus 4.8, GPT 5.5, and Gemini models. Results for Terminal-Bench and SWE-Bench are reported from the official leaderboards.
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:980px;">
+                <thead>
+                  <tr><th rowspan="2">Benchmark</th><th colspan="3">Baseline models (accuracy)</th><th colspan="3">LLM-as-a-Verifier</th></tr>
+                  <tr><th>#1</th><th>#2</th><th>#3</th><th>Pass@1</th><th>Oracle</th><th>Ours</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Terminal-Bench V2</td><td>GPT-5.5 (84.7%)</td><td>Opus 4.7 (80.2%)</td><td>Gemini 3.1 Pro (80.2%)</td><td>83.1%</td><td>92.1%</td><td class="hl">86.5%</td></tr>
+                  <tr><td>SWE-Bench Verified</td><td>Opus 4.5 (76.8%)</td><td>Gemini 3 Flash (75.8%)</td><td>MiniMax M2.5 (75.8%)</td><td>76.1%</td><td>84.4%</td><td class="hl">78.2%</td></tr>
+                  <tr><td>MedAgentBench</td><td>Opus 4.8 (70.2%)</td><td>Gemini 3.5 Flash (66.3%)</td><td>GPT-5.5 (65.1%)</td><td>70.2%</td><td>75.0%</td><td class="hl">73.3%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">Preference Accuracy on RoboRewardBench</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              For RoboRewardBench, we curate pairs of rollout videos that follow the same natural-language instruction but make different amounts of progress; the reward model must output a preference indicating which rollout makes more progress. <strong>LLM-as-a-Verifier</strong> outperforms fine-tuned robotics reward models.
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:560px;">
+                <thead><tr><th>Method</th><th>Accuracy (%)</th></tr></thead>
+                <tbody>
+                  <tr><td>TOPReward</td><td>74.7</td></tr>
+                  <tr><td>Robometer-4B</td><td>78.8</td></tr>
+                  <tr><td>RoboReward-8B</td><td>81.4</td></tr>
+                  <tr><td>LLM-as-a-Judge (Discrete)</td><td>70.8</td></tr>
+                  <tr><td><strong>LLM-as-a-Verifier (Ours)</strong></td><td class="hl">87.4</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Progress Tracking Results -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline" style="font-size:22px;">Progress Tracking Results</div>
+          <p class="tldr-caption" style="max-width:920px; text-align:left;">
+            We quantify progress tracking with the <strong>Value-Order Correlation (VOC)</strong> &mdash; the Spearman rank correlation between a step's chronological index and the verifier's predicted value for the prefix ending at that step. A verifier that tracks progress assigns monotonically higher scores to later prefixes of a successful rollout (\(\mathrm{VOC}\to 1\)):
+          </p>
+          <div class="eq-box">
+            \[ \mathrm{VOC} = \mathrm{rank\text{-}correlation}\!\left( \mathrm{argsort}(s_{t_1}, s_{t_2}, \cdots, s_{t_K}),\ (t_1, t_2, \cdots, t_K) \right) \]
+          </div>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">VOC on Terminal-Bench V2</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              Successful rollouts show near-monotonic progress, while failed rollouts correlate more weakly.
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:620px;">
+                <thead><tr><th>Trajectory outcome</th><th>Spearman VOC</th></tr></thead>
+                <tbody>
+                  <tr><td>Successful</td><td class="hl">0.848</td></tr>
+                  <tr><td>Failed</td><td>0.769</td></tr>
+                  <tr><td>Success &minus; Failed (gap)</td><td>+0.079</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">VOC on RoboRewardBench</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              LLM-as-a-Verifier attains the highest correlation between step index and predicted progress, outperforming fine-tuned robotics reward models.
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:620px;">
+                <thead><tr><th>Method</th><th>Spearman VOC</th></tr></thead>
+                <tbody>
+                  <tr><td><strong>LLM-as-a-Verifier (Qwen 3.6 35B)</strong></td><td class="hl">0.966</td></tr>
+                  <tr><td>RoboReward-8B</td><td>0.877</td></tr>
+                  <tr><td>Robometer-4B</td><td>0.780</td></tr>
+                  <tr><td>TOPReward (Qwen 3.6)</td><td>0.565</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reinforcement Learning Results -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="tagline" style="font-size:22px;">Reinforcement Learning Results</div>
+          <p class="tldr-caption" style="max-width:920px; text-align:left;">
+            The fine-grained verifier score is a drop-in <strong>dense reward</strong> for both off-policy and on-policy RL, improving sample efficiency by <strong style="color:#b1040e;">&approx;1.8&times; on LIBERO</strong> and <strong style="color:#b1040e;">&approx;1.1&times; on MATH</strong>.
+          </p>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">Off-policy RL: dense progress rewards for DSRL-SAC</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              When fine-tuning a \(\pi_0\) policy on LIBERO with SAC, we relabel each rollout with the verifier's per-step progress score \(\rho_t\) as a dense shaped reward, then store the transitions in the replay buffer \(\mathcal{D}\) and train the SAC critic on returns sampled from \(\mathcal{D}\):
+            </p>
+            <div class="eq-box">
+              \[ r_t = r^{\text{env}}_t + \lambda\,\rho_t \qquad\quad \mathcal{D} \leftarrow \mathcal{D} \cup \{(s_t, a_t, r_t, s_{t+1})\} \]
+            </div>
+            <div class="table-head" style="margin-top:18px;">Sample Efficiency on LIBERO <span class="th-note">(\(\pi_0\) + DSRL-SAC)</span></div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:4px;">
+              Environment timesteps required to reach each target success rate (averaged over \(n{=}5\) seeds).
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:760px;">
+                <thead><tr><th>Target SR (%)</th><th>Sparse</th><th>LLM-as-a-Verifier</th><th>Steps saved</th><th>Speedup</th></tr></thead>
+                <tbody>
+                  <tr><td>20</td><td>132,800</td><td>74,300</td><td>58,500</td><td class="hl">1.79&times;</td></tr>
+                  <tr><td>40</td><td>309,400</td><td>168,500</td><td>140,900</td><td class="hl">1.84&times;</td></tr>
+                  <tr><td>60</td><td>993,800</td><td>600,000</td><td>393,800</td><td class="hl">1.66&times;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card-surface" style="margin-top:18px;">
+            <div class="subtitle" style="margin-top:0;">On-policy RL: dense reasoning rewards for GRPO</div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:6px;">
+              When fine-tuning Qwen3-8B on MATH with GRPO, sparse correctness rewards give no gradient when every sampled answer is wrong. We score each completion's reasoning trace with the <strong>Probabilistic Pivot Tournament (PPT)</strong> and add this reasoning-quality score to the correctness and format rewards to provide additional signal:
+            </p>
+            <div class="eq-box">
+              \[ r_i = r_{\mathrm{correct},i} + r_{\mathrm{format},i} + \beta\, r_{\mathrm{reasoning},i} \]
+            </div>
+            <div class="table-head" style="margin-top:18px;">Sample Efficiency on MATH <span class="th-note">(Qwen3-8B + GRPO)</span></div>
+            <p class="tldr-caption" style="max-width:none; text-align:left; margin-top:4px;">
+              Sampled completions required to reach each target success rate (averaged over \(n{=}3\) seeds; each step samples 1024).
+            </p>
+            <div class="mini-table-wrap">
+              <table class="mini-table lefttab" style="max-width:760px;">
+                <thead><tr><th>Target SR (%)</th><th>Sparse</th><th>LLM-as-a-Verifier</th><th>Completions saved</th><th>Speedup</th></tr></thead>
+                <tbody>
+                  <tr><td>20</td><td>40,890</td><td>36,010</td><td>4,880</td><td class="hl">1.14&times;</td></tr>
+                  <tr><td>40</td><td>47,990</td><td>43,450</td><td>4,540</td><td class="hl">1.10&times;</td></tr>
+                  <tr><td>60</td><td>55,860</td><td>50,780</td><td>5,080</td><td class="hl">1.10&times;</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Robotics (commented out) -->
+  <section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem; display: none;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="subtitle">Zero-Shot Robotics Reward Modeling</div>
+          <div class="card-surface">
+            <img src="./figures/roborewardbench.png" alt="RoboRewardBench" style="width: 100%; max-width: 1100px; display: block; margin-left: auto; margin-right: auto;">
+          </div>
+          <p class="tldr-caption has-text-centered">
+            On RoboRewardBench, the verifier must integrate visual context across multi-frame videos to reason about physical progress. Applied <strong>zero-shot</strong> with a Qwen 3.6 35B VLM, LLM-as-a-Verifier reaches <strong>87.4%</strong> trajectory preference accuracy&mdash;outperforming the discrete judge (70.8%) and reward models trained specifically on robotics data, including RoboReward-8B (81.4%), Robometer-4B (78.8%), and TOPReward (74.7%)&mdash;despite using no fine-tuning. It also reduces MAE against human annotations from 1.11 to <strong>0.72</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" style="padding-top: 1.75rem; padding-bottom: 1.75rem;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered" style="margin-bottom: 0;">
+        <div class="column is-full-width">
+          <div class="sec-eyebrow">Appendix</div>
+          <div class="tagline" id="appendix" style="font-size:22px;">Recovering Continuous Rewards for Logit-Restricted Frontier Models</div>
+          <p class="tldr-caption" style="max-width:920px; text-align:left;">
+            Some frontier models (e.g., GPT-5.5, Claude Opus) expose only sampled completions and <strong>withhold token-level logprobs</strong>, which our continuous reward requires. A simple <strong>two-stage workaround</strong> recovers most of the calibrated signal: the closed model supplies domain-specific reasoning, and an open verifier supplies the calibrated probability distribution it withholds.
+          </p>
+          <div class="card-surface" style="margin-top:16px;">
+            <div class="flow2">
+              <div class="flow-box">
+                <div class="flow-icon">&#128274;</div>
+                <div class="flow-title">Closed Frontier Model</div>
+                <div class="flow-sub">GPT-5.5 &middot; Claude Opus<br>logprobs withheld</div>
+              </div>
+              <div class="flow-arrow"><span class="ar">&rarr;</span><span class="arlbl">reasoning + draft score</span></div>
+              <div class="flow-box">
+                <div class="flow-icon">&#128275;</div>
+                <div class="flow-title">Open Verifier</div>
+                <div class="flow-sub">Gemini 2.5 Flash (G=20)<br>reads &lt;score_A&gt;/&lt;score_B&gt; logprobs</div>
+              </div>
+              <div class="flow-arrow"><span class="ar">&rarr;</span><span class="arlbl">expectation over logits</span></div>
+              <div class="flow-box accent">
+                <div class="flow-icon">&#128200;</div>
+                <div class="flow-title">Continuous Reward</div>
+                <div class="flow-sub">\(R(x,\tau)\)</div>
+              </div>
+            </div>
+          </div>
+          <p class="tldr-caption" style="max-width:920px; text-align:left;">
+            On Terminal-Bench V2, routing GPT-5.5's reasoning through Gemini 2.5 Flash recovers a <strong>+5.2-point</strong> accuracy gain over directly using the closed model's integer scores (<strong>80.1% vs. 74.9%</strong>) and eliminates its 10.9% tie rate entirely &mdash; without any access to the frontier model's logits.
+          </p>
+          <div class="mini-table-wrap">
+            <table class="mini-table lefttab" style="max-width:820px;">
+              <thead>
+                <tr><th rowspan="2">\(K\)</th><th colspan="2">GPT-5.5 (Discrete)</th><th colspan="2">GPT-5.5 &rarr; Gemini 2.5 Flash (Continuous)</th></tr>
+                <tr><th>Accuracy (%)</th><th>Tie rate (%)</th><th>Accuracy (%)</th><th>Tie rate (%)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>74.9</td><td>10.9</td><td class="hl">80.1</td><td class="hl">0.0</td></tr>
+                <tr><td>2</td><td>76.3</td><td>9.1</td><td class="hl">80.5</td><td class="hl">0.0</td></tr>
+                <tr><td>4</td><td>77.6</td><td>7.0</td><td class="hl">81.0</td><td class="hl">0.0</td></tr>
+                <tr><td>8</td><td>78.4</td><td>5.8</td><td class="hl">80.9</td><td class="hl">0.0</td></tr>
+                <tr><td>16</td><td>79.1</td><td>5.0</td><td class="hl">81.2</td><td class="hl">0.0</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<section class="section" id="BibTeX">
+  <div class="columns is-centered">
+    <div class="column is-7 content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>@misc{kwok2026llmasaverifiergeneralpurposeverificationframework,
+      title={LLM-as-a-Verifier: A General-Purpose Verification Framework},
+      author={Jacky Kwok and Shulu Li and Pranav Atreya and Yuejiang Liu and Yixing Jiang and Chelsea Finn and Marco Pavone and Ion Stoica and Azalia Mirhoseini},
+      year={2026},
+      eprint={2607.05391},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2607.05391},
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" style="padding: 2rem 1.5rem;">
+  <div class="content has-text-centered">
+    <p style="font-size: 0.9em;">
+      <a href="https://github.com/llm-as-a-verifier/llm-as-a-verifier" target="_blank">Code</a> &nbsp;&middot;&nbsp;
+      <a href="https://github.com/llm-as-a-verifier/TurboAgent" target="_blank">Claude Code Extension</a> &nbsp;&middot;&nbsp;
+      <a href="mailto:jackykwok@stanford.edu">Contact</a>
+    </p>
+    <p style="font-size: 0.8em; color: #999; margin-top: 0.6rem;">
+      Website based on <a href="https://github.com/polaris-evals/polaris-evals.github.io" target="_blank" style="color:inherit; text-decoration:underline;">PolaRiS Template</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var ids=['overview','results','api','motivation','methodology','analysis','experiments','appendix'];
+  var links={};
+  document.querySelectorAll('.side-nav a').forEach(function(a){ links[a.getAttribute('data-target')]=a; });
+  var nav=document.querySelector('.side-nav');
+  var topNav=document.getElementById('topNav');
+  var trig=document.getElementById('results');
+  var S=ids.map(function(id){ var el=document.getElementById(id); return el?{id:id,el:el}:null; }).filter(Boolean);
+  function onScroll(){
+    // show the top nav bar once the user scrolls down into the page
+    if(topNav){ topNav.classList.toggle('visible', window.scrollY > 120); }
+    // show the nav only once we've scrolled to/past the Test-Time Scaling (results) section
+    if(nav){
+      var show = trig ? (trig.getBoundingClientRect().top <= 100) : (window.scrollY > 400);
+      nav.classList.toggle('visible', show);
+    }
+    var y=140, best=null, bestTop=-Infinity;
+    S.forEach(function(o){
+      var t=o.el.getBoundingClientRect().top;
+      if(t-y<=0 && t>bestTop){ bestTop=t; best=o; }
+    });
+    if(!best && S.length) best=S[0];
+    Object.keys(links).forEach(function(k){ links[k].classList.remove('active'); });
+    if(best && links[best.id]) links[best.id].classList.add('active');
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  if(document.readyState!=='loading') onScroll(); else document.addEventListener('DOMContentLoaded', onScroll);
+})();
+</script>
+
+<script>
+(function(){
+  function init(data){
+    var S=data.success, F=data.failed;
+    var ys=[].concat(S.progress.map(function(p){return p.y;}), F.progress.map(function(p){return p.y;}));
+    var lo=Math.min.apply(null,ys), hi=Math.max.apply(null,ys), span=hi-lo;
+    function mk(d){ return d.progress.map(function(p){ return {x:p.x, y: span>0?(p.y-lo)/span:0}; }); }
+    var sFull=mk(S), fFull=mk(F);
+    var ctx=document.getElementById('ptChart');
+    if(!ctx || !window.Chart) return;
+    var chart=new Chart(ctx,{
+      type:'line',
+      data:{ datasets:[
+        {label:'SUCCESS', data:sFull.slice(), borderColor:'#1aa260', backgroundColor:'rgba(26,162,96,0.10)', borderWidth:2.5, pointRadius:3, pointHoverRadius:6, pointBackgroundColor:'#1aa260', tension:0.25, fill:true},
+        {label:'FAILED', data:fFull.slice(), borderColor:'#b1040e', backgroundColor:'rgba(177,4,14,0.07)', borderWidth:2.5, borderDash:[5,3], pointRadius:3, pointHoverRadius:6, pointBackgroundColor:'#b1040e', tension:0.25, fill:true}
+      ]},
+      options:{
+        responsive:true, maintainAspectRatio:false, animation:false,
+        interaction:{mode:'index', intersect:false},
+        scales:{
+          x:{ type:'linear', min:0, max:1, title:{display:true, text:'Normalized Step', color:'#7a7a7a', font:{size:12, family:'Inter'}}, ticks:{color:'#9a9a9a', stepSize:0.1, font:{family:'Inter'}}, grid:{color:'rgba(0,0,0,0.05)'} },
+          y:{ min:0, max:1.0, title:{display:true, text:'Normalized Verifier Score', color:'#7a7a7a', font:{size:12, family:'Inter'}}, ticks:{color:'#9a9a9a', stepSize:0.2, font:{family:'Inter'}}, grid:{color:'rgba(0,0,0,0.05)'} }
+        },
+        plugins:{ legend:{display:false}, tooltip:{enabled:false} }
+      }
+    });
+    var scrub=document.getElementById('ptScrub'),
+        playBtn=document.getElementById('ptPlay'),
+        stepLabel=document.getElementById('ptStepLabel'),
+        capS=document.getElementById('ptCapSuccess'),
+        capF=document.getElementById('ptCapFailed');
+    function binSummary(d,b){ for(var i=0;i<d.bins.length;i++){ if(d.bins[i].b===b) return d.bins[i].summary; } return ''; }
+    function render(bin){
+      var t=bin/10;
+      chart.data.datasets[0].data=sFull.filter(function(p){return p.x<=t+1e-6;});
+      chart.data.datasets[1].data=fFull.filter(function(p){return p.x<=t+1e-6;});
+      chart.update('none');
+      stepLabel.textContent='step '+bin+'/10';
+      capS.textContent=binSummary(S,bin);
+      capF.textContent=binSummary(F,bin);
+    }
+    var playing=false, timer=null;
+    function stop(){ if(timer){clearInterval(timer);timer=null;} playing=false; playBtn.innerHTML='&#9654;'; }
+    function play(){
+      playing=true; playBtn.innerHTML='&#10073;&#10073;';
+      if(+scrub.value>=10){ scrub.value=1; render(1); }
+      timer=setInterval(function(){
+        var v=+scrub.value;
+        if(v>=10){ stop(); return; }
+        v+=1; scrub.value=v; render(v);
+      },750);
+    }
+    scrub.addEventListener('input', function(){ stop(); render(+scrub.value); });
+    playBtn.addEventListener('click', function(){ if(playing) stop(); else play(); });
+    render(10);
+  }
+  function boot(){
+    fetch('./data/progress_pytorch_model_cli.json').then(function(r){return r.json();}).then(init).catch(function(e){console.error('progress data load failed', e);});
+  }
+  if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+
+<script>
+(function(){
+  function makePoints(arr){
+    var N=arr.length; if(!N) return [];
+    var base=arr[0], hi=Math.max.apply(null,arr), span=hi-base;
+    if(N===1) return [{x:0,y:0}];
+    return arr.map(function(y,i){ return {x:i/(N-1), y: span>0?Math.max(0,(y-base)/span):0}; });
+  }
+  function init(data){
+    var ctx=document.getElementById('rbChart'), video=document.getElementById('rbVideo'), labelEl=document.getElementById('rbLabel');
+    if(!ctx || !video || !window.Chart) return;
+    var full=makePoints(data.scores);
+    // Timed event annotations (normalized time -> label); video pauses briefly at each.
+    var events=[
+      {t:0.22, text:'Fail to grasp the corn', ok:false},
+      {t:0.46, text:'Grasp the wrong object (tomato)', ok:false},
+      {t:0.72, text:'Corn on plate', ok:true}
+    ];
+    var PAUSE_MS=1600;
+    // vertical time-line + event markers plugin
+    var vLine={ id:'rbVLine', afterDraw:function(chart){
+      var xS=chart.scales.x, yS=chart.scales.y, c=chart.ctx;
+      // event markers
+      c.save();
+      events.forEach(function(e){
+        var ex=xS.getPixelForValue(e.t);
+        c.beginPath(); c.moveTo(ex,yS.top); c.lineTo(ex,yS.bottom);
+        c.lineWidth=1; c.strokeStyle='rgba(0,0,0,0.18)'; c.setLineDash([3,3]); c.stroke();
+        c.setLineDash([]); c.beginPath(); c.arc(ex,yS.top+4,3,0,2*Math.PI); c.fillStyle='#b1040e'; c.fill();
+      });
+      c.restore();
+      // playhead
+      var t=chart._videoT; if(t==null) return;
+      var px=xS.getPixelForValue(t);
+      c.save(); c.beginPath(); c.moveTo(px,yS.top); c.lineTo(px,yS.bottom);
+      c.lineWidth=1.5; c.strokeStyle='rgba(177,4,14,0.5)'; c.setLineDash([4,3]); c.stroke(); c.restore();
+    }};
+    var chart=new Chart(ctx,{
+      type:'line', plugins:[vLine],
+      data:{ datasets:[{ label:'LLM-as-a-Verifier', _full:full, data:[], borderColor:'#b1040e', backgroundColor:'rgba(177,4,14,0.10)', borderWidth:2.5, pointRadius:3, pointHoverRadius:6, pointBackgroundColor:'#b1040e', tension:0.25, fill:true }]},
+      options:{
+        responsive:true, maintainAspectRatio:false, animation:false,
+        interaction:{mode:'index', intersect:false},
+        scales:{
+          x:{ type:'linear', min:0, max:1, title:{display:true, text:'Normalized Step', color:'#7a7a7a', font:{size:12, family:'Inter'}}, ticks:{color:'#9a9a9a', stepSize:0.1, font:{family:'Inter'}}, grid:{color:'rgba(0,0,0,0.05)'} },
+          y:{ min:0, max:1.0, title:{display:true, text:'Normalized Verifier Score', color:'#7a7a7a', font:{size:12, family:'Inter'}}, ticks:{color:'#9a9a9a', stepSize:0.2, font:{family:'Inter'}}, grid:{color:'rgba(0,0,0,0.05)'} }
+        },
+        plugins:{ legend:{display:false}, tooltip:{enabled:false} }
+      }
+    });
+    try{ video.playbackRate=0.25; }catch(e){}
+    video.addEventListener('loadeddata', function(){ try{ video.playbackRate=0.25; }catch(e){} });
+    function showLabel(e){ if(!labelEl) return; labelEl.textContent=(e.ok?'✓ ':'✗ ')+e.text; labelEl.classList.toggle('rb-label-ok', !!e.ok); labelEl.classList.add('show'); }
+    function hideLabel(){ if(labelEl) labelEl.classList.remove('show'); }
+
+    var scrub=document.getElementById('rbScrub'),
+        playBtn=document.getElementById('rbPlay'),
+        timeEl=document.getElementById('rbTime'),
+        nFrames=(data.num_frames||full.length);
+    var paused=false, userScrub=false, lastT=-1;
+    function setIcon(){ if(playBtn) playBtn.innerHTML = video.paused ? '&#9654;' : '&#10073;&#10073;'; }
+    video.addEventListener('play', setIcon); video.addEventListener('pause', setIcon);
+    if(playBtn) playBtn.addEventListener('click', function(){ if(video.paused){ video.play().catch(function(){}); } else { video.pause(); } });
+    if(scrub){
+      var seek=function(){ userScrub=true; if(!video.paused) video.pause(); var dur=video.duration||0; video.currentTime=(+scrub.value/1000)*dur; };
+      scrub.addEventListener('input', seek);
+      scrub.addEventListener('change', function(){ userScrub=false; });
+      scrub.addEventListener('pointerup', function(){ userScrub=false; });
+      scrub.addEventListener('mouseup', function(){ userScrub=false; });
+    }
+
+    function tick(){
+      var dur=video.duration, t=(isFinite(dur)&&dur>0)?(video.currentTime/dur):0;
+      // reset event flags + label on loop restart
+      if(t<0.04){ events.forEach(function(e){e.fired=false;}); if(t<0.02) hideLabel(); }
+      // trigger timed pause at events (only during natural playback)
+      if(!paused && !userScrub && !video.paused){
+        for(var i=0;i<events.length;i++){
+          var e=events[i];
+          if(!e.fired && t>=e.t){
+            e.fired=true; showLabel(e);
+            paused=true; video.pause();
+            (function(){ setTimeout(function(){ paused=false; if(!userScrub) video.play().catch(function(){}); }, PAUSE_MS); })();
+            break;
+          }
+        }
+      }
+      if(t!==lastT){
+        lastT=t; chart._videoT=t;
+        if(scrub && !userScrub) scrub.value = Math.round(t*1000);
+        if(timeEl) timeEl.textContent = 'frame ' + Math.min(nFrames, Math.round(t*(nFrames-1))+1) + '/' + nFrames;
+        var N=full.length;
+        if(N<=1){ chart.data.datasets[0].data=full.slice(); }
+        else{
+          var ts=t*(N-1), idx=Math.min(Math.floor(ts),N-1), frac=ts-idx;
+          var vis=full.slice(0,idx+1);
+          if(idx<N-1 && frac>0.001){ var p0=full[idx],p1=full[idx+1]; vis.push({x:p0.x+frac*(p1.x-p0.x), y:p0.y+frac*(p1.y-p0.y)}); }
+          chart.data.datasets[0].data=vis;
+        }
+        chart.update('none');
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  function boot(){
+    fetch('./data/robotics_corn.json').then(function(r){return r.json();}).then(init).catch(function(e){console.error('robotics data load failed', e);});
+  }
+  if(document.readyState!=='loading') boot(); else document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+
+</body>
+</html>

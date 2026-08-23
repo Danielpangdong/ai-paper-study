@@ -1,0 +1,25 @@
+# 2026-06-21 AI Concept Run Summary
+
+- Run time: 2026-06-21 08:11:34 CST / 2026-06-21T08:11:34+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `边缘AI（Edge AI）`.
+- Rationale: the previous three concept runs covered `模型量化（Quantization）`, `推测解码（Speculative Decoding）`, and `模型压缩（Model Compression）`; today's concept continues the inference/deployment learning path by explaining why compressed and efficient models matter in real devices and near-user systems.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/2026-06-21_边缘AI（Edge AI）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/2026-06-21_边缘AI（Edge AI）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/chatgpt_edge_ai_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/chatgpt_edge_ai_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-21_EdgeAI/email_body.txt`
+- Visuals: generated with ChatGPT Image 2.0 under `/Users/mac/.codex/generated_images/019ee77b-df6b-7430-a2f3-c1e151c8d41d/`; selected the kitchen analogy and workflow infographic variants and copied them into the report directory.
+- Verification:
+  - `python3 reports/2026-06-21_EdgeAI/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 8 A4 pages and a 4,966,945 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed two inline base64 image data URIs and two image tags.
+  - PDF pages rendered to `rendered/page-*.png`; cover, analogy figure, workflow figure, terminology table, misconceptions, summary, and quiz pages were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ee78483d85122a`.
+- Continuity note: avoid repeating `边缘AI`, `模型压缩`, `推测解码`, and `模型量化` soon. Strong next candidates for the learning path: `批处理与吞吐量（Batching and Throughput）`, `推理路由（Inference Routing）`, `AI芯片（AI Chips）`, or `端云协同（Edge-cloud Collaboration）`.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

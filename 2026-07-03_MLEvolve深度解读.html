@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文精读 · 2026-07-03 · MLEvolve：自进化机器学习算法发现框架</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:#0b1020; --card:#141a2e; --card2:#1a2140; --line:#293056;
+    --text:#e8ecf5; --muted:#a4acc4; --accent:#7c5cff; --accent2:#22d3ee;
+    --gold:#fbbf24; --green:#22c55e; --red:#f87171; --orange:#fb923c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+       background:linear-gradient(180deg,#0b1020 0%,#0d1428 100%);color:var(--text);line-height:1.75}
+  .container{max-width:1160px;margin:0 auto;padding:32px 24px 80px}
+  header{border-radius:20px;padding:36px 36px;background:linear-gradient(135deg,#1a1d3e 0%,#2d1b5e 50%,#0f2942 100%);
+         border:1px solid var(--line);position:relative;overflow:hidden}
+  header::before{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;
+                 background:radial-gradient(circle,rgba(124,92,255,.35),transparent 60%);border-radius:50%}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(124,92,255,.18);
+         color:#c4b5fd;font-size:12px;letter-spacing:1px;margin-bottom:12px;border:1px solid rgba(124,92,255,.35)}
+  h1{margin:0 0 12px;font-size:32px;line-height:1.3;font-weight:700}
+  .sub{color:var(--muted);font-size:15px;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:20px}
+  .meta-item{background:rgba(255,255,255,.05);padding:8px 14px;border-radius:10px;font-size:13px;color:#cbd5e1;
+             border:1px solid rgba(255,255,255,.08)}
+  .meta-item b{color:#fff;font-weight:600}
+  section{margin-top:32px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px 28px}
+  h2{font-size:22px;margin:0 0 18px;display:flex;align-items:center;gap:10px;font-weight:700}
+  h2 .num{display:inline-flex;width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+          color:#0b1020;align-items:center;justify-content:center;font-size:15px;font-weight:800}
+  h3{font-size:17px;color:#c4b5fd;margin:20px 0 10px}
+  p{margin:0 0 12px;color:#dfe4f2}
+  .muted{color:var(--muted)}
+  ul{padding-left:22px;margin:8px 0 12px}
+  li{margin:6px 0}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin:16px 0}
+  @media (max-width:800px){.grid-3,.grid-2{grid-template-columns:1fr}}
+  .stat{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .stat .k{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+  .stat .v{font-size:28px;font-weight:800;margin-top:6px;background:linear-gradient(135deg,#22d3ee,#a78bfa);
+           -webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .t{color:var(--muted);font-size:12px;margin-top:4px}
+  .pill{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;margin-right:6px}
+  .pill.gold{background:rgba(251,191,36,.15);color:#fcd34d;border:1px solid rgba(251,191,36,.35)}
+  .pill.green{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+  .pill.blue{background:rgba(34,211,238,.15);color:#7dd3fc;border:1px solid rgba(34,211,238,.35)}
+  .pill.purple{background:rgba(124,92,255,.18);color:#c4b5fd;border:1px solid rgba(124,92,255,.35)}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:#c4b5fd;font-weight:600;font-size:13px;background:rgba(124,92,255,.06)}
+  tr:hover td{background:rgba(255,255,255,.03)}
+  .mlv-row{background:rgba(34,211,238,.08)!important;font-weight:600}
+  .chart-box{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:12px;height:360px}
+  .flow{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+  .flow-step{background:var(--card2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;position:relative}
+  .flow-step::before{content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:4px;border-radius:4px;
+                     background:linear-gradient(180deg,var(--accent),var(--accent2))}
+  .flow-step h4{margin:0 0 6px;color:#e0d4ff;font-size:15px}
+  .flow-step p{margin:0;color:#cbd5e1;font-size:14px}
+  .quote{border-left:3px solid var(--accent);padding:10px 16px;background:rgba(124,92,255,.06);
+         border-radius:0 10px 10px 0;color:#dfe4f2;font-style:italic;margin:12px 0}
+  .kv{display:grid;grid-template-columns:140px 1fr;gap:8px 14px;font-size:14px;margin:12px 0}
+  .kv .k{color:var(--muted)}
+  footer{margin-top:36px;padding:20px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+  a{color:#7dd3fc;text-decoration:none}
+  a:hover{text-decoration:underline}
+  .highlight{color:#fcd34d;font-weight:600}
+  .callout{background:linear-gradient(135deg,rgba(124,92,255,.1),rgba(34,211,238,.08));
+           border:1px solid rgba(124,92,255,.3);border-radius:12px;padding:16px 20px;margin:14px 0}
+  .callout .title{font-weight:700;color:#e0d4ff;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="badge">AI 前沿论文精读 · 每日一篇</div>
+  <h1>MLEvolve：自进化多智能体框架，重新定义机器学习算法自动发现</h1>
+  <p class="sub">在 MLE-Bench 上以 <b>一半的时间预算</b> 拿下 <b>65.3% 平均奖牌率</b>，全面超越 AlphaEvolve、AIBuildAI 等 SOTA 方案</p>
+  <div class="meta">
+    <div class="meta-item"><b>发布日期</b> 2026-06-04（arXiv:2606.06473v1）</div>
+    <div class="meta-item"><b>机构</b> 上海人工智能实验室 / 华东师范大学</div>
+    <div class="meta-item"><b>方向</b> LLM Agent · AutoML · 自进化搜索</div>
+    <div class="meta-item"><b>解读日期</b> 2026-07-03</div>
+  </div>
+</header>
+
+<!-- 摘要 & 核心结论 -->
+<section class="card">
+  <h2><span class="num">1</span>一句话总结</h2>
+  <p>MLEvolve 是一个 <b>基于 LLM 的自进化多智能体框架</b>，专门用于端到端机器学习算法发现（MLE）。它通过三项关键设计——<span class="highlight">渐进式蒙特卡洛图搜索（Progressive MCGS）</span>、<span class="highlight">回溯记忆（Retrospective Memory）</span>与<span class="highlight">规划-编码解耦的自适应生成机制</span>——首次同时解决了 MLE 智能体的三大顽疾：<b>分支间信息孤岛、无记忆搜索、层级控制缺失</b>。</p>
+
+  <div class="grid-3">
+    <div class="stat">
+      <div class="k">MLE-BENCH 平均奖牌率</div>
+      <div class="v">65.3%</div>
+      <div class="t">仅用 12 小时预算（对比基线普遍 24 小时）</div>
+    </div>
+    <div class="stat">
+      <div class="k">有效提交率</div>
+      <div class="v">100%</div>
+      <div class="t">三次随机种子稳定收敛</div>
+    </div>
+    <div class="stat">
+      <div class="k">金牌率</div>
+      <div class="v">34.7%</div>
+      <div class="t">Above-median 达 76.0%</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="title">🎯 为什么值得关注</div>
+    这是 <b>2026 年首个在同等时间内明显超越 AlphaEvolve 系列的 MLE Agent 框架</b>。它把 "长时段搜索" 从"堆算力"转向"结构化的自我进化"，同时在 Kaggle 型端到端 ML 任务与数学算法优化任务上都刷新 SOTA，展现出跨领域泛化能力。开源代码已在 GitHub 释放。
+  </div>
+</section>
+
+<!-- 问题背景 -->
+<section class="card">
+  <h2><span class="num">2</span>问题背景：现有 MLE Agent 卡在哪里？</h2>
+  <p>LLM 智能体正被广泛用于科研发现与机器学习工程（MLE）这类<b>长时段任务</b>。但作者指出，现有方法（AIDE、R&amp;D-Agent、AIRA-Dojo、MLE-STAR、FM-Agent 等）在长时段自进化时普遍存在三个瓶颈：</p>
+
+  <div class="grid-3">
+    <div class="stat">
+      <span class="pill purple">痛点 1</span>
+      <h3 style="margin-top:8px">分支间信息孤岛</h3>
+      <p class="muted" style="font-size:14px;margin:0">传统 MCTS 只能在同一分支往深处走，不同分支之间无法互相借鉴——一个分支已经踩过的坑，另一个分支还得重新踩。</p>
+    </div>
+    <div class="stat">
+      <span class="pill purple">痛点 2</span>
+      <h3 style="margin-top:8px">无记忆搜索</h3>
+      <p class="muted" style="font-size:14px;margin:0">Agent 每一步的经验（成功技巧、失败教训）用完即弃，无法沉淀为可复用的先验，导致长时段迭代收益递减。</p>
+    </div>
+    <div class="stat">
+      <span class="pill purple">痛点 3</span>
+      <h3 style="margin-top:8px">缺乏层级控制</h3>
+      <p class="muted" style="font-size:14px;margin:0">规划与编码耦合在一起，往往陷入"改一小段代码却把整个 pipeline 打乱"的稳定性问题，无法稳定地长时间迭代。</p>
+    </div>
+  </div>
+
+  <div class="quote">"Existing MLE agents suffer from inter-branch information isolation, memoryless search, and lack of hierarchical control, which together hinder long-horizon optimization." —— 论文摘要</div>
+</section>
+
+<!-- 方法论 -->
+<section class="card">
+  <h2><span class="num">3</span>方法论：三大核心组件如何协同</h2>
+
+  <h3>① Progressive MCGS：从 MCTS 到有向图搜索</h3>
+  <p>作者把经典 MCTS 扩展成 <b>有向图 G=(V, E)</b>，其中 E = E<sub>T</sub> ∪ E<sub>ref</sub>：</p>
+  <ul>
+    <li><b>主边 E<sub>T</sub></b>：父子生成顺序，用于选择与回溯（等价传统 MCTS）</li>
+    <li><b>参考边 E<sub>ref</sub></b>：<span class="highlight">跨分支或非相邻的知识流动通道</span>，让不同分支之间可以组合迁移；不参与回溯，避免污染价值估计</li>
+    <li>当 E<sub>ref</sub>=∅ 时，MCGS 退化为标准 MCTS——即向下兼容</li>
+  </ul>
+
+  <p><b>渐进探索调度（Entropy-Inspired Progressive Schedule）</b>：UCT 探索系数 c(t) 从 c<sub>0</sub> 衰减到 c<sub>min</sub>，同时用 Shannon 熵 H(π<sub>t</sub>) 度量各分支的选择频率。软切换机制以概率 w(t) 在 <b>UCT 探索</b> 与 <b>Elite-Guided 利用</b> 之间过渡：</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <h4>四类扩展操作</h4>
+      <p>① 主扩展（R=∅）；② 分支内演化（同分支最近 k 个节点）；③ 跨分支参考（分支停滞时召唤其他分支 top-N）；④ 多分支聚合（全局停滞时综合多分支洞察，创建新根）</p>
+    </div>
+    <div class="flow-step">
+      <h4>两级停滞检测</h4>
+      <p>分支级 τ<sub>branch</sub> 步无提升 → 触发分支内演化，再触发跨分支参考；全局级 τ<sub>global</sub> 步无提升 → 触发多分支聚合，破除局部极值</p>
+    </div>
+    <div class="flow-step">
+      <h4>模拟奖励 R(v)</h4>
+      <p>失败 = -1；成功但未刷新分支最佳 = 1；刷新分支最佳 = 2</p>
+    </div>
+  </div>
+
+  <h3>② Retrospective Memory：给 Agent 一个能长期成长的"大脑"</h3>
+  <div class="grid-2">
+    <div class="stat">
+      <span class="pill blue">冷启动</span>
+      <h3 style="margin-top:8px">领域知识库</h3>
+      <p class="muted" style="font-size:14px;margin:0">静态，按任务类型（图像分类、NLP、表格回归等）组织，包含开源项目 + 竞赛平台沉淀的候选模型与使用指南</p>
+    </div>
+    <div class="stat">
+      <span class="pill blue">动态成长</span>
+      <h3 style="margin-top:8px">全局动态记忆</h3>
+      <p class="muted" style="font-size:14px;margin:0">每次有效执行后写入 (plan, outcome, analysis, feedback) 四元组；<b>混合检索</b>：BM25 关键词 + FAISS 语义，用 <b>Reciprocal Rank Fusion (RRF)</b> 融合</p>
+    </div>
+  </div>
+  <p><b>阶段感知检索</b>：规划阶段用当前 plan 作为查询，同时召回成功与失败案例；调试阶段用报错信息作为查询，直接找出历史踩坑经验。</p>
+
+  <h3>③ 分层规划与自适应代码生成</h3>
+  <p>把 <b>Planner</b>（模块级：改什么、为什么）与 <b>Coder</b>（代码级：怎么改）解耦，Coder 提供三种自适应生成模式：</p>
+  <div class="grid-3">
+    <div class="stat">
+      <span class="pill green">Base 模式</span>
+      <h3 style="margin-top:8px">从零全量生成</h3>
+      <p class="muted" style="font-size:14px;margin:0">初始草稿，适用于开局或大结构重写</p>
+    </div>
+    <div class="stat">
+      <span class="pill green">Stepwise 模式</span>
+      <h3 style="margin-top:8px">按模块顺序生成</h3>
+      <p class="muted" style="font-size:14px;margin:0">跟随 Planner 拆分，适合复杂多阶段 pipeline</p>
+    </div>
+    <div class="stat">
+      <span class="pill green">Diff 模式</span>
+      <h3 style="margin-top:8px">局部差异化编辑</h3>
+      <p class="muted" style="font-size:14px;margin:0">在已能跑通的解上做定向精修，不破坏其他部分</p>
+    </div>
+  </div>
+</section>
+
+<!-- 实验结果 -->
+<section class="card">
+  <h2><span class="num">4</span>实验结果：数据说话</h2>
+
+  <h3>MLE-Bench 主结果（12 小时预算，3 次种子平均 ± SEM）</h3>
+  <div class="grid-3">
+    <div class="stat"><div class="k">低复杂度任务</div><div class="v">80.3%</div><div class="t">± 1.5%</div></div>
+    <div class="stat"><div class="k">中复杂度任务</div><div class="v">64.0%</div><div class="t">± 0.9%</div></div>
+    <div class="stat"><div class="k">高复杂度任务</div><div class="v">46.7%</div><div class="t">± 0.0%</div></div>
+  </div>
+
+  <h3>与主流 MLE Agent 基线对比（MLE-Bench 全部 75 任务，平均奖牌率）</h3>
+  <div class="chart-box"><canvas id="baselineChart"></canvas></div>
+
+  <h3>详细基线对比表</h3>
+  <table>
+    <thead><tr><th>方法</th><th>骨干模型</th><th>运行时长</th><th>平均奖牌率</th></tr></thead>
+    <tbody>
+      <tr><td>AIDE</td><td>o1-preview</td><td>24h</td><td>17.1%</td></tr>
+      <tr><td>ML-Master</td><td>DeepSeek-R1</td><td>12h</td><td>29.3%</td></tr>
+      <tr><td>AIRA-Dojo</td><td>o3</td><td>24h</td><td>31.6%</td></tr>
+      <tr><td>R&D-Agent</td><td>gpt-5</td><td>12h</td><td>35.1%</td></tr>
+      <tr><td>FM-Agent</td><td>Gemini-2.5-Pro</td><td>24h</td><td>43.6%</td></tr>
+      <tr><td>MLE-STAR-Pro-1.5</td><td>Gemini-2.5-Pro</td><td>24h</td><td>44.0%</td></tr>
+      <tr><td>Leeroo</td><td>Gemini-3-Pro-preview</td><td>24h</td><td>50.7%</td></tr>
+      <tr><td>MARS</td><td>Gemini-3-Pro-preview</td><td>24h</td><td>56.0%</td></tr>
+      <tr><td>ML-Master 2.0</td><td>DeepSeek-V3.2-Speciale</td><td>24h</td><td>56.4%</td></tr>
+      <tr><td>MARS+</td><td>Gemini-3-Pro-preview</td><td>24h</td><td>62.7%</td></tr>
+      <tr><td>AIBuildAI</td><td>Claude-Opus-4.6</td><td>24h</td><td>63.1%</td></tr>
+      <tr class="mlv-row"><td><b>MLEvolve（本文）</b></td><td>Gemini-3.1-Pro-preview</td><td><b>12h</b></td><td><b>65.3%</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout" style="margin-top:16px">
+    <div class="title">💡 关键洞察</div>
+    <b>MLEvolve 用一半的时间（12h vs. 24h）超越所有 24 小时预算基线</b>。这意味着新框架的效率提升并非来自"更长时间的暴力搜索"，而是来自 <span class="highlight">更聪明的搜索结构本身</span>。
+  </div>
+
+  <h3>多维度性能雷达图</h3>
+  <div class="chart-box"><canvas id="radarChart"></canvas></div>
+
+  <h3>跨领域泛化：数学算法优化任务</h3>
+  <p>在从 AlphaEvolve 论文迁移过来的 <b>15 个开放式数学优化任务</b> 上，MLEvolve 同样击败了 <b>AlphaEvolve 与 AlphaEvolve-v2</b>。这证明该框架并非只在 Kaggle 型端到端 ML 任务上过拟合，而是对更抽象的算法搜索问题同样有效——<b>MLE 与数学算法发现共享同一套自进化机制</b>。</p>
+</section>
+
+<!-- 实验设置 -->
+<section class="card">
+  <h2><span class="num">5</span>实验设置</h2>
+  <div class="kv">
+    <div class="k">基准数据集</div><div>MLE-Bench（75 个 Kaggle 任务，低/中/高三级复杂度）+ 15 个 AlphaEvolve 数学优化任务</div>
+    <div class="k">骨干 LLM</div><div>Gemini-3.1-Pro-preview，temperature = 1.0</div>
+    <div class="k">搜索预算</div><div>500 步扩展 + 12 小时挂钟时间</div>
+    <div class="k">硬件配置</div><div>21 vCPUs · 234 GB RAM · 1 × NVIDIA H200 GPU</div>
+    <div class="k">评价指标</div><div>Medal Rate（奖牌率）、Valid Submission（有效提交率）、Med+（超过中位数比例）、Gold（金牌率）</div>
+    <div class="k">重复次数</div><div>3 次随机种子取平均，报告 SEM</div>
+  </div>
+</section>
+
+<!-- 深度分析 -->
+<section class="card">
+  <h2><span class="num">6</span>深度分析：这篇论文真的是"突破"吗？</h2>
+
+  <h3>它做对了什么</h3>
+  <ul>
+    <li><b>结构化搜索胜过暴力堆算力。</b>MCGS 通过参考边打通分支间信息通道，从数据结构层面根治了 MCTS 的分支孤立问题——这是<b>方法论层面的贡献</b>，而不是简单的工程优化。</li>
+    <li><b>把"记忆"当作一等公民。</b>Retrospective Memory 结合冷启动知识库和动态全局记忆，让 Agent 在长时段迭代中真正有"经验积累"，不再是"每一步从零开始"。</li>
+    <li><b>规划-编码解耦解决稳定性问题。</b>Adaptive Code Generation 的三种模式让 Agent 可以在"重写"和"精修"之间自主切换，这是长时段迭代能稳定收敛的关键。</li>
+    <li><b>跨领域验证。</b>不仅刷 MLE-Bench，还在数学优化上打败 AlphaEvolve——证明框架具备真正的通用自进化能力。</li>
+  </ul>
+
+  <h3>可能的局限与需要审慎看待的地方（论文正文中未见明确 Limitations 章节，以下是解读者的独立评估）</h3>
+  <ul>
+    <li><b>骨干模型强依赖。</b>使用 Gemini-3.1-Pro-preview 这一未公开发行的顶级模型，其它团队复现时能否保持同等性能存疑。<span class="pill" style="background:rgba(251,146,60,.15);color:#fdba74;border:1px solid rgba(251,146,60,.35)">置信度：中</span></li>
+    <li><b>成本未披露。</b>论文未给出总 token 消耗与 API 成本，"12 小时预算"的经济性无法评估。</li>
+    <li><b>H100/H200 单卡设定。</b>MLE-Bench 中真正需要大规模训练的任务本身受硬件限制，这个设定与真实 Kaggle 竞争者的算力有显著差距。</li>
+    <li><b>对比方法的时间不对等。</b>基线大多是 24 小时预算，但骨干模型代际不同（o1-preview vs. Gemini-3.1-Pro-preview 有明显模型能力差）——严格公平比较应控制骨干变量。<span class="pill" style="background:rgba(248,113,113,.15);color:#fca5a5;border:1px solid rgba(248,113,113,.35)">值得存疑</span></li>
+    <li><b>数学优化任务对比 AlphaEvolve 的具体数字论文正文（本次抓取的 HTML 版本）未详细展开</b>，只在 Abstract 中提及"outperforms"。需读完整 PDF 或等待 v2 版本验证。<span class="pill" style="background:rgba(251,146,60,.15);color:#fdba74;border:1px solid rgba(251,146,60,.35)">置信度：中</span></li>
+  </ul>
+
+  <h3>与最强反驳的对话</h3>
+  <div class="quote">"你只是把 MCTS 加了几个 tricks，本质还是在特定 Benchmark 上过拟合。"</div>
+  <p>——这个反驳部分成立。MCGS 的三个创新（图结构、渐进调度、多级停滞）单独看都不算革命性，但组合效果超过 60% 的整体提升，且在两个截然不同的领域（Kaggle ML 与数学优化）验证。<b>组合创新 + 跨领域泛化</b>比单点突破更能说明框架的通用价值。真正的检验是社区独立复现——GitHub 开源是一个积极信号。</p>
+</section>
+
+<!-- 影响与展望 -->
+<section class="card">
+  <h2><span class="num">7</span>行业影响与展望</h2>
+  <div class="grid-2">
+    <div class="stat">
+      <h3 style="margin-top:0">对 AutoML 行业</h3>
+      <p class="muted" style="font-size:14px">传统 AutoML（NAS、超参搜索）与 LLM Agent 的边界被进一步模糊。未来 6-12 个月，Kaggle 顶级方案很可能被 <b>Agent + 少量人工引导</b> 取代——这对数据科学家的职业角色是显著冲击。</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">对科研发现</h3>
+      <p class="muted" style="font-size:14px">跨领域泛化（打败 AlphaEvolve）意味着这套框架有潜力从 ML 工程扩展到 <b>数学定理证明、蛋白设计、材料筛选</b> 等长时段科研任务。GPT-5、Claude Sonnet 5、Gemini-3 之后的下一个前沿在这里。</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">对基础设施</h3>
+      <p class="muted" style="font-size:14px">Retrospective Memory 需要长期存储 (plan, outcome, feedback) 四元组，这将推动 <b>Agent-native 向量库</b> 与 <b>过程记忆管理</b> 成为新赛道。</p>
+    </div>
+    <div class="stat">
+      <h3 style="margin-top:0">对安全与治理</h3>
+      <p class="muted" style="font-size:14px">自进化 Agent 具备"越用越强"的属性，如何审计其自我修改路径、防止能力涌现失控，将成为治理层必须回答的问题。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 关键要点回顾 -->
+<section class="card">
+  <h2><span class="num">8</span>五点带走</h2>
+  <ol style="padding-left:22px;line-height:2">
+    <li><b>MLEvolve 用一半时间预算刷新 MLE-Bench SOTA（65.3%）</b>——这不是渐进改进，而是效率跃迁。</li>
+    <li><b>三项核心创新：</b>Progressive MCGS（图结构搜索）+ Retrospective Memory（可积累的经验记忆）+ Hierarchical Planning（规划-编码解耦）。</li>
+    <li><b>跨领域打败 AlphaEvolve</b>：Kaggle ML + 数学算法优化双料 SOTA，展现真正的通用自进化能力。</li>
+    <li><b>值得警惕的对比不对等</b>：与基线的骨干 LLM 代际存在差异，公平性需社区独立复现验证。</li>
+    <li><b>已开源</b>：<a href="https://github.com/InternScience/MLEvolve" target="_blank">github.com/InternScience/MLEvolve</a> ——这是判断其真实价值的最快路径。</li>
+  </ol>
+</section>
+
+<!-- 资料来源 -->
+<section class="card">
+  <h2><span class="num">9</span>资料来源</h2>
+  <ul>
+    <li><a href="https://arxiv.org/abs/2606.06473" target="_blank">MLEvolve: A Self-Evolving Framework for Automated Machine Learning Algorithm Discovery — arXiv:2606.06473</a></li>
+    <li><a href="https://arxiv.org/html/2606.06473v1" target="_blank">论文全文 HTML 版本</a></li>
+    <li><a href="https://github.com/InternScience/MLEvolve" target="_blank">GitHub 开源仓库（InternScience/MLEvolve）</a></li>
+    <li><a href="https://arxiv.org/list/cs.AI/current" target="_blank">arXiv cs.AI 最新论文列表</a></li>
+    <li><a href="https://openai.com/news/" target="_blank">OpenAI News</a> · <a href="https://deepmind.google/research/publications/" target="_blank">Google DeepMind Publications</a></li>
+    <li><a href="https://letsdatascience.com/news/anthropic-launches-claude-sonnet-5-for-agentic-workflows-5e7b91b6" target="_blank">Anthropic Claude Sonnet 5 发布报道</a></li>
+  </ul>
+</section>
+
+<footer>
+  AI 论文精读 · 2026-07-03 · 每日一篇 · 只看英文一手资料 · 中文可视化呈现
+</footer>
+
+</div>
+
+<script>
+// 基线对比柱状图
+const baselineCtx = document.getElementById('baselineChart').getContext('2d');
+new Chart(baselineCtx, {
+  type: 'bar',
+  data: {
+    labels: ['AIDE\n(24h)', 'ML-Master\n(12h)', 'AIRA-Dojo\n(24h)', 'R&D-Agent\n(12h)', 'FM-Agent\n(24h)', 'MLE-STAR-Pro\n(24h)', 'Leeroo\n(24h)', 'MARS\n(24h)', 'ML-Master 2.0\n(24h)', 'MARS+\n(24h)', 'AIBuildAI\n(24h)', 'MLEvolve\n(12h)'],
+    datasets: [{
+      label: '平均奖牌率 %',
+      data: [17.1, 29.3, 31.6, 35.1, 43.6, 44.0, 50.7, 56.0, 56.4, 62.7, 63.1, 65.3],
+      backgroundColor: (ctx) => {
+        const i = ctx.dataIndex;
+        return i === 11 ? 'rgba(34,211,238,0.85)' : 'rgba(124,92,255,0.55)';
+      },
+      borderColor: (ctx) => ctx.dataIndex === 11 ? '#22d3ee' : '#7c5cff',
+      borderWidth: 1.5,
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: {display:false},
+      tooltip: {
+        callbacks: {
+          label: (c) => c.parsed.y + '%'
+        }
+      }
+    },
+    scales: {
+      y: {beginAtZero:true, max:75, ticks:{color:'#a4acc4', callback:v=>v+'%'}, grid:{color:'rgba(255,255,255,0.06)'}},
+      x: {ticks:{color:'#a4acc4', font:{size:10}}, grid:{display:false}}
+    }
+  }
+});
+
+// 雷达图
+const radarCtx = document.getElementById('radarChart').getContext('2d');
+new Chart(radarCtx, {
+  type: 'radar',
+  data: {
+    labels: ['低复杂度奖牌率', '中复杂度奖牌率', '高复杂度奖牌率', '金牌率', '有效提交率', 'Above-Median'],
+    datasets: [{
+      label: 'MLEvolve',
+      data: [80.3, 64.0, 46.7, 34.7, 100.0, 76.0],
+      backgroundColor: 'rgba(34,211,238,0.2)',
+      borderColor: '#22d3ee',
+      pointBackgroundColor: '#22d3ee',
+      borderWidth: 2
+    },{
+      label: 'AIBuildAI (最强基线)',
+      data: [72, 60, 40, 30, 95, 70],
+      backgroundColor: 'rgba(124,92,255,0.15)',
+      borderColor: '#7c5cff',
+      pointBackgroundColor: '#7c5cff',
+      borderWidth: 2,
+      borderDash: [5,5]
+    }]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:'#dfe4f2'}}},
+    scales:{
+      r:{
+        angleLines:{color:'rgba(255,255,255,0.08)'},
+        grid:{color:'rgba(255,255,255,0.08)'},
+        pointLabels:{color:'#c4b5fd', font:{size:12}},
+        ticks:{color:'#a4acc4', backdropColor:'transparent'},
+        min:0, max:100
+      }
+    }
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选｜RiVER：没有标准答案，AI也能继续学习</title>
+  <style>
+    :root{
+      --ink:#121820;--muted:#5d6877;--line:#dce3ea;--soft:#f5f7fa;--paper:#ffffff;
+      --blue:#1368d8;--green:#16834b;--amber:#b46a00;--red:#b43131;--graph:#253040;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:#eef2f6;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.72}
+    a{color:var(--blue);text-decoration:none}
+    .wrap{max-width:980px;margin:0 auto;background:var(--paper);box-shadow:0 24px 60px rgba(24,38,55,.12)}
+    header{padding:44px 42px 34px;background:linear-gradient(135deg,#0d1118 0%,#1c2735 58%,#0c5a8f 100%);color:#fff}
+    .kicker{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#b8d8ff;margin-bottom:14px}
+    h1{font-size:36px;line-height:1.16;margin:0 0 14px;letter-spacing:0}
+    .subtitle{font-size:19px;color:#dbe8f6;margin:0;max-width:820px}
+    .meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:26px}
+    .meta div{border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:12px 14px;background:rgba(255,255,255,.07)}
+    .meta b{display:block;font-size:12px;color:#9fc7f4;font-weight:700}
+    main{padding:34px 42px 48px}
+    h2{font-size:24px;margin:38px 0 16px;line-height:1.25}
+    h3{font-size:17px;margin:20px 0 8px}
+    p{margin:0 0 14px}
+    .lead{font-size:18px;color:#293441}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}
+    .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .card{border:1px solid var(--line);border-radius:8px;padding:16px;background:#fff}
+    .card strong{display:block;font-size:15px;margin-bottom:6px}
+    .tag{display:inline-block;border-radius:999px;padding:4px 9px;background:#e7f0ff;color:#0c54b8;font-weight:700;font-size:12px;margin:0 6px 8px 0}
+    .callout{border-left:4px solid var(--blue);background:#f3f8ff;padding:16px 18px;border-radius:0 8px 8px 0;margin:18px 0}
+    .warning{border-left-color:var(--amber);background:#fff8ed}
+    table{width:100%;border-collapse:collapse;margin:16px 0 24px;font-size:14px}
+    th,td{border-bottom:1px solid var(--line);padding:10px 9px;text-align:left;vertical-align:top}
+    th{background:#f4f7fb;font-weight:800;color:#243041}
+    .num{font-variant-numeric:tabular-nums}
+    .figure{margin:22px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+    .figure img{display:block;width:100%;height:auto}
+    .caption{font-size:13px;color:var(--muted);padding:10px 14px;background:#f8fafc}
+    svg{max-width:100%;height:auto;display:block}
+    .svgbox{padding:18px;background:#fbfdff}
+    .pill{font-size:12px;font-weight:700;border-radius:999px;padding:3px 8px;background:#eef4fb;color:#36506c}
+    .quote{font-size:22px;line-height:1.45;font-weight:800;margin:20px 0;padding:18px 20px;border-radius:8px;background:#111820;color:#fff}
+    .small{font-size:13px;color:var(--muted)}
+    .source-list li{margin-bottom:8px}
+    @media (max-width:720px){
+      header,main{padding-left:20px;padding-right:20px}
+      h1{font-size:29px}.subtitle{font-size:17px}.meta,.grid,.grid.two{grid-template-columns:1fr}
+      table{font-size:13px} th,td{padding:8px 7px}
+    }
+  </style>
+</head>
+<body>
+  <article class="wrap">
+    <header>
+      <div class="kicker">AI每日论文精选 · 2026-06-28</div>
+      <h1>RiVER：没有标准答案，AI也能继续学习</h1>
+      <p class="subtitle">这篇论文把强化学习从“做题对答案”，推进到“在真实环境里比较谁做得更好”。它可能是代码模型、优化型 Agent 和自动改进系统的重要训练范式。</p>
+      <section class="meta" aria-label="论文信息卡">
+        <div><b>论文标题</b>Reinforcement Learning without Ground-Truth Solutions can Improve LLMs</div>
+        <div><b>中文标题</b>没有标准答案的强化学习，也能提升大语言模型</div>
+        <div><b>作者</b>Yingyu Lin, Qiyue Gao, Nikki Lijing Kuang, Xunpeng Huang, Kun Zhou, Tongtong Liang, Zhewei Yao, Yi-An Ma, Yuxiong He</div>
+        <div><b>机构</b>UC San Diego；Snowflake AI Research</div>
+        <div><b>发布时间 / 平台</b>2026-06-25 · arXiv:2606.27369v1 · cs.LG</div>
+        <div><b>链接</b><a href="https://arxiv.org/abs/2606.27369v1">论文主页</a> · <a href="https://arxiv.org/pdf/2606.27369v1">PDF</a></div>
+      </section>
+    </header>
+    <main>
+      <section id="s1">
+        <h2>1. 标题区</h2>
+        <div class="grid two">
+          <div class="card"><strong>核心主题</strong>把“可验证奖励”从标准答案扩展到可执行环境：程序跑起来、被约束检查、按目标函数打分，再用相对排名训练模型。</div>
+          <div class="card"><strong>会议 / 平台</strong>当前为 arXiv 预印本，未在论文页标注接收会议。报告中的结论以论文自报实验和公开基准说明为依据。</div>
+        </div>
+        <span class="tag">RLVR</span><span class="tag">代码模型</span><span class="tag">强化学习</span><span class="tag">无标准答案训练</span><span class="tag">Agent训练环境</span>
+      </section>
+
+      <section id="s2">
+        <h2>2. 为什么今天选它？</h2>
+        <p class="lead">因为它回答了一个非常现实的问题：如果未来 AI 要解决的任务越来越像创业、调度、研究、供应链、代码优化，而不是考试选择题，那么我们还怎么训练它？</p>
+        <div class="grid">
+          <div class="card"><strong>行业意义</strong>过去的 RLVR 很像“老师手里有答案”。RiVER 说：很多任务没有标准答案，但有裁判和计分牌，AI 仍然可以学习。</div>
+          <div class="card"><strong>技术突破</strong>它不是直接拿原始分数喂给模型，而是先做同实例排名，再给胜者更重奖励，避免分数尺度和重复样本误导训练。</div>
+          <div class="card"><strong>长期价值</strong>如果成立，优化问题、仿真器、工具环境、商业流程都可能变成训练数据来源，而不需要人工写出“唯一正确答案”。</div>
+        </div>
+        <div class="callout warning">
+          <strong>克制判断：</strong>RiVER 还不是被行业大规模复现的经典论文。今天选它，不是因为它最热，而是因为它切中了“可验证强化学习如何继续扩展”的关键瓶颈。
+        </div>
+      </section>
+
+      <section id="s3">
+        <h2>3. 一句话讲透论文</h2>
+        <div class="quote">RiVER 像让 AI 参加“没有标准答案的编程竞赛”：不问它是否写出唯一答案，只看它的方案跑起来后，是否比同场其他方案更好。</div>
+      </section>
+
+      <section id="s4">
+        <h2>4. 核心贡献拆解</h2>
+        <table>
+          <thead><tr><th>问题</th><th>旧方法</th><th>RiVER 的做法</th><th>为什么更好</th></tr></thead>
+          <tbody>
+            <tr><td>没有标准答案</td><td>RLVR 通常依赖正确答案、单元测试或 gold output。</td><td>只需要一个能执行、能检查约束、能计算目标分数的环境。</td><td>让优化、规划、调度这类开放任务也能提供训练信号。</td></tr>
+            <tr><td>原始分数不可比</td><td>直接把任务分数当奖励，容易被大尺度实例支配。</td><td>在同一个隐藏实例内比较候选程序，转成排名。</td><td>像同一张试卷上排名，避免不同试卷分值尺度互相污染。</td></tr>
+            <tr><td>好方案太稀有</td><td>多个普通方案重复出现，可能比一个罕见强方案拿到更多梯度权重。</td><td>Winner-heavy reward：胜者明显加权，非胜者仍保留有限反馈。</td><td>鼓励模型记住真正更好的策略，而不是被“人多势众”的普通策略带偏。</td></tr>
+            <tr><td>能否迁移</td><td>只在原任务涨分，不一定提升一般代码能力。</td><td>在 AHC 训练，再测 ALE-Bench、LiveCodeBench、USACO。</td><td>论文报告显示不只优化竞赛涨分，常规 pass/fail 代码题也有提升。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="s5">
+        <h2>5. 工作原理：深入浅出</h2>
+        <p>可以把 RiVER 想成一个没有标准答案的厨艺比赛。评委不知道“世界上最好吃的菜”是什么，但能判断：这盘能不能吃、是否符合规则、味道得分多少。同一批选手做同一道题，谁更好就更值得学习。</p>
+        <div class="figure">
+          <img src="river-chatgpt-infographic-cropped.png" alt="RiVER 与传统 RLVR 对比图">
+          <div class="caption">ChatGPT Image 2.0 生成图经裁剪后保留核心流程；报告下方另用可控 SVG 重构关键逻辑，避免依赖截图式读图。</div>
+        </div>
+        <div class="figure">
+          <div class="svgbox">
+            <svg viewBox="0 0 900 360" role="img" aria-label="RiVER流程图">
+              <defs>
+                <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#253040"/></marker>
+              </defs>
+              <rect x="20" y="30" width="145" height="90" rx="8" fill="#f3f8ff" stroke="#b8cce8"/>
+              <text x="92" y="65" text-anchor="middle" font-size="18" font-weight="800" fill="#123">问题</text>
+              <text x="92" y="94" text-anchor="middle" font-size="14" fill="#526070">例如路径规划</text>
+              <line x1="165" y1="75" x2="230" y2="75" stroke="#253040" stroke-width="2" marker-end="url(#arrow)"/>
+              <rect x="230" y="30" width="150" height="90" rx="8" fill="#fff" stroke="#d2dce8"/>
+              <text x="305" y="58" text-anchor="middle" font-size="17" font-weight="800">模型生成</text>
+              <text x="305" y="84" text-anchor="middle" font-size="14" fill="#526070">16个候选程序</text>
+              <text x="305" y="108" text-anchor="middle" font-size="14" fill="#526070">每个都可执行</text>
+              <line x1="380" y1="75" x2="445" y2="75" stroke="#253040" stroke-width="2" marker-end="url(#arrow)"/>
+              <rect x="445" y="25" width="170" height="102" rx="8" fill="#f8fff9" stroke="#b9dcc7"/>
+              <text x="530" y="54" text-anchor="middle" font-size="17" font-weight="800">隐藏实例执行</text>
+              <text x="530" y="82" text-anchor="middle" font-size="14" fill="#526070">检查约束</text>
+              <text x="530" y="106" text-anchor="middle" font-size="14" fill="#526070">计算目标分数</text>
+              <line x1="615" y1="75" x2="680" y2="75" stroke="#253040" stroke-width="2" marker-end="url(#arrow)"/>
+              <rect x="680" y="30" width="170" height="90" rx="8" fill="#fff8ed" stroke="#ead0a7"/>
+              <text x="765" y="58" text-anchor="middle" font-size="17" font-weight="800">同实例排名</text>
+              <text x="765" y="86" text-anchor="middle" font-size="14" fill="#526070">先比名次</text>
+              <text x="765" y="108" text-anchor="middle" font-size="14" fill="#526070">再奖胜者</text>
+              <path d="M765 120 C765 205 520 215 420 215" fill="none" stroke="#253040" stroke-width="2" marker-end="url(#arrow)"/>
+              <rect x="300" y="170" width="245" height="90" rx="8" fill="#f5f7fa" stroke="#d2dce8"/>
+              <text x="422" y="202" text-anchor="middle" font-size="17" font-weight="800">GRPO 更新模型</text>
+              <text x="422" y="232" text-anchor="middle" font-size="14" fill="#526070">学习“相对更好”的策略</text>
+              <rect x="80" y="285" width="740" height="44" rx="8" fill="#121820"/>
+              <text x="450" y="313" text-anchor="middle" font-size="16" font-weight="800" fill="#fff">关键变化：从“是否匹配标准答案”变成“在同一环境里谁的方案更优”</text>
+            </svg>
+          </div>
+          <div class="caption">重构图：RiVER 把开放式优化任务变成可比较、可执行、可训练的反馈回路。</div>
+        </div>
+        <h3>三步理解</h3>
+        <p><strong>第一步：</strong>模型一次生成多个候选程序，而不是只交一个答案。</p>
+        <p><strong>第二步：</strong>每个程序在同一组隐藏测试实例上运行。失败、超时、违反约束会被扣掉；有效程序按目标函数得分。</p>
+        <p><strong>第三步：</strong>RiVER 不直接迷信原始分数，而是在每个实例内部排序，并给最强候选更大训练信号。</p>
+      </section>
+
+      <section id="s6">
+        <h2>6. 关键术语解释</h2>
+        <table>
+          <thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead>
+          <tbody>
+            <tr><td>RLVR</td><td>Reinforcement Learning with Verifiable Rewards，用可验证反馈做强化学习。</td><td>AI 做完题后，有一个自动裁判告诉它对不对或好不好。</td></tr>
+            <tr><td>Ground-truth</td><td>标准答案、参考程序或已知最优解。</td><td>老师手里的答案。</td></tr>
+            <tr><td>Evaluator</td><td>可执行评测器，负责运行程序、检查约束、计算目标值。</td><td>比赛裁判和计分器。</td></tr>
+            <tr><td>Objective score</td><td>优化任务的目标函数分数，可能是路径长度、成本、收益等。</td><td>不是“对/错”，而是“做得有多好”。</td></tr>
+            <tr><td>GRPO</td><td>Group Relative Policy Optimization，一类用同组样本相对表现更新策略的方法。</td><td>让同一批候选互相比，表现好的方向被加强。</td></tr>
+            <tr><td>Pass@1</td><td>模型第一次生成的答案通过测试的比例。</td><td>一次出手就做对的概率。</td></tr>
+            <tr><td>AHC / ALE-Bench</td><td>AtCoder Heuristic Contest 与基于 AHC 的算法工程评测。</td><td>更像“写一个尽量好的方案”，不是背标准答案。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="s7">
+        <h2>7. 实验结果解读</h2>
+        <p>论文使用 12 个 AtCoder Heuristic Contest 任务训练，底座模型是 Qwen3-8B 与 GLM-Z1-9B-0414。评估分两类：一类是无标准答案的 ALE-Bench，另一类是传统 pass/fail 的 LiveCodeBench 与 USACO。</p>
+        <table>
+          <thead><tr><th>模型</th><th>ALE-Bench Rating</th><th>ALE Rank %</th><th>LCB v5 Avg</th><th>LCB v6 Avg</th><th>USACO</th><th>解读</th></tr></thead>
+          <tbody>
+            <tr><td>Qwen3-8B 基线</td><td class="num">845</td><td class="num">86.4</td><td class="num">56.1</td><td class="num">49.2</td><td class="num">40.4</td><td>原始能力。</td></tr>
+            <tr><td>Qwen3-8B + RiVER</td><td class="num">987</td><td class="num">77.5</td><td class="num">58.3</td><td class="num">51.4</td><td class="num">43.3</td><td>优化竞赛明显提升，传统代码题也提升。</td></tr>
+            <tr><td>GLM-Z1-9B 基线</td><td class="num">805</td><td class="num">88.2</td><td class="num">49.2</td><td class="num">46.7</td><td class="num">32.4</td><td>第二个底座模型。</td></tr>
+            <tr><td>GLM-Z1-9B + RiVER</td><td class="num">962</td><td class="num">78.8</td><td class="num">54.7</td><td class="num">49.7</td><td class="num">34.3</td><td>跨模型复现同方向收益。</td></tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          <strong>结果意味着什么：</strong>最重要的不是 ALE 分数涨了，而是只用“无标准答案优化任务”训练后，LiveCodeBench 和 USACO 这类标准代码题也涨了。论文认为，这说明模型学到的是更通用的代码搜索与改进能力，而不只是记住某个比赛规则。
+        </div>
+      </section>
+
+      <section id="s8">
+        <h2>8. 局限性与问题</h2>
+        <div class="grid two">
+          <div class="card"><strong>领域仍然很窄</strong>实验集中在代码与算法优化。它能否迁移到商业决策、产品规划、科学研究，还需要新的可执行环境证明。</div>
+          <div class="card"><strong>评测器会塑造行为</strong>如果目标函数设计不好，模型可能学会钻规则空子，而不是真正解决问题。</div>
+          <div class="card"><strong>算力和工程成本高</strong>每个候选程序要在多个隐藏实例上执行；这比普通监督微调更像运行一套训练中的比赛平台。</div>
+          <div class="card"><strong>独立复现仍待观察</strong>当前结论主要来自论文自报实验；是否能在更多模型、更多任务、开源训练栈中稳定复现，还未完全确定。</div>
+        </div>
+      </section>
+
+      <section id="s9">
+        <h2>9. 产业影响分析</h2>
+        <table>
+          <thead><tr><th>受益方</th><th>可能变化</th><th>原因</th></tr></thead>
+          <tbody>
+            <tr><td>代码模型公司</td><td>从刷题训练转向“可执行优化环境”训练。</td><td>真实工程常常没有唯一答案，只有成本、延迟、稳定性、收益等多目标约束。</td></tr>
+            <tr><td>Agent 平台</td><td>更容易构建自我改进循环。</td><td>Agent 做计划、调用工具、跑仿真后，可以按结果相互比较。</td></tr>
+            <tr><td>企业 AI 应用</td><td>企业流程可能成为训练环境。</td><td>定价、排班、物流、库存、广告投放都有可计算指标，但未必有标准答案。</td></tr>
+            <tr><td>标注产业</td><td>部分人工答案标注价值下降，环境设计价值上升。</td><td>训练信号从“人写答案”转向“系统可验证反馈”。</td></tr>
+          </tbody>
+        </table>
+        <p>长期看，RiVER 的方向会把 AI 训练从“学习过去的答案”推向“在环境里试、比、改”。这与未来 Agent 的生产力形态高度一致。</p>
+      </section>
+
+      <section id="s10">
+        <h2>10. 延伸阅读</h2>
+        <ul>
+          <li><a href="https://arxiv.org/abs/2606.27369v1">RiVER 原论文 arXiv 页面</a></li>
+          <li><a href="https://arxiv.org/pdf/2606.27369v1">RiVER PDF</a></li>
+          <li><a href="https://github.com/SakanaAI/ALE-Bench">ALE-Bench GitHub</a>：基于 AtCoder Heuristic Contest 的算法工程评测。</li>
+          <li><a href="https://github.com/LiveCodeBench/LiveCodeBench">LiveCodeBench GitHub</a>：持续更新的代码能力评测。</li>
+          <li><a href="https://github.com/princeton-nlp/USACO">USACO benchmark GitHub</a>：奥赛编程能力评测。</li>
+          <li><a href="https://atcoder.jp/">AtCoder 官方网站</a>：论文训练任务来源的竞赛平台。</li>
+        </ul>
+      </section>
+
+      <section id="s11">
+        <h2>11. 引用来源</h2>
+        <ol class="source-list">
+          <li>Yingyu Lin et al., <a href="https://arxiv.org/abs/2606.27369v1">Reinforcement Learning without Ground-Truth Solutions can Improve LLMs</a>, arXiv:2606.27369v1, 2026-06-25.</li>
+          <li><a href="https://github.com/SakanaAI/ALE-Bench">SakanaAI/ALE-Bench</a> README：score-based algorithmic programming contest benchmark。</li>
+          <li><a href="https://github.com/LiveCodeBench/LiveCodeBench">LiveCodeBench</a> README：contamination-free coding evaluation and release versions。</li>
+          <li><a href="https://github.com/princeton-nlp/USACO">Princeton NLP USACO benchmark</a> README：Olympiad programming evaluation dataset and judge notes。</li>
+          <li><a href="https://atcoder.jp/">AtCoder</a> official platform：AtCoder Heuristic Contest task context。</li>
+        </ol>
+        <p class="small">本报告为中文解构与产业分析，不构成投资建议；实验数字来自论文原文，尚未在本地复现实验。</p>
+      </section>
+    </main>
+  </article>
+</body>
+</html>

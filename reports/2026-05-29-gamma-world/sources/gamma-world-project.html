@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>γ-World: Generative Multi-Agent World Modeling Beyond Two Players</title>
+    <meta property="og:description" content="γ-World: A generative multi-agent world model for interactive simulation"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="//assets.adobedtm.com/5d4962a43b79/814eb6e9b4e1/launch-4bc07f1e0b0b.min.js"></script>
+    <link rel="icon" href="https://www.nvidia.com/favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<gemini-header id="header" role="banner">
+    <div class="header-content">
+        <a class="header-logo" href="https://research.nvidia.com/labs/sil/" aria-label="Spatial Intelligence Lab Home" style="display:flex; align-items:center; gap:10px; text-decoration:none; max-width:50%;">
+            <img src="assets/nvidia-logo-wht.png" alt="NVIDIA Logo" style="height: 50px; width: auto;">
+            <span style="font-size: 1.2em; font-weight: 700; letter-spacing: 0.5px; color: #fff;">Spatial Intelligence Lab</span>
+        </a>
+        <nav class="header-nav">
+            <ul>
+                <li><a href="#teaser">Teaser</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#method">Method</a></li>
+                <li><a href="#citation">Citation</a></li>
+            </ul>
+        </nav>
+    </div>
+</gemini-header>
+
+<main>
+    <section>
+        <div class="container">
+            <h1><span class="accent-text">Gamma-World:</span><br>Generative Multi-Agent World Modeling<br>Beyond Two Players</h1>
+
+            <div id="authors">
+                <div class="author-row">
+                    <div class="author-item"><a href="https://liuff19.github.io/" target="_blank">Fangfu Liu</a><sup>1,2*</sup></div>
+                    <div class="author-item"><a href="https://www.cs.toronto.edu/~hekai/" target="_blank">Kai He</a><sup>1,3,4*</sup></div>
+                    <div class="author-item"><a href="https://www.cs.toronto.edu/~shenti11/" target="_blank">Tianchang Shen</a><sup>1</sup></div>
+                    <div class="author-item"><a href="https://www.linkedin.com/in/tianshi-cao-a23270b1/" target="_blank">Tianshi Cao</a><sup>1</sup></div>
+                    <div class="author-item"><a href="https://www.cs.toronto.edu/~fidler/" target="_blank">Sanja Fidler</a><sup>1,3,4</sup></div>
+                    <div class="author-item"><a href="https://duanyueqi.github.io/" target="_blank">Yueqi Duan</a><sup>2</sup></div>
+                    <div class="author-item"><a href="https://www.cs.toronto.edu/~jungao/" target="_blank">Jun Gao</a><sup>1</sup></div>
+                </div>
+                <div class="author-row">
+                    <div class="author-item"><a href="https://discover.research.utoronto.ca/32914-igor-gilitschenski" target="_blank">Igor Gilitschenski</a><sup>3,4†</sup></div>
+                    <div class="author-item"><a href="https://www.cs.toronto.edu/~zianwang/" target="_blank">Zian Wang</a><sup>1†</sup></div>
+                    <div class="author-item"><a href="https://xuanchiren.com/" target="_blank">Xuanchi Ren</a><sup>1†</sup></div>
+                </div>
+                <div class="affil-row">
+                    <span><sup>1</sup>NVIDIA</span>
+                    <span><sup>2</sup>Tsinghua University</span>
+                    <span><sup>3</sup>University of Toronto</span>
+                    <span><sup>4</sup>Vector Institute</span>
+                </div>
+                <div class="author-footnote">
+                    <span><sup>*</sup>Equal contribution.</span>
+                    <span><sup>†</sup>Joint advising.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+
+        <section id="hero-links">
+            <div class="container-fullwidth">
+                <div style="text-align: center; margin: 20px 0; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                    <a href="https://arxiv.org/abs/2605.28816" class="pill-btn" target="_blank" rel="noopener noreferrer">
+                        <img src="assets/pdf.svg" alt="PDF" style="height: 1em; vertical-align: middle; margin-right: 0.2em;">
+                        Paper
+                    </a>
+                    <a href="https://github.com/nv-tlabs/Gamma-World" class="pill-btn" target="_blank" rel="noopener noreferrer">
+                        <img src="assets/github.svg" alt="GitHub" style="height: 1em; vertical-align: middle; margin-right: 0.2em;">
+                        Code
+                    </a>
+                    <a href="#citation" class="pill-btn">Citation</a>
+                </div>
+
+                <p class="tldr"><i>
+                    <span style="color: #76B900;"><b>TL;DR:</b></span> γ-World is a generative multi-agent world model that supports independently controllable, permutation-symmetric agents via <b>Simplex Rotary Agent Encoding</b> and <b>Sparse Hub Attention</b>, achieving real-time <b>24 FPS</b> rollouts and zero-shot generalization from two to four players.
+                </i></p>
+            </div>
+        </section>
+
+        <!-- Teaser Section -->
+        <section id="teaser">
+            <div class="container" style="padding: 0;">
+                <h2>γ-World</h2>
+                <hr>
+            </div>
+            <p class="caption-center">γ-World interactively generates coherent future frames from multi-agent actions while preserving shared-world consistency, scaling from virtual games to real-world environments.</p>
+            <div class="teaser-figure-container">
+                <img src="assets/teaser.png" alt="γ-World Teaser" class="teaser-figure">
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery">
+            <div class="container" style="padding: 0;">
+                <h2>Gallery</h2>
+                <hr>
+            </div>
+
+            <div class="tab-navigation">
+                <button class="tab-button active" data-tab="intro">Overview</button>
+                <button class="tab-button" data-tab="two-agent">Two-Agent Interaction</button>
+                <button class="tab-button" data-tab="four-agent">Four-Agent Generalization</button>
+                <button class="tab-button" data-tab="robotics">Real-World Robotics</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="tab-intro">
+                <h3>γ-World Overview</h3>
+                <p class="caption-center">A comprehensive overview of γ-World: interactive multi-agent world generation across diverse scenes and configurations.</p>
+                <div class="hero-video-single">
+                    <video controls autoplay loop muted playsinline>
+                        <source src="videos/16-all.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+
+            <!-- Two-Agent Tab (media10-18) -->
+            <div class="tab-content" id="tab-two-agent">
+                <h3>Two-Agent Interaction</h3>
+                <p class="caption-center">Qualitative results of two-agent interaction. Each agent is independently controllable while sharing the same evolving world.</p>
+                <div class="figure-container">
+                    <img src="figures/combined_2agent_v7.png" alt="Two Agent Visualization" class="figure-image">
+                </div>
+                <div class="video-grid video-grid-3 video-grid-natural">
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media10.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media11.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media12.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media13.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media14.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media15.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media16.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/two_agent_interaction/media17.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/intro/media3.mp4" type="video/mp4"></video></div>
+                </div>
+            </div>
+
+            <!-- Four-Agent Tab (media19-23) -->
+            <div class="tab-content" id="tab-four-agent">
+                <h3>Four-Agent Generalization</h3>
+                <p class="caption-center">Benefiting from the permutation-symmetric simplex agent encoding, γ-World generalizes from two to four players <strong>without additional training</strong>.</p>
+                <div class="figure-container">
+                    <img src="figures/4agent_visualization.png" alt="Four Agent Visualization" class="figure-image">
+                </div>
+                <div class="video-grid video-grid-1 video-grid-natural">
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/four_agent_generalization/media19.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/four_agent_generalization/media20.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/four_agent_generalization/media21.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/four_agent_generalization/media22.mp4" type="video/mp4"></video></div>
+                </div>
+            </div>
+
+            <!-- Robotics Tab (media36-39) -->
+            <div class="tab-content" id="tab-robotics">
+                <h3>Real-World Robotics Coordination</h3>
+                <p class="caption-center">γ-World extends to real-world multi-robot coordination scenarios, demonstrating practical applicability beyond virtual environments.</p>
+                <div class="figure-container">
+                    <img src="figures/robo-visualization.png" alt="Robotics Visualization" class="figure-image">
+                </div>
+                <div class="video-grid video-grid-2 video-grid-natural">
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/robotics_coordination/media36.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/robotics_coordination/media37.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/robotics_coordination/media38.mp4" type="video/mp4"></video></div>
+                    <div class="video-item"><video controls autoplay loop muted playsinline><source src="videos/robotics_coordination/media39.mp4" type="video/mp4"></video></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Abstract Section -->
+        <section id="abstract">
+            <div class="container" style="padding: 0;">
+                <h2>Abstract</h2>
+                <hr>
+            </div>
+            <p>World models for interactive video generation have largely focused on single-agent settings, where future observations are rolled out from a single action stream, user input, or controllable viewpoint. However, many simulated worlds are inherently populated: multiple players, robots, or embodied agents act simultaneously within a shared, evolving environment. Scaling world models to such settings requires a principled multi-agent design: agents should remain independently controllable, permutation-symmetric, and support efficient inference while maintaining consistency across time and perspectives.</p>
+            <p>In this paper, we present <strong>γ-World</strong>, a generative multi-agent world model for interactive simulation. γ-World introduces <em>Simplex Rotary Agent Encoding</em>, a parameter-free extension of 3D RoPE that represents agents as vertices of a regular simplex in rotary angle space. This gives each agent a distinct phase while making all agents permutation-equivalent, enabling scalable agent identity without learned per-slot identities or a fixed agent ordering.</p>
+            <p>To support efficient cross-agent interaction, we further propose <em>Sparse Hub Attention</em>, where learnable hub tokens mediate communication across agents, reducing cross-agent attention cost from quadratic to linear in the number of agents. Finally, we use a bidirectional multi-agent teacher to guide a block-causal student with distillation, after which the final causal model can use KV caching for streaming, achieving real-time action-responsive rollouts at <strong>24 FPS</strong>.</p>
+            <p>Experiments in multiplayer virtual environments show that γ-World improves video fidelity, action controllability, and inter-agent consistency over slot-based and dense-attention baselines, while generalizing from two to four players without additional training.</p>
+        </section>
+
+        <!-- Method Section -->
+        <section id="method">
+            <div class="container" style="padding: 0;">
+                <h2>Method</h2>
+                <hr>
+            </div>
+            <div class="figure-container">
+                <img src="figures/multiagent_method.png" alt="Method overview" class="figure-image">
+            </div>
+            <p><b>Architecture overview.</b> γ-World takes per-agent action streams and produces a shared, multi-view rollout. Two key designs make it scalable to many agents:</p>
+
+            <div class="method-cards">
+                <div class="method-card">
+                    <h4 style="color: var(--accent-green);">Simplex Rotary Agent Encoding</h4>
+                    <p>A parameter-free extension of 3D RoPE that represents agents as vertices of a regular simplex in rotary angle space. Each agent receives a distinct phase while remaining <em>permutation-equivalent</em>, eliminating the need for learned per-slot identities or a fixed agent ordering.</p>
+                </div>
+                <div class="method-card">
+                    <h4 style="color: var(--accent-green);">Sparse Hub Attention</h4>
+                    <p>Learnable hub tokens mediate communication across agents, reducing cross-agent attention cost from <em>quadratic</em> to <em>linear</em> in the number of agents — enabling efficient scaling to four or more agents.</p>
+                </div>
+            </div>
+
+            <h3>Efficiency: Sparse Hub Attention</h3>
+            <p class="caption-center">Sparse Hub Attention scales linearly with the number of agents, while dense attention scales quadratically.</p>
+            <div class="figure-container">
+                <img src="figures/sparse_hub_timing_comparison.png" alt="Sparse Hub Attention Timing" class="figure-image" style="max-width: 65%;">
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- Acknowledgement Section -->
+<section id="acknowledgement">
+    <div class="container">
+        <h3>Acknowledgement</h3>
+        <div class="contributors-grid" style="grid-template-columns: 1fr;">
+            <div class="contributors-card" style="max-width: 100%;">
+                <p style="margin: 0;">The authors would like to thank Product Managers <a href="https://www.linkedin.com/in/aditya-mahajan1" target="_blank">Aditya Mahajan</a> and <a href="https://www.linkedin.com/in/mcragun/" target="_blank">Matt Cragun</a> for their valuable support and guidance, Jingnan Gao for proof discussion, and Yixin Hong for demo creation.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Citation Section -->
+<section id="citation">
+    <div class="container">
+        <h3>Citation</h3>
+        <div class="contributors-grid" style="grid-template-columns: 1fr;">
+            <div class="contributors-card" style="max-width: 100%; overflow-x: auto;">
+<pre>@article{gammaworld2026,
+    title={Gamma-World: Generative Multi-Agent World Modeling Beyond Two Players},
+    author={Fangfu Liu and Kai He and Tianchang Shen and Tianshi Cao and
+            Sanja Fidler and Yueqi Duan and Jun Gao and Igor Gilitschenski and
+            Zian Wang and Xuanchi Ren},
+    journal={arXiv preprint arXiv:2605.28816},
+    year={2026}
+}</pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <p style="color: var(--subtle-text-color); font-size: 0.9em;">© 2026 NVIDIA Corporation. All rights reserved.</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

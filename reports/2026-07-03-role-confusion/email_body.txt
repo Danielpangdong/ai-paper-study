@@ -1,0 +1,9 @@
+今天精选的论文是 Prompt Injection as Role Confusion，来自 Charles Ye、Jasmine Cui 与 MIT 的 Dylan Hadfield-Menell，已被项目页标注为 ICML 2026。
+
+它解释了一个非常关键的问题：
+为什么 AI Agent 明明有 system/user/tool 等角色标签，却仍可能被网页、邮件或工具输出里的文字诱导越权？
+
+一句话推荐理由：
+这篇论文把“提示词注入”从提示技巧问题，推进为模型内部角色感知和 Agent 权限边界问题。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者、产品经理、创业者和投资研究者阅读。

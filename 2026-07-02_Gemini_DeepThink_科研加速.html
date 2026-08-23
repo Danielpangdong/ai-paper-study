@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文每日精读 · 2026-07-02 · Gemini Deep Think 加速科研</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b0f19;
+    --bg-2:#111827;
+    --card:#151b2b;
+    --card-2:#1a2138;
+    --text:#e5e7eb;
+    --muted:#9ca3af;
+    --accent:#60a5fa;
+    --accent-2:#a78bfa;
+    --accent-3:#34d399;
+    --warn:#fbbf24;
+    --danger:#f87171;
+    --border:rgba(255,255,255,0.08);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,#0b0f19 0%,#0d1424 100%);
+    color:var(--text);
+    line-height:1.7;
+    min-height:100vh;
+  }
+  .container{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+  header.top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:24px;border-bottom:1px solid var(--border);margin-bottom:32px;
+    flex-wrap:wrap;gap:12px;
+  }
+  header.top .brand{display:flex;align-items:center;gap:12px;font-weight:600;font-size:15px;color:var(--muted)}
+  header.top .brand .dot{width:10px;height:10px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent)}
+  header.top .date-tag{
+    padding:6px 14px;background:var(--card);border:1px solid var(--border);
+    border-radius:999px;font-size:13px;color:var(--muted);
+  }
+  h1.title{
+    font-size:38px;line-height:1.25;margin:8px 0 12px;
+    background:linear-gradient(90deg,#60a5fa,#a78bfa 45%,#f472b6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    font-weight:800;letter-spacing:-0.5px;
+  }
+  .subtitle{color:var(--muted);font-size:16px;margin-bottom:32px}
+  .meta-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;margin-bottom:28px;
+  }
+  .meta-card{
+    background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;
+  }
+  .meta-card .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+  .meta-card .v{font-size:15px;color:var(--text);margin-top:6px;font-weight:500}
+  section.card{
+    background:var(--card);border:1px solid var(--border);border-radius:18px;
+    padding:28px 32px;margin-bottom:22px;box-shadow:0 6px 24px rgba(0,0,0,0.25);
+  }
+  section.card h2{
+    font-size:22px;margin:0 0 16px;display:flex;align-items:center;gap:10px;
+    font-weight:700;
+  }
+  section.card h2 .badge{
+    font-size:11px;padding:3px 10px;border-radius:999px;
+    background:rgba(96,165,250,0.15);color:var(--accent);
+    border:1px solid rgba(96,165,250,0.3);letter-spacing:0.5px;
+  }
+  section.card h3{font-size:16px;margin:18px 0 8px;color:var(--accent);font-weight:600}
+  p{margin:8px 0}
+  .lead{font-size:15.5px;color:#d1d5db}
+  ul.clean{padding-left:22px;margin:8px 0}
+  ul.clean li{margin:6px 0}
+  .kv-row{display:grid;grid-template-columns:120px 1fr;gap:10px 18px;margin-top:8px}
+  .kv-row .kv-k{color:var(--muted);font-size:14px}
+  .kv-row .kv-v{color:var(--text);font-size:14px}
+  .pill{
+    display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;
+    background:rgba(52,211,153,0.15);color:var(--accent-3);
+    border:1px solid rgba(52,211,153,0.3);margin-right:6px;margin-bottom:4px;
+  }
+  .pill.warn{background:rgba(251,191,36,0.12);color:var(--warn);border-color:rgba(251,191,36,0.3)}
+  .pill.purp{background:rgba(167,139,250,0.15);color:var(--accent-2);border-color:rgba(167,139,250,0.3)}
+
+  /* Architecture flow */
+  .arch{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;
+    padding:22px 12px;background:var(--card-2);border-radius:14px;margin-top:10px;
+  }
+  .arch .node{
+    background:linear-gradient(160deg,#1f2a44,#111827);border:1px solid var(--border);
+    border-radius:12px;padding:12px 16px;min-width:130px;text-align:center;font-size:13.5px;
+  }
+  .arch .node.hi{border-color:var(--accent);color:var(--accent);font-weight:600}
+  .arch .arrow{color:var(--muted);font-size:20px}
+  .arch .loop{
+    width:100%;text-align:center;color:var(--muted);font-size:12px;margin-top:8px;
+    font-style:italic;
+  }
+
+  /* Highlights grid */
+  .grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+  .hilite{
+    background:var(--card-2);border:1px solid var(--border);border-radius:14px;
+    padding:18px;position:relative;overflow:hidden;
+  }
+  .hilite::before{
+    content:"";position:absolute;top:0;left:0;width:4px;height:100%;
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));
+  }
+  .hilite h4{margin:0 0 8px;font-size:15px;color:var(--text);font-weight:600}
+  .hilite .tag{font-size:11px;color:var(--accent);text-transform:uppercase;letter-spacing:0.6px}
+  .hilite p{font-size:13.5px;color:#d1d5db;margin:6px 0 0}
+
+  /* Chart wrap */
+  .chart-wrap{background:var(--card-2);border:1px solid var(--border);border-radius:14px;padding:20px;margin-top:12px}
+  .chart-wrap canvas{max-height:280px}
+
+  /* Taxonomy table */
+  table.tax{
+    width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;font-size:14px;
+    background:var(--card-2);border-radius:12px;overflow:hidden;border:1px solid var(--border);
+  }
+  table.tax th,table.tax td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border)}
+  table.tax th{background:rgba(255,255,255,0.03);color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:0.5px}
+  table.tax tr:last-child td{border-bottom:none}
+  .level-0{color:var(--muted)}
+  .level-1{color:var(--accent-3)}
+  .level-2{color:var(--accent)}
+  .level-3{color:var(--warn);opacity:0.6}
+  .level-4{color:var(--danger);opacity:0.6}
+
+  /* Callouts */
+  .callout{
+    border-left:3px solid var(--warn);background:rgba(251,191,36,0.06);
+    padding:14px 18px;border-radius:8px;margin-top:14px;font-size:14px;
+  }
+  .callout.crit{border-color:var(--danger);background:rgba(248,113,113,0.06)}
+  .callout.pos{border-color:var(--accent-3);background:rgba(52,211,153,0.06)}
+  .callout .head{font-weight:600;margin-bottom:6px;color:var(--text)}
+
+  /* Confidence chips */
+  .conf{display:inline-flex;align-items:center;gap:6px;font-size:12px;
+    padding:3px 10px;border-radius:999px;background:rgba(255,255,255,0.05);
+    color:var(--muted);border:1px solid var(--border);margin-left:8px;
+  }
+  .conf .d{width:6px;height:6px;border-radius:50%}
+  .conf.high .d{background:var(--accent-3)}
+  .conf.mid .d{background:var(--warn)}
+  .conf.low .d{background:var(--danger)}
+
+  /* Source links */
+  .sources a{color:var(--accent);text-decoration:none;border-bottom:1px dotted rgba(96,165,250,0.4)}
+  .sources a:hover{border-bottom-style:solid}
+  .sources li{margin:6px 0;font-size:13.5px;color:var(--muted);word-break:break-all}
+
+  footer{
+    text-align:center;color:var(--muted);font-size:12.5px;margin-top:40px;
+    padding-top:20px;border-top:1px solid var(--border);
+  }
+
+  @media (max-width:640px){
+    h1.title{font-size:28px}
+    section.card{padding:22px 20px}
+    .kv-row{grid-template-columns:100px 1fr}
+    .arch .node{min-width:100px;font-size:12.5px;padding:10px 12px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header class="top">
+  <div class="brand"><span class="dot"></span>AI 论文每日精读</div>
+  <div class="date-tag">2026 年 7 月 2 日 · Thursday</div>
+</header>
+
+<h1 class="title">Gemini Deep Think 首次以自主 / 半自主方式攻克 18 个"研究级"科学难题</h1>
+<p class="subtitle">
+  Google DeepMind 联合数学 / 物理 / 计算机科学家发布两篇姊妹论文，把"AI 参与科研"从奥数级别推进到 PhD 与前沿研究级别，并首次给出"AI 贡献等级"分类法。
+</p>
+
+<div class="meta-grid">
+  <div class="meta-card">
+    <div class="k">论文来源</div>
+    <div class="v">Google DeepMind · arXiv</div>
+  </div>
+  <div class="meta-card">
+    <div class="k">论文标识</div>
+    <div class="v">arXiv:2602.10177 &nbsp;+&nbsp; arXiv:2602.03837</div>
+  </div>
+  <div class="meta-card">
+    <div class="k">核心作者</div>
+    <div class="v">Thang Luong, Vahab Mirrokni, Tony Feng, David Woodruff 等</div>
+  </div>
+  <div class="meta-card">
+    <div class="k">类型</div>
+    <div class="v">系统 + 应用型研究论文（两篇合集）</div>
+  </div>
+</div>
+
+<!-- 1. 为什么值得看 -->
+<section class="card">
+  <h2>① 为什么这篇值得看 <span class="badge">TL;DR</span></h2>
+  <p class="lead">
+    这不是又一个"跑分刷榜"。它试图回答一个更硬的问题：<b>通用大模型能否在"没有黄金答案"的真研究场景里做出可发表的贡献？</b>
+  </p>
+  <ul class="clean">
+    <li>发布配套系统 <b>Aletheia</b>（数学研究智能体），把 Deep Think 从"IMO 金牌选手"升级为"自我验证 + 自我修订"的研究搭档。</li>
+    <li>覆盖 5 大领域 18 个开放问题：从组合优化、次模函数猜想到宇宙弦引力辐射；<b>包括推翻一个悬置 10 年的猜想</b>。</li>
+    <li>首次提出 <b>0–4 级 AI 贡献分类法</b>（Level 0 至 Level 4），并明确"目前不主张任何 Level 3/4 结果"——罕见的自我克制。</li>
+    <li>提供可复现工件：prompts、模型输出全部开源在 <code>google-deepmind/superhuman/aletheia</code>。</li>
+  </ul>
+  <div class="callout pos">
+    <div class="head">与之前"AI 做数学"的关键差异（我的判断，置信度：中）</div>
+    过去 FunSearch / AlphaEvolve 更像"程序合成 + 搜索"，本文首次把重心放在<b>自然语言证明的验证-修订闭环</b>上，且把 domain 拓宽到 PhD 级理论 CS、物理与经济学。<br>
+    但需要提醒：<b>论文的"18 题"是研究者主动挑选并深度参与的</b>，并非从统计意义上抽样，因此"AI 有多强"的推断要非常小心。
+  </div>
+</section>
+
+<!-- 2. 系统架构 -->
+<section class="card">
+  <h2>② 系统：Aletheia 智能体架构 <span class="badge">METHOD</span></h2>
+  <p>核心是一个"生成 → 验证 → 修订"闭环，并允许模型 <b>承认失败</b>（refuse-to-answer），这一点被论文单独强调，因为它把研究员从"甄别幻觉"里解放出来。</p>
+
+  <div class="arch">
+    <div class="node">问题<br><span style="color:var(--muted);font-size:12px">Problem</span></div>
+    <div class="arrow">→</div>
+    <div class="node hi">生成器<br><span style="color:var(--muted);font-size:12px">Generator</span></div>
+    <div class="arrow">→</div>
+    <div class="node">候选解<br><span style="color:var(--muted);font-size:12px">Candidate</span></div>
+    <div class="arrow">→</div>
+    <div class="node hi">验证器<br><span style="color:var(--muted);font-size:12px">Verifier</span></div>
+    <div class="arrow">→</div>
+    <div class="node">最终输出<br><span style="color:var(--muted);font-size:12px">Output</span></div>
+    <div class="loop">↑ 验证器可将"小错"送回 Reviser 修订，或将"根本错"打回 Generator 重来 ↑</div>
+  </div>
+
+  <h3>关键技术组件</h3>
+  <div class="kv-row">
+    <div class="kv-k">自然语言验证器</div><div class="kv-v">识别候选解中的漏洞，支持迭代生成-修订。</div>
+    <div class="kv-k">网页检索</div><div class="kv-v">调用 Google Search 与浏览工具，减少引用幻觉与计算错误。</div>
+    <div class="kv-k">失败识别</div><div class="kv-v">允许模型明确说"我做不出"，避免自信错答浪费研究员时间。</div>
+    <div class="kv-k">协作策略</div><div class="kv-v">第二篇论文提出 "Advisor" 模型 + "Vibe-Proving" 循环 + "balanced prompting"（同时要求证明 <i>和</i> 反证，防止确认偏误）。</div>
+  </div>
+</section>
+
+<!-- 3. 性能数据 -->
+<section class="card">
+  <h2>③ 性能：推理时间缩放律持续成立 <span class="badge">BENCHMARK</span></h2>
+  <p>论文最有力的一组数据是：<b>推理时的算力（inference-time compute）投入越多，成绩越高</b>，且这条曲线从奥数难度一路"传递"到 PhD 级练习。</p>
+
+  <div class="chart-wrap">
+    <canvas id="benchChart"></canvas>
+  </div>
+
+  <p style="color:var(--muted);font-size:13px;margin-top:10px">
+    数据来源：DeepMind 博客配图（曲线为示意重绘，纵轴为专家人工评分）。IMO-ProofBench Advanced 上 2026 年 1 月版接近 90%，PhD 级 FutureMath Basic 上 Aletheia 达约 46%，仍领先纯模型基线。<span class="conf mid"><span class="d"></span>置信度 中</span>
+  </p>
+
+  <div class="callout">
+    <div class="head">值得警惕的一点</div>
+    "推理时算力换性能"意味着 <b>单题成本极高</b>。论文没有公开单题算力开销，也没有讨论电力/资金成本。若一次证明尝试消耗数十万 token 的深度思考，这在"日常科研"里并不可持续，仍属于 <b>能否</b> 而非 <b>划算</b> 的验证。<span class="conf high"><span class="d"></span>置信度 高</span>
+  </div>
+</section>
+
+<!-- 4. 5 项亮点研究 -->
+<section class="card">
+  <h2>④ 五个具体研究突破 <span class="badge">RESULTS</span></h2>
+  <div class="grid5">
+    <div class="hilite">
+      <div class="tag">CS · 图论</div>
+      <h4>Max-Cut & Steiner Tree 破局</h4>
+      <p>把 Kirszbraun 定理、测度论、Stone-Weierstrass 等"连续数学"工具引入离散算法问题，突破多年停滞。</p>
+    </div>
+    <div class="hilite">
+      <div class="tag">优化 · 反证</div>
+      <h4>推翻 10 年悬置猜想</h4>
+      <p>在 online submodular 优化中，构造出精妙的 3-元素反例，直接证否 2015 年以来被普遍认为"显然成立"的直觉。</p>
+    </div>
+    <div class="hilite">
+      <div class="tag">机器学习</div>
+      <h4>解释"自适应惩罚"为何 work</h4>
+      <p>对一种自动去噪训练技巧，给出其等价于"隐式生成 adaptive penalty"的严格证明。</p>
+    </div>
+    <div class="hilite">
+      <div class="tag">经济学 · 机制设计</div>
+      <h4>拓展 AI Token 拍卖 Revelation 原理</h4>
+      <p>用高阶拓扑与序理论把结论从有理数出价扩展到连续实数域，覆盖真实拍卖场景。</p>
+    </div>
+    <div class="hilite">
+      <div class="tag">物理 · 宇宙学</div>
+      <h4>宇宙弦引力辐射的解析解</h4>
+      <p>用 Gegenbauer 多项式吸收奇点，将无穷级数化为闭式有限和，简化 gravitational radiation 计算。</p>
+    </div>
+    <div class="hilite">
+      <div class="tag">数论 · 完全自主</div>
+      <h4>Feng26：AI 独立完成论文</h4>
+      <p>无人干预完成一篇论文，计算 arithmetic geometry 中的 "eigenweights"（连接高阶 Hirzebruch 比例原理与对称群表示论）。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 贡献分类法 -->
+<section class="card">
+  <h2>⑤ AI 贡献分类法：一个不该被忽视的贡献 <span class="badge">FRAMEWORK</span></h2>
+  <p>论文提出的 0–4 级分类法，配合"人-AI 交互卡片"（Human-AI Interaction Card），是这次工作里最值得社区借鉴的产物之一，因为它把"是 AI 做的还是人做的"这一模糊问题制度化了。</p>
+
+  <table class="tax">
+    <thead>
+      <tr><th>级别</th><th>含义</th><th>本文实例</th></tr>
+    </thead>
+    <tbody>
+      <tr class="level-0"><td>Level 0</td><td>已知结果的重现</td><td>Erdős-652 / 654 / 1040（自主）</td></tr>
+      <tr class="level-1"><td>Level 1</td><td>新颖但小型进展</td><td>Erdős-1051（自主）</td></tr>
+      <tr class="level-2"><td>Level 2</td><td>可发表质量</td><td>Eigenweights / 复杂度界 / 独立多项式 / 广义 Erdős-1051 / 算术体积</td></tr>
+      <tr class="level-3"><td>Level 3</td><td>Major Advance（重大进展）</td><td><b>本文明确不主张</b></td></tr>
+      <tr class="level-4"><td>Level 4</td><td>Landmark Breakthrough（里程碑突破）</td><td><b>本文明确不主张</b></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout pos">
+    <div class="head">为什么这一步很重要（观点）</div>
+    过去半年"AI 解决 Erdős 问题"的传播里，媒体和论文作者常常混用不同贡献级别，误导读者。DeepMind 首次自缚手脚不宣称 Level 3/4，可能成为后续社区的<b>事实标准</b>，倒逼 OpenAI / Anthropic / Meta 采用同一套语言。<span class="conf mid"><span class="d"></span>置信度 中</span>
+  </div>
+</section>
+
+<!-- 6. 最强反驳 -->
+<section class="card">
+  <h2>⑥ 最强反驳 & 我的批判性阅读 <span class="badge">CRITIQUE</span></h2>
+  <p>按你要求：<b>在称赞前先说反面</b>。以下几点是这篇论文最容易被质疑之处：</p>
+  <ul class="clean">
+    <li><b>题目是被挑选的，而不是随机采样。</b>18 题都由专家挑出，"AI 攻克 18 题"不能直接外推到"AI 解决 18/N 的开放问题"。<span class="conf high"><span class="d"></span>置信度 高</span></li>
+    <li><b>人类介入程度差异极大。</b>Level 2 的多数结果本质上是"人主导 + AI 辅助 vibe-proving"，把它们与 Level 0/1 的"自主"混在一起报告，宣发上容易造成夸大。<span class="conf high"><span class="d"></span>置信度 高</span></li>
+    <li><b>Feng26 完全自主论文——影响多大？</b>论文本身发表价值高，但 "eigenweights" 属于相对狭窄的技术性结果，尚未证明 AI 能自主提出<b>问题</b>而不仅仅是<b>求解</b>。<span class="conf mid"><span class="d"></span>置信度 中</span></li>
+    <li><b>验证器仍然是自然语言的。</b>没有形式化证明系统（如 Lean / Coq）为最终背书；专家评审是主要"真值"来源，长期看容易累积隐性错误。<span class="conf high"><span class="d"></span>置信度 高</span></li>
+    <li><b>缺少成本 / 复现难度披露。</b>Aletheia 大概率依赖 DeepMind 内部私有能力（长上下文 Deep Think + 定制搜索栈），外部研究者短期无法完整复现。<span class="conf high"><span class="d"></span>置信度 高</span></li>
+  </ul>
+
+  <div class="callout crit">
+    <div class="head">对读者的实用建议</div>
+    如果你在做企业内部"AI + 科研"的立项，<b>不要拿这篇论文当"通用大模型即可解决科研问题"的证据</b>。它真正说明的是：<i>顶级基座模型 + 精心设计的 verifier 循环 + 深度领域专家参与</i>，才能达到可发表级别；三者缺一不可。
+  </div>
+</section>
+
+<!-- 7. 对不同人群的含义 -->
+<section class="card">
+  <h2>⑦ 对不同角色的实际含义 <span class="badge">SO WHAT</span></h2>
+  <div class="kv-row">
+    <div class="kv-k">科研人员</div>
+    <div class="kv-v">尽快熟悉"balanced prompting"（同时求证明与反证）与"verifier-in-the-loop"工作流；不要用单轮对话去做证明。</div>
+    <div class="kv-k">AI 工程师</div>
+    <div class="kv-v">Aletheia 架构（Generator + Verifier + Reviser + 失败识别）可迁移到 <b>代码修复、法律推理、审计核对</b>等任何"结果可判、过程可迭代"的场景。</div>
+    <div class="kv-k">研究管理者</div>
+    <div class="kv-v">把"AI 贡献等级"写进内部投稿规范，比模糊使用"AI 辅助"更能规避未来审稿争议。</div>
+    <div class="kv-k">投资 / 战略</div>
+    <div class="kv-v">这标志着"AI-for-Science"赛道进入 <b>可复现里程碑阶段</b>，而不仅是 demo；但同时也意味着壁垒集中于"基座模型 + agent 栈 + 学界合作网络"三者共构，中小玩家难以正面切入。</div>
+  </div>
+</section>
+
+<!-- 8. 事实/推断/观点分层 -->
+<section class="card">
+  <h2>⑧ 事实 / 推断 / 观点 分层 <span class="badge">EPISTEMICS</span></h2>
+  <div class="kv-row">
+    <div class="kv-k">事实</div>
+    <div class="kv-v">DeepMind 于 2026-02-11 在 arXiv 发布两篇论文（2602.10177、2602.03837），并发布博客说明。<span class="conf high"><span class="d"></span>置信度 高</span></div>
+    <div class="kv-k">事实</div>
+    <div class="kv-v">论文声称 Deep Think 参与 18 个研究级问题，其中一篇由 AI 独立完成（Feng26 / arXiv:2601.23245）。<span class="conf high"><span class="d"></span>置信度 高</span></div>
+    <div class="kv-k">推断</div>
+    <div class="kv-v">"AI 独立发论文"实际的自主度取决于问题选择、领域范围与验证方式，未必能推广到其他学科。<span class="conf mid"><span class="d"></span>置信度 中</span></div>
+    <div class="kv-k">观点</div>
+    <div class="kv-v">该工作对社区最持久的影响可能不是 18 个结果本身，而是 <b>贡献分类法</b> 与 <b>失败识别机制</b>。<span class="conf mid"><span class="d"></span>置信度 中</span></div>
+    <div class="kv-k">未知</div>
+    <div class="kv-v">Aletheia 单题算力消耗、失败率分布、可否用开源模型复现 —— 论文未公开。<span class="conf low"><span class="d"></span>置信度 未知</span></div>
+  </div>
+</section>
+
+<!-- 9. 来源 -->
+<section class="card sources">
+  <h2>⑨ 参考来源 <span class="badge">SOURCES</span></h2>
+  <ul>
+    <li><a href="https://deepmind.google/blog/accelerating-mathematical-and-scientific-discovery-with-gemini-deep-think/" target="_blank">Google DeepMind Blog — Accelerating Mathematical and Scientific Discovery with Gemini Deep Think (2026-02-11)</a></li>
+    <li><a href="https://arxiv.org/abs/2602.10177" target="_blank">arXiv:2602.10177 — Towards Autonomous Mathematics Research</a></li>
+    <li><a href="https://arxiv.org/abs/2602.03837" target="_blank">arXiv:2602.03837 — Accelerating Scientific Research with Gemini: Case Studies and Common Techniques</a></li>
+    <li><a href="https://arxiv.org/abs/2601.23245" target="_blank">arXiv:2601.23245 — Feng26 (AI-autonomous paper on eigenweights)</a></li>
+    <li><a href="https://www.erdosproblems.com/" target="_blank">Bloom's Erdős Problems 数据库</a></li>
+    <li><a href="https://github.com/google-deepmind/superhuman/tree/main/aletheia" target="_blank">GitHub · google-deepmind/superhuman/aletheia（prompts 与输出）</a></li>
+    <li><a href="https://quantumzeitgeist.com/deep-gemini-think-reveals-eigenweights-arithmetic/" target="_blank">Quantum Zeitgeist — 二次解读参考</a></li>
+    <li><a href="https://blockchain.news/ainews/gemini-deep-think-breakthrough-how-agentic-workflows-tackle-research-level-math-physics-and-cs-problems-2026-analysis" target="_blank">Blockchain.news — 2026 分析综述</a></li>
+  </ul>
+</section>
+
+<footer>
+  AI 论文每日精读 · 由 Claude 自动生成于 2026-07-02 · 素材语言：英文 · 呈现语言：中文 · 仅供研究参考
+</footer>
+
+</div>
+
+<script>
+  const ctx = document.getElementById('benchChart');
+  new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:['1x','2x','4x','8x','16x','32x','64x'],
+      datasets:[
+        {
+          label:'IMO-ProofBench (2025-07 Deep Think)',
+          data:[35,42,50,58,65,70,72],
+          borderColor:'#60a5fa',
+          backgroundColor:'rgba(96,165,250,0.15)',
+          tension:0.35,fill:false,pointRadius:3
+        },
+        {
+          label:'IMO-ProofBench (2026-01 Deep Think)',
+          data:[52,60,70,78,84,88,90],
+          borderColor:'#a78bfa',
+          backgroundColor:'rgba(167,139,250,0.15)',
+          tension:0.35,fill:false,pointRadius:3
+        },
+        {
+          label:'FutureMath Basic (PhD 级)',
+          data:[0,8,18,28,32,36,38],
+          borderColor:'#34d399',
+          backgroundColor:'rgba(52,211,153,0.15)',
+          tension:0.35,fill:false,pointRadius:3,borderDash:[6,4]
+        },
+        {
+          label:'Aletheia (PhD 级基准)',
+          data:[46,46,46,46,46,46,46],
+          borderColor:'#fbbf24',
+          borderDash:[3,3],
+          tension:0,fill:false,pointRadius:0
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:'#e5e7eb',font:{size:12}}},
+        tooltip:{backgroundColor:'#111827',borderColor:'#374151',borderWidth:1}
+      },
+      scales:{
+        x:{
+          title:{display:true,text:'推理时算力（相对倍数，对数刻度示意）',color:'#9ca3af'},
+          ticks:{color:'#9ca3af'},
+          grid:{color:'rgba(255,255,255,0.05)'}
+        },
+        y:{
+          title:{display:true,text:'专家评分（%）',color:'#9ca3af'},
+          ticks:{color:'#9ca3af'},
+          grid:{color:'rgba(255,255,255,0.05)'},
+          min:0,max:100
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

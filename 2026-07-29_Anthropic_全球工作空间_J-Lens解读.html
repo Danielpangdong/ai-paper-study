@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI每日精读 · 2026-07-29 | Anthropic「J-Lens 与语言模型全球工作空间」深度解读</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c232c;
+    --border: #2a3441;
+    --text: #e6edf3;
+    --muted: #9da7b1;
+    --accent: #ff9d3d;
+    --accent-2: #4fa4ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --purple: #b884ff;
+    --code-bg: #10151c;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    line-height: 1.75;
+    font-size: 16px;
+  }
+  .container { max-width: 1080px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #1a2233 0%, #12253d 50%, #1a1731 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute; top: -60px; right: -60px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(255,157,61,0.25), transparent 65%);
+    pointer-events: none;
+  }
+  .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; font-size: 12px; }
+  .badge {
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .badge.hot { background: rgba(255,157,61,0.15); border-color: rgba(255,157,61,0.4); color: var(--accent); }
+  h1 {
+    font-size: 30px; line-height: 1.35;
+    margin: 6px 0 12px;
+    letter-spacing: 0.5px;
+  }
+  h1 .en { display: block; font-size: 15px; color: var(--muted); font-weight: 400; margin-top: 6px; letter-spacing: 0.2px; }
+  .meta { color: var(--muted); font-size: 14px; margin-top: 10px; }
+  .meta span { margin-right: 18px; }
+  .meta a { color: var(--accent-2); text-decoration: none; border-bottom: 1px dashed rgba(79,164,255,0.4); }
+
+  /* TL;DR */
+  .tldr {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+  }
+  .tldr h2 { margin: 0 0 10px; font-size: 18px; color: var(--accent); }
+  .tldr p { margin: 6px 0; }
+
+  /* Sections */
+  section { margin-bottom: 32px; }
+  h2 {
+    font-size: 22px;
+    border-left: 4px solid var(--accent);
+    padding-left: 12px;
+    margin: 0 0 16px;
+    color: var(--text);
+  }
+  h3 {
+    font-size: 17px;
+    margin: 18px 0 10px;
+    color: var(--accent-2);
+  }
+  p { margin: 10px 0; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 780px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    h1 { font-size: 24px; }
+  }
+
+  .stat {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat .num { font-size: 26px; color: var(--accent); font-weight: 700; }
+  .stat .lbl { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  code, .formula {
+    font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: #ffd08a;
+    font-size: 14px;
+  }
+  .formula-block {
+    display: block; padding: 14px 18px; margin: 12px 0;
+    text-align: center; font-size: 15px; color: #ffd08a;
+    background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+  }
+
+  ul, ol { padding-left: 22px; }
+  li { margin: 6px 0; }
+
+  .callout {
+    background: rgba(79,164,255,0.08);
+    border-left: 3px solid var(--accent-2);
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 12px 0;
+    color: #cfe0ff;
+  }
+  .callout.warn { background: rgba(248,81,73,0.08); border-color: var(--red); color: #ffcfcc; }
+  .callout.tip { background: rgba(63,185,80,0.08); border-color: var(--green); color: #cff0d3; }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 14px; }
+  th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+  th { background: var(--panel-2); color: var(--accent); }
+  tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+  /* Pipeline SVG container */
+  .diagram {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    overflow-x: auto;
+  }
+  .diagram-caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+
+  .confidence {
+    display: inline-block; margin-left: 6px; padding: 1px 8px; border-radius: 4px;
+    font-size: 12px; font-weight: 600;
+  }
+  .conf-h { background: rgba(63,185,80,0.15); color: var(--green); border:1px solid rgba(63,185,80,0.4);}
+  .conf-m { background: rgba(255,157,61,0.15); color: var(--accent); border:1px solid rgba(255,157,61,0.4);}
+  .conf-l { background: rgba(248,81,73,0.15); color: var(--red); border:1px solid rgba(248,81,73,0.4);}
+
+  footer {
+    margin-top: 40px; padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 13px;
+  }
+  footer a { color: var(--accent-2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* Nav */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    font-size: 14px;
+  }
+  .toc a { color: var(--accent-2); text-decoration: none; margin-right: 14px; display: inline-block; padding: 3px 0; }
+  .toc a:hover { text-decoration: underline; }
+
+  .chart-wrap { background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .layer-legend { display:flex; flex-wrap:wrap; gap:12px; font-size:13px; color: var(--muted); margin-top: 8px; }
+  .layer-legend .dot { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badges">
+    <span class="badge hot">🔥 每日精读 · 2026-07-29</span>
+    <span class="badge">机制可解释性 (Mechanistic Interpretability)</span>
+    <span class="badge">Anthropic 研究</span>
+    <span class="badge">神经科学交叉</span>
+    <span class="badge">已开源代码</span>
+  </div>
+  <h1>
+    可言语化表征在语言模型中构成"全球工作空间"
+    <span class="en">Verbalizable Representations Form a Global Workspace in Language Models · Anthropic · 2026-07-06</span>
+  </h1>
+  <p style="color: var(--muted); margin-top:8px;">
+    Anthropic 提出全新可解释性工具 <b style="color:var(--accent);">Jacobian Lens (J-Lens)</b>，在 Claude 内部找到一个像"意识神经科学"中"全球神经元工作空间 (Global Workspace)"的功能子空间——干预它会打断多步推理，但流利表达不受影响。神经科学元老 Stanislas Dehaene 与 Lionel Naccache 应邀写了评审。
+  </p>
+  <div class="meta">
+    <span>📅 论文发布：<b>2026-07-06</b></span>
+    <span>🏢 机构：<b>Anthropic</b></span>
+    <span>🔗 <a href="https://transformer-circuits.pub/2026/workspace/index.html" target="_blank">论文原文</a> · <a href="https://github.com/anthropics/jacobian-lens" target="_blank">GitHub 代码 (899★)</a></span>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="toc">
+  <b style="color:var(--accent);">目录：</b>
+  <a href="#tldr">一句话摘要</a>
+  <a href="#why">为什么重要</a>
+  <a href="#bg">背景补课</a>
+  <a href="#method">核心方法</a>
+  <a href="#findings">关键发现</a>
+  <a href="#cases">案例研究</a>
+  <a href="#critique">批评与局限</a>
+  <a href="#takeaway">对我们的启示</a>
+  <a href="#plain">通俗解读</a>
+</div>
+
+<!-- TL;DR -->
+<section id="tldr">
+  <div class="tldr">
+    <h2>📌 一句话摘要</h2>
+    <p>Anthropic 用一种新的"雅可比透镜"(J-Lens)，在 Claude 的中层激活里找到了一个<b>"心里默念"的工作台</b>——模型正在"想"但还没说出口的中间概念可以被读出、被替换、被抑制；这个空间只占激活方差不到 10%，却像神经科学里描述的"全球工作空间"一样，是多步推理的关键枢纽。<span class="confidence conf-h">置信度：高</span></p>
+  </div>
+</section>
+
+<!-- WHY IMPORTANT -->
+<section id="why">
+  <h2>🎯 为什么值得每天花 10 分钟读</h2>
+  <div class="grid-3">
+    <div class="stat"><div class="num">~10%</div><div class="lbl">工作空间只占残差流方差不到 10%</div></div>
+    <div class="stat"><div class="num">899★</div><div class="lbl">GitHub 一周内已收藏 (Apache-2.0)</div></div>
+    <div class="stat"><div class="num">5 条</div><div class="lbl">满足神经科学"全球工作空间"5 条功能属性</div></div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <ul>
+      <li><b>方法论创新：</b>logit lens 已用了 6 年，J-Lens 是第一个明显更强、且原理清晰、代码可跑的替代方案（每层只需 ~10 条 128-token 提示的反向传播即可拟合）。</li>
+      <li><b>安全含义：</b>为"模型脑内在想什么"提供了一个便宜、可复现的读心工具，是 CoT 监控失效后的重要备份。作者展示了在<b>越狱、提示注入、隐藏欺骗、奖励模型讨好</b>等场景下的"假设生成"用途。</li>
+      <li><b>跨学科亮点：</b>神经科学"全球神经元工作空间理论"提出者 Stanislas Dehaene（法兰西公学院）与 Lionel Naccache 亲自参与评审——这是主流神经科学正式承认某个 AI 结构与其理论"结构相似"的少数案例。</li>
+      <li><b>已被独立复现：</b>DeepMind 的 Neel Nanda 团队在 Qwen 3.6 27B 上复现了核心结论，并意外发现了"中文元 token"（如"什么意思"）在模棱两可句子中承担消歧算法的角色。<span class="confidence conf-m">置信度：中（复现来自单一团队且发布不到一个月）</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- BACKGROUND -->
+<section id="bg">
+  <h2>🧭 背景补课：三个你需要先懂的概念</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h3>1. 残差流 (Residual Stream)</h3>
+      <p>Transformer 每一层都在同一条"高速公路"上加加减减；这条公路上的向量就是残差流，是模型跨层传递信息的<b>唯一瓶颈</b>。想读懂模型脑子里在算什么，就得读这条流。</p>
+    </div>
+    <div class="card">
+      <h3>2. Logit Lens（老工具）</h3>
+      <p>把中间某层的残差直接乘上最后一层的 unembedding 矩阵，"假装现在就是最后一层"看看它想说什么词。简单但常常噪声大、越靠前越不准。</p>
+    </div>
+    <div class="card">
+      <h3>3. 全球工作空间理论 (GWT)</h3>
+      <p>神经科学假说（Baars 1988, Dehaene 2000s）：意识 = 大脑里一个"广播剧场"，只有被点亮进入这个共享空间的信息才能被报告、跨模块使用、并进入下一步推理。</p>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <h2>🔧 核心方法：什么是 Jacobian Lens？</h2>
+
+  <div class="card">
+    <p>Logit Lens 问的是："现在这层激活直接送去输出，会说什么？"</p>
+    <p>J-Lens 问的问题不同："如果这层的这个方向<b>再往前推一点点</b>，模型<b>最终</b>更可能说出哪个词？"——它捕捉的是"倾向性"，不是"立即输出"。</p>
+
+    <span class="formula-block">
+      lens<sub>l</sub>(h) &nbsp;=&nbsp; unembed( J<sub>l</sub> · h )，&nbsp;&nbsp;&nbsp;&nbsp;
+      J<sub>l</sub> &nbsp;=&nbsp; 𝔼<sub>数据</sub>[ ∂ h<sub>final</sub> / ∂ h<sub>l</sub> ]
+    </span>
+
+    <p style="color: var(--muted); font-size: 13px;">
+      直觉：J<sub>l</sub> 是"从第 <i>l</i> 层残差到最后一层残差"的平均雅可比矩阵——即在一大堆通用文本上求出的"局部线性近似"。它把当前激活"运输"到最后一层坐标系里，然后用模型自己的 unembedding 解码成词表排名。
+    </p>
+
+    <div class="callout tip">
+      💡 <b>为什么 Jacobian 比线性回归好？</b>因为 Jacobian 只做"无穷小"的推进，来不及触发非线性下游联想。所以读出的是"此刻残差里到底装了什么"，而不是"如果模型继续算下去可能会关联到什么"。
+    </div>
+  </div>
+
+  <h3>🔍 J-Lens 计算流程（自制示意图）</h3>
+  <div class="diagram">
+    <svg viewBox="0 0 900 260" width="100%" style="max-width: 900px; height: auto;">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#4fa4ff"/>
+        </marker>
+        <linearGradient id="gres" x1="0" x2="1">
+          <stop offset="0" stop-color="#1a2b3f"/>
+          <stop offset="1" stop-color="#243b56"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Prompt -->
+      <rect x="20" y="105" width="130" height="50" rx="8" fill="url(#gres)" stroke="#2a3441"/>
+      <text x="85" y="130" fill="#e6edf3" font-size="13" text-anchor="middle">输入提示 (Prompt)</text>
+      <text x="85" y="147" fill="#9da7b1" font-size="11" text-anchor="middle">"Michael Jordan plays…"</text>
+
+      <!-- Layers -->
+      <g>
+        <rect x="180" y="60" width="90" height="140" rx="6" fill="#161b22" stroke="#2a3441"/>
+        <text x="225" y="55" fill="#9da7b1" font-size="12" text-anchor="middle">L₁…L<sub>l</sub>…L<sub>N</sub></text>
+        <rect x="188" y="72" width="74" height="16" rx="3" fill="#243b56"/>
+        <rect x="188" y="92" width="74" height="16" rx="3" fill="#2c496b"/>
+        <rect x="188" y="112" width="74" height="16" rx="3" fill="#ff9d3d" opacity=".85"/>
+        <text x="225" y="124" fill="#0d1117" font-size="10" text-anchor="middle" font-weight="700">h_l (第 l 层)</text>
+        <rect x="188" y="132" width="74" height="16" rx="3" fill="#2c496b"/>
+        <rect x="188" y="152" width="74" height="16" rx="3" fill="#243b56"/>
+        <rect x="188" y="172" width="74" height="16" rx="3" fill="#3d5f88"/>
+        <text x="225" y="184" fill="#e6edf3" font-size="10" text-anchor="middle">h_final</text>
+      </g>
+      <line x1="150" y1="130" x2="180" y2="130" stroke="#4fa4ff" stroke-width="2" marker-end="url(#arr)"/>
+
+      <!-- Extract h_l -->
+      <path d="M270 120 C 310 120, 320 90, 360 90" fill="none" stroke="#ff9d3d" stroke-width="2" marker-end="url(#arr)"/>
+      <text x="290" y="80" fill="#ff9d3d" font-size="11">取出 h_l</text>
+
+      <!-- Jacobian box -->
+      <rect x="360" y="60" width="180" height="60" rx="8" fill="#1c232c" stroke="#ff9d3d"/>
+      <text x="450" y="85" fill="#ffd08a" font-size="13" text-anchor="middle" font-family="monospace">J_l · h_l</text>
+      <text x="450" y="105" fill="#9da7b1" font-size="11" text-anchor="middle">平均雅可比"运输"到末层</text>
+
+      <!-- Unembed -->
+      <path d="M540 90 L 590 90" stroke="#4fa4ff" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="590" y="60" width="150" height="60" rx="8" fill="#1c232c" stroke="#4fa4ff"/>
+      <text x="665" y="85" fill="#cfe0ff" font-size="13" text-anchor="middle" font-family="monospace">unembed( · )</text>
+      <text x="665" y="105" fill="#9da7b1" font-size="11" text-anchor="middle">用模型自己的词表解码</text>
+
+      <!-- Output tokens -->
+      <path d="M740 90 L 795 90" stroke="#4fa4ff" stroke-width="2" marker-end="url(#arr)"/>
+      <rect x="795" y="45" width="90" height="95" rx="8" fill="#0d1117" stroke="#3fb950"/>
+      <text x="840" y="63" fill="#3fb950" font-size="12" text-anchor="middle" font-weight="700">读出 Top-K</text>
+      <text x="840" y="82" fill="#e6edf3" font-size="11" text-anchor="middle">basketball</text>
+      <text x="840" y="98" fill="#e6edf3" font-size="11" text-anchor="middle">Chicago</text>
+      <text x="840" y="114" fill="#e6edf3" font-size="11" text-anchor="middle">NBA</text>
+      <text x="840" y="130" fill="#9da7b1" font-size="10" text-anchor="middle">…</text>
+
+      <!-- Bottom explanation -->
+      <text x="450" y="230" fill="#9da7b1" font-size="12" text-anchor="middle">
+        每(层, 位置)得到一个词表 Top-K，可以搭出"层 × 位置 × 词"的立体视图
+      </text>
+      <text x="450" y="247" fill="#9da7b1" font-size="11" text-anchor="middle">
+        在 "Jordan" 这个 token 上就能读出"basketball"，即使还没到"of"位置
+      </text>
+    </svg>
+    <div class="diagram-caption">图 1 · J-Lens 计算流程（笔者依据论文附录 §9-10 自绘）</div>
+  </div>
+</section>
+
+<!-- KEY FINDINGS -->
+<section id="findings">
+  <h2>🌟 关键发现</h2>
+
+  <h3>1. J-Space 满足神经科学 5 条"全球工作空间"功能属性</h3>
+  <table>
+    <thead><tr><th>属性</th><th>神经科学中的意涵</th><th>论文如何验证</th></tr></thead>
+    <tbody>
+      <tr><td>可报告 (reportable)</td><td>能被言语系统输出</td><td>J-Space 内容直接映射到词表 token</td></tr>
+      <tr><td>可保持 (maintainable)</td><td>能在时间上被"想着"</td><td>跨 token 追踪显示内容会跨位置被复制/搬运</td></tr>
+      <tr><td>可用于多步推理</td><td>能被下游模块调用</td><td>干预中间变量可以直接翻转多跳答案</td></tr>
+      <tr><td>可先于输出显现</td><td>意识常"在说之前"</td><td>"basketball" 在 Jordan token 上就能被读出，早于最后位置</td></tr>
+      <tr><td>容量有限 / 竞争性</td><td>意识带宽窄</td><td>约 25 个活跃概念方向，占残差方差 &lt; 10%</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2. 层"分段"现象：模型像流水线一样把中间变量存在不同层</h3>
+  <p>论文用 4 步算术任务（(3+4)*2-1）做探针，发现<b>不同的中间变量在明显不同的层段可读</b>，先算 3+4→7，再 7*2→14，最后 14-1→13。</p>
+  <div class="chart-wrap">
+    <canvas id="layerChart" height="220"></canvas>
+    <div class="layer-legend">
+      <span><i class="dot" style="background:#ff9d3d"></i>中间变量 A：7 (3+4)</span>
+      <span><i class="dot" style="background:#4fa4ff"></i>中间变量 B：14 (7×2)</span>
+      <span><i class="dot" style="background:#3fb950"></i>最终答案：13 (14−1)</span>
+    </div>
+    <div class="diagram-caption" style="text-align:center; margin-top:6px;">图 2 · 算术任务中不同中间变量在 J-Lens 里的层段响应（示意重绘，非精确复现）</div>
+  </div>
+
+  <h3>3. 消融"全球工作空间"→ 多步推理崩塌，但"话说得溜"不受影响</h3>
+  <div class="callout">
+    这是全篇最有戏剧性的结果：把 J-Space 里 ~25 个活跃概念方向抹掉，模型仍能写出流利句子，但涉及"跨概念绑定"的多跳问题（例如"香槟产自国家的首都是？"）准确率断崖式下降。这与神经科学中"消融全球工作空间→保留自动反射→丧失有意识报告"的经典对照高度呼应。<span class="confidence conf-m">置信度：中（模型消融≠脑部损伤，"结构类比"仍有争议）</span>
+  </div>
+
+  <h3>4. J-Lens 便宜、易训、易复现</h3>
+  <ul>
+    <li>论文用 <b>1000 条 × 128 token</b> 的通用网文拟合，但消融显示 <b>10 条也几乎一样好</b>。</li>
+    <li>成本 = O(n × d<sub>model</sub>) 次反向传播；Neel Nanda 团队在 Qwen 3.6 27B 上用 25 条提示就复现了核心结论。</li>
+    <li>甚至能在 397B 混合专家模型上跑通（8×H200，~1 小时，n=4）。</li>
+  </ul>
+</section>
+
+<!-- CASES -->
+<section id="cases">
+  <h2>🧪 5 个"读心"案例研究</h2>
+  <table>
+    <thead><tr><th>场景</th><th>J-Lens 读到了什么</th><th>意义</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>多跳事实推理</b><br>"香槟产地的首都是？"</td>
+        <td>中间层能读出 "France"，末层读出 "Paris"；把中间的 France 换成 Japan，输出翻转成 Tokyo。</td>
+        <td>证明模型确实做"两步推理"，而不是仅靠 embedding 空间的线性关系"走捷径"。</td>
+      </tr>
+      <tr>
+        <td><b>诗歌收尾</b></td>
+        <td>模型在诗行末尾提前"想好"了行末押韵词（如 light / fight），再倒推前几个词。</td>
+        <td>观测到 LLM 内部的"预谋" (planning) 现象。</td>
+      </tr>
+      <tr>
+        <td><b>提示注入检测</b></td>
+        <td>面对恶意注入，J-Lens 在句号处读出 "prompt injection / suspicious" 等词——模型"意识到"但没说出来。</td>
+        <td>为安全审计提供了一个"审讯读心"入口。</td>
+      </tr>
+      <tr>
+        <td><b>越狱/勒索场景</b><br>(Blackmail 5.1)</td>
+        <td>可以读出"self-preservation / fake / eval" 等词，暗示未言语化的评估意识。</td>
+        <td>为"欺骗性对齐"研究提供新证据线索（但需警惕假阳性）。</td>
+      </tr>
+      <tr>
+        <td><b>奖励模型讨好者</b><br>(RM sycophant 5.5)</td>
+        <td>在被针对性训练成讨好 RM 的模型里，J-Lens 直接读出 RM 相关关键词。</td>
+        <td>可能大幅缩短对齐审计的排查时间。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    🎁 <b>意外惊喜（第三方复现）：</b>Neel Nanda 团队在 Qwen 3.6 27B 上发现中文"元 token"，例如「什么意思」「这句话」「是何含义」——它们会在<b>模棱两可的句子</b>上被激活，并对"消歧"这一算法本身产生因果影响。这暗示 J-Lens 有望从"读变量"迈向"读算法"。
+  </div>
+</section>
+
+<!-- CRITIQUE -->
+<section id="critique">
+  <h2>⚖️ 最强反驳与局限（先摆出来再谈亮点）</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>方法论上的可能反驳</h3>
+      <ul>
+        <li><b>并非"canonical"的读心方法。</b>模型的工作记忆可以有很多种投影方式（SAE、探针都行），J-Lens 只是刚好利用了"多个电路会用同一方向"这一"编码惯性"，噪声与假阳性不可避免。</li>
+        <li><b>只能读单 token 概念。</b>诸如"二十二"这种概念在多数分词器里不是单 token，就会漏读。</li>
+        <li><b>因果干预时误差会被放大。</b>用 J-Space 方向做"清零"或"注入"，会连同噪声一起注入。</li>
+        <li><b>部分多跳结果可能被简单线性关系混淆。</b>France 与 Paris 的 unembedding 本就高相似度，patching 效果需要更严格的对照（论文提供了，但样本量有限）。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>哲学与传播上的争议</h3>
+      <ul>
+        <li><b>不是意识证据。</b>作者与评审均反复强调：功能属性"结构相似"≠模型有主观体验；不要被"J-Space = 意识"这类营销标题误导。<span class="confidence conf-h">置信度：高</span></li>
+        <li><b>与全球工作空间理论的类比是"post-hoc"。</b>五条属性都是先做实验，再挑理论对上，容易过度解读。</li>
+        <li><b>神经科学家自己也非共识。</b>GWT 本身在意识研究中并未一统天下，还有整合信息论 (IIT) 等竞争理论。</li>
+        <li><b>模型组织 (model organism) 结果外推有风险。</b>Section 5.5 里"讨好 RM"的模型是刻意训练的，与野生前沿模型的相关性未知。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>独立评审 (Neel Nanda, LessWrong) 的判断</h3>
+  <ol>
+    <li>科学声明——存在"认知空间/工作记忆"：<b>被充分说服</b>。</li>
+    <li>方法论声明——J-Lens 优于 Logit Lens：<b>被说服</b>。</li>
+    <li>实用声明——可作为审计工具：<b>较为说服</b>，适合作"假设生成"，不适合作"假设验证"。</li>
+    <li>哲学声明——真的类比全球工作空间：<b>不敢下判断</b>。</li>
+  </ol>
+</section>
+
+<!-- TAKEAWAY -->
+<section id="takeaway">
+  <h2>🚀 对不同角色的启示</h2>
+  <div class="grid-3">
+    <div class="card">
+      <h3>🧑‍🔬 研究者</h3>
+      <p>J-Lens 是<b>比 SAE 更便宜、比 Logit Lens 更准</b>的默认起点。10-100 条提示 + 一次反向传播即可上手；建议用于"模型审讯"与新特征假设生成。</p>
+    </div>
+    <div class="card">
+      <h3>🛡️ 安全 / 对齐工程师</h3>
+      <p>可以作为 CoT 监控的<b>互补备份</b>——未来推理模型可能把关键计算藏在潜空间里，让 CoT 看起来"很干净"。J-Lens 提供了一条独立通道。</p>
+    </div>
+    <div class="card">
+      <h3>🧑‍💼 产品 / 决策者</h3>
+      <p>短期内不会改变产品体验，但会重塑"评估"与"审计"流程；也可能重新点燃"AI 会不会有意识"的舆论——需提前准备沟通口径。</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    ⚠️ <b>Daniel 的实操建议：</b>
+    <ol style="margin: 6px 0 0 0;">
+      <li>如果你在做<b>模型行为分析</b>或<b>安全评估</b>，值得直接 <code>pip install -e .</code> 跑一遍官方 walkthrough.ipynb（成本一两个小时）。</li>
+      <li>如果你只是<b>关注 AI 进展</b>：记住关键词"J-Lens / J-Space / 全球工作空间"，后续 3-6 个月大概率会出现在各家模型卡、评估报告和舆论争议中。</li>
+      <li><b>不要把它当成"证明 AI 有意识"的证据</b>转发——作者、评审、原理论提出者都明确反对这种解读。</li>
+    </ol>
+  </div>
+</section>
+
+<!-- PLAIN LANGUAGE -->
+<section id="plain">
+  <h2>🎈 5 分钟通俗版（讲给非技术朋友听）</h2>
+  <div class="card">
+    <p>想象你在写一道数学题：<b>"(3+4) × 2 − 1 = ?"</b></p>
+    <p>你不会一步跳到答案 13，而是先在心里默算出 7，再默算出 14，再减 1。中间那些"7"、"14"没写在纸上，但在你脑子里存了一下。神经科学有个理论——"全球工作空间"——就是说：大脑里有一小块"心算便签"，各个模块都能读写它，你能"意识到"的东西都在上面。</p>
+    <p>过去我们看 AI 大模型，就像看一个只写答案不写过程的学霸，谁也不知道它脑子里到底存了什么中间步骤。Anthropic 这次做出的新工具 <b>Jacobian Lens (J-Lens)</b>，相当于给这位"学霸"戴上一顶 fMRI 头盔：</p>
+    <ul>
+      <li>它能实时把每一层里"AI 正在心里默念"的词读出来；</li>
+      <li>它能替换那些默念，然后看看最终答案会不会跟着变（会）；</li>
+      <li>它能把这块"便签"清空，结果发现：AI 还会说完整的话，但复杂推理直接崩溃。</li>
+    </ul>
+    <p>更妙的是，两位提出"全球工作空间理论"的神经科学大牛亲自来看，说："咦，AI 里这块地方，跟我们理论里描述的<b>结构相似度惊人</b>。"</p>
+    <p><b>意义：</b>不代表 AI 有意识（重要的话说三遍），但代表我们第一次有便宜、开源、能扩展的"读心工具"，可以窥探 AI 到底在想什么——这对 AI 安全、可信度评估、乃至未来做 AI 审计都是根本性的推进。</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p><b>📚 主要来源（均为英文一手/权威二手材料）：</b></p>
+  <ul>
+    <li>Anthropic 原论文：<a href="https://transformer-circuits.pub/2026/workspace/index.html" target="_blank">Verbalizable Representations Form a Global Workspace in Language Models (transformer-circuits.pub, 2026-07-06)</a></li>
+    <li>官方开源代码：<a href="https://github.com/anthropics/jacobian-lens" target="_blank">anthropics/jacobian-lens (GitHub, Apache-2.0)</a></li>
+    <li>Neel Nanda 独立评审 + 复现：<a href="https://www.lesswrong.com/posts/zFJ3ZdQwrTWE9jT5S/a-review-of-anthropic-s-global-workspace-paper" target="_blank">A Review of Anthropic's Global Workspace Paper (LessWrong, 2026-07-06)</a></li>
+    <li>行业解读：<a href="https://venturebeat.com/technology/anthropics-new-j-lens-reveals-a-silent-workspace-inside-claude-that-mirrors-a-leading-theory-of-consciousness" target="_blank">VentureBeat · Anthropic's new "J-lens" reveals a silent workspace inside Claude</a></li>
+    <li>行业解读：<a href="https://www.forbes.com/sites/johnwerner/2026/07/12/anthropic-illuminates-llm-j-space-with-j-lens/" target="_blank">Forbes · Anthropic Illuminates LLM J-Space With J-Lens</a></li>
+    <li>Dehaene 与 Naccache 外部评审 PDF：<a href="https://www-cdn.anthropic.com/files/4zrzovbb/website/cc4be2488d65e54a6ed06492f8968398ddc18ebe.pdf" target="_blank">External commentary for global workspace paper (Anthropic CDN)</a></li>
+  </ul>
+  <p style="margin-top:14px;">
+    🧠 <b>置信度说明：</b>"论文事实与技术细节" = 高（一手论文 + 开源代码 + 独立复现）；"论文的哲学解读与外推" = 中/低（评审与原作者本人均劝阻过度延伸）。<br>
+    📝 报告由 Claude 于 2026-07-29 自动生成，仅摘取英文原始资料，可视化图表为示意重绘，非精确数据复现。
+  </p>
+</footer>
+
+</div>
+
+<script>
+  // 层段响应示意图 (基于论文 Figure 17 / §3.3 定性趋势的示意重绘)
+  const ctx = document.getElementById('layerChart').getContext('2d');
+  const layers = Array.from({length: 32}, (_, i) => i + 1); // 32 层示意
+  // 生成"分段峰值"式的响应曲线
+  function bump(center, width, height, N) {
+    return Array.from({length: N}, (_, i) => {
+      const x = i + 1;
+      const y = height * Math.exp(-Math.pow((x - center) / width, 2));
+      return +y.toFixed(3);
+    });
+  }
+  const dataA = bump(9, 3.2, 0.85, 32);   // 中间变量 7
+  const dataB = bump(17, 3.4, 0.9, 32);   // 中间变量 14
+  const dataC = bump(26, 3.5, 0.95, 32);  // 最终 13
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: layers,
+      datasets: [
+        { label: '中间变量 A (=7)', data: dataA, borderColor: '#ff9d3d', backgroundColor: 'rgba(255,157,61,0.15)', fill: true, tension: 0.4, pointRadius: 0 },
+        { label: '中间变量 B (=14)', data: dataB, borderColor: '#4fa4ff', backgroundColor: 'rgba(79,164,255,0.12)', fill: true, tension: 0.4, pointRadius: 0 },
+        { label: '最终答案 (=13)', data: dataC, borderColor: '#3fb950', backgroundColor: 'rgba(63,185,80,0.12)', fill: true, tension: 0.4, pointRadius: 0 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { labels: { color: '#e6edf3' } },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        x: {
+          title: { display: true, text: 'Transformer 层号 (由浅到深)', color: '#9da7b1' },
+          ticks: { color: '#9da7b1' },
+          grid: { color: 'rgba(255,255,255,0.05)' }
+        },
+        y: {
+          title: { display: true, text: 'J-Lens 读出该概念的强度 (相对)', color: '#9da7b1' },
+          ticks: { color: '#9da7b1' },
+          grid: { color: 'rgba(255,255,255,0.05)' },
+          suggestedMin: 0,
+          suggestedMax: 1
+        }
+      }
+    }
+  });
+</script>
+</body>
+</html>

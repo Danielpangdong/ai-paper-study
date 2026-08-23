@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-08-04 AI每日精读 · OpenAI Astra：一个未发布模型解决十道尘封数十年的数学难题</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#121a33;
+    --panel2:#1a2447;
+    --line:#243069;
+    --accent:#7aa2ff;
+    --accent2:#7ef0c7;
+    --warn:#f5b556;
+    --danger:#ff6b6b;
+    --text:#e6ebff;
+    --muted:#93a0c9;
+    --high:#7ef0c7;
+    --mid:#f5b556;
+    --low:#ff6b6b;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:linear-gradient(180deg,#070a1a 0%,#0b1020 40%,#0b1020 100%);color:var(--text);font-family:"PingFang SC","Microsoft Yahei","Helvetica Neue",Arial,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .container{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+
+  /* HERO */
+  .hero{position:relative;padding:56px 40px;border-radius:24px;overflow:hidden;background:radial-gradient(1200px 500px at 20% -10%,rgba(122,162,255,.25),transparent 60%),radial-gradient(900px 500px at 90% 0%,rgba(126,240,199,.18),transparent 60%),linear-gradient(135deg,#101838,#0b1020);border:1px solid var(--line)}
+  .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);background-size:22px 22px;opacity:.6;pointer-events:none}
+  .badge{display:inline-flex;gap:8px;align-items:center;padding:6px 12px;border-radius:999px;background:rgba(122,162,255,.15);color:var(--accent);font-size:12px;border:1px solid rgba(122,162,255,.35)}
+  .hero h1{font-size:40px;line-height:1.25;margin:18px 0 10px;font-weight:800;letter-spacing:.5px}
+  .hero h2{font-size:18px;color:var(--muted);font-weight:400;margin:0 0 24px}
+  .meta{display:flex;flex-wrap:wrap;gap:16px 28px;font-size:13px;color:var(--muted);margin-bottom:26px}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--accent2)}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px}
+  .kpi{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px}
+  .kpi .num{font-size:28px;font-weight:800;color:var(--accent2);letter-spacing:.5px}
+  .kpi .lbl{font-size:12px;color:var(--muted);margin-top:2px}
+
+  /* SECTION */
+  section{margin-top:40px}
+  h3.sec{display:flex;align-items:center;gap:12px;font-size:22px;margin:0 0 18px;padding-left:14px;border-left:4px solid var(--accent);letter-spacing:.5px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px}
+  .card + .card{margin-top:14px}
+
+  /* TL;DR */
+  .tldr{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+  .tldr .box{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px}
+  .tldr h4{margin:0 0 10px;font-size:15px;color:var(--accent2);letter-spacing:.5px}
+  .confidence{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .tag{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted)}
+  .tag.h{color:#0b1020;background:var(--high);border-color:transparent;font-weight:700}
+  .tag.m{color:#0b1020;background:var(--mid);border-color:transparent;font-weight:700}
+  .tag.l{color:#fff;background:var(--danger);border-color:transparent;font-weight:700}
+
+  /* GRID OF 10 */
+  .grid10{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .item{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative;transition:.2s}
+  .item:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .item .idx{position:absolute;top:-14px;left:16px;background:linear-gradient(135deg,var(--accent),#4d78ff);color:#0b1020;font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;letter-spacing:.5px}
+  .item h4{margin:6px 0 6px;font-size:15px;color:var(--accent2)}
+  .item .en{font-size:12px;color:var(--muted);margin:0 0 8px}
+  .item p{margin:0;font-size:13.5px;color:#c9d1ec}
+  .field{display:inline-block;font-size:11px;padding:3px 8px;background:rgba(122,162,255,.12);color:var(--accent);border-radius:6px;margin-top:8px}
+
+  /* COST + STATS */
+  .stats-row{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
+  .chart-wrap{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
+  .chart-wrap h4{margin:0 0 8px;font-size:15px;color:var(--accent2)}
+  .chart-wrap .sub{font-size:12px;color:var(--muted);margin-bottom:10px}
+  .chart-holder{position:relative;height:280px}
+
+  /* DEEP DIVE */
+  .deep{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+  .deep h4{margin:0 0 10px;font-size:16px;color:var(--accent2)}
+  .deep .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .deep .cell{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .deep .cell b{color:var(--accent);font-size:13px;letter-spacing:.5px}
+  .deep .cell p{margin:6px 0 0;font-size:13.5px;color:#c9d1ec}
+
+  /* CRITIQUE */
+  .critique{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .critique .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .critique .pro{border-left:4px solid var(--high)}
+  .critique .con{border-left:4px solid var(--warn)}
+  .critique h4{margin:0 0 8px;font-size:15px}
+  .critique ul{margin:0;padding-left:18px;font-size:13.5px;color:#c9d1ec}
+  .critique li{margin:6px 0}
+
+  /* TIMELINE */
+  .timeline{position:relative;margin-top:16px;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+  .tl-item{position:relative;margin:12px 0;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+  .tl-item::before{content:"";position:absolute;left:-24px;top:16px;width:12px;height:12px;background:var(--accent2);border-radius:50%;box-shadow:0 0 0 4px rgba(126,240,199,.15)}
+  .tl-item .yr{font-weight:700;color:var(--accent);font-size:13px;margin-right:8px}
+  .tl-item span.txt{font-size:13.5px;color:#c9d1ec}
+
+  /* SOURCES */
+  .sources{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 22px}
+  .sources ul{margin:8px 0 0;padding-left:18px}
+  .sources li{margin:6px 0;font-size:13.5px}
+  footer{margin-top:32px;text-align:center;color:var(--muted);font-size:12px}
+
+  /* RESPONSIVE */
+  @media (max-width: 860px){
+    .hero{padding:32px 22px}
+    .hero h1{font-size:28px}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .tldr,.grid10,.deep .row,.critique,.stats-row{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <span class="badge">● 2026-08-04 · AI 每日精读 · 第 1 期</span>
+    <h1>OpenAI Astra：一个未发布的模型，一口气解决十道尘封数十年的数学难题</h1>
+    <h2>发布日：2026-08-01 · 来源：openai.com · 领域：几何、编码理论、算术电路复杂性、群论、算子代数、量子复杂性、格密码、极值组合</h2>
+    <div class="meta">
+      <span><span class="dot"></span>作者机构：OpenAI</span>
+      <span><span class="dot"></span>论文长度：249 页手稿 + Lean 机器可验证证书</span>
+      <span><span class="dot"></span>推理总花费：约 2,000 美元 API 费用</span>
+      <span><span class="dot"></span>发布形式：预印本 + GitHub 开源 Lean 证书</span>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="num">10</div><div class="lbl">被推进/解决的开放问题</div></div>
+      <div class="kpi"><div class="num">$2K</div><div class="lbl">运行推理的 API 成本</div></div>
+      <div class="kpi"><div class="num">249</div><div class="lbl">页最终手稿</div></div>
+      <div class="kpi"><div class="num">10+ 年</div><div class="lbl">这些问题此前的停滞时间</div></div>
+    </div>
+  </div>
+
+  <!-- TL;DR -->
+  <section>
+    <h3 class="sec">一分钟速览（TL;DR）</h3>
+    <div class="tldr">
+      <div class="box">
+        <h4>结论</h4>
+        <p>OpenAI 用一个尚未发布的内部模型（代号 <b>Astra</b>，被外界推测为 GPT-6 家族）产出了十份数学与理论计算机领域的新结果，涵盖<b>球堆积、二元/球面码、非 sofic 群、Connes 刚性猜想、算术电路下界、量子平行重复、最近向量问题（CVP）、Ehrhart 体积猜想、多色 Ramsey 数、极值图论</b>。每份证明都用 <b>Lean 4</b> 形式化，任何人都能在几秒内独立机器校验。</p>
+        <p style="margin-top:10px">这不是"模型给了一个看起来对的猜想"，而是——如果 Lean 证书成立——<b>逻辑步骤已被计算机逐行验证</b>。这在方法论上，与以往所有"AI 参与数学"的新闻是量级差别。</p>
+        <div class="confidence">
+          <span class="tag">事实：Lean 证书已在 GitHub 公开 <b>置信度：高</b></span>
+          <span class="tag">推断：这些结果的"数学价值"仍待专家评估 <b>置信度：中</b></span>
+          <span class="tag">观点：这是 LLM 首次接近专业研究数学家 <b>置信度：中</b></span>
+        </div>
+      </div>
+      <div class="box">
+        <h4>为什么值得今天读</h4>
+        <p>1. <b>方法论转折</b>：机器可验证证书让"同行评审"这一环节部分被机器接管——问题不再是"我是否相信作者"，而是"陈述是否表达了原问题"。</p>
+        <p>2. <b>成本颠覆</b>：解出这十道题的推理开销仅约 <b>2,000 美元</b>，意味着专业数学研究首次被拉入"可批量采购"的价格区间。</p>
+        <p>3. <b>产品指向</b>：Astra 是 OpenAI 明确点名的"下一代主力模型家族"，此次发布是产品预热，也是能力宣告。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT ARE THE 10 -->
+  <section>
+    <h3 class="sec">十项结果：一句话讲清每一项做了什么</h3>
+    <p style="color:var(--muted);margin:-6px 0 16px;font-size:13.5px">下面每张卡片的英文原名来自 OpenAI 原文，中文解读为便于非专业读者理解已做通俗化改写。<b>括号内为"通俗理解"</b>，非严格数学定义。</p>
+    <div class="grid10">
+      <div class="item">
+        <span class="idx">01</span>
+        <h4>高维球堆积的新上界</h4>
+        <p class="en">High-dimensional sphere packing — bounds down to the Cohn–Elkies threshold.</p>
+        <p>把等大小的球扔进 n 维空间里能塞多密？1978 年以来通用上界几乎没动过。Astra 把它一路收紧到 Cohn–Elkies 阈值。<br><em>（想象搬家时怎样最省空间——这题定义了理论极限。）</em></p>
+        <span class="field">几何 / 编码理论</span>
+      </div>
+      <div class="item">
+        <span class="idx">02</span>
+        <h4>二元码与球面码规模的指数级改进</h4>
+        <p class="en">Binary and spherical codes — exponentially improved size bounds.</p>
+        <p>给定最小汉明距离，最多能容纳多少码字？直接影响纠错码、通信、存储的理论上限。<br><em>（Wi-Fi、卫星、SSD 背后的数学地基被抬高了一层。）</em></p>
+        <span class="field">编码理论</span>
+      </div>
+      <div class="item">
+        <span class="idx">03</span>
+        <h4>非 sofic 群的首个显式构造</h4>
+        <p class="en">Non-sofic groups — an explicit construction.</p>
+        <p>Gromov 在 1999 年提出"sofic 群"概念后，"是否所有群都 sofic"悬置了 27 年。Astra 给出反例。<br><em>（数学界原本连一个反例都找不到，现在有了。）</em></p>
+        <span class="field">群论</span>
+      </div>
+      <div class="item">
+        <span class="idx">04</span>
+        <h4>反驳 Connes 刚性猜想</h4>
+        <p class="en">Disproof of Connes's rigidity conjecture.</p>
+        <p>关于"某些群能否被它的 von Neumann 代数唯一决定"，这一猜想被推翻。<br><em>（算子代数领域数十年的"默认假设"被摘掉了。）</em></p>
+        <span class="field">算子代数 / 冯诺依曼代数</span>
+      </div>
+      <div class="item">
+        <span class="idx">05</span>
+        <h4>永久式的算术电路新下界</h4>
+        <p class="en">Arithmetic circuit complexity — n⁴/log n formula lower bound for the permanent.</p>
+        <p>"永久式（permanent）"是与行列式形似、但硬得多的多项式。给出更强的电路下界，是复杂性理论的核心方向。<br><em>（离证明"P ≠ NP"的家族问题又近一步——虽然还远。）</em></p>
+        <span class="field">复杂性理论</span>
+      </div>
+      <div class="item">
+        <span class="idx">06</span>
+        <h4>量子平行重复定理（一般双人纠缠博弈）</h4>
+        <p class="en">Exponential parallel repetition for two-player quantum games.</p>
+        <p>把经典复杂性中的一个基础原理，扩展到"量子纠缠"环境下的一般情况。<br><em>（量子密码学与量子交互证明的重要工具箱新增一件。）</em></p>
+        <span class="field">量子复杂性</span>
+      </div>
+      <div class="item">
+        <span class="idx">07</span>
+        <h4>最近向量问题（CVP）的多项式因子近似困难性</h4>
+        <p class="en">Closest vector problem — polynomial-factor hardness of approximation.</p>
+        <p>CVP 是后量子密码学（尤其格密码）的核心难题。近似困难性的增强，直接影响我们"未来加密算法能扛多久"。<br><em>（今天你手机里的 TLS，将来靠格密码守夜——这条底线被抬高了。）</em></p>
+        <span class="field">格密码 / 后量子安全</span>
+      </div>
+      <div class="item">
+        <span class="idx">08</span>
+        <h4>Ehrhart 体积猜想</h4>
+        <p class="en">Ehrhart's volume conjecture — max volume with a single interior lattice point.</p>
+        <p>确定"内部只包含一个格点、且质心就是这个格点"的凸体最大体积——在每个维度上给出。<br><em>（离散几何里的一个老大难，被系统解决。）</em></p>
+        <span class="field">离散几何</span>
+      </div>
+      <div class="item">
+        <span class="idx">09</span>
+        <h4>多色 Ramsey 数的超指数下界</h4>
+        <p class="en">Multicolor Ramsey numbers — superexponential lower bound. Erdős #183.</p>
+        <p>直接解决 <b>Erdős 第 183 号问题</b>——即"用 k 种颜色染完全图，需要多少顶点才能保证出现单色三角形"的下界。<br><em>（Erdős 一生留下 1000+ 问题，这一题他悬赏了 250 美元。）</em></p>
+        <span class="field">极值组合 / Ramsey 理论</span>
+      </div>
+      <div class="item">
+        <span class="idx">10</span>
+        <h4>极值数猜想：紧性与退化猜想</h4>
+        <p class="en">Extremal number conjectures — compactness & degeneracy. Erdős #146, #180.</p>
+        <p>一举解决 <b>Erdős 第 146 号 和 第 180 号问题</b>。<br><em>（Erdős 问题清单又被划掉三道，本次共 #146 / #180 / #183。）</em></p>
+        <span class="field">极值图论</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section>
+    <h3 class="sec">量化对比：这次到底"炸"在哪里</h3>
+    <div class="stats-row">
+      <div class="chart-wrap">
+        <h4>推理成本 vs. 人力对照（单位：美元）</h4>
+        <div class="sub">2,000 美元 API 推理 ≈ 一个博士生 1 周的工资中位数（美国）。以往一篇顶刊数学论文，往往对应数月甚至数年的人力投入。</div>
+        <div class="chart-holder"><canvas id="costChart"></canvas></div>
+      </div>
+      <div class="chart-wrap">
+        <h4>十道题所属领域分布</h4>
+        <div class="sub">覆盖八个不同的数学与 TCS 子领域，广度是过去任何一次"AI 数学新闻"都没有的。</div>
+        <div class="chart-holder"><canvas id="fieldChart"></canvas></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEEP DIVE -->
+  <section>
+    <h3 class="sec">深挖：三点方法论上的"新东西"</h3>
+    <div class="deep">
+      <div class="row">
+        <div class="cell">
+          <b>#1  Lean 4 机器可验证证书</b>
+          <p>每份证明都被翻译为 Lean 4 定理证明器可接受的严格形式。任何研究者只需在自己机器上跑一遍 <code>lake build</code>，若一步不成立，编译器立即拒收。<br>——同行评审首次可以"客观化"：不再需要说服委员会，只需说服编译器。</p>
+        </div>
+        <div class="cell">
+          <b>#2  推理即产品：Astra 的"agent 化"</b>
+          <p>OpenAI 明确把 Astra 定位为"允许多个 AI agent 协作解决大问题"的模型家族。这意味着单次 API 调用背后，是一个规划-探索-回溯-形式化的 agent 循环，而非单轮生成。</p>
+        </div>
+        <div class="cell">
+          <b>#3  人机分工的显式声明</b>
+          <p>OpenAI 罕见地公开说明分工：<b>数学论证由模型生成</b>；<b>手稿撰写与 Lean 形式化由人+模型协作完成</b>。他们承担正确性责任，但拒绝把作者署名"洗成"人类。这是对 Leiden Declaration 的直接回应。</p>
+        </div>
+        <div class="cell">
+          <b>#4  同类工作的历史线</b>
+          <p>2025 年 GPT-5 曾被 OpenAI 高管声称"解决 10 个 Erdős 问题"，事后被 Erdős 数据库维护者 Thomas Bloom 指出实为"检索到已有论文"，声明撤回。<br>——这次 Lean 证书 + 249 页手稿 + reasoning walkthrough，就是对上次翻车的直接回应。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CRITIQUE -->
+  <section>
+    <h3 class="sec">最强反驳：先给"泼冷水"的人说话</h3>
+    <div class="critique">
+      <div class="box con">
+        <h4>⚠ 泼冷水的四个理由</h4>
+        <ul>
+          <li><b>Lean 证书 ≠ 数学重要性。</b>编译器只检查"从公理到结论的逻辑无漏洞"，不判断"这个结论在数学上是否本来就是想问的"。有可能证明了一个技术上等价但语义上偏移的陈述。</li>
+          <li><b>尚未通过同行评审。</b>OpenAI 也承认：需要专业数学家判断"每个 formal statement 是否表达了原开放问题"，以及"这一结果是否在学科语境中真的关键"。</li>
+          <li><b>公司公告 ≠ 独立结论。</b>OpenAI 有产品预热动机，Astra 尚未发布；这次是"能力 demo"性质，缺乏第三方复现。</li>
+          <li><b>历史前科。</b>2025 年 GPT-5 的"10 个 Erdős 问题"事件，让整个数学界对 OpenAI 的措辞高度警惕（Thomas Bloom 事件）。</li>
+        </ul>
+      </div>
+      <div class="box pro">
+        <h4>✓ 但为什么这次仍然不同</h4>
+        <ul>
+          <li><b>可即时、无需信任地验证。</b>Lean 证书公开在 GitHub（openai/ten-proofs），任何人都能在数分钟内独立机器校验——这是过去任何 AI 数学声明都做不到的。</li>
+          <li><b>OpenAI 主动区分角色。</b>公告明确写出"我们只做形式化和文稿整理，论证由模型生成"，且拒绝把作者身份"洗白"。这是罕见的透明。</li>
+          <li><b>广度前所未有。</b>八个子领域、10 个不同问题——不是"针对某一题狂调 prompt"，说明能力具备可迁移性。</li>
+          <li><b>已引发外溢研究。</b>OpenAI 原文脚注列出了 5 篇 2026 年 6-7 月由人类研究者受 Astra 早前 disproof 启发而写出的 arXiv 论文，说明这些结果已经被学界当作真问题在跟进。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section>
+    <h3 class="sec">背景时间线：AI × 数学的六年短史</h3>
+    <div class="timeline">
+      <div class="tl-item"><span class="yr">2020</span><span class="txt">GPT-3 发布，能"写"数学，但基本不会解题；数学界普遍认为 LLM 无法做证明。</span></div>
+      <div class="tl-item"><span class="yr">2022</span><span class="txt">Minerva、AlphaGeometry 等专用模型出现，能解 IMO 几何题，但仍属"教科书难度"。</span></div>
+      <div class="tl-item"><span class="yr">2024</span><span class="txt">DeepMind AlphaProof 在 IMO 2024 拿下银牌等级，用 Lean 交互；但仍是"考试题"而非开放问题。</span></div>
+      <div class="tl-item"><span class="yr">2025 春</span><span class="txt">Terence Tao 公开表态："AI 已可作为数学研究的合作者。"</span></div>
+      <div class="tl-item"><span class="yr">2025 夏</span><span class="txt">GPT-5"10 个 Erdős 问题"翻车事件——实为检索已有论文，OpenAI 副总裁事后删帖。</span></div>
+      <div class="tl-item"><span class="yr">2026 春</span><span class="txt">OpenAI 用未发布模型给出 Erdős 单位距离猜想的 disproof。</span></div>
+      <div class="tl-item"><span class="yr">2026-08-01</span><span class="txt"><b>Astra 十项结果发布</b>——首次以"未发布模型 + Lean 证书 + 手稿"三件套形式，把"AI 参与数学"推进到"AI 独立生成研究级证明"的新档。</span></div>
+    </div>
+  </section>
+
+  <!-- IMPLICATIONS -->
+  <section>
+    <h3 class="sec">对不同人群的意义</h3>
+    <div class="tldr">
+      <div class="box">
+        <h4>对数学家</h4>
+        <p>需要立刻做三件事：<br>① 拉下 GitHub 的 Lean 证书，在本地跑一遍；<br>② 判断每个 formal statement 是否忠实表达了原开放问题；<br>③ 决定这些结果对本子领域的下一步研究是否有推动力。这是学界的责任，不是 OpenAI 能替代的。</p>
+      </div>
+      <div class="box">
+        <h4>对 AI 研究者</h4>
+        <p>Astra 是 <b>"reasoning 家族"</b> 的新代际——OpenAI 在博客中定义它为"允许 AI agent 协作解决大问题"的模型。核心研究问题正在从"下一 token 预测"转向"多 agent 长程规划 + 形式化验证"。</p>
+      </div>
+      <div class="box">
+        <h4>对产品与工程</h4>
+        <p>如果同类推理 <b>2,000 美元</b>能做出研究级证明，那么"复杂技术论证"（专利检索、法律辩护、工程可行性论证）在 12 个月内会有类似的价格塌陷。做垂直知识型 SaaS 的人应当立刻重估成本模型。</p>
+      </div>
+      <div class="box">
+        <h4>对政策与治理</h4>
+        <p>Leiden Declaration 和 International Mathematical Union 已警告 AI 公司"绕过同行评审、威胁证明与署名的完整性"。Astra 的"人机分工声明"是一次积极回应，但学界仍需建立"AI 生成数学"的引用与验证规范。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONFIDENCE / VERIFY -->
+  <section>
+    <h3 class="sec">如何自己验证这条新闻？（可执行清单）</h3>
+    <div class="card">
+      <p>1. 打开原文：<a href="https://openai.com/index/ten-advances-in-mathematics/" target="_blank">openai.com/index/ten-advances-in-mathematics</a></p>
+      <p>2. 下载 PDF 手稿（249 页）：<a href="https://cdn.openai.com/pdf/ten-proofs-oai.pdf" target="_blank">cdn.openai.com/pdf/ten-proofs-oai.pdf</a></p>
+      <p>3. 下载 reasoning walkthrough：<a href="https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf" target="_blank">cdn.openai.com/pdf/reasoning-walkthroughs.pdf</a></p>
+      <p>4. 克隆 Lean 证书仓库并本地校验：<code style="background:#0b1020;padding:2px 8px;border-radius:4px">git clone https://github.com/openai/ten-proofs &amp;&amp; cd ten-proofs &amp;&amp; lake build</code></p>
+      <p>5. 关注 arXiv 后续跟进论文，参考原文脚注给出的 5 篇由 disproof 引发的后续研究。</p>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section>
+    <h3 class="sec">信息来源（本篇解读所引用的英文原始资料）</h3>
+    <div class="sources">
+      <ul>
+        <li>OpenAI 官方公告：<a href="https://openai.com/index/ten-advances-in-mathematics/" target="_blank">Ten advances in mathematics and theoretical computer science</a>（2026-08-01）</li>
+        <li>论文 PDF：<a href="https://cdn.openai.com/pdf/ten-proofs-oai.pdf" target="_blank">ten-proofs-oai.pdf</a>（249 页）</li>
+        <li>推理走查 PDF：<a href="https://cdn.openai.com/pdf/reasoning-walkthroughs.pdf" target="_blank">reasoning-walkthroughs.pdf</a></li>
+        <li>Lean 4 证书仓库：<a href="https://github.com/openai/ten-proofs" target="_blank">github.com/openai/ten-proofs</a></li>
+        <li>研究员评论（Sebastien Bubeck，OpenAI）：<a href="https://x.com/SebastienBubeck/status/2083456300692979886" target="_blank">Astra 结果综述 (X)</a></li>
+        <li>批评视角：<a href="https://mlq.ai/news/openai-publishes-ten-claimed-math-advances-with-formal-peer-review-still-pending/" target="_blank">MLQ News — 尚待同行评审</a></li>
+        <li>批评视角：<a href="https://kingy.ai/news/openai-astra-ten-math-results-evidence/" target="_blank">Kingy.ai — Evidence and Limits</a></li>
+        <li>行业解读：<a href="https://siliconangle.com/2026/08/02/openais-astra-solves-10-long-open-math-problems-publishes-proofs/" target="_blank">SiliconANGLE</a></li>
+        <li>行业解读：<a href="https://thenextweb.com/news/openai-astra-model-ten-math-proofs-non-sofic-groups" target="_blank">The Next Web</a></li>
+        <li>Forbes 评论：<a href="https://www.forbes.com/sites/jonmarkman/2026/08/03/openais-astra-solved-10-decades-old-math-problems-for-just-2000/" target="_blank">Forbes — Just $2,000</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    生成时间：2026-08-04（每日 AI 精读第 1 期） · 语言：中文解读，源资料 100% 英文 · 视觉化：单文件 HTML + Chart.js<br>
+    本篇为自动化每日任务生成。若十项结果中的任一项被后续同行评审推翻，请以最新学术共识为准。
+  </footer>
+</div>
+
+<script>
+  const isDark = true;
+  const grid = "#243069";
+  const label = "#93a0c9";
+
+  // Cost chart
+  new Chart(document.getElementById('costChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Astra 十题总成本', '博士生月薪(美)', '一次学术会议差旅', '一年 AWS 中型集群'],
+      datasets: [{
+        label: '美元',
+        data: [2000, 4500, 3500, 60000],
+        backgroundColor: ['#7ef0c7','#7aa2ff','#f5b556','#ff6b6b'],
+        borderRadius: 8
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { type: 'logarithmic', ticks: { color: label, callback: v => '$'+v }, grid: { color: grid } },
+        y: { ticks: { color: label }, grid: { color: 'transparent' } }
+      }
+    }
+  });
+
+  // Field chart
+  new Chart(document.getElementById('fieldChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['几何/球堆积','编码理论','群论','算子代数','复杂性理论','量子复杂性','格密码','极值组合'],
+      datasets: [{
+        data: [1,1,1,1,1,1,1,3],
+        backgroundColor: ['#7aa2ff','#7ef0c7','#f5b556','#ff6b6b','#c78bff','#66d9e8','#ffe066','#a3e635'],
+        borderColor: '#0b1020',
+        borderWidth: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { color: label, boxWidth: 12 } },
+        tooltip: { callbacks: { label: c => `${c.label}: ${c.raw} 题` } }
+      },
+      cutout: '55%'
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-27_上下文工程（Context Engineering）</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #475569;
+      --quiet: #64748b;
+      --line: #d7e1ea;
+      --paper: #ffffff;
+      --soft: #f8fafc;
+      --blue: #163a73;
+      --teal: #0f8b8d;
+      --green: #24785a;
+      --amber: #a16207;
+      --red: #b42318;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #edf3f8;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.74;
+    }
+
+    .cover {
+      min-height: 100vh;
+      padding: 58px 26px 42px;
+      background:
+        radial-gradient(circle at 86% 14%, rgba(15, 139, 141, .12), transparent 31%),
+        linear-gradient(180deg, #ffffff 0%, #f6fbff 54%, #eef7f4 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap { max-width: 1080px; margin: 0 auto; }
+
+    .eyebrow {
+      color: var(--teal);
+      font-size: 15px;
+      font-weight: 840;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 1000px;
+      margin: 18px 0 14px;
+      color: var(--ink);
+      font-size: clamp(42px, 6vw, 74px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h1 span { color: var(--blue); }
+
+    .subtitle {
+      max-width: 920px;
+      margin: 0;
+      color: var(--muted);
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    .core {
+      max-width: 980px;
+      margin-top: 28px;
+      padding: 18px 22px;
+      border: 1px solid #99f6e4;
+      border-left: 8px solid var(--teal);
+      border-radius: 8px;
+      background: #f0fdfa;
+      color: #0f766e;
+      font-size: 20px;
+      font-weight: 840;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .cover-card {
+      min-height: 148px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .94);
+      padding: 18px;
+    }
+
+    .cover-card b {
+      display: block;
+      color: var(--blue);
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .cover-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--blue);
+      font-weight: 760;
+      text-decoration: none;
+    }
+
+    main { padding: 34px 26px 80px; }
+
+    section {
+      max-width: 1080px;
+      margin: 0 auto 28px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--ink);
+      font-size: 32px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 6px;
+      color: var(--blue);
+      font-size: 20px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    p { margin: 12px 0; font-size: 18px; }
+
+    .lead {
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 720;
+    }
+
+    figure {
+      margin: 20px 0 8px;
+      break-inside: avoid;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    figcaption {
+      margin-top: 8px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step-card {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 14px;
+      min-height: 140px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      break-inside: avoid;
+    }
+
+    .step-num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      font-weight: 900;
+    }
+
+    .step-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 18px 0 0;
+    }
+
+    .compare-card {
+      min-height: 150px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      break-inside: avoid;
+    }
+
+    .compare-card b {
+      display: block;
+      color: var(--blue);
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+
+    .compare-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 15.5px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 12px;
+      vertical-align: top;
+    }
+
+    th {
+      width: 23%;
+      background: #f8fafc;
+      color: var(--blue);
+      text-align: left;
+    }
+
+    ul, ol { padding-left: 24px; }
+
+    li {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+
+    .mistakes {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+    }
+
+    .mistakes li {
+      border: 1px solid var(--line);
+      border-left: 6px solid var(--amber);
+      border-radius: 8px;
+      padding: 13px 16px;
+      background: #fffaf0;
+      break-inside: avoid;
+    }
+
+    .mistakes strong {
+      display: block;
+      color: #92400e;
+      margin-bottom: 4px;
+    }
+
+    .mistakes span { color: var(--muted); }
+
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 760;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      background: #fff5f5;
+      color: var(--red);
+      font-size: 18px;
+      font-weight: 760;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .summary-card {
+      min-height: 168px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 17px;
+      font-weight: 730;
+    }
+
+    .source-list a {
+      color: var(--blue);
+      text-decoration: none;
+      border-bottom: 1px solid #bfdbfe;
+    }
+
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 8px 30px 34px;
+      color: var(--quiet);
+      font-size: 14px;
+    }
+
+    @page { size: A4; margin: 15mm 13mm 17mm; }
+
+    @media print {
+      body { background: #fff; }
+      .cover {
+        min-height: 238mm;
+        padding: 0;
+        border-bottom: 0;
+        break-after: page;
+      }
+      .cover .wrap { padding-top: 8mm; }
+      h1 { font-size: 48px; margin: 12px 0 10px; }
+      .subtitle { font-size: 21px; line-height: 1.32; }
+      .core { margin-top: 16px; padding: 12px 16px; font-size: 17px; }
+      .cover-grid { gap: 9px; margin-top: 16px; }
+      .cover-card { min-height: 88px; padding: 12px; }
+      .cover-card b { font-size: 16px; margin-bottom: 4px; }
+      .cover-card p { font-size: 13px; }
+      .toc {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+        margin-top: 14px;
+      }
+      .toc a { font-size: 13px; padding: 7px 10px; }
+      main { padding: 0; }
+      section {
+        max-width: none;
+        margin: 0 0 10mm;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        break-inside: avoid;
+      }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+      .step-card { min-height: 116px; }
+      .compare { grid-template-columns: repeat(3, 1fr); }
+      .compare-card { min-height: 120px; }
+      p, li { font-size: 14.5px; line-height: 1.65; }
+      h2 { font-size: 24px; }
+      h3 { font-size: 17px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px; }
+      .summary-card { min-height: 128px; font-size: 13px; }
+      .note, .warning { font-size: 14px; }
+      footer { display: none; }
+    }
+
+    @media (max-width: 760px) {
+      .cover-grid, .steps, .compare, .summary-grid { grid-template-columns: 1fr; }
+      section { padding: 22px; }
+      main { padding: 24px 16px 56px; }
+      .cover { padding: 44px 18px 32px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cover" aria-label="标题页">
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-27</div>
+      <h1>上下文工程<br><span>Context Engineering</span></h1>
+      <p class="subtitle">为什么聪明的 AI，不只是“会回答”，更要先把资料摆对？</p>
+      <div class="core">核心一句话：上下文工程的本质，是把有限的上下文窗口整理成一张好用的工作台，让 AI 看到正确、必要、顺序合适的信息。</div>
+      <div class="cover-grid">
+        <div class="cover-card"><b>它解决什么？</b><p>解决资料太多、提示太乱、检索结果不准、工具说明冲突、历史对话拖累回答的问题。</p></div>
+        <div class="cover-card"><b>它改变什么？</b><p>AI 产品竞争不再只看模型多大，也要看能否把任务资料、记忆、工具和规则组织好。</p></div>
+        <div class="cover-card"><b>今天怎么学？</b><p>用“开卷考试”和“考试桌面”的类比，看懂为什么不是塞得越多越好。</p></div>
+      </div>
+      <nav id="toc" class="toc" aria-label="目录"></nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="why" data-toc="为什么重要">
+      <h2>1. 为什么这个概念重要？</h2>
+      <p class="lead">上下文工程解释的是：为什么同一个模型，在不同资料组织方式下，会像两个完全不同的助手。</p>
+      <p>很多人以为，模型越大、上下文窗口越长，AI 就自然更聪明。现实里不是这样。你把一堆网页、会议记录、代码、表格、历史聊天和工具说明全塞进去，模型常常不是变聪明，而是被淹没。</p>
+      <p>这就像学生参加开卷考试。允许带书不等于一定考得好。如果桌上堆满教材、打印稿、草稿纸和过期资料，学生反而会找不到重点。真正厉害的备考老师，会提前把最相关的资料挑出来，按答题顺序摆好，还会删掉容易误导的旧材料。</p>
+      <p>AI 也是这样。大模型每次回答时，真正能直接读取的是上下文窗口。上下文工程要做的，是决定哪些信息该放进去、放多少、按什么顺序放、如何压缩、哪些旧信息该丢掉、哪些工具说明必须保留。</p>
+      <p>它正在成为 AI 应用工程的核心能力。RAG、Agent、AI 记忆、工具调用、长上下文模型，本质上都绕不开同一个问题：怎样让模型在有限注意力里看到最有用的材料。</p>
+    </section>
+
+    <section id="analogy" data-toc="直观类比">
+      <h2>2. 一个直观类比：开卷考试不是把图书馆搬上桌</h2>
+      <p>想象一个学生要回答一道历史大题。学校允许开卷，他可以看书、笔记、资料卡、老师讲义和同学讨论记录。</p>
+      <p>最笨的方法，是把整座图书馆都搬到桌上。资料确实多，但桌面有限，学生还要在一堆无关信息里翻找。时间被浪费，重点被稀释，甚至可能被错误资料带偏。</p>
+      <p>更好的方法，是让一位老师提前整理：先看题目要问什么，再选出最相关的几页，按“背景、证据、推理、结论”的顺序摆好，把长篇内容压缩成清楚笔记，并标出哪些资料只是参考、哪些资料必须引用。</p>
+      <p>上下文工程就是这位老师。它不替 AI 回答问题，而是帮助 AI 在回答前拥有一张干净、有序、可信的考试桌面。</p>
+      <figure>
+        <img src="context_engineering_exam_analogy.png" alt="上下文工程开卷考试类比图：资料库很多但杂，上下文工程挑选排序压缩，上下文窗口是 AI 当前能看的桌面">
+        <figcaption>图解：上下文工程不是把所有资料塞进窗口，而是把最有用的资料放对位置。</figcaption>
+      </figure>
+      <div class="note">最关键的直觉：上下文窗口像桌面大小，上下文工程像整理桌面的方法。</div>
+    </section>
+
+    <section id="mechanism" data-toc="工作原理">
+      <h2>3. 工作原理：上下文工程到底在做什么？</h2>
+      <p class="lead">它不是一句提示词技巧，而是一条把任务、资料、记忆、工具和规则组织给模型看的工程链路。</p>
+      <figure>
+        <img src="context_engineering_pipeline.png" alt="上下文工程流程图：用户目标、资料收集、筛选排序、压缩改写、放入上下文窗口、模型回答">
+        <figcaption>图解：好的上下文工程先理解用户目标，再收集、筛选、排序、压缩，最后把内容放进有限窗口。</figcaption>
+      </figure>
+      <div class="steps">
+        <article class="step-card">
+          <div class="step-num">1</div>
+          <div><h3>理解目标</h3><p>先弄清用户到底要什么：是解释概念、写代码、查事实、做决策，还是执行一串任务。目标不同，需要的上下文完全不同。</p></div>
+        </article>
+        <article class="step-card">
+          <div class="step-num">2</div>
+          <div><h3>收集材料</h3><p>从系统提示、用户输入、历史对话、检索结果、文件、数据库、工具返回、长期记忆中拿到候选信息。</p></div>
+        </article>
+        <article class="step-card">
+          <div class="step-num">3</div>
+          <div><h3>筛选和排序</h3><p>不是所有材料都值得放进去。要优先放最相关、最新、可信、能直接支持回答的信息，并把重要内容放在更容易被模型利用的位置。</p></div>
+        </article>
+        <article class="step-card">
+          <div class="step-num">4</div>
+          <div><h3>压缩和改写</h3><p>长材料需要摘要、结构化、去重和重写。好的压缩不是把字变少，而是保留证据、限制、定义和关键细节。</p></div>
+        </article>
+        <article class="step-card">
+          <div class="step-num">5</div>
+          <div><h3>放入窗口</h3><p>上下文窗口有限。系统要决定：系统规则、工具说明、用户需求、资料证据、历史状态，各占多少位置。</p></div>
+        </article>
+        <article class="step-card">
+          <div class="step-num">6</div>
+          <div><h3>持续更新</h3><p>Agent 多步工作时，上下文会变旧、变长、变乱。需要不断删除过期信息，加入新证据，避免模型被历史噪音拖住。</p></div>
+        </article>
+      </div>
+      <div class="warning">上下文工程最怕三件事：放错资料、放太多资料、放了互相冲突的资料。</div>
+    </section>
+
+    <section id="terms" data-toc="关键术语">
+      <h2>4. 关键术语解释</h2>
+      <table>
+        <thead>
+          <tr><th>术语</th><th>一句专业解释</th><th>一句白话解释</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Context 上下文</th><td>模型当前生成时可读取的输入信息集合。</td><td>AI 回答前，桌面上摊开的全部材料。</td></tr>
+          <tr><th>Context Window 上下文窗口</th><td>模型一次能处理的最大 token 范围。</td><td>这张桌面有多大，能同时放多少纸。</td></tr>
+          <tr><th>Context Engineering 上下文工程</th><td>设计、选择、压缩、排序和维护模型上下文的工程实践。</td><td>帮 AI 整理桌面，让它看到该看的东西。</td></tr>
+          <tr><th>RAG 检索增强生成</th><td>先从外部知识库取回相关资料，再交给模型回答。</td><td>像开卷考试前先去查书，但查到的内容还要摆好。</td></tr>
+          <tr><th>Prompt 提示词</th><td>用户或系统给模型的任务指令和约束。</td><td>你对 AI 说的题目、要求和规则。</td></tr>
+          <tr><th>System Prompt 系统提示</th><td>对模型行为、身份、边界和输出方式的高优先级指令。</td><td>考场规则和老师要求，通常比普通聊天更重要。</td></tr>
+          <tr><th>Tool Description 工具说明</th><td>告诉模型有哪些工具、何时调用、输入输出是什么的描述。</td><td>告诉 AI 桌上有哪些计算器、字典和搜索器。</td></tr>
+          <tr><th>Memory 记忆</th><td>跨会话保存并在需要时取回的用户、任务或环境信息。</td><td>不是当前桌面，而是长期笔记本。</td></tr>
+          <tr><th>Context Rot 上下文腐化</th><td>上下文随多轮任务变长变杂，导致模型表现下降的现象。</td><td>桌面越堆越乱，最后重点被旧纸盖住。</td></tr>
+          <tr><th>Compression 压缩</th><td>把长内容缩短并保留任务所需关键信息的过程。</td><td>把厚书整理成能答题的重点笔记。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="case" data-toc="真实案例">
+      <h2>5. 一个真实应用案例：企业 AI 客服如何用上下文工程</h2>
+      <p>假设一家电商公司想让 AI 客服回答“我的订单为什么还没到”。如果只把用户问题丢给模型，模型可能会说一些通用安慰话，听起来礼貌，但没有真正解决问题。</p>
+      <p>一个更好的系统会先做上下文工程。它会把当前用户问题、订单状态、物流节点、售后政策、用户历史投诉、可用工具、回复口径和隐私规则整理成一份短而清楚的工作台。</p>
+      <p>例如，系统不需要把整本客服手册都塞进去，而只放与“延迟配送”和“补偿规则”相关的片段；也不需要把用户所有历史聊天都放进去，而只保留最近一次投诉和已承诺的处理方案。</p>
+      <p>然后模型看到的是一张整理好的桌面：用户在问什么、订单现在在哪里、公司允许怎么处理、哪些话不能说、下一步可以调用哪个工具。这样回答会更具体、更一致，也更不容易编造。</p>
+      <p>这就是为什么很多 AI 产品的真实差距，不只来自模型本身，而来自背后的上下文组织能力。</p>
+    </section>
+
+    <section id="mistakes" data-toc="常见误区">
+      <h2>6. 常见误区</h2>
+      <ul class="mistakes">
+        <li><strong>误区一：上下文工程就是 Prompt Engineering。</strong><span>不完全是。提示词是其中一部分；上下文工程还包括检索、记忆、工具说明、历史状态、资料排序和压缩。</span></li>
+        <li><strong>误区二：上下文窗口越长，就越不需要上下文工程。</strong><span>恰恰相反。窗口越长，越需要筛选和组织，否则模型会在更多噪音里迷路。</span></li>
+        <li><strong>误区三：RAG 查到了资料，问题就解决了。</strong><span>没有。检索只是找资料；还要判断相关性、可信度、顺序、长度和是否互相冲突。</span></li>
+        <li><strong>误区四：把所有历史聊天都放进去会更个性化。</strong><span>不一定。旧信息可能过时、重复、隐私敏感，甚至和当前任务无关。</span></li>
+        <li><strong>误区五：摘要越短越好。</strong><span>不一定。压缩过度会丢掉证据、数字、限制条件和用户偏好，反而让回答变空泛。</span></li>
+        <li><strong>误区六：上下文工程只适合复杂 Agent。</strong><span>不是。简单问答、客服、代码助手、研究报告、写作工具都需要把材料组织好。</span></li>
+        <li><strong>误区七：模型会自动知道哪段资料最重要。</strong><span>不能完全指望。信息顺序、长度、格式和冲突内容都会影响模型注意力。</span></li>
+        <li><strong>误区八：上下文工程只是后端工程师的事。</strong><span>产品经理、内容设计师、数据治理人员和业务专家都要参与，因为“该给 AI 看什么”本身就是业务判断。</span></li>
+      </ul>
+    </section>
+
+    <section id="map" data-toc="知识地图">
+      <h2>7. 它和相邻概念有什么区别？</h2>
+      <div class="compare">
+        <div class="compare-card"><b>和上下文窗口</b><p>上下文窗口是桌面大小；上下文工程是整理桌面的方法。</p></div>
+        <div class="compare-card"><b>和 RAG</b><p>RAG 负责查资料；上下文工程负责把查到的资料筛好、压好、摆好。</p></div>
+        <div class="compare-card"><b>和 AI 记忆</b><p>记忆是长期笔记本；上下文工程决定什么时候把哪页笔记拿上桌。</p></div>
+        <div class="compare-card"><b>和 Agent</b><p>Agent 会多步行动；上下文工程负责维持每一步的任务状态和工具信息。</p></div>
+        <div class="compare-card"><b>和 Prompt Engineering</b><p>提示词像题目和要求；上下文工程还要管理证据、工具、历史和外部资料。</p></div>
+        <div class="compare-card"><b>和长上下文模型</b><p>长窗口能放更多材料；上下文工程决定哪些材料真的值得放进去。</p></div>
+      </div>
+    </section>
+
+    <section id="summary" data-toc="3句话总结">
+      <h2>8. 3句话总结</h2>
+      <div class="summary-grid">
+        <div class="summary-card">1. 上下文工程的本质，是把有限的上下文窗口变成一张干净、有序、可信的 AI 工作台。</div>
+        <div class="summary-card">2. 它不等于提示词，也不等于 RAG，而是把任务、资料、记忆、工具和规则组织给模型看的完整方法。</div>
+        <div class="summary-card">3. 未来 AI 产品的差距，会越来越体现在“模型有多强”之外的另一件事：给模型看的上下文有多好。</div>
+      </div>
+    </section>
+
+    <section id="quiz" data-toc="复习问题">
+      <h2>9. 复习问题</h2>
+      <ol>
+        <li>为什么上下文窗口变大，不一定会让 AI 回答更准确？请用“开卷考试桌面”的类比解释。</li>
+        <li>一个企业知识库问答系统已经用了 RAG，为什么仍然需要上下文工程？</li>
+        <li>如果 AI 客服把用户所有历史聊天都放进上下文，可能带来哪些好处和风险？你会如何筛选？</li>
+      </ol>
+    </section>
+
+    <section id="sources" data-toc="参考来源">
+      <h2>附录：参考来源</h2>
+      <ul class="source-list">
+        <li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic Engineering: Effective context engineering for AI agents</a></li>
+        <li><a href="https://developers.openai.com/cookbook/examples/agents_sdk/context_personalization/">OpenAI Cookbook: Context engineering for personalization</a></li>
+        <li><a href="https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/long-context-tips">Anthropic Docs: Long context prompting tips</a></li>
+        <li><a href="https://platform.openai.com/docs/guides/text-generation">OpenAI Platform Docs: Text generation and prompt inputs</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>© 2026 AI每日深度科普 · 本文面向非技术读者，用生活化方式解释 AI 核心概念。</footer>
+
+  <script>
+    const toc = document.querySelector("#toc");
+    document.querySelectorAll("main section[data-toc]").forEach((section) => {
+      const link = document.createElement("a");
+      link.href = `#${section.id}`;
+      link.textContent = section.dataset.toc;
+      toc.appendChild(link);
+    });
+  </script>
+</body>
+</html>

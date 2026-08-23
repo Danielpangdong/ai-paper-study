@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选｜Synthetic Computers at Scale</title>
+  <style>
+    body{margin:0;background:#f4f7fb;color:#182230;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;line-height:1.62}
+    .wrap{max-width:920px;margin:0 auto;padding:28px 18px 42px}
+    .hero{background:#0f2742;color:#fff;border-radius:8px;padding:26px 28px;margin-bottom:18px}
+    .eyebrow{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:#9fd4ff;margin:0 0 8px}
+    h1{font-size:30px;line-height:1.22;margin:0 0 12px;letter-spacing:0}
+    h2{font-size:20px;margin:0 0 12px;color:#102a43}
+    h3{font-size:16px;margin:18px 0 8px;color:#17324d}
+    p{margin:0 0 12px}
+    a{color:#0b69b3;text-decoration:none}
+    .meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+    .meta div{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:10px 12px}
+    .meta b{display:block;color:#cce8ff;font-size:12px;margin-bottom:2px}
+    .card{background:#fff;border:1px solid #dbe5ef;border-radius:8px;padding:20px 22px;margin:14px 0;box-shadow:0 1px 2px rgba(16,42,67,.04)}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .stat{background:#eef6fc;border:1px solid #cfe1ee;border-radius:8px;padding:14px}
+    .stat strong{display:block;font-size:24px;color:#0f5f99}
+    .tag{display:inline-block;background:#e9f5ee;color:#17683a;border:1px solid #c7e6d2;border-radius:999px;padding:3px 9px;font-size:12px;margin:2px 4px 2px 0}
+    table{border-collapse:collapse;width:100%;font-size:14px;margin:10px 0 4px}
+    th,td{border:1px solid #d7e2ec;padding:9px 10px;vertical-align:top}
+    th{background:#eef4f9;text-align:left;color:#17324d}
+    .reason{border-left:4px solid #1f9d55;background:#f1fbf5;padding:12px 14px;border-radius:6px;margin:10px 0}
+    .warn{border-left:4px solid #d97706;background:#fff7ed;padding:12px 14px;border-radius:6px;margin:10px 0}
+    .small{font-size:13px;color:#536577}
+    ul{margin:8px 0 10px 20px;padding:0}
+    li{margin:5px 0}
+    .diagram{width:100%;height:auto;background:#fbfdff;border:1px solid #dbe5ef;border-radius:8px;margin:8px 0 4px}
+    .footer{font-size:12px;color:#5f6f7f;margin-top:18px}
+    @media(max-width:680px){.meta,.grid{grid-template-columns:1fr}.hero{padding:22px 18px}h1{font-size:24px}.card{padding:17px 16px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <p class="eyebrow">AI每日论文精选 · 2026-05-04</p>
+      <h1>Synthetic Computers at Scale for Long-Horizon Productivity Simulation</h1>
+      <p>今日推荐一篇来自 Microsoft 的 agent 训练与评测论文：它把“真实电脑里的长期工作”做成可扩展的合成世界，用于产生长时程、多文件、多协作人的生产力任务轨迹。</p>
+      <div class="meta">
+        <div><b>论文</b>arXiv:2604.28181，Submitted on 30 Apr 2026</div>
+        <div><b>作者</b>Tao Ge, Baolin Peng, Hao Cheng, Jianfeng Gao</div>
+        <div><b>机构</b>Microsoft</div>
+        <div><b>方向</b>AI Agents · Long-horizon Simulation · Agentic RL</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>一句话结论</h2>
+      <p><b>这篇论文最值得精读的地方</b>不是提出了一个更强的单点 agent，而是提出了一套可规模化生成“合成电脑 + 合成月度工作”的训练底座，让 AI agent 能从接近真实办公室工作的长轨迹中学习。</p>
+      <div class="reason">
+        <b>推荐理由：</b>当前 agent 的瓶颈正在从“会不会调用工具”转向“能不能在复杂文件系统、长期目标、多人协作、持续反馈里稳定推进工作”。这篇论文正面处理这个问题，并给出公开数据集与初步可扩展证据。
+      </div>
+      <p>
+        <span class="tag">生产力 agent</span>
+        <span class="tag">合成数据</span>
+        <span class="tag">长时程任务</span>
+        <span class="tag">经验学习</span>
+        <span class="tag">企业落地</span>
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>为什么选它</h2>
+      <table>
+        <tr><th>筛选维度</th><th>判断</th></tr>
+        <tr><td>技术新颖性</td><td>从单任务 benchmark 转向“用户专属合成电脑”，包含 persona、文件树、文档/表格/演示稿、协作者、月度目标和工作轨迹。</td></tr>
+        <tr><td>产业落地潜力</td><td>直接对应 Microsoft 365 Copilot、企业知识工作 agent、桌面自动化和办公软件 agent 的核心难点。</td></tr>
+        <tr><td>影响力信号</td><td>Hugging Face Daily Papers 5 月 1 日收录，提交者为 Baolin Peng，机构标记为 Microsoft；公开 Hugging Face 数据集。</td></tr>
+        <tr><td>长期研究价值</td><td>提供一种“先模拟真实工作世界，再从轨迹中提炼技能/训练模型”的路径，可能成为 agentic reinforcement learning 的重要基础设施。</td></tr>
+      </table>
+      <p class="small">注：本次运行时间为 2026-05-04 07:04 CST；arXiv 最新可见 cs.AI 批次仍停留在 Fri, 1 May 2026，因此“今日精选”按本次运行时可验证的最新英文公开论文源筛选，并避开上次已精选论文。</p>
+    </section>
+
+    <section class="card">
+      <h2>核心贡献</h2>
+      <ul>
+        <li><b>合成电脑生成：</b>从 persona 出发，扩展为用户画像、协作关系、项目组合、文件系统规则、文件清单和文件依赖图。</li>
+        <li><b>长时程生产力仿真：</b>一个 agent 生成贴合用户背景的月度目标，另一个 work agent 扮演用户，跨文件系统、协作者和交付物完成任务。</li>
+        <li><b>经验信号提炼：</b>从仿真轨迹和回顾报告中抽取失败模式、工作模式和职业特定技能，再用于增强后续 agent。</li>
+        <li><b>公开数据集：</b>Hugging Face 发布 98 个合成电脑环境，包含 macOS 48 个、Windows 50 个，MIT 许可。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>技术路线重构</h2>
+      <svg class="diagram" viewBox="0 0 900 320" role="img" aria-label="Synthetic Computers pipeline">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#286aa6"></path>
+          </marker>
+        </defs>
+        <rect x="25" y="35" width="150" height="72" rx="8" fill="#eaf5ff" stroke="#97c2e6"></rect>
+        <text x="100" y="66" text-anchor="middle" font-size="15" fill="#14324a">Persona</text>
+        <text x="100" y="88" text-anchor="middle" font-size="12" fill="#536577">职业、习惯、背景</text>
+        <line x1="175" y1="71" x2="235" y2="71" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="235" y="35" width="170" height="72" rx="8" fill="#eafaf1" stroke="#98d6ad"></rect>
+        <text x="320" y="64" text-anchor="middle" font-size="15" fill="#14324a">用户工作世界</text>
+        <text x="320" y="88" text-anchor="middle" font-size="12" fill="#536577">画像、项目、协作者</text>
+        <line x1="405" y1="71" x2="465" y2="71" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="465" y="35" width="180" height="72" rx="8" fill="#fff7e8" stroke="#e6bd75"></rect>
+        <text x="555" y="64" text-anchor="middle" font-size="15" fill="#14324a">合成电脑</text>
+        <text x="555" y="88" text-anchor="middle" font-size="12" fill="#536577">文件树、文档、依赖图</text>
+        <line x1="645" y1="71" x2="705" y2="71" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="705" y="35" width="170" height="72" rx="8" fill="#f3efff" stroke="#b7a5e7"></rect>
+        <text x="790" y="64" text-anchor="middle" font-size="15" fill="#14324a">月度任务仿真</text>
+        <text x="790" y="88" text-anchor="middle" font-size="12" fill="#536577">20 天、多人协作</text>
+        <line x1="790" y1="107" x2="790" y2="152" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="630" y="152" width="245" height="82" rx="8" fill="#eef4f9" stroke="#adc3d8"></rect>
+        <text x="752" y="184" text-anchor="middle" font-size="15" fill="#14324a">轨迹 + 交付物 + 回顾报告</text>
+        <text x="752" y="207" text-anchor="middle" font-size="12" fill="#536577">记录计划、行动、反馈、修订</text>
+        <line x1="630" y1="193" x2="535" y2="193" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="335" y="152" width="200" height="82" rx="8" fill="#eafaf1" stroke="#98d6ad"></rect>
+        <text x="435" y="184" text-anchor="middle" font-size="15" fill="#14324a">抽取经验技能</text>
+        <text x="435" y="207" text-anchor="middle" font-size="12" fill="#536577">按职业聚类、排序、改写</text>
+        <line x1="335" y1="193" x2="235" y2="193" stroke="#286aa6" stroke-width="2" marker-end="url(#arrow)"></line>
+        <rect x="55" y="152" width="180" height="82" rx="8" fill="#eaf5ff" stroke="#97c2e6"></rect>
+        <text x="145" y="184" text-anchor="middle" font-size="15" fill="#14324a">增强 agent</text>
+        <text x="145" y="207" text-anchor="middle" font-size="12" fill="#536577">in-domain / GDPVal 测试</text>
+        <path d="M145 235 C145 285, 790 285, 790 236" fill="none" stroke="#91a4b7" stroke-width="2" stroke-dasharray="6 6" marker-end="url(#arrow)"></path>
+        <text x="462" y="294" text-anchor="middle" font-size="12" fill="#536577">自改进循环：更强 agent 产生更高质量轨迹，再提炼新技能</text>
+      </svg>
+      <p><b>高中生版解释：</b>这就像给 AI 搭了很多“虚拟办公室电脑”。每台电脑都有不同人的文件夹、项目资料、老板和同事。AI 不再只是做一道题，而是在一个月里像真实员工一样找资料、改表格、写文档、做汇报，并把做事经验总结成下次可用的工作方法。</p>
+    </section>
+
+    <section class="card">
+      <h2>实验结果怎么读</h2>
+      <div class="grid">
+        <div class="stat"><strong>1,000</strong>合成电脑仿真规模</div>
+        <div class="stat"><strong>&gt;8h</strong>单次仿真 agent 运行时间</div>
+        <div class="stat"><strong>2,272</strong>平均 turn 数（次级摘要提取）</div>
+      </div>
+      <table>
+        <tr><th>结果</th><th>含义</th><th>解读</th></tr>
+        <tr><td>每个任务平均超过 2,000 turns</td><td>不再是几步点击或一次问答</td><td>更接近真正办公场景中的长期计划、反复修改和跨文件依赖。</td></tr>
+        <tr><td>DOCX/XLSX/PDF/PPTX 占 67.8%</td><td>文件类型偏真实办公</td><td>对企业 agent 很关键，因为它们需要处理文档、表格和演示稿，而不仅是网页文本。</td></tr>
+        <tr><td>900 台训练电脑时技能增强 agent 达到 83% win rate</td><td>经验信号随规模变多而更有用</td><td>说明仿真轨迹不只是“热闹”，能提炼出可复用工作方法。</td></tr>
+        <tr><td>GDPVal 上 Sonnet 设置 105 胜 / 67 负，p=0.002</td><td>跨分布测试仍有效</td><td>从合成世界学到的技能能迁移到短得多的公开生产力任务。</td></tr>
+      </table>
+      <p class="small">详细数字来自 ChatPaper 对论文图表的抽取；高层结论与 arXiv/Hugging Face 摘要中“1,000 synthetic computers、over 8 hours、more than 2,000 turns、in/out-of-domain improvements”的表述一致。</p>
+    </section>
+
+    <section class="card">
+      <h2>术语解释</h2>
+      <table>
+        <tr><th>术语</th><th>简单解释</th></tr>
+        <tr><td>Synthetic Computer</td><td>不是真人电脑，而是 AI 生成的一台“虚拟电脑”：有文件夹、项目文件、历史资料、命名习惯和工作上下文。</td></tr>
+        <tr><td>Long-Horizon Task</td><td>需要很多步骤、持续很久才能完成的任务，比如一个月内做完客户分析、预算表和汇报材料。</td></tr>
+        <tr><td>Experiential Learning Signal</td><td>AI 做事过程中留下的经验，比如“先检查数据版本”“改 PPT 前先确认 Excel 公式”。这些经验可被提炼成下次用的技能。</td></tr>
+        <tr><td>Agentic RL</td><td>让 AI 在环境里行动、获得反馈、再改进，而不是只看静态答案学习。</td></tr>
+        <tr><td>GDPVal</td><td>一个用于测试模型完成真实知识工作任务能力的公开评测集。</td></tr>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>局限性</h2>
+      <ul>
+        <li><b>仍是 preview / work in progress：</b>论文自己标注为预览版本，实验设计和数值后续可能更新。</li>
+        <li><b>合成不等于真实：</b>虚拟文件和协作者能降低隐私风险，但可能遗漏真实公司的混乱、权限、合规和沟通噪声。</li>
+        <li><b>公开数据集还小：</b>Hugging Face 数据集公开 98 个电脑环境，适合评测和种子研究，不等同于论文中大规模仿真的全部产物。</li>
+        <li><b>计算成本高：</b>单次仿真超过 8 小时，意味着规模化训练会消耗大量推理预算。</li>
+        <li><b>评估仍难：</b>最终交付物质量依赖 rubric 和模型裁判，真实企业场景还需要人工、业务指标和合规审查验证。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>产业影响</h2>
+      <p>这篇论文对“企业 AI agent”尤其重要。真实工作不是单轮聊天，而是长期维护文件、理解项目历史、协调多人、持续改稿。Synthetic Computers 提供了一种隐私友好的训练和评测环境，可能被用于：</p>
+      <ul>
+        <li>训练 Copilot 类办公 agent 的长期任务能力。</li>
+        <li>构造企业级桌面自动化 benchmark，减少只看短任务的偏差。</li>
+        <li>从成功/失败轨迹中抽取职业技能，例如财务、法务、产品、工程项目管理。</li>
+        <li>在不访问真实员工电脑的前提下，模拟不同岗位和组织流程。</li>
+      </ul>
+      <p>它也和近期 Microsoft CORPGEN、ICLR 2026 ROGA 等工作形成同一趋势：下一代 agent 竞争重点会从“模型单次推理能力”扩展到“环境、记忆、计划、经验学习和长期协作”。</p>
+    </section>
+
+    <section class="card">
+      <h2>延伸阅读与引用来源</h2>
+      <table>
+        <tr><th>来源</th><th>用途</th></tr>
+        <tr><td><a href="https://arxiv.org/abs/2604.28181">arXiv: Synthetic Computers at Scale</a></td><td>论文元数据、摘要、提交时间、作者、学科分类。</td></tr>
+        <tr><td><a href="https://huggingface.co/papers/2604.28181">Hugging Face Papers 页面</a></td><td>社区提交时间、Microsoft 标记、摘要和项目链接。</td></tr>
+        <tr><td><a href="https://huggingface.co/datasets/microsoft/synthetic-computers-at-scale">Hugging Face Dataset: microsoft/synthetic-computers-at-scale</a></td><td>公开数据集结构、98 rows、macOS/Windows 分布、MIT license、文件字段说明。</td></tr>
+        <tr><td><a href="https://chatpaper.com/paper/273912">ChatPaper 论文摘要页</a></td><td>论文图表与实验数字的辅助抽取；作为次级来源使用。</td></tr>
+        <tr><td><a href="https://www.microsoft.com/en-us/research/blog/corpgen-advances-ai-agents-for-real-work/">Microsoft Research: CORPGEN</a></td><td>同方向趋势验证：多任务办公环境、记忆、经验学习。</td></tr>
+        <tr><td><a href="https://iclr.cc/virtual/2026/poster/10010129">ICLR 2026 ROGA poster</a></td><td>同方向会议参照：office productivity agents、world modeling、persistent memory。</td></tr>
+        <tr><td><a href="https://arxiv.org/list/cs.AI/recent">arXiv cs.AI recent</a> 与 <a href="https://huggingface.co/papers/date/2026-05-01">Hugging Face Daily Papers May 1</a></td><td>本次候选池与最新批次核验。</td></tr>
+      </table>
+      <p class="footer">生成时间：2026-05-04 07:04 CST。报告用于邮件精读，不依赖外部私有资源；所有链接均为公开英文资源。</p>
+    </section>
+  </div>
+</body>
+</html>

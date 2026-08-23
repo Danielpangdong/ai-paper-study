@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI每日论文精选 | SkillOpt：像训练神经网络一样训练 Agent 技能</title>
+  <style>
+    :root {
+      --ink: #111827;
+      --muted: #5f6b7a;
+      --line: #d7dde6;
+      --soft: #f5f7fb;
+      --card: #ffffff;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --green: #0f766e;
+      --amber: #b45309;
+      --red: #b91c1c;
+      --slate: #334155;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #eef2f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.68;
+    }
+    .page { max-width: 980px; margin: 0 auto; background: #fff; }
+    header {
+      padding: 42px 28px 30px;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, .94), rgba(30, 64, 175, .88)),
+        radial-gradient(circle at top right, rgba(8, 145, 178, .55), transparent 38%);
+    }
+    .kicker { margin: 0 0 14px; color: #bfdbfe; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(28px, 5vw, 48px); line-height: 1.12; letter-spacing: 0; }
+    .subtitle { margin: 18px 0 0; max-width: 780px; color: #dbeafe; font-size: 18px; }
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .meta {
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .meta b { display: block; color: #bfdbfe; font-size: 12px; margin-bottom: 4px; }
+    .meta span, .meta a { color: #fff; font-size: 14px; word-break: break-word; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    main { padding: 30px 28px 52px; }
+    section { padding: 24px 0; border-bottom: 1px solid var(--line); }
+    section:last-child { border-bottom: 0; }
+    h2 { margin: 0 0 16px; font-size: 25px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 18px 0 8px; font-size: 18px; }
+    p { margin: 0 0 14px; }
+    .lead { font-size: 18px; color: #263447; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 18px 0;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+      padding: 16px;
+    }
+    .card b { display: block; margin-bottom: 8px; }
+    .card p { color: var(--muted); font-size: 14px; margin: 0; }
+    .quote {
+      margin: 18px 0;
+      border-left: 4px solid var(--blue);
+      background: var(--soft);
+      padding: 16px 18px;
+      font-size: 20px;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+    th, td { padding: 11px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { text-align: left; background: #f1f5f9; color: #243044; }
+    tr:last-child td { border-bottom: 0; }
+    .tag {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #e0f2fe;
+      color: #075985;
+      margin: 0 6px 6px 0;
+    }
+    .figure {
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 14px;
+      overflow-x: auto;
+    }
+    .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .note {
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      background: #fff7ed;
+      padding: 14px 16px;
+      color: #7c2d12;
+    }
+    .source-list li { margin-bottom: 8px; }
+    @media (max-width: 760px) {
+      header, main { padding-left: 18px; padding-right: 18px; }
+      .meta-grid, .cards { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+      th, td { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <p class="kicker">AI每日论文精选 · 2026-05-27</p>
+      <h1>SkillOpt：像训练神经网络一样训练 Agent 技能</h1>
+      <p class="subtitle">这篇论文的重要性不在于又做了一个 Agent，而在于提出了一种更工程化的想法：不要只训练模型权重，也可以训练“写在文档里的工作方法”。</p>
+      <div class="meta-grid">
+        <div class="meta"><b>论文标题</b><span>SkillOpt: Executive Strategy for Self-Evolving Agent Skills</span></div>
+        <div class="meta"><b>中文标题</b><span>SkillOpt：面向自进化 Agent 技能的执行策略</span></div>
+        <div class="meta"><b>作者</b><span>Yifan Yang, Ziyang Gong, Weiquan Huang, Qihao Yang, Ziwei Zhou, Zisu Huang, Yan Li, Xuemei Gao, Qi Dai, Bei Liu, Kai Qiu, Yuqing Yang, Dongdong Chen, Xue Yang, Chong Luo</span></div>
+        <div class="meta"><b>机构</b><span>Microsoft, Shanghai Jiao Tong University, Tongji University, Fudan University</span></div>
+        <div class="meta"><b>时间与平台</b><span>arXiv:2605.23904；2026-05-22 提交，2026-05-25 修订；cs.AI / cs.CL</span></div>
+        <div class="meta"><b>链接</b><a href="https://arxiv.org/abs/2605.23904">arXiv</a><span> · </span><a href="https://microsoft.github.io/SkillOpt/">项目页</a><span> · </span><a href="https://github.com/microsoft/SkillOpt">GitHub</a></div>
+      </div>
+    </header>
+
+    <main>
+      <section id="why">
+        <h2>1. 为什么今天选它？</h2>
+        <p class="lead">因为它击中了 Agent 产品化的一个关键问题：模型很强，但“怎么做事”的经验仍然容易散落在提示词、流程文档、人工经验和失败日志里。</p>
+        <div class="cards">
+          <div class="card"><b>技术突破</b><p>把自然语言 skill 文档当成可训练对象，用 rollout、反思、受控编辑、验证门来稳定优化。</p></div>
+          <div class="card"><b>产业价值</b><p>不改模型权重，部署时只带一个 best_skill.md，适合闭源模型、企业流程和代码 Agent。</p></div>
+          <div class="card"><b>长期意义</b><p>它把 Agent 经验从“会话里的灵感”变成“可审计、可迁移、可版本化的能力资产”。</p></div>
+        </div>
+        <p>Hugging Face 把它列为当日 #1 Paper of the day；官方项目页强调 52/52 个模型、基准和执行环境组合里 SkillOpt 都达到最好或并列最好。论文代码也已在 Microsoft GitHub 仓库开放。</p>
+      </section>
+
+      <section id="one-line">
+        <h2>2. 一句话讲透论文</h2>
+        <div class="quote">SkillOpt 本质上是在教 AI：把反复踩坑总结成一份“工作手册”，再像训练模型一样反复试、改、验，直到这份手册真的让 Agent 做事更靠谱。</div>
+        <p>可以把它想成培训一名新人。传统做法是主管凭经验写一份 SOP，或者让新人自己写工作心得。SkillOpt 更像是：让新人先做一批任务，记录成功和失败；教练看日志后只允许小步修改 SOP；新 SOP 必须在没见过的题目上更好，才算升级。</p>
+      </section>
+
+      <section id="contribution">
+        <h2>3. 核心贡献拆解</h2>
+        <table>
+          <thead><tr><th>问题</th><th>旧方法</th><th>SkillOpt 的做法</th><th>为什么更好</th></tr></thead>
+          <tbody>
+            <tr><td>技能来自哪里</td><td>人工写、一次性让 LLM 生成、或松散自我改写。</td><td>把 skill 文档视为 Agent 的外部可训练状态。</td><td>能力不再只靠模型内部权重，也可以沉淀为可读文档。</td></tr>
+            <tr><td>如何更新技能</td><td>大段重写，容易把有效规则也改坏。</td><td>只允许 add / delete / replace 形式的受控小编辑。</td><td>像调学习率一样控制步长，减少“越改越坏”。</td></tr>
+            <tr><td>如何判断改得好</td><td>凭感觉或训练集表现。</td><td>必须通过 held-out validation gate。</td><td>只有在新题上更好，候选 skill 才会被接受。</td></tr>
+            <tr><td>失败经验怎么用</td><td>失败日志常被丢掉。</td><td>保存 rejected-edit buffer，作为负反馈。</td><td>让优化器知道哪些修改方向已经证明有害。</td></tr>
+            <tr><td>部署成本</td><td>需要额外模型调用、检索系统或复杂框架。</td><td>最终只导出一个紧凑的 best_skill.md。</td><td>部署时没有额外推理调用，便于审计和迁移。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="mechanism">
+        <h2>4. 工作原理：把“工作手册”当模型来训练</h2>
+        <p>SkillOpt 的关键不是让 Agent 无限制自我修改，而是给自我改进加上工程纪律：证据来自真实任务轨迹，修改必须小步，结果必须被验证。</p>
+        <div class="figure">
+          <svg viewBox="0 0 920 360" role="img" aria-label="SkillOpt 中文流程图">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/>
+              </marker>
+              <style>
+                .box{fill:#fff;stroke:#cbd5e1;stroke-width:2;rx:12}
+                .blue{fill:#eff6ff;stroke:#60a5fa}
+                .green{fill:#ecfdf5;stroke:#34d399}
+                .amber{fill:#fffbeb;stroke:#f59e0b}
+                .red{fill:#fef2f2;stroke:#f87171}
+                .t{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+                .s{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#475569}
+                .arrow{stroke:#2563eb;stroke-width:3;fill:none;marker-end:url(#arrow)}
+              </style>
+            </defs>
+            <rect x="24" y="52" width="170" height="86" class="box blue"/>
+            <text x="48" y="84" class="t">当前技能文档</text>
+            <text x="48" y="111" class="s">像一份 SOP</text>
+            <rect x="250" y="52" width="170" height="86" class="box"/>
+            <text x="285" y="84" class="t">Agent 执行</text>
+            <text x="278" y="111" class="s">留下成功/失败轨迹</text>
+            <rect x="476" y="52" width="170" height="86" class="box amber"/>
+            <text x="512" y="84" class="t">优化器反思</text>
+            <text x="504" y="111" class="s">找可复用规律</text>
+            <rect x="702" y="52" width="170" height="86" class="box green"/>
+            <text x="728" y="84" class="t">受控小编辑</text>
+            <text x="728" y="111" class="s">增 / 删 / 替换</text>
+            <rect x="250" y="222" width="170" height="86" class="box green"/>
+            <text x="286" y="254" class="t">验证门</text>
+            <text x="274" y="281" class="s">新题上更好才接受</text>
+            <rect x="476" y="222" width="170" height="86" class="box red"/>
+            <text x="500" y="254" class="t">拒绝编辑缓存</text>
+            <text x="504" y="281" class="s">记录坏方向</text>
+            <rect x="702" y="222" width="170" height="86" class="box blue"/>
+            <text x="737" y="254" class="t">导出部署</text>
+            <text x="725" y="281" class="s">best_skill.md</text>
+            <path d="M194 95 H250" class="arrow"/>
+            <path d="M420 95 H476" class="arrow"/>
+            <path d="M646 95 H702" class="arrow"/>
+            <path d="M787 138 C787 185 420 176 365 222" class="arrow"/>
+            <path d="M420 265 H476" class="arrow"/>
+            <path d="M420 265 C545 340 675 338 747 308" class="arrow"/>
+            <path d="M250 265 C120 250 80 178 95 138" class="arrow"/>
+          </svg>
+          <div class="caption">重构图示：SkillOpt 不是让 Agent 自由发挥，而是形成“执行、反思、小步修改、验证、导出”的闭环。</div>
+        </div>
+        <p>这里最值得注意的是“验证门”。如果没有验证门，Agent 自我改进很容易变成自我陶醉：它写了一段看起来很聪明的新规则，但实际任务不一定更好。SkillOpt 强制把每次修改都变成一次可测实验。</p>
+      </section>
+
+      <section id="terms">
+        <h2>5. 关键术语解释</h2>
+        <table>
+          <thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead>
+          <tbody>
+            <tr><td>Agent Skill</td><td>可复用的自然语言程序性知识，规定工具使用、检查步骤、输出格式和失败处理。</td><td>AI 的工作手册。</td></tr>
+            <tr><td>Frozen Agent</td><td>模型权重、执行后端和 harness 固定不变。</td><td>员工不换脑子，只更新操作手册。</td></tr>
+            <tr><td>Rollout</td><td>Agent 在任务上的完整执行轨迹，包括消息、工具调用、反馈和得分。</td><td>做题过程录像加成绩单。</td></tr>
+            <tr><td>Text-space Optimizer</td><td>在自然语言文本空间里搜索更优 skill，而不是更新神经网络参数。</td><td>不是改模型，而是改说明书。</td></tr>
+            <tr><td>Held-out Gate</td><td>用未参与训练的验证集决定候选 skill 是否接受。</td><td>不能只在练习题上进步，必须在新题上也进步。</td></tr>
+            <tr><td>Textual Learning Rate</td><td>限制每轮文本编辑幅度的预算。</td><td>每次只允许小修，避免把整份手册改乱。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="results">
+        <h2>6. 实验结果怎么读</h2>
+        <p>论文最有冲击力的结果是：SkillOpt 在 6 个基准、7 个目标模型、3 类执行环境中，52/52 个评估组合达到最好或并列最好。它不仅能改善直接聊天，也能改善 Codex 和 Claude Code 这样的真实 Agent 执行循环。</p>
+        <table>
+          <thead><tr><th>设置</th><th>论文报告的平均提升</th><th>它意味着什么</th></tr></thead>
+          <tbody>
+            <tr><td>GPT-5.5 Direct Chat</td><td>相对无 skill 平均 +23.5 分</td><td>即使是强模型，也会从高质量工作手册中显著受益。</td></tr>
+            <tr><td>GPT-5.5 Codex Agentic Loop</td><td>相对无 skill 平均 +24.8 分</td><td>在工具、文件、验证器参与的真实工作流里，过程规则更重要。</td></tr>
+            <tr><td>GPT-5.5 Claude Code Loop</td><td>相对无 skill 平均 +19.1 分</td><td>skill 不是只绑定单一 harness，有跨执行环境迁移潜力。</td></tr>
+            <tr><td>Codex 训练的 Spreadsheet skill 迁移到 Claude Code</td><td>项目页报告跨 harness +31.8</td><td>学到的可能是“如何处理表格任务”的程序性知识，而不是某个模型的小技巧。</td></tr>
+          </tbody>
+        </table>
+        <div class="figure">
+          <svg viewBox="0 0 920 300" role="img" aria-label="SkillOpt 实验结果柱状图">
+            <style>
+              .axis{stroke:#94a3b8;stroke-width:2}
+              .bar1{fill:#2563eb}
+              .bar2{fill:#0891b2}
+              .bar3{fill:#0f766e}
+              .label{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#334155}
+              .num{font:700 18px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+              .ttl{font:700 19px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+            </style>
+            <text x="30" y="34" class="ttl">SkillOpt 对 GPT-5.5 的平均提升</text>
+            <line x1="210" y1="240" x2="850" y2="240" class="axis"/>
+            <line x1="210" y1="60" x2="210" y2="240" class="axis"/>
+            <text x="38" y="96" class="label">Direct Chat</text>
+            <rect x="210" y="73" width="376" height="34" class="bar1" rx="5"/>
+            <text x="600" y="98" class="num">+23.5</text>
+            <text x="38" y="154" class="label">Codex Loop</text>
+            <rect x="210" y="131" width="397" height="34" class="bar2" rx="5"/>
+            <text x="620" y="156" class="num">+24.8</text>
+            <text x="38" y="212" class="label">Claude Code</text>
+            <rect x="210" y="189" width="306" height="34" class="bar3" rx="5"/>
+            <text x="530" y="214" class="num">+19.1</text>
+            <text x="210" y="270" class="label">单位：平均准确率百分点提升，基于论文摘要与项目页报告</text>
+          </svg>
+          <div class="caption">重构图示：最重要的不是某个单点分数，而是它在不同执行环境里都有效。</div>
+        </div>
+      </section>
+
+      <section id="limits">
+        <h2>7. 局限性与问题</h2>
+        <div class="note">
+          <p><b>不要把 SkillOpt 理解成“Agent 已经能完全自我进化”。</b>它更像把 skill 优化变成可控实验，而不是取消人类审查。</p>
+        </div>
+        <table>
+          <thead><tr><th>风险</th><th>现实含义</th><th>需要怎么防</th></tr></thead>
+          <tbody>
+            <tr><td>验证集代表性不足</td><td>如果验证题太窄，skill 会学会“考试技巧”。</td><td>使用跨场景测试集、回归集和人工抽查。</td></tr>
+            <tr><td>优化器模型成本</td><td>训练 skill 需要额外调用更强模型分析轨迹。</td><td>把训练放在离线批处理；部署只用最终 skill。</td></tr>
+            <tr><td>安全与权限</td><td>skill 可能学到激进工具使用策略。</td><td>把权限、审计、不可越权规则写进 harness，而不只写进 skill。</td></tr>
+            <tr><td>可解释但不等于正确</td><td>自然语言文档可读，但仍可能包含错误规则。</td><td>需要版本管理、差异审查和任务级证据。</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="industry">
+        <h2>8. 产业影响分析</h2>
+        <p>如果这一路线成立，未来企业部署 Agent 的核心资产可能不只是模型 API Key，而是一套经过真实任务训练的 skill 库。</p>
+        <div class="cards">
+          <div class="card"><b>谁受益</b><p>代码 Agent、客服自动化、财务表格、法务审查、供应链运营、数据分析等流程性强的场景。</p></div>
+          <div class="card"><b>谁被冲击</b><p>只靠“更长提示词模板”交付的浅层 Agent 工具会被可验证 skill 训练替代。</p></div>
+          <div class="card"><b>竞争格局</b><p>模型能力仍重要，但企业专有流程经验会变成可迁移、可复用的第二层壁垒。</p></div>
+        </div>
+        <p>这对产品经理尤其关键：Agent 产品的护城河可能不是“我接了哪个大模型”，而是“我能否把用户的反复失败变成越来越好的操作规程”。</p>
+      </section>
+
+      <section id="intuition">
+        <h2>9. 这篇论文改变了什么直觉？</h2>
+        <p>过去我们常把 AI 进步想成三条路：更大模型、更多数据、更强强化学习。SkillOpt 提醒我们还有第四条路：训练围绕模型的外部工作系统。</p>
+        <div class="figure">
+          <svg viewBox="0 0 920 320" role="img" aria-label="AI 能力资产图">
+            <style>
+              .circle{fill:#eff6ff;stroke:#2563eb;stroke-width:2}
+              .rect{fill:#ffffff;stroke:#cbd5e1;stroke-width:2}
+              .txt{font:700 17px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#111827}
+              .small{font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",Arial;fill:#475569}
+              .arr{stroke:#64748b;stroke-width:2;fill:none;marker-end:url(#arrow)}
+            </style>
+            <rect x="42" y="72" width="210" height="160" rx="12" class="rect"/>
+            <text x="92" y="116" class="txt">模型权重</text>
+            <text x="76" y="148" class="small">强大的通用能力</text>
+            <text x="70" y="176" class="small">但常不可改、很昂贵</text>
+            <rect x="355" y="72" width="210" height="160" rx="12" class="circle"/>
+            <text x="414" y="116" class="txt">Agent Skill</text>
+            <text x="393" y="148" class="small">可读、可审计</text>
+            <text x="381" y="176" class="small">可通过任务反馈训练</text>
+            <rect x="668" y="72" width="210" height="160" rx="12" class="rect"/>
+            <text x="714" y="116" class="txt">业务执行力</text>
+            <text x="701" y="148" class="small">更少踩坑</text>
+            <text x="694" y="176" class="small">更稳定地产出结果</text>
+            <path d="M252 152 H355" class="arr"/>
+            <path d="M565 152 H668" class="arr"/>
+            <text x="80" y="272" class="small">旧直觉：能力主要藏在模型里。</text>
+            <text x="390" y="272" class="small">新直觉：能力也可以藏在可训练的工作手册里。</text>
+          </svg>
+          <div class="caption">重构图示：SkillOpt 把“外部 procedure”提升为和模型权重并列的重要能力载体。</div>
+        </div>
+      </section>
+
+      <section id="reading">
+        <h2>10. 延伸阅读</h2>
+        <ul class="source-list">
+          <li><a href="https://arxiv.org/abs/2605.23904">原论文 arXiv 页面：SkillOpt: Executive Strategy for Self-Evolving Agent Skills</a></li>
+          <li><a href="https://arxiv.org/pdf/2605.23904">论文 PDF</a></li>
+          <li><a href="https://microsoft.github.io/SkillOpt/">Microsoft 官方项目页</a></li>
+          <li><a href="https://github.com/microsoft/SkillOpt">官方 GitHub 仓库</a></li>
+          <li><a href="https://huggingface.co/papers/2605.23904">Hugging Face Papers 讨论页</a></li>
+          <li><a href="https://www.youtube.com/watch?v=mWITf7PRg9M">项目页链接的视频介绍</a></li>
+          <li>相关脉络：GEPA、TextGrad、Trace2Skill、EvoSkill、Code as Agent Harness 等工作共同指向“语言制品也可以被优化”。</li>
+        </ul>
+      </section>
+
+      <section id="sources">
+        <h2>11. 引用来源</h2>
+        <p>本报告优先使用英文原始信息源，并用项目页、代码仓库和社区论文页做交叉验证。</p>
+        <ul class="source-list">
+          <li>arXiv 摘要页：提交/修订时间、作者、机构、摘要、实验结论与代码链接。</li>
+          <li>arXiv PDF：论文正文、方法图、结果、迁移实验、贡献说明。</li>
+          <li>Microsoft SkillOpt 项目页：核心循环、52/52 主结果、跨模型/跨 harness 迁移、消融结论。</li>
+          <li>Microsoft GitHub 仓库：开源代码、README、仓库活跃度与项目结构。</li>
+          <li>Hugging Face Papers：社区热度、#1 Paper of the day、作者补充说明和收藏情况。</li>
+        </ul>
+        <p>
+          <span class="tag">Agent Skills</span>
+          <span class="tag">Text-space Optimization</span>
+          <span class="tag">Codex / Claude Code</span>
+          <span class="tag">可审计 AI 工作流</span>
+        </p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

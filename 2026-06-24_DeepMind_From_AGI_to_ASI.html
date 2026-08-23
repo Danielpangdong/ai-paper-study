@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文每日精读 · 2026-06-24 · From AGI to ASI（DeepMind）</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --bg-2:#111733;
+    --card:#161d3d;
+    --card-2:#1c2552;
+    --border:#2a356b;
+    --text:#e8ecf7;
+    --muted:#9aa3c7;
+    --accent:#7aa2ff;
+    --accent-2:#9b7aff;
+    --good:#5ad19a;
+    --warn:#f5b04a;
+    --bad:#ff7a90;
+    --grad:linear-gradient(135deg,#7aa2ff 0%,#9b7aff 60%,#ff7ac6 100%);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+  header.hero{
+    background:radial-gradient(1200px 400px at 10% -20%,rgba(122,162,255,.25),transparent 60%),
+               radial-gradient(900px 400px at 110% 10%,rgba(155,122,255,.22),transparent 60%),
+               linear-gradient(180deg,#0e1530 0%,#0b1020 100%);
+    border:1px solid var(--border);border-radius:20px;padding:36px 32px;position:relative;overflow:hidden
+  }
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .badge{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted)}
+  .badge.hot{background:linear-gradient(90deg,#ff7ac6,#9b7aff);color:#0b1020;border:none;font-weight:600}
+  h1{font-size:34px;margin:0 0 8px;letter-spacing:.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);font-size:15px}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:24px}
+  .meta-grid .item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .meta-grid .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+  .meta-grid .val{font-size:15px;color:var(--text)}
+
+  section{margin-top:36px}
+  h2{font-size:22px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .num{display:inline-flex;width:28px;height:28px;border-radius:8px;background:var(--grad);color:#0b1020;font-size:14px;align-items:center;justify-content:center;font-weight:700}
+  h3{font-size:17px;margin:14px 0 8px;color:var(--text)}
+  p{margin:8px 0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  @media (max-width:820px){.grid-2,.grid-4{grid-template-columns:1fr}}
+
+  .tldr{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .tldr .t{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .tldr .t .k{color:var(--accent);font-size:12px;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+  .tldr .t .v{font-size:14px;color:var(--text)}
+
+  /* continuum */
+  .continuum{position:relative;padding:22px 8px 8px}
+  .continuum .track{height:8px;border-radius:999px;background:linear-gradient(90deg,#3a4990,#7aa2ff,#9b7aff,#ff7ac6);position:relative;margin:24px 0 50px}
+  .continuum .node{position:absolute;top:-10px;transform:translateX(-50%);text-align:center}
+  .continuum .dot{width:28px;height:28px;border-radius:50%;background:#0b1020;border:3px solid #fff;margin:0 auto;box-shadow:0 0 12px rgba(122,162,255,.7)}
+  .continuum .lbl{margin-top:8px;font-size:13px;color:var(--text);white-space:nowrap}
+  .continuum .sub2{font-size:11px;color:var(--muted)}
+
+  /* pathway cards */
+  .paths{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  @media (max-width:820px){.paths{grid-template-columns:1fr}}
+  .path{position:relative;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;overflow:hidden;transition:transform .15s ease}
+  .path:hover{transform:translateY(-2px)}
+  .path::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad)}
+  .path .pnum{display:inline-block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .path h3{margin:0 0 8px;font-size:18px}
+  .path .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted);margin-right:6px;margin-top:8px}
+
+  /* friction table */
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:1px;text-transform:uppercase;background:rgba(255,255,255,.02)}
+  tr:last-child td{border-bottom:none}
+
+  /* confidence chips */
+  .chip{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;margin-left:6px;font-weight:600}
+  .chip.high{background:rgba(90,209,154,.18);color:var(--good);border:1px solid rgba(90,209,154,.4)}
+  .chip.mid{background:rgba(245,176,74,.18);color:var(--warn);border:1px solid rgba(245,176,74,.4)}
+  .chip.low{background:rgba(255,122,144,.18);color:var(--bad);border:1px solid rgba(255,122,144,.4)}
+
+  blockquote{margin:16px 0;padding:14px 18px;border-left:4px solid var(--accent);background:rgba(122,162,255,.08);border-radius:0 10px 10px 0;color:var(--text);font-style:italic}
+
+  .authors{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .author{font-size:12px;padding:4px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--muted)}
+
+  ul.clean{margin:8px 0 0 18px;padding:0}
+  ul.clean li{margin:4px 0}
+
+  .callout{background:linear-gradient(135deg,rgba(122,162,255,.12),rgba(155,122,255,.10));border:1px solid var(--border);border-radius:14px;padding:18px}
+  .callout .h{font-weight:700;color:var(--accent);margin-bottom:6px;letter-spacing:.5px}
+
+  footer{margin-top:50px;padding-top:22px;border-top:1px solid var(--border);color:var(--muted);font-size:12px}
+  footer a{color:var(--accent);word-break:break-all}
+  .src-list{margin:8px 0 0;padding:0;list-style:none}
+  .src-list li{margin:6px 0;font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="badges">
+    <span class="badge hot">每日AI精读 · 2026-06-24</span>
+    <span class="badge">来源：Google DeepMind · arXiv</span>
+    <span class="badge">类别：AI 战略 / 安全 / 长期路线图</span>
+    <span class="badge">阅读时长：约 8 分钟</span>
+  </div>
+  <h1>《From AGI to ASI》：DeepMind 给出"人类级 AI 之后"的四条路</h1>
+  <p class="sub">一份 57–60 页、14 位作者署名的路线图。<strong>核心论点不是 ASI 何时到来，而是它可能不会以"一刹那的奇点"形式到来——而是表现为科学技术各领域接连不断的突破。</strong></p>
+
+  <div class="meta-grid">
+    <div class="item"><div class="label">论文标题</div><div class="val">From AGI to ASI</div></div>
+    <div class="item"><div class="label">机构</div><div class="val">Google DeepMind（主导）</div></div>
+    <div class="item"><div class="label">arXiv 编号</div><div class="val">2606.12683 · v1</div></div>
+    <div class="item"><div class="label">提交日期</div><div class="val">2026 年 6 月 10 日</div></div>
+    <div class="item"><div class="label">作者数</div><div class="val">14 人（含 Shane Legg、Marcus Hutter）</div></div>
+    <div class="item"><div class="label">许可</div><div class="val">CC BY 4.0</div></div>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">1</span>30 秒看懂</h2>
+  <div class="card">
+    <div class="tldr">
+      <div class="t"><div class="k">主题</div><div class="v">在 AGI（人类级）之后，AI 如何继续进化到 ASI（超越大型人类组织的智能）？</div></div>
+      <div class="t"><div class="k">核心结构</div><div class="v">提出 <strong>4 条路径</strong>，并指出每条路径对应的<strong>瓶颈</strong>都属于"开放研究问题"，未被证伪也未被证实。</div></div>
+      <div class="t"><div class="k">最大重构</div><div class="v">质疑"单次奇点跳变"叙事。<strong>未来更像一连串跨领域突破</strong>，而不是一次性的断点。</div></div>
+      <div class="t"><div class="k">为何重要</div><div class="v">这是前沿实验室<strong>首次以"路线图"形式</strong>公开讨论 AGI 之后的进化结构，影响政策与安全研究的规划期限。</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">2</span>智能的连续谱：从当前 AI 到 Universal AI</h2>
+  <div class="card">
+    <p>论文一上来就拒绝"AGI 是终点"的常见叙事，而把机器智能视为一条<strong>连续谱</strong>。两端理论上比较清晰：当前 AI 可通过基准衡量；理论上限 <em>Universal AI（UAI）</em> 由 Marcus Hutter 的 AIXI 框架形式化定义（数学上不可计算，只能作为北极星）。<span class="chip high">置信度：高</span></p>
+
+    <div class="continuum">
+      <div class="track">
+        <div class="node" style="left:5%"><div class="dot"></div><div class="lbl">当前 AI</div><div class="sub2">已具备基准与可观测能力</div></div>
+        <div class="node" style="left:40%"><div class="dot"></div><div class="lbl">AGI</div><div class="sub2">达到人类中位水平</div></div>
+        <div class="node" style="left:75%"><div class="dot"></div><div class="lbl">ASI</div><div class="sub2">超越大型组织的认知能力</div></div>
+        <div class="node" style="left:97%"><div class="dot"></div><div class="lbl">Universal AI</div><div class="sub2">理论上限 · 不可计算</div></div>
+      </div>
+    </div>
+
+    <p style="margin-top:30px">论文给 <strong>ASI 设了一个故意拔高的门槛</strong>：不是"超过单个人类"，也不是"超过一个团队"，而是"超过具有分工、专业化与集体记忆的大型人类组织"。这一定义把当前已经在棋类、蛋白质折叠等领域"超人"的窄 AI 排除在 ASI 之外。<span class="chip high">置信度：高（来自摘要原文）</span></p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">3</span>四条路径：可能并行、可能组合</h2>
+  <p style="color:var(--muted);font-size:14px">摘要明确列出四条路径，并强调它们<strong>不互斥</strong>，真实未来可能是某种组合。</p>
+  <div class="paths">
+    <div class="path">
+      <div class="pnum">PATH 01</div>
+      <h3>路径一 · 继续扩展（Scaling AGI）</h3>
+      <p>沿用已知架构，继续堆算力、堆数据、堆模型规模。如果过去十年的"扩展律"在 AGI 之后仍然成立，那么 ASI 只是已有方法的<strong>定量延伸</strong>。</p>
+      <p style="color:var(--muted);font-size:13px">主要瓶颈：高质量数据耗尽、训练经济性曲线、规模化是否会出现新的能力断点。</p>
+      <span class="tag">最直觉</span><span class="tag">最易被低估也最易被高估</span>
+    </div>
+    <div class="path">
+      <div class="pnum">PATH 02</div>
+      <h3>路径二 · 新算法范式（Paradigm Shifts）</h3>
+      <p>一种新架构 / 新训练方式 / 新学习机制，解锁靠"扩展现有方法"无法实现的能力。类比：从 RNN 到 Transformer 不仅让模型更好，而是<strong>改变了"可能性的边界"</strong>。</p>
+      <p style="color:var(--muted);font-size:13px">关键属性：更高的样本效率、更强的组合泛化、更稳健的分布外表现。</p>
+      <span class="tag">最不可预测</span><span class="tag">对安全工作最不友好</span>
+    </div>
+    <div class="path">
+      <div class="pnum">PATH 03</div>
+      <h3>路径三 · 递归自我改进（Recursive Improvement）</h3>
+      <p>AI 加速 AI 研究，产生更强的 AI 继续加速研究——经典"智能爆炸"的核心机制。论文比通俗版本更克制，明确区分 <strong>"AI 辅助改进"（人类在环）</strong> 与 <strong>"AI 自主改进"（无人审查）</strong>，后者引发最尖锐的安全担忧。</p>
+      <p style="color:var(--muted);font-size:13px">关键问题：被改进的到底是什么？是否存在自我改进的边际递减？</p>
+      <span class="tag">最具不确定性</span><span class="tag">安全代价最高</span>
+    </div>
+    <div class="path">
+      <div class="pnum">PATH 04</div>
+      <h3>路径四 · 多智能体集体（Multi-Agent Collectives）</h3>
+      <p>不是一个单体 ASI，而是<strong>大量 AGI 级智能体的协作网络</strong>，其集体认知能力超过任何单体。这与 2026 年正在普及的多智能体编排趋势天然对齐。</p>
+      <p style="color:var(--muted);font-size:13px">安全启示：对齐不仅要保证单个智能体，还要保证它们之间的<strong>协调协议</strong>。一个失准的智能体可能在紧耦合系统中传染。</p>
+      <span class="tag">最容易被现有趋势"无声"达成</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">4</span>潜在阻力与瓶颈</h2>
+  <div class="card">
+    <p>摘要明确指出：每条路径都存在"摩擦与瓶颈"，这些摩擦是<strong>"轻微的还是实质性的"，是论文留给社区的开放研究问题</strong>。<span class="chip high">置信度：高</span></p>
+    <p style="color:var(--muted);font-size:13px">下表中"物理 / 经济 / 对齐 / 可解释性 / 监管"五项与摘要论述及多家技术媒体二手概括一致；具体定量估计（如"有效算力每年 10×"）<strong>未出现在摘要中</strong>，仅见于部分二手解读，本表已剔除。<span class="chip mid">二手部分：置信度中</span></p>
+    <table>
+      <thead>
+        <tr><th>瓶颈</th><th>含义</th><th>对哪条路径影响最大</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>物理 / 能源极限</td><td>训练所需算力与电力的工程与经济上限</td><td>路径一（扩展）</td></tr>
+        <tr><td>数据墙</td><td>高质量人类语料有限，合成数据自带偏置</td><td>路径一、路径二</td></tr>
+        <tr><td>对齐瓶颈</td><td>每条路径需要解决不同的对齐问题（可扩展监督 / 安全自我修改 / 集体对齐），目前皆<strong>未解决</strong></td><td>所有路径</td></tr>
+        <tr><td>可解释性墙</td><td>能力越强，决策为何作出越难追溯，安全验证愈发困难</td><td>路径三尤甚</td></tr>
+        <tr><td>制度 / 监管摩擦</td><td>政府与国际机构会引入限制，可能减速也可能改向；作者视之为"特性"而非纯粹的"bug"，为安全工作争取时间</td><td>所有路径</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">5</span>最值得记住的一句话：不是"一次跳变"，而是"接连不断的突破"</h2>
+  <div class="callout">
+    <div class="h">原文重构</div>
+    <blockquote>"更恰当的画面，可能是 AI 推动的一系列变革性社会变化，跨越科学与技术的多个领域。"<br><span style="color:var(--muted);font-style:normal;font-size:12px">—— arXiv 摘要原文翻译</span></blockquote>
+    <p>这句话的政策含义被低估了：如果转型是<strong>分布式 + 渐进 + 跨领域</strong>的（比如先在生物学、再在材料、再在软件工程取得决定性优势），那么社会有更多时间适应；但"危险点"也更难被识别，"红利集中爆发"的瞬间也不会出现，难以唤起统一的公共注意力。<span class="chip high">置信度：高</span></p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">6</span>最强反驳（在认可此论文价值前，应先质疑的事）</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>反驳 A · "列出路径 ≠ 路径成立"</h3>
+      <p>AI 预测史上充斥着自信满满的"阶段地图"，最终或被事件、或被起初看似次要的障碍颠覆。<strong>论文是一张可能性的目录，不是任何一条路径可行的证据。</strong>作者自己也明确承认这一点。</p>
+    </div>
+    <div class="card">
+      <h3>反驳 B · 利益相关者的可信度问题</h3>
+      <p>发表该论文的实验室，<strong>同时也是正在竞赛构建论文所述系统的实验室之一</strong>。任何把这份路线图作为政策依据的人，都需要把这种"利益相关 × 权威性"的张力计入。</p>
+    </div>
+    <div class="card">
+      <h3>反驳 C · "ASI 定义"是策略性拔高</h3>
+      <p>把 ASI 定义为"超越大型组织"听上去严谨，但也<strong>抬高了门槛、推迟了警报触发的时点</strong>。如果实操中应担忧的是"足以颠覆某个关键行业的窄域超人系统"，那这个定义反而模糊焦点。</p>
+    </div>
+    <div class="card">
+      <h3>反驳 D · "渐进叙事"会让监管放松</h3>
+      <p>"不是一次跳变"在认知上更准确，但也可能在<strong>政治上更危险</strong>：监管机构在没有明确"事件点"时更容易拖延。论文未给出对应的制度设计建议，这是从研究到政策之间的真实缺口。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">7</span>作者署名（为什么这份名单很重要）</h2>
+  <div class="card">
+    <p><strong>Shane Legg</strong> 是 DeepMind 联合创始人，2008 年博士论文中首次使用"机器超级智能（machine superintelligence）"一词。<strong>Marcus Hutter</strong> 是 AIXI（通用智能体的理论框架）的提出者，本论文中所说的 Universal AI 即源于其工作。<strong>Allan Dafoe</strong> 主导 DeepMind 的长期战略与 AI 治理研究。这<strong>不是局外人的猜想</strong>，而是几位"用一生研究这件事"的人坐下来写的路线图——这是这篇论文超越普通会议论文的原因。<span class="chip high">置信度：高</span></p>
+    <div class="authors">
+      <span class="author">Tim Genewein</span><span class="author">Matija Franklin</span><span class="author">Alexander Lerchner</span><span class="author">Laurent Orseau</span><span class="author">Samuel Albanie</span><span class="author">Adam Bales</span><span class="author">Cole Wyeth</span><span class="author">Stephanie Chan</span><span class="author">Iason Gabriel</span><span class="author">Joel Z. Leibo</span><span class="author">Allan Dafoe</span><span class="author">Marcus Hutter</span><span class="author">Thore Graepel</span><span class="author">Shane Legg</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">8</span>对从业者的可执行启示</h2>
+  <div class="card">
+    <ul class="clean">
+      <li><strong>安全 / 对齐研究者：</strong>把规划期限从"接近 AGI"扩展到"AGI 之后"。当前大多数对齐方法是为接近当前能力水平的系统设计的，可能不足以应对四条路径中的任一种。</li>
+      <li><strong>多智能体方向的工程师：</strong>路径四在 2026 年已具备真实雏形。<strong>协调协议层面的安全工作</strong>（不仅是单 agent 行为约束）值得被纳入路线。</li>
+      <li><strong>政策研究者：</strong>把"单一转型时刻"的政策模型替换为"<strong>跨领域连续冲击</strong>"模型——后者需要长期、持续、跨部门的治理能力，而不是一次性大规模立法。</li>
+      <li><strong>企业战略：</strong>把"AGI 何时到来"这种二元问题，替换成"<strong>每个 6–12 个月会有哪些领域被推进多远</strong>"的滚动评估问题。</li>
+      <li><strong>普通读者：</strong>认识到 ASI <em>不</em> 等于全知全能。即便达到 ASI，仍受光速、可计算性、哥德尔不完备等基本边界约束。<span class="chip mid">置信度：中（部分论点来自二手解读）</span></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2><span class="num">9</span>不确定性与本报告的边界声明</h2>
+  <div class="card">
+    <ul class="clean">
+      <li>论文摘要 / arXiv 元数据中明确的事实（标题、作者、四条路径名称、ASI 的定义方式、"非单次跳变"的论断、需要"跨学科全球努力"）—— <span class="chip high">置信度：高</span></li>
+      <li>"六大瓶颈"中的"研究边际递减""抽象壁垒"等条目仅见于部分二手综述，未在 arXiv 摘要中复现，已在本报告表格中合并或省略 —— <span class="chip mid">置信度：中</span></li>
+      <li>"有效算力每年 10×"等具体定量估计 —— <span class="chip low">置信度：低 / 未在摘要中直接给出，本报告已剔除以免误导</span></li>
+      <li>本报告基于 arXiv 摘要 + 4 篇英文二手深度解读交叉验证。若需进一步精度，建议直接阅读论文全文（PDF / HTML 链接见底部）。</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  <strong>信息来源 / Sources（均为英文一手 / 权威二手）：</strong>
+  <ul class="src-list">
+    <li>[一手] Genewein, Franklin, …, Legg et al. <em>From AGI to ASI</em>, arXiv:2606.12683, 2026-06-10 —— <a href="https://arxiv.org/abs/2606.12683">https://arxiv.org/abs/2606.12683</a></li>
+    <li>[一手 · 全文] HTML 版本 —— <a href="https://arxiv.org/html/2606.12683v1">https://arxiv.org/html/2606.12683v1</a></li>
+    <li>[一手 · PDF] —— <a href="https://arxiv.org/pdf/2606.12683">https://arxiv.org/pdf/2606.12683</a></li>
+    <li>[一手 · DeepMind 出版物页] —— <a href="https://deepmind.google/research/publications/239142/">https://deepmind.google/research/publications/239142/</a></li>
+    <li>[二手 · 深度解读] explainx.ai, "From AGI to ASI: DeepMind's 57-Page Roadmap"（2026-06-16）—— <a href="https://www.explainx.ai/blog/deepmind-agi-to-asi-paper-four-pathways-2026">https://www.explainx.ai/blog/deepmind-agi-to-asi-paper-four-pathways-2026</a></li>
+    <li>[二手 · 政策视角] AI Insiders, "DeepMind maps four routes from AGI to superintelligence"（2026-06-17）—— <a href="https://aiinsiders.net/article/deepmind-maps-four-routes-from-agi-to-superintelligence">https://aiinsiders.net/article/deepmind-maps-four-routes-from-agi-to-superintelligence</a></li>
+    <li>[二手 · 大众科普] Jerry Cards, "After Human-Level AI, What Comes Next?"（2026-06-15）—— <a href="https://www.jerrycards.com/news/deepmind-from-agi-to-asi-four-pathways-superintelligence-roadmap-2026">https://www.jerrycards.com/news/deepmind-from-agi-to-asi-four-pathways-superintelligence-roadmap-2026</a></li>
+  </ul>
+  <p style="margin-top:18px">本报告由「AI 论文每日精读」自动化任务于 2026-06-24 生成。所有引用与事实均基于上述英文一手 / 权威二手来源；置信度标签遵守"高 / 中 / 低 / 未知"分级。如发现事实偏差，欢迎指正。</p>
+</footer>
+
+</div>
+</body>
+</html>

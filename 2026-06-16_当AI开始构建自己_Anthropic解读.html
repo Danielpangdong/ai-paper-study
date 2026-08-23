@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>当AI开始构建自己 · Anthropic研究解读 | 2026-06-16</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0b; --panel:#111114; --panel2:#16161a; --line:#26262d;
+    --text:#e8e8ea; --muted:#9b9ba3; --accent:#d97757; --accent2:#c47a5e;
+    --warn:#f4a261; --ok:#86efac; --danger:#f87171; --blue:#60a5fa;
+  }
+  *{box-sizing:border-box}
+  html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans SC',sans-serif;margin:0;padding:0;line-height:1.7}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .gradient-text{background:linear-gradient(90deg,#d97757,#f4a261,#86efac);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+  .panel2{background:var(--panel2);border:1px solid var(--line);border-radius:10px}
+  .accent-line{background:linear-gradient(90deg,transparent,var(--accent),transparent);height:1px}
+  .glow{box-shadow:0 0 40px -10px rgba(217,119,87,.4)}
+  .timeline-dot{width:14px;height:14px;border-radius:50%;background:var(--accent);box-shadow:0 0 14px var(--accent)}
+  .confidence{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:.5px}
+  .conf-high{background:rgba(134,239,172,.15);color:#86efac;border:1px solid #86efac40}
+  .conf-mid{background:rgba(244,162,97,.15);color:#f4a261;border:1px solid #f4a26140}
+  .conf-low{background:rgba(248,113,113,.15);color:#f87171;border:1px solid #f8717140}
+  .tag{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11px;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+  .num-big{font-family:'JetBrains Mono',monospace;font-weight:900;line-height:1;background:linear-gradient(90deg,#d97757,#f4a261);-webkit-background-clip:text;background-clip:text;color:transparent}
+  blockquote{border-left:3px solid var(--accent);padding:8px 16px;color:var(--muted);font-style:italic;background:rgba(217,119,87,.05);border-radius:0 8px 8px 0}
+  .scenario{position:relative;overflow:hidden}
+  .scenario::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+  .s1::before{background:#86efac}
+  .s2::before{background:#f4a261}
+  .s3::before{background:#f87171}
+  table{border-collapse:collapse;width:100%}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+  th{color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  .grid-bg{
+    background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,.04) 1px, transparent 0);
+    background-size:24px 24px;
+  }
+  .hover-lift{transition:transform .2s ease, box-shadow .2s ease}
+  .hover-lift:hover{transform:translateY(-2px);box-shadow:0 8px 24px -8px rgba(217,119,87,.25)}
+  .chart-wrap{position:relative;height:280px}
+  .pill{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:600;display:inline-block}
+  .progress{height:8px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  .progress-bar{height:100%;background:linear-gradient(90deg,#d97757,#f4a261);border-radius:4px;transition:width 1s ease}
+</style>
+</head>
+<body class="grid-bg">
+
+<!-- 顶部Hero -->
+<header class="relative overflow-hidden">
+  <div class="absolute inset-0" style="background:radial-gradient(ellipse at top, rgba(217,119,87,.18), transparent 60%)"></div>
+  <div class="max-w-6xl mx-auto px-6 pt-10 pb-12 relative">
+    <div class="flex items-center gap-2 mb-6 text-xs mono" style="color:var(--muted)">
+      <span class="tag">每日AI论文精读</span>
+      <span class="tag">2026-06-16</span>
+      <span class="tag">来源：Anthropic Institute</span>
+      <span class="tag">原文语言：英文</span>
+    </div>
+    <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-4">
+      当 AI 开始<span class="gradient-text">构建自己</span>
+    </h1>
+    <p class="text-lg md:text-xl" style="color:var(--muted)">
+      Anthropic 关于<strong style="color:var(--text)">递归自我改进 (RSI)</strong>的进展报告与影响推演
+    </p>
+    <p class="text-sm mt-2" style="color:var(--muted)">
+      原标题：When AI builds itself — Our progress toward recursive self-improvement, and its implications<br>
+      作者：Marina Favaro & Jack Clark（Anthropic Institute） · 发布：2026-06-04
+    </p>
+    <div class="flex flex-wrap gap-3 mt-6">
+      <a href="https://www.anthropic.com/institute/recursive-self-improvement" target="_blank"
+         class="px-4 py-2 rounded-lg text-sm font-semibold transition"
+         style="background:var(--accent);color:#0a0a0b">阅读原文 →</a>
+      <span class="px-4 py-2 rounded-lg text-sm panel2">阅读用时 · 约 12 分钟</span>
+    </div>
+  </div>
+  <div class="accent-line"></div>
+</header>
+
+<!-- 一句话核心结论 -->
+<section class="max-w-6xl mx-auto px-6 mt-10">
+  <div class="panel p-6 md:p-8 glow">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="pill" style="background:rgba(217,119,87,.15);color:var(--accent)">★ 一句话结论</span>
+      <span class="confidence conf-mid">置信度：中</span>
+    </div>
+    <p class="text-xl md:text-2xl font-bold leading-snug">
+      AI 系统对 AI 自身研发的加速作用，<span class="gradient-text">已经在 Anthropic 内部可量化</span>；
+      但论文并未声称已经实现"递归自我改进"，而是认为我们正在加速逼近这一拐点，且<span class="text-orange-300">现有制度的准备度严重不足</span>。
+    </p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      <div class="panel2 p-4 hover-lift">
+        <div class="num-big text-4xl">80%+</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Anthropic 合并入主仓的代码<br>由 Claude 编写（2026.05）</div>
+      </div>
+      <div class="panel2 p-4 hover-lift">
+        <div class="num-big text-4xl">8×</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">2026 Q2 工程师人均每日<br>合并代码量 vs. 2024</div>
+      </div>
+      <div class="panel2 p-4 hover-lift">
+        <div class="num-big text-4xl">4 月</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">模型可独立完成任务时长的<br>"翻倍周期"（原为 7 月）</div>
+      </div>
+      <div class="panel2 p-4 hover-lift">
+        <div class="num-big text-4xl">76%</div>
+        <div class="text-xs mt-1" style="color:var(--muted)">Claude 在"开放式难题"<br>会话中的成功率（2026.05）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 先给最强反驳 -->
+<section class="max-w-6xl mx-auto px-6 mt-10">
+  <div class="panel p-6 md:p-8" style="border-color:#f8717140">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="pill" style="background:rgba(248,113,113,.15);color:var(--danger)">⚠ 先给最强反驳</span>
+      <span class="text-xs" style="color:var(--muted)">遵循"在支持某观点前先呈现反方论据"原则</span>
+    </div>
+    <ul class="space-y-3 text-sm">
+      <li class="flex gap-3">
+        <span class="mono text-orange-300 shrink-0">①</span>
+        <div><strong>利益冲突：</strong>报告的数据生产者、利益相关方与"呼吁全球暂停"的倡导者是同一家公司。"80% 代码由 Claude 编写"既是技术成就声明，也是其在监管讨论中的<strong>话语筹码</strong>。</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="mono text-orange-300 shrink-0">②</span>
+        <div><strong>代码行数是不可靠指标：</strong>论文自己承认 "8× 代码行数" 高估了生产力提升。METR 的近期研究也显示开发者对 AI 提效的自我估计普遍偏高。</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="mono text-orange-300 shrink-0">③</span>
+        <div><strong>未做同行评议：</strong>这是公司博客文章而非经过同行评审的论文。许多内部基准（如 Claude Code 会话成功率）<strong>判官也是 Claude</strong>，存在"自我打分"的方法学风险。</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="mono text-orange-300 shrink-0">④</span>
+        <div><strong>外推存疑：</strong>METR 任务时长翻倍曲线、SWE-bench 饱和，都可能是 <strong>S 曲线</strong>而非指数。论文自己列出此为 Scenario 1，但仅一笔带过、未量化反证。</div>
+      </li>
+      <li class="flex gap-3">
+        <span class="mono text-orange-300 shrink-0">⑤</span>
+        <div><strong>"递归"被偷换概念：</strong>当前证据是"AI 加速 AI 研发"（弱 RSI），而非"AI 自主设计并训练后继者"（强 RSI）。文章在标题与正文中模糊了二者边界。</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 时间轴 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">📍 五阶段叙事：Anthropic 自我描述的开发模式演变</h2>
+  <div class="panel p-6 md:p-8">
+    <div class="space-y-6">
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="timeline-dot"></div>
+          <div class="w-px flex-1 mt-2" style="background:var(--line)"></div>
+        </div>
+        <div class="pb-4">
+          <div class="mono text-xs" style="color:var(--accent)">2021–2023</div>
+          <div class="font-bold mt-1">构建第一代 Claude</div>
+          <div class="text-sm mt-1" style="color:var(--muted)">人类工程师在笔记本上手动写代码与文档，模式与一般科技公司无异。</div>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="timeline-dot"></div>
+          <div class="w-px flex-1 mt-2" style="background:var(--line)"></div>
+        </div>
+        <div class="pb-4">
+          <div class="mono text-xs" style="color:var(--accent)">2023–2025</div>
+          <div class="font-bold mt-1">聊天机器人作为助手</div>
+          <div class="text-sm mt-1" style="color:var(--muted)">早期 chatbot 生成代码片段，人类复制粘贴到编辑器。</div>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="timeline-dot"></div>
+          <div class="w-px flex-1 mt-2" style="background:var(--line)"></div>
+        </div>
+        <div class="pb-4">
+          <div class="mono text-xs" style="color:var(--accent)">2025–2026</div>
+          <div class="font-bold mt-1">编程 Agent</div>
+          <div class="text-sm mt-1" style="color:var(--muted)">Claude Code 上线（2025-02），Agent 可独立编辑整个文件。</div>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="timeline-dot" style="background:#f4a261;box-shadow:0 0 14px #f4a261"></div>
+          <div class="w-px flex-1 mt-2" style="background:var(--line)"></div>
+        </div>
+        <div class="pb-4">
+          <div class="mono text-xs" style="color:#f4a261">今天（2026 年中）</div>
+          <div class="font-bold mt-1">自主 Agent</div>
+          <div class="text-sm mt-1" style="color:var(--muted)">Agent 自行运行代码、将数小时工作委派给其他 Agent，并可独立完成 12 小时连续任务。</div>
+        </div>
+      </div>
+      <div class="flex gap-4">
+        <div class="flex flex-col items-center shrink-0">
+          <div class="timeline-dot" style="background:#f87171;box-shadow:0 0 14px #f87171"></div>
+        </div>
+        <div>
+          <div class="mono text-xs" style="color:#f87171">20XX？</div>
+          <div class="font-bold mt-1">闭环 · 完整递归自我改进</div>
+          <div class="text-sm mt-1" style="color:var(--muted)">Agent 自行构建与训练新一代模型，未来版本的 Claude 由 Claude 自身持续改进。<strong>论文承认此阶段"尚未实现"</strong>。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 数据图表区 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">📊 关键证据：来自 Anthropic 内部的可量化数据</h2>
+
+  <div class="grid md:grid-cols-2 gap-5">
+
+    <!-- 图1：人均每日代码合并量 -->
+    <div class="panel p-5 hover-lift">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="text-sm font-semibold">① 人均每日合并代码量</div>
+          <div class="text-xs" style="color:var(--muted)">2021 → 2026 Q2</div>
+        </div>
+        <span class="confidence conf-high">证据：高</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ch1"></canvas></div>
+      <div class="text-xs mt-2" style="color:var(--muted)">两个拐点：①2025 年 Claude Code 上线（执行代码而非建议代码）；②2026 年模型开始长时段自主运行。</div>
+    </div>
+
+    <!-- 图2：任务时长翻倍 -->
+    <div class="panel p-5 hover-lift">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="text-sm font-semibold">② 可独立完成任务时长（METR）</div>
+          <div class="text-xs" style="color:var(--muted)">50% 可靠性下的对数尺度</div>
+        </div>
+        <span class="confidence conf-high">证据：高</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ch2"></canvas></div>
+      <div class="text-xs mt-2" style="color:var(--muted)">翻倍周期由 7 月加速至 4 月。若曲线延续，2027 年 AI 或可完成"数周级"任务。</div>
+    </div>
+
+    <!-- 图3：会话成功率 -->
+    <div class="panel p-5 hover-lift">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="text-sm font-semibold">③ Claude Code 会话成功率（按任务难度）</div>
+          <div class="text-xs" style="color:var(--muted)">2025.10 → 2026.05</div>
+        </div>
+        <span class="confidence conf-mid">证据：中（判官为 Claude 本身）</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ch3"></canvas></div>
+      <div class="text-xs mt-2" style="color:var(--muted)">"开放式"任务成功率 6 个月内提升约 50 个百分点（达 76%）。</div>
+    </div>
+
+    <!-- 图4：训练代码优化倍率 -->
+    <div class="panel p-5 hover-lift">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="text-sm font-semibold">④ 训练代码"优化加速比"基准</div>
+          <div class="text-xs" style="color:var(--muted)">与起始代码相比的速度提升</div>
+        </div>
+        <span class="confidence conf-mid">证据：中（仅内部任务）</span>
+      </div>
+      <div class="chart-wrap"><canvas id="ch4"></canvas></div>
+      <div class="text-xs mt-2" style="color:var(--muted)">对比：熟练人类研究员 4–8 小时仅能达到约 4×。论文强调"绝对倍率不可外推"。</div>
+    </div>
+
+    <!-- 图5：判断力对比 -->
+    <div class="panel p-5 hover-lift md:col-span-2">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="text-sm font-semibold">⑤ "下一步该做什么"——模型 vs 人类研究员的判断对比</div>
+          <div class="text-xs" style="color:var(--muted)">在 129 个"人类走了弯路"的研究会话节点上做比较（n=129）</div>
+        </div>
+        <span class="confidence conf-low">证据：低（评测样本偏向人类弱项）</span>
+      </div>
+      <div class="chart-wrap" style="height:300px"><canvas id="ch5"></canvas></div>
+      <div class="text-xs mt-2" style="color:var(--muted)">作者自己提示：作为对照，在 127 个"人类走对了"的样本中，模型仅 ~20% 被判更优——说明样本选择存偏。</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 三种未来情景 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">🔮 论文给出的三种未来情景</h2>
+  <div class="grid md:grid-cols-3 gap-5">
+    <div class="panel p-5 scenario s1 pl-7 hover-lift">
+      <div class="text-xs mono" style="color:#86efac">SCENARIO 1</div>
+      <div class="text-lg font-bold mt-1">趋势停滞，但今日能力广泛扩散</div>
+      <p class="text-sm mt-3" style="color:var(--muted)">指数曲线变 S 曲线；瓶颈在于研究"品味"无法通过 scaling 获得，或受制于电力/芯片/带宽供应链。论文认为<strong style="color:var(--text)">概率最低</strong>。</p>
+      <div class="text-xs mt-3" style="color:var(--muted)"><span class="pill" style="background:rgba(134,239,172,.15);color:#86efac">社会缓冲：最多</span></div>
+    </div>
+    <div class="panel p-5 scenario s2 pl-7 hover-lift">
+      <div class="text-xs mono" style="color:#f4a261">SCENARIO 2</div>
+      <div class="text-lg font-bold mt-1">复利式效率提升（论文判断的"现行路径"）</div>
+      <p class="text-sm mt-3" style="color:var(--muted)">AI 高度自动化，但人类仍设定研究方向。100 人公司可做 1 万人的工作。受 <em>Amdahl 定律</em>约束，人类代码审查/方向判断成新瓶颈。</p>
+      <div class="text-xs mt-3" style="color:var(--muted)"><span class="pill" style="background:rgba(244,162,97,.15);color:#f4a261">社会缓冲：中</span></div>
+    </div>
+    <div class="panel p-5 scenario s3 pl-7 hover-lift">
+      <div class="text-xs mono" style="color:#f87171">SCENARIO 3</div>
+      <div class="text-lg font-bold mt-1">完整 RSI：AI 构建自己的后继者</div>
+      <p class="text-sm mt-3" style="color:var(--muted)">进展速度由"算力可用性"决定。人类转向"监督、验证、对齐"。对齐如何被解决仍是最大未知，潜在风险是"小概率失准在迭代中被放大"。</p>
+      <div class="text-xs mt-3" style="color:var(--muted)"><span class="pill" style="background:rgba(248,113,113,.15);color:#f87171">社会缓冲：最少</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 关键引述 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">💬 文章原文摘录（来自 Anthropic 员工）</h2>
+  <div class="grid md:grid-cols-2 gap-5">
+    <blockquote class="text-sm">"我大概一年前开始全力'Claude 化'。这是一场疯狂的冒险——大约 5 个月前我就没有再亲手写过代码了。"<br><span class="text-xs not-italic" style="color:var(--muted)">— Anthropic 员工</span></blockquote>
+    <blockquote class="text-sm">"目前的形态大致是：人类负责想点子，模型实现、测试和评估的速度比以前快了一个数量级。"<br><span class="text-xs not-italic" style="color:var(--muted)">— Anthropic 员工</span></blockquote>
+    <blockquote class="text-sm">"在事事顺利的日子里我会想：我做的一切都不重要，一切都被自动化了，更快更好。但有些日子一切都崩了我又搞不懂为什么，我突然意识到我已经不知道自己在做什么了。"<br><span class="text-xs not-italic" style="color:var(--muted)">— Anthropic 员工</span></blockquote>
+    <blockquote class="text-sm">"工作（与生活）此前运行在人与人之间互相帮小忙的'礼物经济'上……Claude 更快、不带来任何人情债，但每一次也都是一次失落的人类协作机会。"<br><span class="text-xs not-italic" style="color:var(--muted)">— Anthropic 员工</span></blockquote>
+  </div>
+</section>
+
+<!-- 论文政策诉求 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">🏛️ 政策诉求与可行性分析</h2>
+  <div class="panel p-6 md:p-8">
+    <p class="text-base" style="color:var(--muted)">
+      Anthropic 主张：世界应保留<strong style="color:var(--text)">"在必要时减缓或暂停前沿 AI 开发"</strong>的选项，以让对齐研究与社会制度跟上技术节奏。但其前提是 <strong>可验证的多方协同</strong>。
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-5 mt-5">
+      <div class="panel2 p-4">
+        <div class="text-sm font-semibold mb-2 text-orange-300">为何"单边暂停"无意义</div>
+        <ul class="text-sm space-y-1.5" style="color:var(--muted)">
+          <li>• 只会让"最不谨慎的玩家"反超</li>
+          <li>• 不会创造任何全球性审议机制</li>
+          <li>• 等于把前沿位置拱手让人</li>
+        </ul>
+      </div>
+      <div class="panel2 p-4">
+        <div class="text-sm font-semibold mb-2 text-orange-300">"可验证暂停"的根本困难</div>
+        <ul class="text-sm space-y-1.5" style="color:var(--muted)">
+          <li>• 训练运行远比导弹发射井<strong style="color:var(--text)">更易隐藏</strong></li>
+          <li>• 输入（算力、数据）是<strong style="color:var(--text)">通用品</strong>，难管控</li>
+          <li>• 偷跑收益巨大（可"独享"前沿身位）</li>
+          <li>• 触发条件、解除条件、裁判者均需提前界定</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-5 p-4 panel2 text-sm">
+      <div class="font-semibold mb-2 text-orange-300">⌛ 时间窗口判断（论文原话）</div>
+      <p style="color:var(--muted)">"INF 条约（中导条约）等核查机制花了数十年才构建基础设施与互信。<strong style="color:var(--text)">我们没有那么多时间。</strong>"</p>
+    </div>
+  </div>
+</section>
+
+<!-- 个人解读层 -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">🧠 我的解读：事实 / 推断 / 观点 分层</h2>
+
+  <div class="grid md:grid-cols-3 gap-5">
+    <div class="panel p-5">
+      <div class="pill mb-3" style="background:rgba(96,165,250,.15);color:var(--blue)">事实层</div>
+      <ul class="text-sm space-y-2">
+        <li>✓ Claude Code 2025.02 上线后，工程师产出曲线发生明显斜率变化。<span class="confidence conf-high">高</span></li>
+        <li>✓ Anthropic 自报数据：80%+ 合并代码归因 Claude。<span class="confidence conf-high">高</span></li>
+        <li>✓ SWE-bench、CORE-Bench 等公开基准已接近饱和。<span class="confidence conf-high">高</span></li>
+        <li>✓ Anthropic 在 6-4 发布该报告，并呼吁"保留可控暂停的选项"。<span class="confidence conf-high">高</span></li>
+      </ul>
+    </div>
+
+    <div class="panel p-5">
+      <div class="pill mb-3" style="background:rgba(244,162,97,.15);color:var(--warn)">推断层</div>
+      <ul class="text-sm space-y-2">
+        <li>○ "8× 生产力"高估，真实倍率约 2–4× 更可信。<span class="confidence conf-mid">中</span></li>
+        <li>○ 任务时长翻倍周期短期内会维持，但 18–24 个月内可能进入 S 曲线弯折。<span class="confidence conf-mid">中</span></li>
+        <li>○ "76% 开放式任务成功率"含判官同源风险，需打 20–30% 折扣。<span class="confidence conf-mid">中</span></li>
+        <li>○ 政策诉求短期落地难度高，但有助于<strong>抢占叙事</strong>与监管标准制定权。<span class="confidence conf-mid">中</span></li>
+      </ul>
+    </div>
+
+    <div class="panel p-5">
+      <div class="pill mb-3" style="background:rgba(217,119,87,.15);color:var(--accent)">观点层</div>
+      <ul class="text-sm space-y-2">
+        <li>● 论文最有价值的部分不是"80%"，而是<strong>Amdahl 瓶颈迁移</strong>的洞察：自动化带来的真正稀缺品变成"方向品味"与"代码审查"。<span class="confidence conf-mid">中</span></li>
+        <li>● "递归自我改进"在 2026 年仍是修辞而非工程现实——但作为<strong>叙事锚点</strong>，正在重塑监管讨论。<span class="confidence conf-mid">中</span></li>
+        <li>● 对从业者：押注"AI Code Review/品味/对齐"方向的工程红利窗口正在打开。<span class="confidence conf-low">低（个人判断）</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 对中国读者的可行动 takeaway -->
+<section class="max-w-6xl mx-auto px-6 mt-12">
+  <h2 class="text-2xl md:text-3xl font-bold mb-6">⚙️ 给中文读者的 5 条可执行 Takeaway</h2>
+  <div class="panel p-6 md:p-8">
+    <ol class="space-y-4">
+      <li class="flex gap-4">
+        <div class="num-big text-2xl shrink-0">01</div>
+        <div>
+          <div class="font-semibold">个人工作流：把"打字"权交给 AI，把"评审/路线"留给自己</div>
+          <div class="text-sm" style="color:var(--muted)">论文给出的人类比较优势是"研究品味、方向选择"。工程师应有意识地把更多精力转向 PR Review、架构权衡与问题挑选。</div>
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="num-big text-2xl shrink-0">02</div>
+        <div>
+          <div class="font-semibold">组织：识别 Amdahl 瓶颈</div>
+          <div class="text-sm" style="color:var(--muted)">"代码生成不再贵，代码审查/方向决策变贵"。立刻评估自己团队的审批、合规、评审流程是否仍按 2024 年节奏运转。</div>
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="num-big text-2xl shrink-0">03</div>
+        <div>
+          <div class="font-semibold">数据观看法：警惕"自报数据 + 自评判官"组合</div>
+          <div class="text-sm" style="color:var(--muted)">下次再看到"X% 由 AI 完成 / X× 提升"，先问：是谁在测？谁在打分？基准是否公开？</div>
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="num-big text-2xl shrink-0">04</div>
+        <div>
+          <div class="font-semibold">投资视角：押"瓶颈侧"的工具</div>
+          <div class="text-sm" style="color:var(--muted)">AI 评审工具、可解释性、模型行为验证、算力/能源、芯片产能——这些都是论文逻辑下确定性更高的方向。</div>
+        </div>
+      </li>
+      <li class="flex gap-4">
+        <div class="num-big text-2xl shrink-0">05</div>
+        <div>
+          <div class="font-semibold">监管观察：盯"可验证暂停"的技术基础设施</div>
+          <div class="text-sm" style="color:var(--muted)">未来 12–24 个月，围绕训练运行检测、算力披露、模型权重审计的国际谈判将成为核心议题。</div>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- 元信息 -->
+<section class="max-w-6xl mx-auto px-6 mt-12 mb-16">
+  <div class="panel p-6">
+    <div class="grid md:grid-cols-3 gap-6 text-sm">
+      <div>
+        <div class="font-semibold mb-2">📂 信源</div>
+        <ul class="space-y-1" style="color:var(--muted)">
+          <li>• <a href="https://www.anthropic.com/institute/recursive-self-improvement" class="underline" target="_blank">anthropic.com/institute/...</a>（一手原文）</li>
+          <li>• Scientific American 2026-06 转载分析</li>
+          <li>• Fortune 2026-06-05 报道</li>
+          <li>• Tom's Hardware 2026-06 技术综述</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold mb-2">⚠ 局限性</div>
+        <ul class="space-y-1" style="color:var(--muted)">
+          <li>• 仅一篇文章 ≠ 行业共识</li>
+          <li>• 多项内部数据无法独立验证</li>
+          <li>• 翻译/解读基于英文原文，无台架复现</li>
+          <li>• 可视化图表使用论文披露数据点重绘，非原图</li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-semibold mb-2">📅 生成信息</div>
+        <ul class="space-y-1" style="color:var(--muted)">
+          <li>• 日期：2026-06-16</li>
+          <li>• 任务：每日 AI 论文精读 · 第 1 期</li>
+          <li>• 来源筛选：仅英文 · 大厂官博 + arXiv</li>
+          <li>• 解读语言：中文</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="text-center py-8 text-xs" style="color:var(--muted)">
+  每日 AI 论文精读 · 由 Claude 生成，使用前请人工复核关键数据。
+</footer>
+
+<script>
+const COL = {accent:'#d97757',accent2:'#f4a261',ok:'#86efac',warn:'#f4a261',danger:'#f87171',blue:'#60a5fa',muted:'#9b9ba3',line:'#26262d',text:'#e8e8ea'};
+Chart.defaults.color = COL.muted;
+Chart.defaults.borderColor = COL.line;
+Chart.defaults.font.family = "'Noto Sans SC',sans-serif";
+
+// 图1: 人均每日代码合并量（示意性重绘）
+new Chart(document.getElementById('ch1'),{
+  type:'bar',
+  data:{
+    labels:['Q2 21','Q4 21','Q2 22','Q4 22','Q2 23','Q4 23','Q2 24','Q4 24','Q2 25','Q4 25','Q2 26'],
+    datasets:[{
+      label:'相对值（2024 Q2 = 1）',
+      data:[0.9,1.0,1.0,1.05,1.0,1.05,1.0,1.1,1.8,3.5,8.0],
+      backgroundColor:(ctx)=>{
+        const v = ctx.parsed?.y ?? 0;
+        if(v < 1.2) return '#3b3b42';
+        if(v < 3) return COL.accent;
+        return COL.accent2;
+      },
+      borderRadius:4
+    }]
+  },
+  options:{
+    plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:c=>`${c.parsed.y.toFixed(1)}× vs 2024Q2`}}},
+    scales:{
+      y:{title:{display:true,text:'相对倍率 (×)'},grid:{color:'rgba(255,255,255,.04)'}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+// 图2: METR 任务时长（对数）
+new Chart(document.getElementById('ch2'),{
+  type:'line',
+  data:{
+    labels:['2024.03','2024.09','2025.03','2025.09','2026.03','2026.06'],
+    datasets:[{
+      label:'任务时长',
+      data:[4,15,90,360,720,720],
+      borderColor:COL.accent,
+      backgroundColor:'rgba(217,119,87,.12)',
+      fill:true,tension:.3,pointRadius:5,pointBackgroundColor:COL.accent2
+    }]
+  },
+  options:{
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>{
+        const m=c.parsed.y;
+        if(m>=60) return `约 ${(m/60).toFixed(1)} 小时`;
+        return `约 ${m} 分钟`;
+      }}}
+    },
+    scales:{
+      y:{type:'logarithmic',title:{display:true,text:'分钟（对数）'},
+        ticks:{callback:v=>{
+          if(v>=60) return (v/60)+'h';
+          return v+'min';
+        }},
+        grid:{color:'rgba(255,255,255,.04)'}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+// 图3: 会话成功率
+new Chart(document.getElementById('ch3'),{
+  type:'line',
+  data:{
+    labels:['2025.10','2025.12','2026.02','2026.04','2026.05'],
+    datasets:[
+      {label:'琐碎任务',data:[88,90,93,95,96],borderColor:COL.blue,backgroundColor:'transparent',tension:.3},
+      {label:'常规任务',data:[72,76,82,85,89],borderColor:COL.ok,backgroundColor:'transparent',tension:.3},
+      {label:'实质性任务',data:[45,55,65,70,78],borderColor:COL.warn,backgroundColor:'transparent',tension:.3},
+      {label:'开放式难题',data:[26,38,52,66,76],borderColor:COL.accent,backgroundColor:'transparent',tension:.3,borderWidth:3}
+    ]
+  },
+  options:{
+    plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},
+    scales:{
+      y:{min:0,max:100,title:{display:true,text:'成功率 %'},grid:{color:'rgba(255,255,255,.04)'}},
+      x:{grid:{display:false}}
+    }
+  }
+});
+
+// 图4: 优化加速比
+new Chart(document.getElementById('ch4'),{
+  type:'bar',
+  data:{
+    labels:['Opus 4 (25.05)','Opus 4.5 (25.11)','Opus 4.6 (26.02)','Mythos Preview (26.04)','熟练人类 (4-8h)'],
+    datasets:[{
+      label:'×',
+      data:[3,8,18,52,4],
+      backgroundColor:[COL.accent,COL.accent2,'#e89668',COL.accent2,'#5a5a62'],
+      borderRadius:4
+    }]
+  },
+  options:{
+    indexAxis:'y',
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.parsed.x}× 加速`}}},
+    scales:{
+      x:{title:{display:true,text:'相对起始代码的加速倍率'},grid:{color:'rgba(255,255,255,.04)'}},
+      y:{grid:{display:false}}
+    }
+  }
+});
+
+// 图5: 模型 vs 人类判断
+new Chart(document.getElementById('ch5'),{
+  type:'bar',
+  data:{
+    labels:['Claude 3 Haiku','Sonnet 4','Sonnet 4.5','Haiku 4.5','Opus 4.5','Sonnet 4.6','Opus 4.6','Opus 4.7','Mythos Preview'],
+    datasets:[
+      {label:'判断优于人类的比例 %（在故意挑选的"人类弱项"样本上）',
+       data:[18,30,38,42,51,55,58,62,64],
+       backgroundColor:'rgba(217,119,87,.85)',borderRadius:4}
+    ]
+  },
+  options:{
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:c=>`${c.parsed.y}%`}}
+    },
+    scales:{
+      y:{min:0,max:100,title:{display:true,text:'%'},grid:{color:'rgba(255,255,255,.04)'},
+        afterDraw:(ch)=>{
+          const yScale = ch.scales.y;
+          const ctx = ch.ctx;
+          ctx.save();
+          ctx.strokeStyle=COL.danger;ctx.setLineDash([4,4]);
+          const y = yScale.getPixelForValue(50);
+          ctx.beginPath();ctx.moveTo(ch.chartArea.left,y);ctx.lineTo(ch.chartArea.right,y);ctx.stroke();
+          ctx.restore();
+        }
+      },
+      x:{grid:{display:false},ticks:{maxRotation:35,minRotation:35,font:{size:10}}}
+    }
+  }
+});
+</script>
+
+</body>
+</html>

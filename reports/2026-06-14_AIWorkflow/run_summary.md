@@ -1,0 +1,22 @@
+# 2026-06-14 AI Concept Run Summary
+
+- Run time: 2026-06-14 08:09:00 CST / 2026-06-14T00:09:00Z.
+- Automation ID: `ai-pdf`.
+- Selected concept: `AI工作流（AI Workflow）`.
+- Rationale: existing concept reports had already covered core model mechanics, RAG, Agent, Function Calling, MCP, Prompt Engineering, Safety Evaluation, Interpretability, and related safety topics. AI Workflow is the next practical foundation because it explains how AI moves from one-off chat into repeatable, checkable, improvable work.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/2026-06-14_AI工作流（AI Workflow）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/2026-06-14_AI工作流（AI Workflow）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/chatgpt_ai_workflow_kitchen.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/chatgpt_ai_workflow_architecture.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-14_AIWorkflow/email_body.txt`
+- Visuals: generated two ChatGPT Image 2.0 diagrams under `/Users/mac/.codex/generated_images/019ec36e-0ee5-7f80-a29d-9841a29ecc12/` and copied them into the report directory.
+- Verification:
+  - `python3 reports/2026-06-14_AIWorkflow/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 8 A4 pages and a 4.5 MB PDF.
+  - `pdftotext` confirmed readable Chinese text.
+  - `pdfimages -list` confirmed two embedded images.
+  - HTML checks confirmed all required sections and both image references are present.
+  - Playwright screenshot previews were written to `html_preview.png` and `html_midpage_preview.png`; both were spot-checked.
+- Delivery: Gmail sent successfully with the PDF attachment to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ec3759ea704391`.

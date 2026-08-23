@@ -1,0 +1,1775 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>AutoMem: Automated Learning of Memory as a Cognitive Skill</title>
+<!--Generated on Wed Jul  1 17:53:59 2026 by LaTeXML (version 0.8.8) http://dlmf.nist.gov/LaTeXML/.-->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="/static/browse/0.3.4/css/arxiv-html-papers-20260131.css" type="text/css">
+<script src="/static/browse/0.3.4/js/arxiv-html-papers-20260131.js"></script>
+<script>
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+</script>
+<link rel="apple-touch-icon" sizes="180x180"
+  href="/static/browse/0.3.4/images/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32"
+  href="/static/browse/0.3.4/images/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16"
+  href="/static/browse/0.3.4/images/icons/favicon-16x16.png">
+<link rel="manifest" href="/static/browse/0.3.4/images/icons/site.webmanifest">
+<link rel="mask-icon" href="/static/browse/0.3.4/images/icons/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="stylesheet" type="text/css" media="screen" href="https://use.typekit.net/utz6mli.css"><link rel="stylesheet" type="text/css" media="screen"
+  href="/static/base/1.0.1/css/arxiv-header-footer.css?v=20260626"><style>
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+</style>
+<script defer src="/static/base/1.0.1/js/arxiv-header.js?v=20260626"></script>
+</head>
+<body>
+<dialog id="modal-form" aria-labelledby="modal-title" closedby="any">
+  <form id="modal-form-content" method="dialog" enctype="multipart/form-data">
+    <header class="modal-header">
+      <h5 id="modal-title" class="modal-title">Report GitHub Issue</h5>
+      <button type="submit" formnovalidate class="modal-close" aria-label="Close">×</button>
+    </header>
+
+    <div class="modal-body">
+      <label for="form_title">Title:</label>
+      <input class="form-control" id="form_title" name="form_title" required placeholder="Enter title">
+
+      <p id="selectedTextModalDescription" hidden>Content selection saved. Describe the issue below:</p>
+
+      <label for="description">Description:</label>
+      <textarea class="form-control" id="description" name="description" required maxlength="500"
+        placeholder="500 characters maximum"></textarea>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="submit" value="internal-report" class="sr-only modal-submit">Submit without GitHub</button>
+      <button type="submit" value="github-report" class="modal-submit">Submit in GitHub</button>
+    </footer>
+  </form>
+</dialog><div class="ds-announcement" id="announcement-banner" role="region" aria-label="Announcement"
+    data-banner-name="spinout-nonprofit">
+    <img class="ds-announcement-glyph" src="/static/base/1.0.1/images/icons/smileybones-small.svg" alt="" aria-hidden="true">
+    <span class="ds-announcement-text">arXiv is now an independent nonprofit!</span>
+    <a class="ds-announcement-link" href="https://info.arxiv.org/about">Learn more</a>
+    <button type="button" class="ds-announcement-close" aria-label="Dismiss announcement">&times;</button>
+  </div>
+
+<header class="arxiv-html-header">
+  <div class="html-header-logo">
+    <a href="/"><img alt="arXiv logo" class="logo desktop-only" width="100"
+        src="/static/base/1.0.1/images/arxiv-logo-primary-light.svg">
+      <span class="sr-only">Back to arXiv</span>
+    </a>
+  </div>
+  <!--TOC, dark mode, links-->
+  <nav class="html-header-nav">
+    <a class="header-button hover-effect desktop-only" href="https://info.arxiv.org/about/accessible_HTML.html"
+      target="_blank">Why HTML?</a>
+    <a class="header-button" title="Report an Issue" href="#" title="Report an issue"
+      onclick="event.preventDefault(); showModalForm();">
+      <svg role="presentation" class="mobile-only toggle-icon" aria-hidden="true" height="1.25rem"
+        viewBox="0 0 640 640">
+        <path
+          d="M224 160C224 107 267 64 320 64C373 64 416 107 416 160L416 163.6C416 179.3 403.3 192 387.6 192L252.5 192C236.8 192 224.1 179.3 224.1 163.6L224.1 160zM569.6 172.8C580.2 186.9 577.3 207 563.2 217.6L465.4 290.9C470.7 299.8 474.7 309.6 477.2 320L576 320C593.7 320 608 334.3 608 352C608 369.7 593.7 384 576 384L480 384L480 416C480 418.6 479.9 421.3 479.8 423.9L563.2 486.4C577.3 497 580.2 517.1 569.6 531.2C559 545.3 538.9 548.2 524.8 537.6L461.7 490.3C438.5 534.5 395.2 566.5 344 574.2L344 344C344 330.7 333.3 320 320 320C306.7 320 296 330.7 296 344L296 574.2C244.8 566.5 201.5 534.5 178.3 490.3L115.2 537.6C101.1 548.2 81 545.3 70.4 531.2C59.8 517.1 62.7 497 76.8 486.4L160.2 423.9C160.1 421.3 160 418.7 160 416L160 384L64 384C46.3 384 32 369.7 32 352C32 334.3 46.3 320 64 320L162.8 320C165.3 309.6 169.3 299.8 174.6 290.9L76.8 217.6C62.7 207 59.8 186.9 70.4 172.8C81 158.7 101.1 155.8 115.2 166.4L224 248C236.3 242.9 249.8 240 264 240L376 240C390.2 240 403.7 242.8 416 248L524.8 166.4C538.9 155.8 559 158.7 569.6 172.8z" />
+      </svg>
+      <span class="desktop-only">Report Issue</span></a>
+    <!--back to abstract-->
+    <a class="header-button" title="Back to abstract page" aria-label="Back to abstract page"
+      href="/abs/2607.01224v1">
+      <svg class="mobile-only toggle-icon" role="presentation" height="1.25rem" viewBox="0 0 512 512" fill="#ffffff"
+        aria-hidden="true">
+        <path
+          d="M502.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L402.7 224 192 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l210.7 0-73.4 73.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l128-128zM160 96c17.7 0 32-14.3 32-32s-14.3-32-32-32L96 32C43 32 0 75 0 128L0 384c0 53 43 96 96 96l64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0c-17.7 0-32-14.3-32-32l0-256c0-17.7 14.3-32 32-32l64 0z">
+        </path>
+      </svg>
+      <span class="desktop-only">Back to Abstract</span>
+    </a>
+    <!-- PDF download link -->
+    <a class="header-button" title="Download PDF" href="/pdf/2607.01224v1"
+      target="_blank">
+      <svg class="mobile-only toggle-icon" role="presentation" height="1.25rem" viewBox="0 0 576 542">
+        <path
+          d="M208 48L96 48c-8.8 0-16 7.2-16 16l0 384c0 8.8 7.2 16 16 16l80 0 0 48-80 0c-35.3 0-64-28.7-64-64L32 64C32 28.7 60.7 0 96 0L229.5 0c17 0 33.3 6.7 45.3 18.7L397.3 141.3c12 12 18.7 28.3 18.7 45.3l0 149.5-48 0 0-128-88 0c-39.8 0-72-32.2-72-72l0-88zM348.1 160L256 67.9 256 136c0 13.3 10.7 24 24 24l68.1 0zM240 380l32 0c33.1 0 60 26.9 60 60s-26.9 60-60 60l-12 0 0 28c0 11-9 20-20 20s-20-9-20-20l0-128c0-11 9-20 20-20zm32 80c11 0 20-9 20-20s-9-20-20-20l-12 0 0 40 12 0zm96-80l32 0c28.7 0 52 23.3 52 52l0 64c0 28.7-23.3 52-52 52l-32 0c-11 0-20-9-20-20l0-128c0-11 9-20 20-20zm32 128c6.6 0 12-5.4 12-12l0-64c0-6.6-5.4-12-12-12l-12 0 0 88 12 0zm76-108c0-11 9-20 20-20l48 0c11 0 20 9 20 20s-9 20-20 20l-28 0 0 24 28 0c11 0 20 9 20 20s-9 20-20 20l-28 0 0 44c0 11-9 20-20 20s-20-9-20-20l0-128z" />
+      </svg>
+      <span class="desktop-only">Download PDF</span></a>
+    <!-- navigational table of contents toggle -->
+    <a class="header-button toggle-icon" href="javascript:toggleNavTOC();" title="Toggle navigation"
+      aria-label="Toggle navigation">
+      <svg height="1.25rem" role="presentation" viewBox="0 0 512 512">
+        <path
+          d="M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z">
+        </path>
+      </svg>
+    </a>
+    <!--- collapsable header / reading mode toggle -->
+    <a class="header-button toggle-icon" href="javascript:toggleReadingMode();"
+      title="Disable reading mode, show header and footer">
+      <svg role="presentation" height="1.25rem"
+        viewBox="0 0 448 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+        <path
+          d="M32 32C14.3 32 0 46.3 0 64l0 96c0 17.7 14.3 32 32 32s32-14.3 32-32l0-64 64 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L32 32zM64 352c0-17.7-14.3-32-32-32S0 334.3 0 352l0 96c0 17.7 14.3 32 32 32l96 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l64 0 0 64c0 17.7 14.3 32 32 32s32-14.3 32-32l0-96c0-17.7-14.3-32-32-32l-96 0zM448 352c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l96 0c17.7 0 32-14.3 32-32l0-96z" />
+      </svg>
+    </a>
+    <!--- colored theme toggle -->
+    <button type="button" class="header-button color-tog" onclick="toggleColorScheme();" title="Toggle dark/light mode" aria-label="Toggle color scheme">
+      <span class="toggle-icon automatic-tog" aria-hidden="true">
+        <svg role="presentation" height="1.25rem" viewBox="0 0 24 24">
+          <path
+            d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9h-1.9M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69m-9.15 3.96h2.3L12 9l-1.15 3.65Z">
+          </path>
+        </svg>
+      </span>
+      <span class="toggle-icon light-tog" aria-hidden="true">
+        <svg role="presentation" height="1.25rem" viewBox="0 0 24 24">
+          <path
+            d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z">
+          </path>
+        </svg>
+      </span>
+      <span class="toggle-icon dark-tog" aria-hidden="true">
+        <svg role="presentation" height="1.25rem" viewBox="0 0 24 24">
+          <path
+            d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12c0-2.42-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69Z">
+          </path>
+        </svg>
+      </span>
+    </button>
+  </nav>
+</header><nav class="ltx_page_navbar">
+<nav class="ltx_TOC">
+<ol class="ltx_toclist">
+<li class="ltx_tocentry ltx_tocentry_abstract"><a href="#abstract1" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Abstract</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a href="#S1" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">1 </span>Introduction</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S1.SS0.SSS0.Px1" title="In 1 Introduction ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Contributions.</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a href="#S2" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2 </span><span class="ltx_text ltx_font_smallcaps">AutoMem</span></span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection"><a href="#S2.SS1" title="In 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.1 </span>Inner-loop agent: memory as file system</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection"><a href="#S2.SS2" title="In 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.2 </span>Outer-loop 1: optimizing the memory scaffold</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#S2.SS3" title="In 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">2.3 </span>Outer-loop 2: training memory proficiency</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S2.SS3.SSS0.Px1" title="In 2.3 Outer-loop 2: training memory proficiency ‣ 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Two loops, one objective.</span></a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a href="#S3" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3 </span>Experiments</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#S3.SS1" title="In 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3.1 </span>Setup</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS1.SSS0.Px1" title="In 3.1 Setup ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Environments.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS1.SSS0.Px2" title="In 3.1 Setup ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Metric.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS1.SSS0.Px3" title="In 3.1 Setup ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Base model and meta-LLM.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS1.SSS0.Px4" title="In 3.1 Setup ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Baselines.</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#S3.SS2" title="In 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">3.2 </span>Results</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS2.SSS0.Px1" title="In 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Memory management is a high-leverage axis on its own.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS2.SSS0.Px2" title="In 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Training the memory specialist adds complementary lift on top of the optimized scaffold.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS2.SSS0.Px3" title="In 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Task decisions and memory operations are simultaneously improved in the shared action space.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS2.SSS0.Px4" title="In 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Training internalizes a consult-before-write memory discipline.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S3.SS2.SSS0.Px5" title="In 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Qualitative examples.</span></a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section">
+<a href="#S4" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">4 </span>Related Work</span></a>
+<ol class="ltx_toclist ltx_toclist_section">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S4.SS0.SSS0.Px1" title="In 4 Related Work ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">External memory for language models.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S4.SS0.SSS0.Px2" title="In 4 Related Work ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Cognitive science of memory management.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S4.SS0.SSS0.Px3" title="In 4 Related Work ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Automated agent optimization.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#S4.SS0.SSS0.Px4" title="In 4 Related Work ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">LLMs in games.</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="#S5" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">5 </span>Conclusion</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="#S6" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">6 </span>Limitations and Future Work</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_section"><a href="#S7" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">7 </span>Broader Impacts</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_bibliography"><a href="#bib" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">References</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_appendix">
+<a href="#A1" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">A </span>Implementation Details</span></a>
+<ol class="ltx_toclist ltx_toclist_appendix">
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#A1.SS1" title="In Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">A.1 </span>Game environment configuration</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A1.SS1.SSS0.Px1" title="In A.1 Game environment configuration ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">BALROG environments.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A1.SS1.SSS0.Px2" title="In A.1 Game environment configuration ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Evaluation seeds.</span></a></li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_subsection">
+<a href="#A1.SS2" title="In Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">A.2 </span>Outer-loops and training pipeline</span></a>
+<ol class="ltx_toclist ltx_toclist_subsection">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A1.SS2.SSS0.Px1" title="In A.2 Outer-loops and training pipeline ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Outer-loop #1.</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A1.SS2.SSS0.Px2" title="In A.2 Outer-loops and training pipeline ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Outer-loop #2.</span></a></li>
+</ol>
+</li>
+</ol>
+</li>
+<li class="ltx_tocentry ltx_tocentry_appendix">
+<a href="#A2" title="In AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title"><span class="ltx_tag ltx_tag_ref">B </span>Memory-scaffold evolution by iteration</span></a>
+<ol class="ltx_toclist ltx_toclist_appendix">
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A2.SS0.SSS0.Px1" title="In Appendix B Memory-scaffold evolution by iteration ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">Crafter (v0 <math class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v5).</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A2.SS0.SSS0.Px2" title="In Appendix B Memory-scaffold evolution by iteration ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">MiniHack (v0 <math class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v4).</span></a></li>
+<li class="ltx_tocentry ltx_tocentry_paragraph"><a href="#A2.SS0.SSS0.Px3" title="In Appendix B Memory-scaffold evolution by iteration ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_title">NetHack (v0 <math class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v2).</span></a></li>
+</ol>
+</li>
+</ol></nav>
+</nav>
+<div class="ltx_page_main">
+<div id="infobox" class="infobox">
+  <a id="license-tr" href="https://info.arxiv.org/help/license/index.html#licenses-available">
+    License: arXiv.org perpetual non-exclusive license
+  </a>
+  <div id="watermark-tr">
+arXiv:2607.01224v1 [cs.AI] 01 Jul 2026</div>
+</div><div class="ltx_page_content">
+<article class="ltx_document ltx_authors_1line">
+<h1 class="ltx_title ltx_title_document">
+<span id="id1.id1" class="ltx_text ltx_font_smallcaps">AutoMem</span>: Automated Learning of Memory as a Cognitive Skill</h1>
+<div class="ltx_authors">
+<span class="ltx_creator ltx_role_author">
+<span class="ltx_personname">Shengguang Wu  Hao Zhu  Yuhui Zhang  Xiaohan Wang  Serena Yeung-Levy 
+<br class="ltx_break">
+Stanford University 
+<br class="ltx_break">
+  
+<br class="ltx_break">
+<a href="https://autolearnmem.github.io/" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://autolearnmem.github.io/</a>
+</span></span>
+</div>
+
+<div id="abstract1" class="ltx_abstract">
+<h6 class="ltx_title ltx_title_abstract">Abstract</h6>
+<p class="ltx_p">Memory expertise is a learned skill: knowing what to encode, when to retrieve, and how to organize knowledge—a capacity known in cognitive science as <span class="ltx_text ltx_font_italic">metamemory</span>. We bring this perspective to LLMs by treating memory management as a trainable skill.
+We promote file-system operations to first-class memory actions alongside task actions, letting the model itself decide how to manage its memory.
+This memory skill improves along two axes: the <span class="ltx_text ltx_font_bold ltx_font_italic">structure</span> that supports it (prompts, file schemas, action vocabulary), and the <span class="ltx_text ltx_font_bold ltx_font_italic">proficiency</span> of the model exercising it.
+Both axes resist manual optimization: episodes in long-horizon tasks run for thousands of steps, and a single memory mistake can hide long before it surfaces, making human review of full trajectories impractical.
+We introduce <span class="ltx_text ltx_font_smallcaps">AutoMem</span>, a framework that <span class="ltx_text ltx_font_bold">automates</span> both axes.
+In the first loop, a strong LLM reviews complete agent trajectories and iteratively revises the memory <span class="ltx_text ltx_font_italic">structure</span> that shapes how the agent interacts with its memory files.
+In the second loop, the agent’s own good memory decisions are identified from many episodes and used as training signal to sharpen the model’s memory <span class="ltx_text ltx_font_italic">proficiency</span> directly.
+Across three procedurally generated long-horizon games (Crafter, MiniHack, and NetHack), optimizing memory alone—without modifying the model’s task-action behavior—improved the base agent’s performance <math class="ltx_math_unparsed" alttext="{\sim}2\times" display="inline" intent=":literal"><semantics><mrow><mo>∼</mo><mn>2</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">{\sim}2\times</annotation></semantics></math>–<math class="ltx_math_unparsed" alttext="4\times" display="inline" intent=":literal"><semantics><mrow><mn>4</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">4\times</annotation></semantics></math>, bringing a 32B open-weight model competitive with frontier systems such as Claude Opus 4.5 and Gemini 3.1 Pro Thinking.
+Our results show that memory management is an independently learnable skill, and a high-leverage objective yielding large gains on long-horizon tasks.</p>
+</div>
+<figure id="S0.F1" class="ltx_figure"><img src="2607.01224v1/x1.png" id="S0.F1.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="660" height="190" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 1: </span><span id="S0.F1.6.1" class="ltx_text ltx_font_bold">Memory skill optimization</span> with <span id="S0.F1.7.2" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span>. Starting from a base agent equipped with file-system memory (v0), <span id="S0.F1.8.3" class="ltx_text ltx_font_smallcaps">AutoMem</span> progressively improves performance through <span id="S0.F1.9.4" class="ltx_text ltx_font_italic">memory scaffold optimization</span> (v0–v5/v4/v2), followed by <span id="S0.F1.10.5" class="ltx_text ltx_font_italic">memory proficiency training</span> (+train) that yields further gains on top of the optimized scaffold.</figcaption>
+</figure>
+<section id="S1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">1 </span>Introduction</h2>
+
+<div id="S1.p1" class="ltx_para">
+<p id="S1.p1.1" class="ltx_p">Humans routinely manage information beyond what can be held in mind at any one moment. Cognitive scientists call this capacity <span id="S1.p1.1.1" class="ltx_text ltx_font_bold ltx_font_italic">metamemory</span>: the learned skill of deciding what is worth remembering, when to retrieve it, and how to organize what is known <cite class="ltx_cite ltx_citemacro_citep">(Flavell, <a href="#bib.bib3" title="" class="ltx_ref">1979</a>; Nelson, <a href="#bib.bib15" title="" class="ltx_ref">1990</a>)</cite>. Metamemory develops with practice, and skilled use of external aids—notes, indices, files—is part of how people extend cognition beyond working memory <cite class="ltx_cite ltx_citemacro_citep">(Clark and Chalmers, <a href="#bib.bib1" title="" class="ltx_ref">1998</a>)</cite>.</p>
+</div>
+<div id="S1.p2" class="ltx_para">
+<p id="S1.p2.1" class="ltx_p">LLMs face an analogous bottleneck. Their context window plays the role of working memory, <em id="S1.p2.1.1" class="ltx_emph ltx_font_italic">i.e.,</em> a fixed-size buffer that bounds what the model can attend to at once.
+Long-horizon tasks routinely exceed this capacity, and external memory has been explored in various forms, including retrieval databases, vector stores, scratchpads, and summary buffers <cite class="ltx_cite ltx_citemacro_citep">(Lewis et al., <a href="#bib.bib12" title="" class="ltx_ref">2020</a>; Packer et al., <a href="#bib.bib16" title="" class="ltx_ref">2023</a>; Park et al., <a href="#bib.bib18" title="" class="ltx_ref">2023</a>; Xu et al., <a href="#bib.bib27" title="" class="ltx_ref">2025</a>; Sumers et al., <a href="#bib.bib22" title="" class="ltx_ref">2023</a>; Zhang et al., <a href="#bib.bib37" title="" class="ltx_ref">2024b</a>; Zhong et al., <a href="#bib.bib39" title="" class="ltx_ref">2024</a>)</cite>. These approaches typically treat memory as an architectural module: a fixed mechanism designed into the system.
+We take a different view, one inspired by <span id="S1.p2.1.2" class="ltx_text ltx_font_italic">metamemory</span>: <span id="S1.p2.1.3" class="ltx_text ltx_font_bold">memory management is an active, trainable skill</span>, and the model itself decides what to store, what to look up, and how to structure its records.</p>
+</div>
+<div id="S1.p3" class="ltx_para">
+<p id="S1.p3.1" class="ltx_p">Concretely, we promote file-system operations (read, write, search, append, create) as <span id="S1.p3.1.1" class="ltx_text ltx_font_italic">first-class memory actions</span> in the model’s action space, on equal footing with the actions it uses to act on the world <cite class="ltx_cite ltx_citemacro_citep">(Yao et al., <a href="#bib.bib29" title="" class="ltx_ref">2022</a>)</cite>. The same forward pass that picks a task action can also select memory file operations (<em id="S1.p3.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> <span id="S1.p3.1.3" class="ltx_text ltx_font_typewriter">&lt;|APPEND|&gt;</span> or <span id="S1.p3.1.4" class="ltx_text ltx_font_typewriter">&lt;|SEARCH|&gt;</span>). This minimal design gives the model full control over its external memory while keeping behavior cleanly observable: every memory decision is a traceable action in the trajectory.</p>
+</div>
+<div id="S1.p4" class="ltx_para">
+<p id="S1.p4.1" class="ltx_p">A learned memory skill improves along two axes. First, there is the <span id="S1.p4.1.1" class="ltx_text ltx_font_bold ltx_font_italic">structure</span> that supports it (the prompts, the file schema, the validation logic, the action vocabulary), which determines what memory operations are available and how the model is guided to use them.
+Second, there is the <span id="S1.p4.1.2" class="ltx_text ltx_font_bold ltx_font_italic">proficiency</span> of the agent exercising the skill—the model’s parametric ability to decide well among the available operations.</p>
+</div>
+<div id="S1.p5" class="ltx_para">
+<p id="S1.p5.1" class="ltx_p">Both axes resist manual optimization. A single episode can run for tens of thousands of steps, and the effect of a memory operation (or a mistake) may remain hidden for many steps before it surfaces as a guiding signal or a missed objective. The learning of memory skill in long-horizon tasks is therefore almost intractable for human review.</p>
+</div>
+<div id="S1.p6" class="ltx_para">
+<p id="S1.p6.1" class="ltx_p">The key observation behind our approach is that a sufficiently capable LLM—acting as a <span id="S1.p6.1.1" class="ltx_text ltx_font_italic">meta-LLM</span>—can review an agent’s complete episode (spanning thousands of steps) and identify where memory decisions went wrong, much as a code reviewer would read a full execution log. This makes it possible to <span id="S1.p6.1.2" class="ltx_text ltx_font_bold">automate</span> both axes of memory improvement.
+We introduce <span id="S1.p6.1.3" class="ltx_text ltx_font_smallcaps">AutoMem</span> (Figure <a href="#S2.F3" title="Figure 3 ‣ 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>), which does so through two sequential outer loops that operate on a shared inner-loop agent using a file system as its memory.</p>
+</div>
+<div id="S1.p7" class="ltx_para">
+<p id="S1.p7.1" class="ltx_p">In the first loop (<span id="S1.p7.1.1" class="ltx_text ltx_font_bold ltx_font_italic">structure</span>), a meta-LLM reads complete episode traces, diagnoses failure patterns in the agent’s memory use, and iteratively revises the agent scaffold: the code, prompts, and memory file schema that shape how the agent interacts with memory and acts on the world.</p>
+</div>
+<div id="S1.p8" class="ltx_para">
+<p id="S1.p8.1" class="ltx_p">In the second loop (<span id="S1.p8.1.1" class="ltx_text ltx_font_bold ltx_font_italic">proficiency</span>), the agent’s own memory decisions from many episodes are reviewed and the ones worth reinforcing are selected—again by a meta-LLM—as supervised training data for a dedicated memory model. The same meta-LLM also orchestrates the finetuning configuration that absorbs this data.
+Because we treat memory as a separable skill, we finetune only a dedicated memory model (<span id="S1.p8.1.2" class="ltx_text ltx_font_italic">memory specialist</span>) while the model that commits world actions remains unmodified, thus sharpening memory proficiency without risking the agent’s existing task competence.</p>
+</div>
+<div id="S1.p9" class="ltx_para">
+<p id="S1.p9.1" class="ltx_p">A common principle connects both loops: <span id="S1.p9.1.1" class="ltx_text ltx_font_bold">long-horizon task improvement can decompose into trajectory-level review and targeted revision</span>—a workflow that a strong meta-LLM can execute autonomously where human review of complete traces (up to <math id="S1.p9.1.m1" class="ltx_Math" alttext="10^{5}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^{5}</annotation></semantics></math> steps) is impractical. The first loop applies this principle to revise code; the second applies it to curate training data and orchestrate the training itself.</p>
+</div>
+<figure id="S1.F2" class="ltx_figure"><img src="2607.01224v1/x2.png" id="S1.F2.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="660" height="194" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 2: </span><span id="S1.F2.9.1" class="ltx_text ltx_font_bold">Long-horizon game environments for evaluating memory skills.</span> All three environments are stochastic worlds, making each episode unique and minimizing the influence of pretraining knowledge. <span id="S1.F2.10.2" class="ltx_text ltx_font_bold">Crafter</span> is an open-world survival game with crafting, combat, and resource management. <span id="S1.F2.11.3" class="ltx_text ltx_font_bold">MiniHack</span> presents focused puzzle, navigation and combat tasks within the NetHack engine. <span id="S1.F2.12.4" class="ltx_text ltx_font_bold">NetHack</span> is among the most complex games: episodes span <math id="S1.F2.3.m1" class="ltx_Math" alttext="10^{4}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>4</mn></msup><annotation encoding="application/x-tex">10^{4}</annotation></semantics></math>–<math id="S1.F2.4.m2" class="ltx_Math" alttext="10^{5}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^{5}</annotation></semantics></math> turns with a vast exploration space, taking human players typically years to master.</figcaption>
+</figure>
+<div id="S1.p10" class="ltx_para">
+<p id="S1.p10.2" class="ltx_p">We evaluate on procedurally generated long-horizon games, which are well suited for studying memory skill: episodes are long enough that context-window management alone cannot sustain performance; worlds are regenerated each episode, so pretraining knowledge transfers poorly <cite class="ltx_cite ltx_citemacro_citep">(Paglieri et al., <a href="#bib.bib17" title="" class="ltx_ref">2024</a>)</cite>; and success demands the kind of records humans naturally keep—such as maps, inventories, encounter logs, strategy notes.
+We choose three environments spanning span a range of complexity (Figure <a href="#S1.F2" title="Figure 2 ‣ 1 Introduction ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>): <span id="S1.p10.2.1" class="ltx_text ltx_font_bold">Crafter</span>, an open-world survival game with crafting and resource management <cite class="ltx_cite ltx_citemacro_citep">(Hafner, <a href="#bib.bib4" title="" class="ltx_ref">2021</a>)</cite>; <span id="S1.p10.2.2" class="ltx_text ltx_font_bold">MiniHack</span>, a suite of focused puzzle, navigation and combat tasks <cite class="ltx_cite ltx_citemacro_citep">(Samvelyan et al., <a href="#bib.bib20" title="" class="ltx_ref">2021</a>)</cite>; and <span id="S1.p10.2.3" class="ltx_text ltx_font_bold">NetHack</span>, a roguelike whose <math id="S1.p10.1.m1" class="ltx_Math" alttext="10^{4}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>4</mn></msup><annotation encoding="application/x-tex">10^{4}</annotation></semantics></math>–<math id="S1.p10.2.m2" class="ltx_Math" alttext="10^{5}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^{5}</annotation></semantics></math> step episodes take human players years to master <cite class="ltx_cite ltx_citemacro_citep">(Küttler et al., <a href="#bib.bib10" title="" class="ltx_ref">2020</a>)</cite>.</p>
+</div>
+<div id="S1.p11" class="ltx_para">
+<p id="S1.p11.2" class="ltx_p">Using <span id="S1.p11.2.1" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span> as the base model, optimizing memory alone—without modifying the model’s task-action weights—the full <span id="S1.p11.2.2" class="ltx_text ltx_font_smallcaps">AutoMem</span> framework yields <math id="S1.p11.1.m1" class="ltx_math_unparsed" alttext="{\sim}2\times" display="inline" intent=":literal"><semantics><mrow><mo>∼</mo><mn>2</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">{\sim}2\times</annotation></semantics></math>–<math id="S1.p11.2.m2" class="ltx_math_unparsed" alttext="4\times" display="inline" intent=":literal"><semantics><mrow><mn>4</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">4\times</annotation></semantics></math> gains over the base agent (Table <a href="#S3.T1" title="Table 1 ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>, Figure <a href="#S0.F1" title="Figure 1 ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>).
+The optimized 32B agent outperforms <span id="S1.p11.2.3" class="ltx_text ltx_font_typewriter">Qwen2.5-72B-Instruct</span> on all three games by a wide margin, indicating that <span id="S1.p11.2.4" class="ltx_text ltx_font_bold">well-managed memory is higher-leverage than model scale</span> on these tasks.
+It also reaches the performance level of frontier proprietary systems such as Claude Opus 4.5 and Gemini 3.1 Pro Thinking—showing that the gap between open-weight and frontier models on long-horizon tasks can be substantially closed by targeting memory as the optimization objective.</p>
+</div>
+<section id="S1.SS0.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Contributions.</h4>
+
+<div id="S1.SS0.SSS0.Px1.p1" class="ltx_para">
+<p id="S1.SS0.SSS0.Px1.p1.2" class="ltx_p"><em id="S1.SS0.SSS0.Px1.p1.2.1" class="ltx_emph ltx_font_italic">(i)</em> We formulate memory management as an independently learnable skill for LLM agents, instantiated through file-system operations that sit in the same action space as task actions, giving the model full, observable control over what to encode, when to retrieve, and how to organize its memory.
+<em id="S1.SS0.SSS0.Px1.p1.2.2" class="ltx_emph ltx_font_italic">(ii)</em> We introduce <span id="S1.SS0.SSS0.Px1.p1.2.3" class="ltx_text ltx_font_smallcaps">AutoMem</span>, a framework that automates memory skill improvement along two complementary axes: scaffold revision that iterates on the agent’s memory structure, and targeted training of the model’s memory proficiency on its own experience. Both loops are driven by meta-LLMs that analyze complete episode traces, making long-horizon optimization feasible where human review of full trajectories is not.
+<em id="S1.SS0.SSS0.Px1.p1.2.4" class="ltx_emph ltx_font_italic">(iii)</em> Across three procedurally generated long-horizon games, targeting memory yields <math id="S1.SS0.SSS0.Px1.p1.1.m1" class="ltx_math_unparsed" alttext="{\sim}2\times" display="inline" intent=":literal"><semantics><mrow><mo>∼</mo><mn>2</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">{\sim}2\times</annotation></semantics></math>–<math id="S1.SS0.SSS0.Px1.p1.2.m2" class="ltx_math_unparsed" alttext="4\times" display="inline" intent=":literal"><semantics><mrow><mn>4</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">4\times</annotation></semantics></math> progression gains for a 32B open-weight model, significantly closing the gap with frontier proprietary systems, and demonstrating that memory is a high-leverage objective for long-horizon tasks.</p>
+</div>
+</section>
+</section>
+<section id="S2" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">2 </span><span id="S2.1.1" class="ltx_text ltx_font_smallcaps">AutoMem</span>
+</h2>
+
+<div id="S2.p1" class="ltx_para">
+<p id="S2.p1.1" class="ltx_p">Memory skill, as formulated above, improves along two axes—<span id="S2.p1.1.1" class="ltx_text ltx_font_italic">structure</span> and <span id="S2.p1.1.2" class="ltx_text ltx_font_italic">proficiency</span>—both of which require automation to optimize on long-horizon tasks.
+<span id="S2.p1.1.3" class="ltx_text ltx_font_smallcaps">AutoMem</span> provides this automation through two sequential outer loops that operate on a shared inner-loop agent (Figure <a href="#S2.F3" title="Figure 3 ‣ 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>). The first loop pushes the agent scaffold as far as code revision can take it; the second trains the model’s memory ability beyond the ceiling of any fixed scaffold.</p>
+</div>
+<figure id="S2.F3" class="ltx_figure"><img src="2607.01224v1/x3.png" id="S2.F3.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="660" height="447" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 3: </span><span id="S2.F3.7.1" class="ltx_text ltx_font_bold">Overview of <span id="S2.F3.7.1.1" class="ltx_text ltx_font_smallcaps">AutoMem</span>.</span> Two automated outer loops optimize a shared inner-loop agent that uses the file system as its memory. <span id="S2.F3.8.2" class="ltx_text ltx_font_bold">Outer-loop #1</span> (top): a meta-LLM reviews full episode traces and iteratively revises the agent scaffold. <span id="S2.F3.9.3" class="ltx_text ltx_font_bold">Outer-loop #2</span> (bottom): a meta-LLM <em id="S2.F3.10.4" class="ltx_emph ltx_font_italic">training engine</em> jointly orchestrates data curation and finetuning configuration to train a dedicated <em id="S2.F3.11.5" class="ltx_emph ltx_font_italic">memory specialist</em> that handles memory operations, while the <em id="S2.F3.12.6" class="ltx_emph ltx_font_italic">task model</em> (frozen, unmodified) commits task actions. The two loops are complementary: loop #1 produces an optimized scaffold within which loop #2 trains the model to interact with its memory more effectively.</figcaption>
+</figure>
+<section id="S2.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.1 </span>Inner-loop agent: memory as file system</h3>
+
+<div id="S2.SS1.p1" class="ltx_para">
+<p id="S2.SS1.p1.1" class="ltx_p">The inner loop is a single LLM agent executing one episode of a long-horizon task, equipped with a directory of files on disk that serves as its external memory (gray-shaded area in the middle of Figure <a href="#S2.F3" title="Figure 3 ‣ 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>).
+At each step the agent runs two routines, each targeting one side of memory management.
+The <span id="S2.SS1.p1.1.1" class="ltx_text ltx_font_smallcaps">LOG</span> routine asks “<span id="S2.SS1.p1.1.2" class="ltx_text ltx_font_bold ltx_font_italic">what is worth recording about what just happened</span>”: the agent decides whether and how to record the environment’s response to the previous action, <em id="S2.SS1.p1.1.3" class="ltx_emph ltx_font_italic">e.g.,</em> appending to an existing file, creating a new one, or rewriting an entry.
+The <span id="S2.SS1.p1.1.4" class="ltx_text ltx_font_smallcaps">PLAN</span> routine asks “<span id="S2.SS1.p1.1.5" class="ltx_text ltx_font_bold ltx_font_italic">what do I need to recall to act now</span>”: the agent searches across files, reads specific entries or their tails, and commits the next world action.</p>
+</div>
+<div id="S2.SS1.p2" class="ltx_para">
+<p id="S2.SS1.p2.1" class="ltx_p">This unified action space is what makes memory a learnable skill rather than a fixed mechanism.
+The file-system substrate gives the model a wide decision space—which files to keep, what to record in each, when to consult them, how to organize what is known—and because every memory decision is a traceable action in the trajectory, the outer loops can observe, evaluate, and optimize it.</p>
+</div>
+<div id="S2.SS1.p3" class="ltx_para">
+<p id="S2.SS1.p3.1" class="ltx_p">As a result of this shared space, borne out in our experiments (Section <a href="#S3.SS2" title="3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3.2</span></a>), <span id="S2.SS1.p3.1.1" class="ltx_text ltx_font_bold">optimizing the memory structure also improves task behavior</span> (<em id="S2.SS1.p3.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> gameplay actions): better-organized memory reduces redundant exploration and directionless action, even though the optimizer targets the memory scaffold rather than the task strategy directly.</p>
+</div>
+</section>
+<section id="S2.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.2 </span>Outer-loop 1: optimizing the memory scaffold</h3>
+
+<div id="S2.SS2.p1" class="ltx_para">
+<p id="S2.SS2.p1.1" class="ltx_p">The first outer loop optimizes the <span id="S2.SS2.p1.1.1" class="ltx_text ltx_font_italic">structure</span> that supports the memory skill.
+The agent scaffold, <em id="S2.SS2.p1.1.2" class="ltx_emph ltx_font_italic">i.e.,</em> the code, prompts, file schema, and action vocabulary that shape how the agent manages memory and acts on the world, is iteratively revised by the meta-LLM.</p>
+</div>
+<div id="S2.SS2.p2" class="ltx_para">
+<p id="S2.SS2.p2.1" class="ltx_p">The optimization signal must be trajectory-level, because the consequences of memory decisions are often delayed in long-horizon tasks.
+A memory mistake at step 50—failing to record a map coordinate, or writing a duplicate entry that buries useful information—may not surface until much later (<em id="S2.SS2.p2.1.1" class="ltx_emph ltx_font_italic">e.g.,</em> step 800), when the agent gets lost or wastes time re-exploring.
+Final-return metrics alone discard the trajectory structure that reveals <em id="S2.SS2.p2.1.2" class="ltx_emph ltx_font_italic">where</em> memory went wrong.</p>
+</div>
+<div id="S2.SS2.p3" class="ltx_para">
+<p id="S2.SS2.p3.1" class="ltx_p">The meta-LLM is therefore given full episode traces (per-step logs, the resulting memory directories, and the agent code itself) and identifies points where the scaffold caused failures. It functions as a code reviewer with a complete execution log in hand, not as a scalar reward signal.
+For example, reviewing NetHack traces, the meta-LLM identified that an unbounded map file was accumulating thousands of duplicate coordinate entries, burying useful information; it responded by introducing a clean coordinate-keyed map deduplication format (Figure <a href="#S3.F5" title="Figure 5 ‣ Task decisions and memory operations are simultaneously improved in the shared action space. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>) that sharply shrank the map the agent must carry.</p>
+</div>
+<div id="S2.SS2.p4" class="ltx_para">
+<p id="S2.SS2.p4.1" class="ltx_p">Each iteration is gated on measured improvement: the rewritten agent plays the same fixed seeds as the previous version, and the revision is kept only if average progression improves. Details about the gate and retry mechanics are in Appendix <a href="#A1.SS2" title="A.2 Outer-loops and training pipeline ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.2</span></a>.
+At rough “convergence” (in practice, after <em id="S2.SS2.p4.1.1" class="ltx_emph ltx_font_italic">e.g.,</em> 2–5 iterations as shown in Figure <a href="#S0.F1" title="Figure 1 ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>), the scaffold has absorbed what code revision can express.
+Concrete revisions the optimizer produced across iterations are discussed in Section <a href="#S3.SS2" title="3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3.2</span></a> and listed in Appendix <a href="#A2" title="Appendix B Memory-scaffold evolution by iteration ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">B</span></a>. Figure <a href="#S3.F5" title="Figure 5 ‣ Task decisions and memory operations are simultaneously improved in the shared action space. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a> illustrates how the memory file schema evolved.
+Given an agent scaffold that is already lean and well-structured, the model’s parametric ability to navigate its memory becomes the remaining bottleneck blocking optimal memory decisions.</p>
+</div>
+</section>
+<section id="S2.SS3" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">2.3 </span>Outer-loop 2: training memory proficiency</h3>
+
+<div id="S2.SS3.p1" class="ltx_para">
+<p id="S2.SS3.p1.1" class="ltx_p">Once the scaffold is optimized, the remaining gap lies in the model’s parametric ability to make good memory decisions—the <span id="S2.SS3.p1.1.1" class="ltx_text ltx_font_italic">proficiency</span> axis.
+Where the first loop revised code with the meta-LLM as reviewer, this loop updates model weights with the meta-LLM as a <span id="S2.SS3.p1.1.2" class="ltx_text ltx_font_italic">training engine</span>—a meta-level optimizer that orchestrates the supervised training process end-to-end.</p>
+</div>
+<div id="S2.SS3.p2" class="ltx_para">
+<p id="S2.SS3.p2.1" class="ltx_p">The memory ability is trained on the model’s own experience: the meta-LLM reads the inner-loop agent code together with a pool of episode traces from many random episodes, derives selection criteria from what the agent code requires of the model, and produces supervised training data.
+Every example in the training set is verbatim text the inner-loop model produced during an episode; the meta-LLM’s role is to select which responses to reinforce—it thus acts as a <span id="S2.SS3.p2.1.1" class="ltx_text ltx_font_bold ltx_font_italic">filter</span> on the model’s own behavior rather than as a <span id="S2.SS3.p2.1.2" class="ltx_text ltx_font_bold ltx_font_italic">teacher</span> generating new responses.</p>
+</div>
+<div id="S2.SS3.p3" class="ltx_para">
+<p id="S2.SS3.p3.1" class="ltx_p">High-quality data curation is essential, but the training must be <span id="S2.SS3.p3.1.1" class="ltx_text ltx_font_bold">configured</span> to absorb it. There are many valid ways to curate good memory traces from the same trace pool (<em id="S2.SS3.p3.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> different selection criteria, sample sizes). Under our LoRA setup—a small adapter finetuned on a modest dataset—a configuration that suits one dataset can underfit or overfit under another, so each data curation calls for its own matching LoRA finetuning configuration to learn effectively.
+The meta-LLM <span id="S2.SS3.p3.1.3" class="ltx_text ltx_font_italic">training engine</span> therefore orchestrates the data selection logic, the data composition, and the LoRA training configuration as a <span id="S2.SS3.p3.1.4" class="ltx_text ltx_font_bold">joint decision</span>, refining all three across iterative trials with concrete eval-trajectory feedback. The point is to find a properly matched (data, configuration) combination so that the finetuning contributes a clean lift of memory capability rather than unwanted disruption.</p>
+</div>
+<div id="S2.SS3.p4" class="ltx_para">
+<p id="S2.SS3.p4.1" class="ltx_p">Because memory is a separable skill, we train it as a distinct target rather than finetuning on full episodes that mix memory operations with action-format outputs.
+This separation carries through to inference deployment. The inner loop runs two model instances that share a single conversation history (lower panel of Figure <a href="#S2.F3" title="Figure 3 ‣ 2 AutoMem ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3</span></a>). The <em id="S2.SS3.p4.1.1" class="ltx_emph ltx_font_italic">memory specialist</em> is the LoRA-finetuned <cite class="ltx_cite ltx_citemacro_citep">(Hu et al., <a href="#bib.bib5" title="" class="ltx_ref">2022</a>)</cite> copy and handles the <span id="S2.SS3.p4.1.2" class="ltx_text ltx_font_smallcaps">LOG</span> routine together with the memory-consultation portion of the <span id="S2.SS3.p4.1.3" class="ltx_text ltx_font_smallcaps">PLAN</span> routine. The <em id="S2.SS3.p4.1.4" class="ltx_emph ltx_font_italic">gameplay model</em> is the unmodified base and commits the world action.
+After the specialist’s last memory operation, a short handoff passes the conversation to the gameplay model, which can still issue further memory reads before committing.</p>
+</div>
+<div id="S2.SS3.p5" class="ltx_para">
+<p id="S2.SS3.p5.1" class="ltx_p">Key benefits follow from this split.
+First, <span id="S2.SS3.p5.1.1" class="ltx_text ltx_font_bold">the training signal stays focused</span>: the supervised loss targets memory-operation behavior without being diluted by action-format examples, so each gradient step addresses memory proficiency directly.
+Second, <span id="S2.SS3.p5.1.2" class="ltx_text ltx_font_bold">the base model’s competence at producing well-formatted world actions is fully preserved</span>, since the gameplay model’s weights are never touched by finetuning.
+In practice, this means the memory-proficiency gain stacks cleanly on top of the scaffold gain (a further <math id="S2.SS3.p5.1.m1" class="ltx_Math" alttext="{\sim}9" display="inline" intent=":literal"><semantics><mrow><mi></mi><mo>∼</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">{\sim}9</annotation></semantics></math>–18% relative gain, see Section <a href="#S3.SS2" title="3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">3.2</span></a>) rather than trading off against it.</p>
+</div>
+<section id="S2.SS3.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Two loops, one objective.</h4>
+
+<div id="S2.SS3.SSS0.Px1.p1" class="ltx_para">
+<p id="S2.SS3.SSS0.Px1.p1.6" class="ltx_p">Combining both loops together, <span id="S2.SS3.SSS0.Px1.p1.6.1" class="ltx_text ltx_font_smallcaps">AutoMem</span> instantiates a coherent process for <span id="S2.SS3.SSS0.Px1.p1.6.2" class="ltx_text ltx_font_bold">learning memory as a skill</span>, one that mirrors the familiar structure of machine learning.
+Each loop has <span id="S2.SS3.SSS0.Px1.p1.6.3" class="ltx_text ltx_font_italic">parameters</span> <math id="S2.SS3.SSS0.Px1.p1.1.m1" class="ltx_Math" alttext="\theta" display="inline" intent=":literal"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math> to optimize and an <span id="S2.SS3.SSS0.Px1.p1.6.4" class="ltx_text ltx_font_italic">update signal</span> <math id="S2.SS3.SSS0.Px1.p1.2.m2" class="ltx_Math" alttext="\nabla L" display="inline" intent=":literal"><semantics><mrow><mo rspace="0.167em">∇</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\nabla L</annotation></semantics></math> derived from the meta-LLM’s trajectory analysis—but in the first loop <math id="S2.SS3.SSS0.Px1.p1.3.m3" class="ltx_Math" alttext="\theta" display="inline" intent=":literal"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math> is the agent scaffold and <math id="S2.SS3.SSS0.Px1.p1.4.m4" class="ltx_Math" alttext="\nabla L" display="inline" intent=":literal"><semantics><mrow><mo rspace="0.167em">∇</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\nabla L</annotation></semantics></math> is a code revision, while in the second, <math id="S2.SS3.SSS0.Px1.p1.5.m5" class="ltx_Math" alttext="\theta" display="inline" intent=":literal"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math> is the dedicated memory model weights and <math id="S2.SS3.SSS0.Px1.p1.6.m6" class="ltx_Math" alttext="\nabla L" display="inline" intent=":literal"><semantics><mrow><mo rspace="0.167em">∇</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">\nabla L</annotation></semantics></math> is a properly-configured supervised training step (curated data together with a matched LoRA setup) drawn from the agent’s own behavior.
+The scaffold sets the structural ceiling for what memory operations are possible, and proficiency training then pushes the model toward that ceiling.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="S3" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">3 </span>Experiments</h2>
+
+<figure id="S3.T1" class="ltx_table">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_table">Table 1: </span><span id="S3.T1.48.1" class="ltx_text ltx_font_bold">Performance on long-horizon games from BALROG.</span> <span id="S3.T1.49.2" class="ltx_text ltx_font_smallcaps">AutoMem</span> is built on <span id="S3.T1.50.3" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span>. Frontier numbers are taken from the BALROG leaderboard <cite class="ltx_cite ltx_citemacro_citep">(Paglieri et al., <a href="#bib.bib17" title="" class="ltx_ref">2024</a>)</cite>; baseline rows for <span id="S3.T1.51.4" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span> use the same BALROG harness with the listed context management method. <span id="S3.T1.52.5" class="ltx_text ltx_font_italic">Scaffold opt.</span> refers to the agent produced by Outer-loop #1 at convergence (Crafter at <span id="S3.T1.53.6" class="ltx_text ltx_font_typewriter">v5</span>, MiniHack at <span id="S3.T1.54.7" class="ltx_text ltx_font_typewriter">v4</span>, NetHack at <span id="S3.T1.55.8" class="ltx_text ltx_font_typewriter">v2</span>). <span id="S3.T1.56.9" class="ltx_text ltx_font_italic">+ memory training</span> adds Outer-loop #2’s training engine on top. All values are progression rate (%), reported as mean <math id="S3.T1.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo>±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math> standard error.</figcaption>
+<table id="S3.T1.38" class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<tbody class="ltx_tbody">
+<tr id="S3.T1.38.37.1" class="ltx_tr">
+<th id="S3.T1.38.37.1.1" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_tt">
+<span id="S3.T1.38.37.1.1.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.38.37.1.1.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.38.37.1.1.1.1.1" class="ltx_text" style="font-size:90%;">Agent</span></span>
+</span>
+</th>
+<td id="S3.T1.38.37.1.2" class="ltx_td ltx_nopad_l ltx_align_center ltx_border_tt"><span id="S3.T1.38.37.1.2.1" class="ltx_text" style="font-size:90%;">Crafter (%)</span></td>
+<td id="S3.T1.38.37.1.3" class="ltx_td ltx_align_center ltx_border_tt"><span id="S3.T1.38.37.1.3.1" class="ltx_text" style="font-size:90%;">MiniHack (%)</span></td>
+<td id="S3.T1.38.37.1.4" class="ltx_td ltx_nopad_r ltx_align_center ltx_border_tt"><span id="S3.T1.38.37.1.4.1" class="ltx_text" style="font-size:90%;">NetHack (%)</span></td>
+</tr>
+<tr id="S3.T1.38.38.2" class="ltx_tr">
+<th id="S3.T1.38.38.2.1" class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_t" style="padding-bottom:2.0pt;" colspan="4"><span id="S3.T1.38.38.2.1.1" class="ltx_text ltx_font_italic" style="font-size:90%;">Frontier proprietary (BALROG leaderboard)</span></th>
+</tr>
+<tr id="S3.T1.5.3" class="ltx_tr">
+<th id="S3.T1.5.3.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.5.3.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.5.3.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.5.3.4.1.1.1" class="ltx_text" style="font-size:90%;">Gemini-3-Pro</span></span>
+</span>
+</th>
+<td id="S3.T1.3.1.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.3.1.1.1" class="ltx_text" style="font-size:90%;">57.3 </span><math id="S3.T1.3.1.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.3.1.1.2" class="ltx_text" style="font-size:90%;"> 4.4</span>
+</td>
+<td id="S3.T1.4.2.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.4.2.2.1" class="ltx_text" style="font-size:90%;">40.0 </span><math id="S3.T1.4.2.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.4.2.2.2" class="ltx_text" style="font-size:90%;"> 7.7</span>
+</td>
+<td id="S3.T1.5.3.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.5.3.3.1" class="ltx_text" style="font-size:90%;">6.8 </span><math id="S3.T1.5.3.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.5.3.3.2" class="ltx_text" style="font-size:90%;"> 3.2</span>
+</td>
+</tr>
+<tr id="S3.T1.8.6" class="ltx_tr">
+<th id="S3.T1.8.6.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.8.6.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.8.6.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.8.6.4.1.1.1" class="ltx_text" style="font-size:90%;">Gemini-3.1-Pro-Thinking</span></span>
+</span>
+</th>
+<td id="S3.T1.6.4.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.6.4.1.1" class="ltx_text" style="font-size:90%;">55.0 </span><math id="S3.T1.6.4.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.6.4.1.2" class="ltx_text" style="font-size:90%;"> 6.4</span>
+</td>
+<td id="S3.T1.7.5.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.7.5.2.1" class="ltx_text" style="font-size:90%;">27.5 </span><math id="S3.T1.7.5.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.7.5.2.2" class="ltx_text" style="font-size:90%;"> 7.1</span>
+</td>
+<td id="S3.T1.8.6.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.8.6.3.1" class="ltx_text" style="font-size:90%;">2.6 </span><math id="S3.T1.8.6.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.8.6.3.2" class="ltx_text" style="font-size:90%;"> 0.3</span>
+</td>
+</tr>
+<tr id="S3.T1.11.9" class="ltx_tr">
+<th id="S3.T1.11.9.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.11.9.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.11.9.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.11.9.4.1.1.1" class="ltx_text" style="font-size:90%;">Claude-Opus-4.5</span></span>
+</span>
+</th>
+<td id="S3.T1.9.7.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.9.7.1.1" class="ltx_text" style="font-size:90%;">49.5 </span><math id="S3.T1.9.7.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.9.7.1.2" class="ltx_text" style="font-size:90%;"> 3.1</span>
+</td>
+<td id="S3.T1.10.8.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.10.8.2.1" class="ltx_text" style="font-size:90%;">27.5 </span><math id="S3.T1.10.8.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.10.8.2.2" class="ltx_text" style="font-size:90%;"> 7.1</span>
+</td>
+<td id="S3.T1.11.9.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.11.9.3.1" class="ltx_text" style="font-size:90%;">2.0 </span><math id="S3.T1.11.9.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.11.9.3.2" class="ltx_text" style="font-size:90%;"> 0.5</span>
+</td>
+</tr>
+<tr id="S3.T1.14.12" class="ltx_tr">
+<th id="S3.T1.14.12.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row" style="padding-bottom:2.0pt;">
+<span id="S3.T1.14.12.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.14.12.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.14.12.4.1.1.1" class="ltx_text" style="font-size:90%;">Gemini-2.5-Pro</span></span>
+</span>
+</th>
+<td id="S3.T1.12.10.1" class="ltx_td ltx_nopad_l ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.12.10.1.1" class="ltx_text" style="font-size:90%;">55.0 </span><math id="S3.T1.12.10.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.12.10.1.2" class="ltx_text" style="font-size:90%;"> 6.0</span>
+</td>
+<td id="S3.T1.13.11.2" class="ltx_td ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.13.11.2.1" class="ltx_text" style="font-size:90%;">17.5 </span><math id="S3.T1.13.11.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.13.11.2.2" class="ltx_text" style="font-size:90%;"> 6.0</span>
+</td>
+<td id="S3.T1.14.12.3" class="ltx_td ltx_nopad_r ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.14.12.3.1" class="ltx_text" style="font-size:90%;">1.7 </span><math id="S3.T1.14.12.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.14.12.3.2" class="ltx_text" style="font-size:90%;"> 0.2</span>
+</td>
+</tr>
+<tr id="S3.T1.38.39.3" class="ltx_tr">
+<th id="S3.T1.38.39.3.1" class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_t" style="padding-bottom:2.0pt;" colspan="4"><span id="S3.T1.38.39.3.1.1" class="ltx_text ltx_font_italic" style="font-size:90%;">Open-weight (BALROG leaderboard)</span></th>
+</tr>
+<tr id="S3.T1.17.15" class="ltx_tr">
+<th id="S3.T1.17.15.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.17.15.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.17.15.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.17.15.4.1.1.1" class="ltx_text" style="font-size:90%;">DeepSeek-R1</span></span>
+</span>
+</th>
+<td id="S3.T1.15.13.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.15.13.1.1" class="ltx_text" style="font-size:90%;">36.4 </span><math id="S3.T1.15.13.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.15.13.1.2" class="ltx_text" style="font-size:90%;"> 3.8</span>
+</td>
+<td id="S3.T1.16.14.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.16.14.2.1" class="ltx_text" style="font-size:90%;">25.0 </span><math id="S3.T1.16.14.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.16.14.2.2" class="ltx_text" style="font-size:90%;"> 6.8</span>
+</td>
+<td id="S3.T1.17.15.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.17.15.3.1" class="ltx_text" style="font-size:90%;">1.4 </span><math id="S3.T1.17.15.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.17.15.3.2" class="ltx_text" style="font-size:90%;"> 0.5</span>
+</td>
+</tr>
+<tr id="S3.T1.20.18" class="ltx_tr">
+<th id="S3.T1.20.18.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.20.18.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.20.18.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.20.18.4.1.1.1" class="ltx_text" style="font-size:90%;">Qwen2.5-72B-Instruct</span></span>
+</span>
+</th>
+<td id="S3.T1.18.16.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.18.16.1.1" class="ltx_text" style="font-size:90%;">27.3 </span><math id="S3.T1.18.16.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.18.16.1.2" class="ltx_text" style="font-size:90%;"> 3.6</span>
+</td>
+<td id="S3.T1.19.17.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.19.17.2.1" class="ltx_text" style="font-size:90%;">5.0 </span><math id="S3.T1.19.17.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.19.17.2.2" class="ltx_text" style="font-size:90%;"> 3.4</span>
+</td>
+<td id="S3.T1.20.18.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.20.18.3.1" class="ltx_text" style="font-size:90%;">0.3 </span><math id="S3.T1.20.18.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.20.18.3.2" class="ltx_text" style="font-size:90%;"> 0.3</span>
+</td>
+</tr>
+<tr id="S3.T1.23.21" class="ltx_tr">
+<th id="S3.T1.23.21.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row" style="padding-bottom:2.0pt;">
+<span id="S3.T1.23.21.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.23.21.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.23.21.4.1.1.1" class="ltx_text" style="font-size:90%;">Qwen2.5-7B-Instruct</span></span>
+</span>
+</th>
+<td id="S3.T1.21.19.1" class="ltx_td ltx_nopad_l ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.21.19.1.1" class="ltx_text" style="font-size:90%;">16.4 </span><math id="S3.T1.21.19.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.21.19.1.2" class="ltx_text" style="font-size:90%;"> 3.0</span>
+</td>
+<td id="S3.T1.22.20.2" class="ltx_td ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.22.20.2.1" class="ltx_text" style="font-size:90%;">0.0 </span><math id="S3.T1.22.20.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.22.20.2.2" class="ltx_text" style="font-size:90%;"> 0.0</span>
+</td>
+<td id="S3.T1.23.21.3" class="ltx_td ltx_nopad_r ltx_align_center" style="padding-bottom:2.0pt;">
+<span id="S3.T1.23.21.3.1" class="ltx_text" style="font-size:90%;">0.0 </span><math id="S3.T1.23.21.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.23.21.3.2" class="ltx_text" style="font-size:90%;"> 0.0</span>
+</td>
+</tr>
+<tr id="S3.T1.38.40.4" class="ltx_tr">
+<th id="S3.T1.38.40.4.1" class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_t" style="padding-bottom:2.0pt;" colspan="4">
+<span id="S3.T1.38.40.4.1.1" class="ltx_text ltx_font_typewriter" style="font-size:90%;">Qwen2.5-32B-Instruct</span><span id="S3.T1.38.40.4.1.2" class="ltx_text" style="font-size:90%;"> </span><span id="S3.T1.38.40.4.1.3" class="ltx_text ltx_font_italic" style="font-size:90%;">with basic context-management baselines</span>
+</th>
+</tr>
+<tr id="S3.T1.26.24" class="ltx_tr">
+<th id="S3.T1.26.24.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.26.24.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.26.24.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.26.24.4.1.1.1" class="ltx_text" style="font-size:90%;">   sliding window</span></span>
+</span>
+</th>
+<td id="S3.T1.24.22.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.24.22.1.1" class="ltx_text" style="font-size:90%;">19.55 </span><math id="S3.T1.24.22.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.24.22.1.2" class="ltx_text" style="font-size:90%;"> 3.46</span>
+</td>
+<td id="S3.T1.25.23.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.25.23.2.1" class="ltx_text" style="font-size:90%;">2.50 </span><math id="S3.T1.25.23.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.25.23.2.2" class="ltx_text" style="font-size:90%;"> 2.47</span>
+</td>
+<td id="S3.T1.26.24.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.26.24.3.1" class="ltx_text" style="font-size:90%;">0.00 </span><math id="S3.T1.26.24.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.26.24.3.2" class="ltx_text" style="font-size:90%;"> 0.00</span>
+</td>
+</tr>
+<tr id="S3.T1.29.27" class="ltx_tr">
+<th id="S3.T1.29.27.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.29.27.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.29.27.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.29.27.4.1.1.1" class="ltx_text" style="font-size:90%;">   + chain-of-thought</span></span>
+</span>
+</th>
+<td id="S3.T1.27.25.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.27.25.1.1" class="ltx_text" style="font-size:90%;">17.27 </span><math id="S3.T1.27.25.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.27.25.1.2" class="ltx_text" style="font-size:90%;"> 2.71</span>
+</td>
+<td id="S3.T1.28.26.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.28.26.2.1" class="ltx_text" style="font-size:90%;">10.00 </span><math id="S3.T1.28.26.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.28.26.2.2" class="ltx_text" style="font-size:90%;"> 4.74</span>
+</td>
+<td id="S3.T1.29.27.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.29.27.3.1" class="ltx_text" style="font-size:90%;">0.00 </span><math id="S3.T1.29.27.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.29.27.3.2" class="ltx_text" style="font-size:90%;"> 0.00</span>
+</td>
+</tr>
+<tr id="S3.T1.38.41.5" class="ltx_tr">
+<th id="S3.T1.38.41.5.1" class="ltx_td ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_t" style="padding-bottom:2.0pt;" colspan="4">
+<span id="S3.T1.38.41.5.1.1" class="ltx_text ltx_font_typewriter" style="font-size:90%;">Qwen2.5-32B-Instruct</span><span id="S3.T1.38.41.5.1.2" class="ltx_text" style="font-size:90%;"> </span><span id="S3.T1.38.41.5.1.3" class="ltx_text ltx_font_italic" style="font-size:90%;">with <span id="S3.T1.38.41.5.1.3.1" class="ltx_text ltx_font_smallcaps">AutoMem</span> (ours)</span>
+</th>
+</tr>
+<tr id="S3.T1.32.30" class="ltx_tr">
+<th id="S3.T1.32.30.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.32.30.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.32.30.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.32.30.4.1.1.1" class="ltx_text" style="font-size:90%;">   memory-as-file-system, </span><span id="S3.T1.32.30.4.1.1.2" class="ltx_text ltx_font_typewriter" style="font-size:90%;">v0</span></span>
+</span>
+</th>
+<td id="S3.T1.30.28.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.30.28.1.1" class="ltx_text" style="font-size:90%;">25.00 </span><math id="S3.T1.30.28.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.30.28.1.2" class="ltx_text" style="font-size:90%;"> 5.50</span>
+</td>
+<td id="S3.T1.31.29.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.31.29.2.1" class="ltx_text" style="font-size:90%;">7.50 </span><math id="S3.T1.31.29.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.31.29.2.2" class="ltx_text" style="font-size:90%;"> 4.16</span>
+</td>
+<td id="S3.T1.32.30.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.32.30.3.1" class="ltx_text" style="font-size:90%;">0.42 </span><math id="S3.T1.32.30.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.32.30.3.2" class="ltx_text" style="font-size:90%;"> 0.37</span>
+</td>
+</tr>
+<tr id="S3.T1.35.33" class="ltx_tr">
+<th id="S3.T1.35.33.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row">
+<span id="S3.T1.35.33.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.35.33.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.35.33.4.1.1.1" class="ltx_text" style="font-size:90%;">   + scaffold opt. (loop #1)</span></span>
+</span>
+</th>
+<td id="S3.T1.33.31.1" class="ltx_td ltx_nopad_l ltx_align_center">
+<span id="S3.T1.33.31.1.1" class="ltx_text" style="font-size:90%;">47.27 </span><math id="S3.T1.33.31.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.33.31.1.2" class="ltx_text" style="font-size:90%;"> 2.05</span>
+</td>
+<td id="S3.T1.34.32.2" class="ltx_td ltx_align_center">
+<span id="S3.T1.34.32.2.1" class="ltx_text" style="font-size:90%;">27.50 </span><math id="S3.T1.34.32.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.34.32.2.2" class="ltx_text" style="font-size:90%;"> 7.06</span>
+</td>
+<td id="S3.T1.35.33.3" class="ltx_td ltx_nopad_r ltx_align_center">
+<span id="S3.T1.35.33.3.1" class="ltx_text" style="font-size:90%;">1.57 </span><math id="S3.T1.35.33.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.35.33.3.2" class="ltx_text" style="font-size:90%;"> 0.35</span>
+</td>
+</tr>
+<tr id="S3.T1.38.36" class="ltx_tr">
+<th id="S3.T1.38.36.4" class="ltx_td ltx_nopad_r ltx_align_justify ltx_align_top ltx_th ltx_th_row ltx_border_bb">
+<span id="S3.T1.38.36.4.1" class="ltx_inline-block ltx_align_top">
+<span id="S3.T1.38.36.4.1.1" class="ltx_p" style="width:225.5pt;"><span id="S3.T1.38.36.4.1.1.1" class="ltx_text" style="font-size:90%;">   + memory training (loop #2)</span></span>
+</span>
+</th>
+<td id="S3.T1.36.34.1" class="ltx_td ltx_nopad_l ltx_align_center ltx_border_bb">
+<span id="S3.T1.36.34.1.1" class="ltx_text ltx_font_bold" style="font-size:90%;">51.36</span><span id="S3.T1.36.34.1.2" class="ltx_text" style="font-size:90%;"> </span><math id="S3.T1.36.34.1.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.36.34.1.3" class="ltx_text" style="font-size:90%;"> 3.81</span>
+</td>
+<td id="S3.T1.37.35.2" class="ltx_td ltx_align_center ltx_border_bb">
+<span id="S3.T1.37.35.2.1" class="ltx_text ltx_font_bold" style="font-size:90%;">30.00</span><span id="S3.T1.37.35.2.2" class="ltx_text" style="font-size:90%;"> </span><math id="S3.T1.37.35.2.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.37.35.2.3" class="ltx_text" style="font-size:90%;"> 7.25</span>
+</td>
+<td id="S3.T1.38.36.3" class="ltx_td ltx_nopad_r ltx_align_center ltx_border_bb">
+<span id="S3.T1.38.36.3.1" class="ltx_text ltx_font_bold" style="font-size:90%;">1.85</span><span id="S3.T1.38.36.3.2" class="ltx_text" style="font-size:90%;"> </span><math id="S3.T1.38.36.3.m1" class="ltx_Math" alttext="\pm" display="inline" intent=":literal"><semantics><mo mathsize="0.900em">±</mo><annotation encoding="application/x-tex">\pm</annotation></semantics></math><span id="S3.T1.38.36.3.3" class="ltx_text" style="font-size:90%;"> 0.44</span>
+</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<section id="S3.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.1 </span>Setup</h3>
+
+<section id="S3.SS1.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Environments.</h4>
+
+<div id="S3.SS1.SSS0.Px1.p1" class="ltx_para">
+<p id="S3.SS1.SSS0.Px1.p1.4" class="ltx_p">We evaluate on three procedurally generated long-horizon games used in BALROG <cite class="ltx_cite ltx_citemacro_citep">(Paglieri et al., <a href="#bib.bib17" title="" class="ltx_ref">2024</a>)</cite> (Figure <a href="#S1.F2" title="Figure 2 ‣ 1 Introduction ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>).
+<span id="S3.SS1.SSS0.Px1.p1.4.1" class="ltx_text ltx_font_bold">Crafter</span> <cite class="ltx_cite ltx_citemacro_citep">(Hafner, <a href="#bib.bib4" title="" class="ltx_ref">2021</a>)</cite> is a 2D survival world with 17 actions and 22 achievements covering exploration, crafting, and combat; episodes run up to <math id="S3.SS1.SSS0.Px1.p1.1.m1" class="ltx_Math" alttext="{\sim}10^{3}" display="inline" intent=":literal"><semantics><mrow><mi></mi><mo>∼</mo><msup><mn>10</mn><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">{\sim}10^{3}</annotation></semantics></math> steps.
+<span id="S3.SS1.SSS0.Px1.p1.4.2" class="ltx_text ltx_font_bold">MiniHack</span> <cite class="ltx_cite ltx_citemacro_citep">(Samvelyan et al., <a href="#bib.bib20" title="" class="ltx_ref">2021</a>)</cite> is an 8-task suite (mazes, corridors, Boxoban puzzles, quests) built on the NetHack engine, with 33 actions and <math id="S3.SS1.SSS0.Px1.p1.2.m2" class="ltx_Math" alttext="{\sim}10^{2}" display="inline" intent=":literal"><semantics><mrow><mi></mi><mo>∼</mo><msup><mn>10</mn><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">{\sim}10^{2}</annotation></semantics></math> steps per task.
+<span id="S3.SS1.SSS0.Px1.p1.4.3" class="ltx_text ltx_font_bold">NetHack</span> <cite class="ltx_cite ltx_citemacro_citep">(Küttler et al., <a href="#bib.bib10" title="" class="ltx_ref">2020</a>)</cite> is the full NetHack Learning Environment (NLE), with 200+ actions and <math id="S3.SS1.SSS0.Px1.p1.3.m3" class="ltx_Math" alttext="10^{4}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>4</mn></msup><annotation encoding="application/x-tex">10^{4}</annotation></semantics></math>–<math id="S3.SS1.SSS0.Px1.p1.4.m4" class="ltx_Math" alttext="10^{5}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^{5}</annotation></semantics></math> steps per episode; the dungeon, monsters, and items are regenerated every seed.
+The BALROG harness is used as released, with minor configuration changes documented in Appendix <a href="#A1.SS1" title="A.1 Game environment configuration ‣ Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A.1</span></a>.</p>
+</div>
+</section>
+<section id="S3.SS1.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Metric.</h4>
+
+<div id="S3.SS1.SSS0.Px2.p1" class="ltx_para">
+<p id="S3.SS1.SSS0.Px2.p1.3" class="ltx_p">We use game <em id="S3.SS1.SSS0.Px2.p1.3.1" class="ltx_emph ltx_font_italic">progression rate</em> following BALROG, scaled to <math id="S3.SS1.SSS0.Px2.p1.1.m1" class="ltx_Math" alttext="[0,100]" display="inline" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>0</mn><mo>,</mo><mn>100</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[0,100]</annotation></semantics></math>.
+For Crafter it is the fraction of the 22 achievements obtained in an episode.
+For MiniHack it is the fraction of the 8 task variants completed (binary per task).
+For NetHack it is the dungeon-and-experience-level progression metric introduced by <cite class="ltx_cite ltx_citemacro_citet">Paglieri et al. (<a href="#bib.bib17" title="" class="ltx_ref">2024</a>)</cite>.
+We report mean and standard error over a fixed list of 10 seeds, <math id="S3.SS1.SSS0.Px2.p1.2.m2" class="ltx_Math" alttext="[42,43,\ldots,51]" display="inline" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>42</mn><mo>,</mo><mn>43</mn><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mn>51</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[42,43,\ldots,51]</annotation></semantics></math>, paired with per-environment episode counts: 10 episodes for Crafter, 5 per task for MiniHack (<math id="S3.SS1.SSS0.Px2.p1.3.m3" class="ltx_Math" alttext="5\times 8=40" display="inline" intent=":literal"><semantics><mrow><mrow><mn>5</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>8</mn></mrow><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">5\times 8=40</annotation></semantics></math> episodes), and 5 for NetHack, matching the BALROG defaults.</p>
+</div>
+</section>
+<section id="S3.SS1.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Base model and meta-LLM.</h4>
+
+<div id="S3.SS1.SSS0.Px3.p1" class="ltx_para">
+<p id="S3.SS1.SSS0.Px3.p1.1" class="ltx_p">The inner-loop model is <span id="S3.SS1.SSS0.Px3.p1.1.1" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span>, served locally with vLLM.
+The scaffold optimizer (Outer-loop #1) and the training engine (Outer-loop #2) call Claude Opus 4.6 &amp; Opus 4.7 respectively as the meta-LLM.
+In outer-loop #2, the <em id="S3.SS1.SSS0.Px3.p1.1.2" class="ltx_emph ltx_font_italic">memory specialist</em> is trained with LoRA; the gameplay model is the unmodified base.
+Hyperparameters, prompt templates and more implementation details are in Appendix <a href="#A1" title="Appendix A Implementation Details ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">A</span></a>.</p>
+</div>
+</section>
+<section id="S3.SS1.SSS0.Px4" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Baselines.</h4>
+
+<div id="S3.SS1.SSS0.Px4.p1" class="ltx_para">
+<p id="S3.SS1.SSS0.Px4.p1.1" class="ltx_p">Two groups. (i) BALROG leaderboard: frontier proprietary models (Gemini-3-Pro, Gemini-3.1-Pro-Thinking, Claude-Opus-4.5, Gemini-2.5-Pro), frontier open-weight reasoning models (DeepSeek-R1, 671B), and same-family open weights at two scales (Qwen2.5-72B-Instruct, Qwen2.5-7B-Instruct). (ii) <span id="S3.SS1.SSS0.Px4.p1.1.1" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span> under the BALROG harness with basic context-management methods: a sliding window of <math id="S3.SS1.SSS0.Px4.p1.1.m1" class="ltx_Math" alttext="16" display="inline" intent=":literal"><semantics><mn>16</mn><annotation encoding="application/x-tex">16</annotation></semantics></math>-step recent observations with/without chain-of-thought <cite class="ltx_cite ltx_citemacro_citep">(Wei et al., <a href="#bib.bib25" title="" class="ltx_ref">2022</a>)</cite>.</p>
+</div>
+</section>
+</section>
+<section id="S3.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">3.2 </span>Results</h3>
+
+<figure id="S3.F4" class="ltx_figure"><img src="2607.01224v1/x4.png" id="S3.F4.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="830" height="206" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 4: </span><span id="S3.F4.24.1" class="ltx_text ltx_font_bold">Effect of scaffold optimization on gameplay and memory behavior</span> (v0 <math id="S3.F4.10.m1" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v5 for Crafter, v0 <math id="S3.F4.11.m2" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v4 for MiniHack, v0 <math id="S3.F4.12.m3" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v2 for NetHack). <span id="S3.F4.25.2" class="ltx_text ltx_font_italic">Left:</span> the unproductive game action rate (fraction of steps that are either stuck or oscillating) drops 32–65% across all three environments. <span id="S3.F4.26.3" class="ltx_text ltx_font_italic">Right three panels:</span> <span id="S3.F4.27.4" class="ltx_text ltx_font_bold">memory operations become more efficient and better targeted</span>—redundant writes drop sharply (<math id="S3.F4.13.m4" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>68 to <math id="S3.F4.14.m5" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>83%), the empty-search rate (memory <span id="S3.F4.28.5" class="ltx_text ltx_font_typewriter">SEARCH</span>es returning nothing) falls (<math id="S3.F4.15.m6" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>13 to <math id="S3.F4.16.m7" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>50%), and per-step input context shrinks (<math id="S3.F4.17.m8" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>3 to <math id="S3.F4.18.m9" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>30%) as leaner memory compresses what the model must attend to. All values are v0 vs. final scaffold version; lower is better in every panel.</figcaption>
+</figure>
+<section id="S3.SS2.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Memory management is a high-leverage axis on its own.</h4>
+
+<div id="S3.SS2.SSS0.Px1.p1" class="ltx_para">
+<p id="S3.SS2.SSS0.Px1.p1.6" class="ltx_p">The model weights are untouched throughout scaffold optimization—only the agent code, prompts, and file schema change—yet progression <span id="S3.SS2.SSS0.Px1.p1.6.1" class="ltx_text ltx_font_bold">roughly doubles or more than triples on every environment</span>: Crafter 25.0%<math id="S3.SS2.SSS0.Px1.p1.1.m1" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math>47.27% (<math id="S3.SS2.SSS0.Px1.p1.2.m2" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>1.89), MiniHack 7.5%<math id="S3.SS2.SSS0.Px1.p1.3.m3" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math>27.5% (<math id="S3.SS2.SSS0.Px1.p1.4.m4" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>3.67), NetHack 0.42%<math id="S3.SS2.SSS0.Px1.p1.5.m5" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math>1.57% (<math id="S3.SS2.SSS0.Px1.p1.6.m6" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>3.74) (Table <a href="#S3.T1" title="Table 1 ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>, Figure <a href="#S0.F1" title="Figure 1 ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>).</p>
+</div>
+<div id="S3.SS2.SSS0.Px1.p2" class="ltx_para">
+<p id="S3.SS2.SSS0.Px1.p2.1" class="ltx_p">To calibrate this: the scaffolded 32B agent outperforms Qwen2.5-72B-Instruct (under the BALROG harness) by a wide margin, and surpasses the same base model under basic sliding-window context strategy by an even wider one, indicating that well-structured external memory management is a <span id="S3.SS2.SSS0.Px1.p2.1.1" class="ltx_text ltx_font_bold">higher-leverage axis than model scale</span> or context management on these long-horizon tasks.</p>
+</div>
+</section>
+<section id="S3.SS2.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Training the memory specialist adds complementary lift on top of the optimized scaffold.</h4>
+
+<div id="S3.SS2.SSS0.Px2.p1" class="ltx_para">
+<p id="S3.SS2.SSS0.Px2.p1.1" class="ltx_p">On top of the optimized scaffold (<span id="S3.SS2.SSS0.Px2.p1.1.1" class="ltx_text ltx_font_typewriter">v5</span> for Crafter, <span id="S3.SS2.SSS0.Px2.p1.1.2" class="ltx_text ltx_font_typewriter">v4</span> for MiniHack, <span id="S3.SS2.SSS0.Px2.p1.1.3" class="ltx_text ltx_font_typewriter">v2</span> for NetHack), the memory-proficiency training loop lifts progression to 51.36% on Crafter (+4.09), 30.0% on MiniHack (+2.5), and 1.85% on NetHack (+0.28), comparable in magnitude to one or two scaffold iterations (Table <a href="#S3.T1" title="Table 1 ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">1</span></a>).</p>
+</div>
+<div id="S3.SS2.SSS0.Px2.p2" class="ltx_para">
+<p id="S3.SS2.SSS0.Px2.p2.1" class="ltx_p">The two optimization axes thus work in sync: structure-revision (outer-loop 1) pushes the ceiling of prompts and agent schema, and proficiency-training (outer-loop 2) addresses the remaining model-capacity gap.
+Together they bring the 32B open-weight model to the performance level of frontier proprietary systems on these tasks, comparable to Claude-Opus-4.5 (Crafter/MiniHack/NetHack: 49.5/27.5/2.0) and within a few points of Gemini-3.1-Pro-Thinking (55.0/27.5/2.6).</p>
+</div>
+</section>
+<section id="S3.SS2.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Task decisions and memory operations are simultaneously improved in the shared action space.</h4>
+
+<div id="S3.SS2.SSS0.Px3.p1" class="ltx_para">
+<p id="S3.SS2.SSS0.Px3.p1.1" class="ltx_p">Because memory operations and task actions share the same action space, both are observable in full episode traces, and the meta-LLM’s trajectory-level review surfaces failures on both sides.
+We measure four behavioral indicators to quantify the effect of scaffold optimization (Figure <a href="#S3.F4" title="Figure 4 ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">4</span></a>).</p>
+</div>
+<div id="S3.SS2.SSS0.Px3.p2" class="ltx_para">
+<p id="S3.SS2.SSS0.Px3.p2.1" class="ltx_p">On the task action (<em id="S3.SS2.SSS0.Px3.p2.1.1" class="ltx_emph ltx_font_italic">i.e.,</em> gameplay) side, we track the <span id="S3.SS2.SSS0.Px3.p2.1.2" class="ltx_text ltx_font_bold ltx_font_italic">unproductive action rate</span>: the fraction of steps where the agent is either <span id="S3.SS2.SSS0.Px3.p2.1.3" class="ltx_text ltx_font_bold">stuck</span> (observation unchanged from the previous step—the action had no effect) or <span id="S3.SS2.SSS0.Px3.p2.1.4" class="ltx_text ltx_font_bold">oscillating</span> (<math id="S3.SS2.SSS0.Px3.p2.1.m1" class="ltx_Math" alttext="\geq" display="inline" intent=":literal"><semantics><mo>≥</mo><annotation encoding="application/x-tex">\geq</annotation></semantics></math>3 direction reversals in the last 10 movements—pacing back and forth without spatial memory of where it has been).
+This combined rate drops 32–65% across all three environments. This reduction recovers steps that the base agent spent repeating ineffective actions; each recovered step is an opportunity to explore, gather, or craft that was previously wasted.</p>
+</div>
+<div id="S3.SS2.SSS0.Px3.p3" class="ltx_para">
+<p id="S3.SS2.SSS0.Px3.p3.6" class="ltx_p">On the memory side, the optimized scaffold makes memory operations substantially more efficient and better targeted.
+<span id="S3.SS2.SSS0.Px3.p3.6.1" class="ltx_text ltx_font_italic">Redundant memory-file writes</span> drop sharply (<math id="S3.SS2.SSS0.Px3.p3.1.m1" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>68 to <math id="S3.SS2.SSS0.Px3.p3.2.m2" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>83%) and the <span id="S3.SS2.SSS0.Px3.p3.6.2" class="ltx_text ltx_font_italic">empty-search rate</span>—memory <span id="S3.SS2.SSS0.Px3.p3.6.3" class="ltx_text ltx_font_typewriter">SEARCH</span>es that return nothing—falls (<math id="S3.SS2.SSS0.Px3.p3.3.m3" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>13 to <math id="S3.SS2.SSS0.Px3.p3.4.m4" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>50%), so the agent both <span id="S3.SS2.SSS0.Px3.p3.6.4" class="ltx_text ltx_font_bold">writes less duplicate content</span> and <span id="S3.SS2.SSS0.Px3.p3.6.5" class="ltx_text ltx_font_bold">retrieves more precisely</span>. Especially on Crafter and NetHack, the leaner memory also compresses the <span id="S3.SS2.SSS0.Px3.p3.6.6" class="ltx_text ltx_font_italic">input context</span> per step (<math id="S3.SS2.SSS0.Px3.p3.5.m5" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>25 to <math id="S3.SS2.SSS0.Px3.p3.6.m6" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>30% tokens).
+This precisely echoes the purpose of external memory, <em id="S3.SS2.SSS0.Px3.p3.6.7" class="ltx_emph ltx_font_italic">i.e.,</em> <span id="S3.SS2.SSS0.Px3.p3.6.8" class="ltx_text ltx_font_bold">compressing the information</span> the model needs to attend to.
+The optimized scaffold leads to the emergence of such effective compression because the meta-LLM’s trajectory review surfaces the consequences of verbose or redundant memory on the actual task environments—a key benefit of memory operations and task decisions sitting in the shared action space.</p>
+</div>
+<figure id="S3.F5" class="ltx_figure ltx_align_floatright"><img src="2607.01224v1/x5.png" id="S3.F5.g1" class="ltx_graphics ltx_centering ltx_img_landscape" width="830" height="631" alt="Refer to caption">
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 5: </span><span id="S3.F5.7.1" class="ltx_text ltx_font_bold">Example memory file evolution (NetHack).</span> The base schema (v0) logs to an unbounded, append-only <span id="S3.F5.8.2" class="ltx_text ltx_font_typewriter">dungeon_map.txt</span> that accumulates duplicate coordinate entries. Scaffold optimization replaces this with a coordinate-keyed <span id="S3.F5.9.3" class="ltx_text ltx_font_typewriter">&lt;|UPSERT_MAP|&gt;</span> deduplication format, adds auto-synced <span id="S3.F5.10.4" class="ltx_text ltx_font_typewriter">inventory</span> and <span id="S3.F5.11.5" class="ltx_text ltx_font_typewriter">status</span> files maintained from observation, and pre-populates a <span id="S3.F5.12.6" class="ltx_text ltx_font_typewriter">strategy</span> reference.</figcaption>
+</figure>
+<div id="S3.SS2.SSS0.Px3.p4" class="ltx_para">
+<p id="S3.SS2.SSS0.Px3.p4.1" class="ltx_p">Figure <a href="#S3.F5" title="Figure 5 ‣ Task decisions and memory operations are simultaneously improved in the shared action space. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a> illustrates some concrete memory schema changes that drive these numbers, using NetHack as an example. More details on per-iteration changes for all three environments are listed in Appendix <a href="#A2" title="Appendix B Memory-scaffold evolution by iteration ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">B</span></a>.
+The base scaffold (v0) uses an append-only <span id="S3.SS2.SSS0.Px3.p4.1.1" class="ltx_text ltx_font_typewriter">dungeon_map.txt</span> that grows without bound, frequently accumulating duplicate coordinate entries (the same tile logged multiple times as the agent revisits it).
+The optimizer introduces a dedicated <span id="S3.SS2.SSS0.Px3.p4.1.2" class="ltx_text ltx_font_typewriter">&lt;|UPSERT_MAP|&gt;</span> operation that replaces append-based map logging with coordinate-keyed deduplication, so any new observation of tile <math id="S3.SS2.SSS0.Px3.p4.1.m1" class="ltx_Math" alttext="(x,y)" display="inline" intent=":literal"><semantics><mrow><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(x,y)</annotation></semantics></math> overwrites the previous entry rather than appending alongside it.
+The evolved schema also adds auto-synced <span id="S3.SS2.SSS0.Px3.p4.1.3" class="ltx_text ltx_font_typewriter">inventory</span> and <span id="S3.SS2.SSS0.Px3.p4.1.4" class="ltx_text ltx_font_typewriter">status</span> files that the scaffold updates programmatically from the observation, removing the need for the model to manually <span id="S3.SS2.SSS0.Px3.p4.1.5" class="ltx_text ltx_font_typewriter">READ</span> and reconcile its own records, and a pre-populated <span id="S3.SS2.SSS0.Px3.p4.1.6" class="ltx_text ltx_font_typewriter">strategy</span> reference that encodes the game’s primary objective (find stairs and descend) so the model does not waste early-episode operations rediscovering the goal.
+Together these changes sharply shrink the memory the agent must carry: its per-step growth falls from 138 to 6 characters, a 95% reduction.</p>
+</div>
+</section>
+<section id="S3.SS2.SSS0.Px4" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Training internalizes a consult-before-write memory discipline.</h4>
+
+<figure id="S3.T2" class="ltx_table ltx_align_floatright">
+<figcaption class="ltx_caption ltx_centering" style="font-size:90%;"><span class="ltx_tag ltx_tag_table">Table 2: </span>LOG-phase memory <span id="S3.T2.17.1" class="ltx_text ltx_font_typewriter">writes</span> per <span id="S3.T2.18.2" class="ltx_text ltx_font_typewriter">SEARCH</span> on the <em id="S3.T2.19.3" class="ltx_emph ltx_font_italic">evolved</em> scaffold with base model vs. <span id="S3.T2.20.4" class="ltx_text ltx_font_bold">+ trained</span> memory specialist (lower <math id="S3.T2.2.m1" class="ltx_Math" alttext="=" display="inline" intent=":literal"><semantics><mo>=</mo><annotation encoding="application/x-tex">=</annotation></semantics></math> more retrieval before writing). The trained specialist checks memory before writing in every environment.</figcaption>
+<table id="S3.T2.5" class="ltx_tabular ltx_centering ltx_guessed_headers ltx_align_middle">
+<thead class="ltx_thead">
+<tr id="S3.T2.5.4.1" class="ltx_tr">
+<th id="S3.T2.5.4.1.1" class="ltx_td ltx_th ltx_th_row ltx_border_tt"></th>
+<th id="S3.T2.5.4.1.2" class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt"><span id="S3.T2.5.4.1.2.1" class="ltx_text ltx_font_bold" style="font-size:90%;">Base</span></th>
+<th id="S3.T2.5.4.1.3" class="ltx_td ltx_align_center ltx_th ltx_th_column ltx_border_tt"><span id="S3.T2.5.4.1.3.1" class="ltx_text ltx_font_bold" style="font-size:90%;">+ Trained</span></th>
+</tr>
+</thead>
+<tbody class="ltx_tbody">
+<tr id="S3.T2.3.1" class="ltx_tr">
+<th id="S3.T2.3.1.2" class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_t"><span id="S3.T2.3.1.2.1" class="ltx_text" style="font-size:90%;">Crafter</span></th>
+<td id="S3.T2.3.1.3" class="ltx_td ltx_align_center ltx_border_t"><span id="S3.T2.3.1.3.1" class="ltx_text" style="font-size:90%;">0.84</span></td>
+<td id="S3.T2.3.1.1" class="ltx_td ltx_align_center ltx_border_t">
+<span id="S3.T2.3.1.1.2" class="ltx_text" style="font-size:90%;">0.39 </span><span id="S3.T2.3.1.1.1" class="ltx_text" style="font-size:70%;--ltx-fg-color:#808080;">(<math id="S3.T2.3.1.1.1.m1" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo style="--ltx-fg-color:#808080;" mathcolor="#808080">−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>54%)</span>
+</td>
+</tr>
+<tr id="S3.T2.4.2" class="ltx_tr">
+<th id="S3.T2.4.2.2" class="ltx_td ltx_align_left ltx_th ltx_th_row"><span id="S3.T2.4.2.2.1" class="ltx_text" style="font-size:90%;">MiniHack</span></th>
+<td id="S3.T2.4.2.3" class="ltx_td ltx_align_center"><span id="S3.T2.4.2.3.1" class="ltx_text" style="font-size:90%;">2.89</span></td>
+<td id="S3.T2.4.2.1" class="ltx_td ltx_align_center">
+<span id="S3.T2.4.2.1.2" class="ltx_text" style="font-size:90%;">0.82 </span><span id="S3.T2.4.2.1.1" class="ltx_text" style="font-size:70%;--ltx-fg-color:#808080;">(<math id="S3.T2.4.2.1.1.m1" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo style="--ltx-fg-color:#808080;" mathcolor="#808080">−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>72%)</span>
+</td>
+</tr>
+<tr id="S3.T2.5.3" class="ltx_tr">
+<th id="S3.T2.5.3.2" class="ltx_td ltx_align_left ltx_th ltx_th_row ltx_border_bb"><span id="S3.T2.5.3.2.1" class="ltx_text" style="font-size:90%;">NetHack</span></th>
+<td id="S3.T2.5.3.3" class="ltx_td ltx_align_center ltx_border_bb"><span id="S3.T2.5.3.3.1" class="ltx_text" style="font-size:90%;">4.66</span></td>
+<td id="S3.T2.5.3.1" class="ltx_td ltx_align_center ltx_border_bb">
+<span id="S3.T2.5.3.1.2" class="ltx_text" style="font-size:90%;">1.31 </span><span id="S3.T2.5.3.1.1" class="ltx_text" style="font-size:70%;--ltx-fg-color:#808080;">(<math id="S3.T2.5.3.1.1.m1" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo style="--ltx-fg-color:#808080;" mathcolor="#808080">−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>72%)</span>
+</td>
+</tr>
+</tbody>
+</table>
+</figure>
+<div id="S3.SS2.SSS0.Px4.p1" class="ltx_para">
+<p id="S3.SS2.SSS0.Px4.p1.6" class="ltx_p">Beyond the aggregate progression lift, the trained memory specialist exhibits a consistent shift toward <span id="S3.SS2.SSS0.Px4.p1.6.1" class="ltx_text ltx_font_bold">consulting memory before modifying it</span> (Table <a href="#S3.T2" title="Table 2 ‣ Training internalizes a consult-before-write memory discipline. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">2</span></a>).
+In the LOG phase, the ratio of memory <span id="S3.SS2.SSS0.Px4.p1.6.2" class="ltx_text ltx_font_typewriter">writes</span> to <span id="S3.SS2.SSS0.Px4.p1.6.3" class="ltx_text ltx_font_typewriter">SEARCH</span>es falls in every environment: Crafter <math id="S3.SS2.SSS0.Px4.p1.1.m1" class="ltx_Math" alttext="0.84\to 0.39" display="inline" intent=":literal"><semantics><mrow><mn>0.84</mn><mo stretchy="false">→</mo><mn>0.39</mn></mrow><annotation encoding="application/x-tex">0.84\to 0.39</annotation></semantics></math> (<math id="S3.SS2.SSS0.Px4.p1.2.m2" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>54%), MiniHack <math id="S3.SS2.SSS0.Px4.p1.3.m3" class="ltx_Math" alttext="2.89\to 0.82" display="inline" intent=":literal"><semantics><mrow><mn>2.89</mn><mo stretchy="false">→</mo><mn>0.82</mn></mrow><annotation encoding="application/x-tex">2.89\to 0.82</annotation></semantics></math> (<math id="S3.SS2.SSS0.Px4.p1.4.m4" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>72%), and NetHack <math id="S3.SS2.SSS0.Px4.p1.5.m5" class="ltx_Math" alttext="4.66\to 1.31" display="inline" intent=":literal"><semantics><mrow><mn>4.66</mn><mo stretchy="false">→</mo><mn>1.31</mn></mrow><annotation encoding="application/x-tex">4.66\to 1.31</annotation></semantics></math> (<math id="S3.SS2.SSS0.Px4.p1.6.m6" class="ltx_Math" alttext="-" display="inline" intent=":literal"><semantics><mo>−</mo><annotation encoding="application/x-tex">-</annotation></semantics></math>72%). That is, the specialist searches existing files more before appending new content, rather than writing blindly.
+This is precisely the consult-before-write pattern the optimized scaffold encourages via prompting, now <span id="S3.SS2.SSS0.Px4.p1.6.4" class="ltx_text ltx_font_bold">internalized</span> into the dedicated memory model weights.</p>
+</div>
+<figure id="S3.F6" class="ltx_figure">
+<div class="ltx_flex_figure">
+<div class="ltx_flex_cell ltx_flex_size_1"><img src="2607.01224v1/x6.png" id="S3.F6.g1" class="ltx_graphics ltx_centering ltx_figure_panel ltx_img_landscape" width="830" height="331" alt="Refer to caption"></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1"><img src="2607.01224v1/x7.png" id="S3.F6.g2" class="ltx_graphics ltx_centering ltx_figure_panel ltx_img_landscape" width="830" height="271" alt="Refer to caption"></div>
+<div class="ltx_flex_break"></div>
+<div class="ltx_flex_cell ltx_flex_size_1"><img src="2607.01224v1/x8.png" id="S3.F6.g3" class="ltx_graphics ltx_centering ltx_figure_panel ltx_img_landscape" width="830" height="215" alt="Refer to caption"></div>
+</div>
+<figcaption class="ltx_caption ltx_centering"><span class="ltx_tag ltx_tag_figure">Figure 6: </span><span id="S3.F6.17.1" class="ltx_text ltx_font_bold">Qualitative behavior across the two optimization stages.</span> Each row is an environment; its three cells show the base scaffold <span id="S3.F6.18.2" class="ltx_text ltx_font_typewriter">v0</span>, the evolved scaffold, and the <math id="S3.F6.5.m1" class="ltx_Math" alttext="+" display="inline" intent=":literal"><semantics><mo>+</mo><annotation encoding="application/x-tex">+</annotation></semantics></math> trained specialist on a representative evaluation episode. The note under each cell reports the agent’s behavior and its progression rate (<em id="S3.F6.19.3" class="ltx_emph ltx_font_italic">prog.</em>); for NetHack it also lists the dungeon level (<span id="S3.F6.20.4" class="ltx_text ltx_font_typewriter">Dlvl</span>, the agent’s depth) and the experience level and points (<span id="S3.F6.21.5" class="ltx_text ltx_font_typewriter">Xp</span>). <span id="S3.F6.22.6" class="ltx_text ltx_font_bold">Crafter</span>: the base agent only gathers wood; the evolved scaffold crafts stone tools, builds a furnace, and mines iron; and the trained specialist reaches that same crafting tier while also feeding itself (<math id="S3.F6.6.m2" class="ltx_Math" alttext="9\to 55\to 59\%" display="inline" intent=":literal"><semantics><mrow><mn>9</mn><mo stretchy="false">→</mo><mn>55</mn><mo stretchy="false">→</mo><mrow><mn>59</mn><mo>%</mo></mrow></mrow><annotation encoding="application/x-tex">9\to 55\to 59\%</annotation></semantics></math> progression). <span id="S3.F6.23.7" class="ltx_text ltx_font_bold">MiniHack</span> Corridor-R3, a task that requires navigating branching corridors to reach a goal staircase: neither the base nor the evolved scaffold reaches the staircase, whereas the trained specialist solves the task (<math id="S3.F6.7.m3" class="ltx_Math" alttext="0\to 0\to 100\%" display="inline" intent=":literal"><semantics><mrow><mn>0</mn><mo stretchy="false">→</mo><mn>0</mn><mo stretchy="false">→</mo><mrow><mn>100</mn><mo>%</mo></mrow></mrow><annotation encoding="application/x-tex">0\to 0\to 100\%</annotation></semantics></math>). <span id="S3.F6.24.8" class="ltx_text ltx_font_bold">NetHack</span>: the base agent dies at experience level 1 within a few hundred steps; the evolved scaffold survives thousands of steps and reaches experience level 2; and the trained specialist survives far longer and reaches experience level 4 (<math id="S3.F6.8.m4" class="ltx_Math" alttext="0\to 1.85\to 2.42\%" display="inline" intent=":literal"><semantics><mrow><mn>0</mn><mo stretchy="false">→</mo><mn>1.85</mn><mo stretchy="false">→</mo><mrow><mn>2.42</mn><mo>%</mo></mrow></mrow><annotation encoding="application/x-tex">0\to 1.85\to 2.42\%</annotation></semantics></math> progression).</figcaption>
+</figure>
+</section>
+<section id="S3.SS2.SSS0.Px5" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Qualitative examples.</h4>
+
+<div id="S3.SS2.SSS0.Px5.p1" class="ltx_para">
+<p id="S3.SS2.SSS0.Px5.p1.1" class="ltx_p">Figure <a href="#S3.F6" title="Figure 6 ‣ Training internalizes a consult-before-write memory discipline. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">6</span></a> traces, for each environment, a representative episode at each optimization stage, illustrating memory’s effect on behavior.
+In Crafter, the base <span id="S3.SS2.SSS0.Px5.p1.1.1" class="ltx_text ltx_font_typewriter">v0</span> agent loops on basic survival. The evolved scaffold organizes its map and inventory well enough to craft stone tools and a furnace and to mine iron, and the trained specialist reaches the same crafting tier while also sustaining itself with food.
+In MiniHack’s Corridor-R3, a task that requires navigating branching corridors to reach a goal staircase, both the base and the evolved scaffold exhaust the step budget without reaching it, whereas the trained specialist threads the corridors and solves the task.
+NetHack is the sharpest illustration of the delayed-consequence problem. With an append-only map, the base agent re-logs redundant observations and never builds on them, dying at experience level 1 within a few hundred steps. The evolved scaffold’s coordinate-keyed map (Figure <a href="#S3.F5" title="Figure 5 ‣ Task decisions and memory operations are simultaneously improved in the shared action space. ‣ 3.2 Results ‣ 3 Experiments ‣ AutoMem: Automated Learning of Memory as a Cognitive Skill" class="ltx_ref"><span class="ltx_text ltx_ref_tag">5</span></a>) lets it survive thousands of steps and reach experience level 2. The trained specialist, which searches its map before writing rather than logging blindly, survives far longer still and climbs to experience level 4.
+These traces make concrete what the aggregate metrics summarize: improving memory management alone contributes significantly to reshaping the agent’s task behavior.</p>
+</div>
+</section>
+</section>
+</section>
+<section id="S4" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">4 </span>Related Work</h2>
+
+<section id="S4.SS0.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">External memory for language models.</h4>
+
+<div id="S4.SS0.SSS0.Px1.p1" class="ltx_para">
+<p id="S4.SS0.SSS0.Px1.p1.1" class="ltx_p">The fixed-size context window bounds an LLM’s working-memory buffer, and motivates a range of external memory designs.
+Retrieval-augmented generation <cite class="ltx_cite ltx_citemacro_citep">(Lewis et al., <a href="#bib.bib12" title="" class="ltx_ref">2020</a>)</cite> couples a retriever with a language model, fetching relevant passages from a document store at inference time;
+MemGPT <cite class="ltx_cite ltx_citemacro_citep">(Packer et al., <a href="#bib.bib16" title="" class="ltx_ref">2023</a>)</cite> pages information in and out of context using OS-inspired memory management;
+Generative Agents <cite class="ltx_cite ltx_citemacro_citep">(Park et al., <a href="#bib.bib18" title="" class="ltx_ref">2023</a>)</cite> maintain a timestamped memory stream from which they retrieve, reflect, and plan;
+A-MEM <cite class="ltx_cite ltx_citemacro_citep">(Xu et al., <a href="#bib.bib27" title="" class="ltx_ref">2025</a>)</cite> equips LLMs with active decisions on what to retain and forget;
+MemoryBank <cite class="ltx_cite ltx_citemacro_citep">(Zhong et al., <a href="#bib.bib39" title="" class="ltx_ref">2024</a>)</cite> maintains a persistent long-term store across sessions.
+MemLLM <cite class="ltx_cite ltx_citemacro_citep">(Modarressi et al., <a href="#bib.bib14" title="" class="ltx_ref">2024</a>)</cite> trains models to interact with a dedicated read-write memory module, and Self-Notes <cite class="ltx_cite ltx_citemacro_citep">(Lanchantin et al., <a href="#bib.bib11" title="" class="ltx_ref">2023</a>)</cite> trains models to interleave reasoning with memory tokens—both closest to our <span id="S4.SS0.SSS0.Px1.p1.1.1" class="ltx_text ltx_font_italic">proficiency</span> axis.
+More recent works promote memory operations to <span id="S4.SS0.SSS0.Px1.p1.1.2" class="ltx_text ltx_font_bold">learnable policy actions</span> and train models to decide when to store, retrieve, or discard <cite class="ltx_cite ltx_citemacro_citep">(Yu et al., <a href="#bib.bib30" title="" class="ltx_ref">2026</a>; Zhou et al., <a href="#bib.bib41" title="" class="ltx_ref">2025</a>; Zhang et al., <a href="#bib.bib35" title="" class="ltx_ref">2026b</a>; Yuan et al., <a href="#bib.bib31" title="" class="ltx_ref">2025</a>; Yan et al., <a href="#bib.bib28" title="" class="ltx_ref">2025</a>)</cite>.
+MemAct <cite class="ltx_cite ltx_citemacro_citep">(Zhang et al., <a href="#bib.bib36" title="" class="ltx_ref">2025b</a>)</cite> shares our “memory as action” insight but operates on the context window itself rather than on external files.
+MemSkill <cite class="ltx_cite ltx_citemacro_citep">(Zhang et al., <a href="#bib.bib33" title="" class="ltx_ref">2026a</a>)</cite> also frames memory operations as evolvable skills whose repertoire grows by reviewing failure cases.
+MeMo <cite class="ltx_cite ltx_citemacro_citep">(Quek et al., <a href="#bib.bib19" title="" class="ltx_ref">2026</a>)</cite> trains a separate, dedicated memory model that a frozen base LLM queries at inference—an architecture close to our trained memory specialist deployed alongside a frozen task model—but its memory model encodes static document knowledge for question answering rather than the memory-management decisions of a long-horizon agent.
+Our work differs in coverage: we optimize both the memory <span id="S4.SS0.SSS0.Px1.p1.1.3" class="ltx_text ltx_font_italic">structure</span> (the scaffold) and the model’s parametric <span id="S4.SS0.SSS0.Px1.p1.1.4" class="ltx_text ltx_font_italic">proficiency</span> at using it, whereas prior work typically addresses only one axis.</p>
+</div>
+</section>
+<section id="S4.SS0.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Cognitive science of memory management.</h4>
+
+<div id="S4.SS0.SSS0.Px2.p1" class="ltx_para">
+<p id="S4.SS0.SSS0.Px2.p1.1" class="ltx_p">Our work draws on <span id="S4.SS0.SSS0.Px2.p1.1.1" class="ltx_text ltx_font_italic">metamemory</span>—the capability to monitor and regulate one’s own memory processes—introduced by <cite class="ltx_cite ltx_citemacro_citet">Flavell (<a href="#bib.bib3" title="" class="ltx_ref">1979</a>)</cite> and formalized by <cite class="ltx_cite ltx_citemacro_citet">Nelson (<a href="#bib.bib15" title="" class="ltx_ref">1990</a>)</cite> as a monitor–control loop between a meta-level and an object-level.
+The Extended-Mind thesis <cite class="ltx_cite ltx_citemacro_citep">(Clark and Chalmers, <a href="#bib.bib1" title="" class="ltx_ref">1998</a>)</cite> argues that such aids—notes, diagrams, files—are part of the cognitive system, not mere accessories.
+These cognitive-science perspectives have recently been applied to LLMs:
+CoALA <cite class="ltx_cite ltx_citemacro_citep">(Sumers et al., <a href="#bib.bib22" title="" class="ltx_ref">2023</a>)</cite> explicitly separates working- from long-term-memory in a language-model architecture;
+and MetaMem <cite class="ltx_cite ltx_citemacro_citep">(Xin et al., <a href="#bib.bib26" title="" class="ltx_ref">2026</a>)</cite> introduces a meta-memory layer that self-improves its knowledge-retrieval strategies across tasks.
+<span id="S4.SS0.SSS0.Px2.p1.1.2" class="ltx_text ltx_font_smallcaps">AutoMem</span> turns the <span id="S4.SS0.SSS0.Px2.p1.1.3" class="ltx_text ltx_font_italic">metamemory</span> concept into a <span id="S4.SS0.SSS0.Px2.p1.1.4" class="ltx_text ltx_font_bold">concrete optimization target</span> rather than an interpretive lens or a symbolic rule set: the scaffold loop shapes the memory structure, and the training loop sharpens the model’s proficiency at the “monitor–control” decision-making process.</p>
+</div>
+</section>
+<section id="S4.SS0.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Automated agent optimization.</h4>
+
+<div id="S4.SS0.SSS0.Px3.p1" class="ltx_para">
+<p id="S4.SS0.SSS0.Px3.p1.1" class="ltx_p">A growing line of work automates the optimization of LLM agent systems.
+The Automated Design of Agentic Systems framework (ADAS) <cite class="ltx_cite ltx_citemacro_citep">(Hu et al., <a href="#bib.bib6" title="" class="ltx_ref">2024</a>)</cite> searches over agent architectures in code;
+AFlow <cite class="ltx_cite ltx_citemacro_citep">(Zhang et al., <a href="#bib.bib34" title="" class="ltx_ref">2024a</a>)</cite> casts agentic workflow generation as Monte Carlo tree search over code-represented workflows;
+DSPy <cite class="ltx_cite ltx_citemacro_citep">(Khattab et al., <a href="#bib.bib9" title="" class="ltx_ref">2023</a>)</cite> compiles LM pipelines into optimized prompt chains;
+PromptBreeder <cite class="ltx_cite ltx_citemacro_citep">(Fernando et al., <a href="#bib.bib2" title="" class="ltx_ref">2023</a>)</cite> and APE <cite class="ltx_cite ltx_citemacro_citep">(Zhou et al., <a href="#bib.bib40" title="" class="ltx_ref">2023</a>)</cite> evolve or search over prompts.
+Closest to our setting, MemEvolve <cite class="ltx_cite ltx_citemacro_citep">(Zhang et al., <a href="#bib.bib32" title="" class="ltx_ref">2025a</a>)</cite> evolves memory architectures from a modular design space of “encode, store, retrieve, and manage” components; and EvolveMem <cite class="ltx_cite ltx_citemacro_citep">(Liu et al., <a href="#bib.bib13" title="" class="ltx_ref">2026</a>)</cite> casts memory optimization as an “AutoResearch” loop in which an LLM diagnoses per-question failure logs and proposes retrieval-configuration changes.
+Our scaffold loop (Outer-loop #1) shares a similar “diagnose-and-revise” structure but rewrites the agent’s code, prompts, and memory-file schema rather than tuning a fixed retrieval configuration, and draws its update signal from <span id="S4.SS0.SSS0.Px3.p1.1.1" class="ltx_text ltx_font_bold">complete long-horizon trajectory analysis</span> (up to <math id="S4.SS0.SSS0.Px3.p1.1.m1" class="ltx_Math" alttext="10^{5}" display="inline" intent=":literal"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^{5}</annotation></semantics></math> steps) rather than from per-question logs in multi-session QA.
+These methods are also inference-only, whereas <span id="S4.SS0.SSS0.Px3.p1.1.2" class="ltx_text ltx_font_smallcaps">AutoMem</span> additionally trains the model’s memory proficiency (Outer-loop #2).</p>
+</div>
+</section>
+<section id="S4.SS0.SSS0.Px4" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">LLMs in games.</h4>
+
+<div id="S4.SS0.SSS0.Px4.p1" class="ltx_para">
+<p id="S4.SS0.SSS0.Px4.p1.1" class="ltx_p">Long-horizon game environments have become a standard testbed for LLM agents.
+Voyager <cite class="ltx_cite ltx_citemacro_citep">(Wang et al., <a href="#bib.bib23" title="" class="ltx_ref">2023a</a>)</cite> uses LLMs to acquire skills and maintain a reusable skill library in Minecraft;
+DEPS <cite class="ltx_cite ltx_citemacro_citep">(Wang et al., <a href="#bib.bib24" title="" class="ltx_ref">2023b</a>)</cite> applies structured “describe–explain–plan–select prompting” to open-world Minecraft tasks;
+NetPlay <cite class="ltx_cite ltx_citemacro_citep">(Jeurissen et al., <a href="#bib.bib8" title="" class="ltx_ref">2024</a>)</cite> is the first zero-shot LLM agent applied to full NetHack <cite class="ltx_cite ltx_citemacro_citep">(Küttler et al., <a href="#bib.bib10" title="" class="ltx_ref">2020</a>)</cite>, underscoring the difficulty of dynamic context management at that scale.
+In the embodied-agent paradigm more broadly, ReAct <cite class="ltx_cite ltx_citemacro_citep">(Yao et al., <a href="#bib.bib29" title="" class="ltx_ref">2022</a>)</cite> interleaves reasoning with acting;
+Reflexion <cite class="ltx_cite ltx_citemacro_citep">(Shinn et al., <a href="#bib.bib21" title="" class="ltx_ref">2023</a>)</cite> draws on verbal self-reflection across episodes;
+Inner Monologue <cite class="ltx_cite ltx_citemacro_citep">(Huang et al., <a href="#bib.bib7" title="" class="ltx_ref">2022</a>)</cite> grounds LM planning in environment feedback;
+and ExpeL <cite class="ltx_cite ltx_citemacro_citep">(Zhao et al., <a href="#bib.bib38" title="" class="ltx_ref">2024</a>)</cite> extracts reusable insights from past trajectories to guide future decisions without parameter updates.
+We use game environments for their <span id="S4.SS0.SSS0.Px4.p1.1.1" class="ltx_text ltx_font_bold">stochastic</span> nature and <span id="S4.SS0.SSS0.Px4.p1.1.2" class="ltx_text ltx_font_bold">long horizons</span>, but study a different perspective: memory management as the primary lever, rather than reasoning, planning, or retrieval architectures.</p>
+</div>
+</section>
+</section>
+<section id="S5" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">5 </span>Conclusion</h2>
+
+<div id="S5.p1" class="ltx_para">
+<p id="S5.p1.2" class="ltx_p">This work demonstrates that memory management is an independently learnable, high-leverage skill for LLM agents. With <span id="S5.p1.2.1" class="ltx_text ltx_font_smallcaps">AutoMem</span>, we factored this skill into two axes—<span id="S5.p1.2.2" class="ltx_text ltx_font_italic">structure</span> and <span id="S5.p1.2.3" class="ltx_text ltx_font_italic">proficiency</span>—and automated their optimization through meta-LLM-driven outer loops.
+Targeting memory alone, without modifying the gameplay model’s weights, improved performance <math id="S5.p1.1.m1" class="ltx_math_unparsed" alttext="{\sim}2\times" display="inline" intent=":literal"><semantics><mrow><mo>∼</mo><mn>2</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">{\sim}2\times</annotation></semantics></math>–<math id="S5.p1.2.m2" class="ltx_math_unparsed" alttext="4\times" display="inline" intent=":literal"><semantics><mrow><mn>4</mn><mo lspace="0.222em">×</mo></mrow><annotation encoding="application/x-tex">4\times</annotation></semantics></math> across three long-horizon game environments, approaching the level of frontier proprietary systems.
+These findings also validate the <span id="S5.p1.2.4" class="ltx_text ltx_font_italic">metamemory</span> perspective from cognitive science as a productive framework for LLM agent design: skilled memory use is learned through practice and feedback, not designed into fixed architectures. The file-system interface, the scaffold revisions, and the trained memory specialist are all instances of this principle—the model acquires memory expertise by having its memory decisions observed, evaluated, and improved.
+A further finding is that long-horizon task improvement can decompose into trajectory-level review and targeted revision—a workflow that meta-LLMs can execute autonomously where human review of full episode traces is intractable. Applying this decomposition to other agent capabilities beyond memory is a promising direction.</p>
+</div>
+</section>
+<section id="S6" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">6 </span>Limitations and Future Work</h2>
+
+<div id="S6.p1" class="ltx_para">
+<p id="S6.p1.1" class="ltx_p">Our current study has several limitations, each suggesting a direction for further work. First, the memory we study is <span id="S6.p1.1.1" class="ltx_text ltx_font_italic">episodic</span>: the file system starts fresh at the beginning of each episode, and a natural extension is a <span id="S6.p1.1.2" class="ltx_text ltx_font_italic">persistent</span> memory that carries knowledge across episodes. Second, our experiments are on game environments, which are well-suited to studying memory—long horizons, procedural generation, and rich information-management demands—and the approach could also be applied to real-world, memory-intensive tasks. Third, since the three games differ in structure and objectives, we optimize a separate scaffold and memory specialist for each; whether a single scaffold or specialist can be shared across environments remains to be explored.</p>
+</div>
+</section>
+<section id="S7" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">
+<span class="ltx_tag ltx_tag_section">7 </span>Broader Impacts</h2>
+
+<div id="S7.p1" class="ltx_para">
+<p id="S7.p1.1" class="ltx_p"><span id="S7.p1.1.1" class="ltx_text ltx_font_smallcaps">AutoMem</span> shows that automated scaffold optimization and targeted training of memory management as a distinct capability effectively improves performance on long-horizon tasks. This also lowers the model-scale threshold at which long-horizon agents become practical, an accessibility gain for open-weight deployment. The same techniques could be adapted to tasks beyond games. The released artifacts are not directly applicable to high-stakes deployment without further safety review.</p>
+</div>
+</section>
+<section id="Sx1" class="ltx_section">
+<h2 class="ltx_title ltx_title_section">Acknowledgments</h2>
+
+<div id="Sx1.p1" class="ltx_para">
+<p id="Sx1.p1.1" class="ltx_p">We thank Kaiyue Wen, James Burgess, Laura Bravo-Sánchez, and Mark Endo for their insights and helpful discussions.</p>
+</div>
+</section>
+<section id="bib" class="ltx_bibliography">
+<h2 class="ltx_title ltx_title_bibliography">References</h2>
+
+<ul class="ltx_biblist">
+<li id="bib.bib1" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Clark and Chalmers [1998]</span>
+<span class="ltx_bibblock">
+Andy Clark and David Chalmers.
+
+</span>
+<span class="ltx_bibblock">The extended mind.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib1.1.1" class="ltx_emph ltx_font_italic">analysis</em>, 58(1):7–19, 1998.
+
+</span>
+</li>
+<li id="bib.bib2" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Fernando et al. [2023]</span>
+<span class="ltx_bibblock">
+Chrisantha Fernando, Dylan Banarse, Henryk Michalewski, Simon Osindero, and Tim Rocktäschel.
+
+</span>
+<span class="ltx_bibblock">Promptbreeder: Self-referential self-improvement via prompt evolution.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib2.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2309.16797</em>, 2023.
+
+</span>
+</li>
+<li id="bib.bib3" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Flavell [1979]</span>
+<span class="ltx_bibblock">
+John H Flavell.
+
+</span>
+<span class="ltx_bibblock">Metacognition and cognitive monitoring: A new area of cognitive–developmental inquiry.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib3.1.1" class="ltx_emph ltx_font_italic">American psychologist</em>, 34(10):906, 1979.
+
+</span>
+</li>
+<li id="bib.bib4" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hafner [2021]</span>
+<span class="ltx_bibblock">
+Danijar Hafner.
+
+</span>
+<span class="ltx_bibblock">Benchmarking the spectrum of agent capabilities.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib4.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2109.06780</em>, 2021.
+
+</span>
+</li>
+<li id="bib.bib5" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hu et al. [2022]</span>
+<span class="ltx_bibblock">
+Edward J Hu, yelong shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen.
+
+</span>
+<span class="ltx_bibblock">LoRA: Low-rank adaptation of large language models.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib5.1.1" class="ltx_emph ltx_font_italic">International Conference on Learning Representations</em>, 2022.
+
+</span>
+<span class="ltx_bibblock">URL <a href="https://openreview.net/forum?id=nZeVKeeFYf9" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://openreview.net/forum?id=nZeVKeeFYf9</a>.
+
+</span>
+</li>
+<li id="bib.bib6" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Hu et al. [2024]</span>
+<span class="ltx_bibblock">
+Shengran Hu, Cong Lu, and Jeff Clune.
+
+</span>
+<span class="ltx_bibblock">Automated design of agentic systems.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib6.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2408.08435</em>, 2024.
+
+</span>
+</li>
+<li id="bib.bib7" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Huang et al. [2022]</span>
+<span class="ltx_bibblock">
+Wenlong Huang, Fei Xia, Ted Xiao, Harris Chan, Jacky Liang, Pete Florence, Andy Zeng, Jonathan Tompson, Igor Mordatch, Yevgen Chebotar, et al.
+
+</span>
+<span class="ltx_bibblock">Inner monologue: Embodied reasoning through planning with language models.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib7.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2207.05608</em>, 2022.
+
+</span>
+</li>
+<li id="bib.bib8" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Jeurissen et al. [2024]</span>
+<span class="ltx_bibblock">
+Dominik Jeurissen, Diego Perez-Liebana, Jeremy Gow, Duygu Cakmak, and James Kwan.
+
+</span>
+<span class="ltx_bibblock">Playing nethack with llms: Potential &amp; limitations as zero-shot agents.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib8.1.1" class="ltx_emph ltx_font_italic">2024 IEEE Conference on Games (CoG)</em>, pages 1–8. IEEE, 2024.
+
+</span>
+</li>
+<li id="bib.bib9" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Khattab et al. [2023]</span>
+<span class="ltx_bibblock">
+Omar Khattab, Arnav Singhvi, Paridhi Maheshwari, Zhiyuan Zhang, Keshav Santhanam, Sri Vardhamanan, Saiful Haq, Ashutosh Sharma, Thomas T Joshi, Hanna Moazam, et al.
+
+</span>
+<span class="ltx_bibblock">Dspy: Compiling declarative language model calls into self-improving pipelines.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib9.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2310.03714</em>, 2023.
+
+</span>
+</li>
+<li id="bib.bib10" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Küttler et al. [2020]</span>
+<span class="ltx_bibblock">
+Heinrich Küttler, Nantas Nardelli, Alexander Miller, Roberta Raileanu, Marco Selvatici, Edward Grefenstette, and Tim Rocktäschel.
+
+</span>
+<span class="ltx_bibblock">The nethack learning environment.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib10.1.1" class="ltx_emph ltx_font_italic">Advances in Neural Information Processing Systems</em>, 33:7671–7684, 2020.
+
+</span>
+</li>
+<li id="bib.bib11" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lanchantin et al. [2023]</span>
+<span class="ltx_bibblock">
+Jack Lanchantin, Shubham Toshniwal, Jason Weston, Sainbayar Sukhbaatar, et al.
+
+</span>
+<span class="ltx_bibblock">Learning to reason and memorize with self-notes.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib11.1.1" class="ltx_emph ltx_font_italic">Advances in Neural Information Processing Systems</em>, 36:11891–11911, 2023.
+
+</span>
+</li>
+<li id="bib.bib12" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Lewis et al. [2020]</span>
+<span class="ltx_bibblock">
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, et al.
+
+</span>
+<span class="ltx_bibblock">Retrieval-augmented generation for knowledge-intensive nlp tasks.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib12.1.1" class="ltx_emph ltx_font_italic">Advances in neural information processing systems</em>, 33:9459–9474, 2020.
+
+</span>
+</li>
+<li id="bib.bib13" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Liu et al. [2026]</span>
+<span class="ltx_bibblock">
+Jiaqi Liu, Xinyu Ye, Peng Xia, Zeyu Zheng, Cihang Xie, Mingyu Ding, and Huaxiu Yao.
+
+</span>
+<span class="ltx_bibblock">Evolvemem: Self-evolving memory architecture via autoresearch for llm agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib13.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2605.13941</em>, 2026.
+
+</span>
+</li>
+<li id="bib.bib14" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Modarressi et al. [2024]</span>
+<span class="ltx_bibblock">
+Ali Modarressi, Abdullatif Köksal, Ayyoob Imani, Mohsen Fayyaz, and Hinrich Schütze.
+
+</span>
+<span class="ltx_bibblock">Memllm: Finetuning llms to use an explicit read-write memory.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib14.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2404.11672</em>, 2024.
+
+</span>
+</li>
+<li id="bib.bib15" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Nelson [1990]</span>
+<span class="ltx_bibblock">
+Thomas O Nelson.
+
+</span>
+<span class="ltx_bibblock">Metamemory: A theoretical framework and new findings.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib15.1.1" class="ltx_emph ltx_font_italic">Psychology of learning and motivation</em>, volume 26, pages 125–173. Elsevier, 1990.
+
+</span>
+</li>
+<li id="bib.bib16" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Packer et al. [2023]</span>
+<span class="ltx_bibblock">
+Charles Packer, Sarah Wooders, Kevin Lin, Vivian Fang, Shishir G Patil, Ion Stoica, and Joseph E Gonzalez.
+
+</span>
+<span class="ltx_bibblock">Memgpt: Towards llms as operating systems.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib16.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2310.08560</em>, 2023.
+
+</span>
+</li>
+<li id="bib.bib17" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Paglieri et al. [2024]</span>
+<span class="ltx_bibblock">
+Davide Paglieri, Bartłomiej Cupiał, Samuel Coward, Ulyana Piterbarg, Maciej Wolczyk, Akbir Khan, Eduardo Pignatelli, Łukasz Kuciński, Lerrel Pinto, Rob Fergus, et al.
+
+</span>
+<span class="ltx_bibblock">Balrog: Benchmarking agentic llm and vlm reasoning on games.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib17.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2411.13543</em>, 2024.
+
+</span>
+</li>
+<li id="bib.bib18" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Park et al. [2023]</span>
+<span class="ltx_bibblock">
+Joon Sung Park, Joseph O’Brien, Carrie Jun Cai, Meredith Ringel Morris, Percy Liang, and Michael S Bernstein.
+
+</span>
+<span class="ltx_bibblock">Generative agents: Interactive simulacra of human behavior.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib18.1.1" class="ltx_emph ltx_font_italic">Proceedings of the 36th annual acm symposium on user interface software and technology</em>, pages 1–22, 2023.
+
+</span>
+</li>
+<li id="bib.bib19" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Quek et al. [2026]</span>
+<span class="ltx_bibblock">
+Ryan Wei Heng Quek, Sanghyuk Lee, Alfred Wei Lun Leong, Arun Verma, Alok Prakash, Nancy F Chen, Bryan Kian Hsiang Low, Daniela Rus, and Armando Solar-Lezama.
+
+</span>
+<span class="ltx_bibblock">Memo: Memory as a model.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib19.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2605.15156</em>, 2026.
+
+</span>
+</li>
+<li id="bib.bib20" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Samvelyan et al. [2021]</span>
+<span class="ltx_bibblock">
+Mikayel Samvelyan, Robert Kirk, Vitaly Kurin, Jack Parker-Holder, Minqi Jiang, Eric Hambro, Fabio Petroni, Heinrich Küttler, Edward Grefenstette, and Tim Rocktäschel.
+
+</span>
+<span class="ltx_bibblock">Minihack the planet: A sandbox for open-ended reinforcement learning research.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib20.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2109.13202</em>, 2021.
+
+</span>
+</li>
+<li id="bib.bib21" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Shinn et al. [2023]</span>
+<span class="ltx_bibblock">
+Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao.
+
+</span>
+<span class="ltx_bibblock">Reflexion: Language agents with verbal reinforcement learning.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib21.1.1" class="ltx_emph ltx_font_italic">Advances in neural information processing systems</em>, 36:8634–8652, 2023.
+
+</span>
+</li>
+<li id="bib.bib22" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Sumers et al. [2023]</span>
+<span class="ltx_bibblock">
+Theodore Sumers, Shunyu Yao, Karthik R Narasimhan, and Thomas L Griffiths.
+
+</span>
+<span class="ltx_bibblock">Cognitive architectures for language agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib22.1.1" class="ltx_emph ltx_font_italic">Transactions on Machine Learning Research</em>, 2023.
+
+</span>
+</li>
+<li id="bib.bib23" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. [2023a]</span>
+<span class="ltx_bibblock">
+Guanzhi Wang, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu, Linxi Fan, and Anima Anandkumar.
+
+</span>
+<span class="ltx_bibblock">Voyager: An open-ended embodied agent with large language models.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib23.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2305.16291</em>, 2023a.
+
+</span>
+</li>
+<li id="bib.bib24" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wang et al. [2023b]</span>
+<span class="ltx_bibblock">
+Zihao Wang, Shaofei Cai, Guanzhou Chen, Anji Liu, Xiaojian Ma, and Yitao Liang.
+
+</span>
+<span class="ltx_bibblock">Describe, explain, plan and select: Interactive planning with large language models enables open-world multi-task agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib24.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2302.01560</em>, 2023b.
+
+</span>
+</li>
+<li id="bib.bib25" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Wei et al. [2022]</span>
+<span class="ltx_bibblock">
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al.
+
+</span>
+<span class="ltx_bibblock">Chain-of-thought prompting elicits reasoning in large language models.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib25.1.1" class="ltx_emph ltx_font_italic">Advances in neural information processing systems</em>, 35:24824–24837, 2022.
+
+</span>
+</li>
+<li id="bib.bib26" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Xin et al. [2026]</span>
+<span class="ltx_bibblock">
+Haidong Xin, Xinze Li, Zhenghao Liu, Yukun Yan, Shuo Wang, Cheng Yang, Yu Gu, Ge Yu, and Maosong Sun.
+
+</span>
+<span class="ltx_bibblock">Metamem: Evolving meta-memory for knowledge utilization through self-reflective symbolic optimization.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib26.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2602.11182</em>, 2026.
+
+</span>
+</li>
+<li id="bib.bib27" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Xu et al. [2025]</span>
+<span class="ltx_bibblock">
+Wujiang Xu, Zujie Liang, Kai Mei, Hang Gao, Juntao Tan, and Yongfeng Zhang.
+
+</span>
+<span class="ltx_bibblock">A-mem: Agentic memory for llm agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib27.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2502.12110</em>, 2025.
+
+</span>
+</li>
+<li id="bib.bib28" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yan et al. [2025]</span>
+<span class="ltx_bibblock">
+Sikuan Yan, Xiufeng Yang, Zuchao Huang, Ercong Nie, Zifeng Ding, Zonggen Li, Xiaowen Ma, Jinhe Bi, Kristian Kersting, Jeff Z Pan, et al.
+
+</span>
+<span class="ltx_bibblock">Memory-r1: Enhancing large language model agents to manage and utilize memories via reinforcement learning.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib28.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2508.19828</em>, 2025.
+
+</span>
+</li>
+<li id="bib.bib29" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yao et al. [2022]</span>
+<span class="ltx_bibblock">
+Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao.
+
+</span>
+<span class="ltx_bibblock">React: Synergizing reasoning and acting in language models.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib29.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2210.03629</em>, 2022.
+
+</span>
+</li>
+<li id="bib.bib30" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yu et al. [2026]</span>
+<span class="ltx_bibblock">
+Yi Yu, Liuyi Yao, Yuexiang Xie, Qingquan Tan, Jiaqi Feng, Yaliang Li, and Libing Wu.
+
+</span>
+<span class="ltx_bibblock">Agentic memory: Learning unified long-term and short-term memory management for large language model agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib30.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2601.01885</em>, 2026.
+
+</span>
+</li>
+<li id="bib.bib31" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Yuan et al. [2025]</span>
+<span class="ltx_bibblock">
+Qianhao Yuan, Jie Lou, Zichao Li, Jiawei Chen, Yaojie Lu, Hongyu Lin, Le Sun, Debing Zhang, and Xianpei Han.
+
+</span>
+<span class="ltx_bibblock">Memsearcher: Training llms to reason, search and manage memory via end-to-end reinforcement learning.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib31.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2511.02805</em>, 2025.
+
+</span>
+</li>
+<li id="bib.bib32" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2025a]</span>
+<span class="ltx_bibblock">
+Guibin Zhang, Haotian Ren, Chong Zhan, Zhenhong Zhou, Junhao Wang, He Zhu, Wangchunshu Zhou, and Shuicheng Yan.
+
+</span>
+<span class="ltx_bibblock">Memevolve: Meta-evolution of agent memory systems.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib32.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2512.18746</em>, 2025a.
+
+</span>
+</li>
+<li id="bib.bib33" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2026a]</span>
+<span class="ltx_bibblock">
+Haozhen Zhang, Quanyu Long, Jianzhu Bao, Tao Feng, Weizhi Zhang, Haodong Yue, and Wenya Wang.
+
+</span>
+<span class="ltx_bibblock">Memskill: Learning and evolving memory skills for self-evolving agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib33.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2602.02474</em>, 2026a.
+
+</span>
+</li>
+<li id="bib.bib34" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2024a]</span>
+<span class="ltx_bibblock">
+Jiayi Zhang, Jinyu Xiang, Zhaoyang Yu, Fengwei Teng, Xiong-Hui Chen, Jiaqi Chen, Mingchen Zhuge, Xin Cheng, Sirui Hong, Jinlin Wang, et al.
+
+</span>
+<span class="ltx_bibblock">Aflow: Automating agentic workflow generation.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib34.1.1" class="ltx_emph ltx_font_italic">The Thirteenth International Conference on Learning Representations</em>, 2024a.
+
+</span>
+</li>
+<li id="bib.bib35" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2026b]</span>
+<span class="ltx_bibblock">
+Shengtao Zhang, Jiaqian Wang, Ruiwen Zhou, Junwei Liao, Yuchen Feng, Zhuo Li, Yujie Zheng, Weinan Zhang, Ying Wen, Zhiyu Li, et al.
+
+</span>
+<span class="ltx_bibblock">Memrl: Self-evolving agents via runtime reinforcement learning on episodic memory.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib35.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2601.03192</em>, 2026b.
+
+</span>
+</li>
+<li id="bib.bib36" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2025b]</span>
+<span class="ltx_bibblock">
+Yuxiang Zhang, Jiangming Shu, Ye Ma, Xueyuan Lin, Shangxi Wu, and Jitao Sang.
+
+</span>
+<span class="ltx_bibblock">Memory as action: Autonomous context curation for long-horizon agentic tasks.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib36.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2510.12635</em>, 2025b.
+
+</span>
+</li>
+<li id="bib.bib37" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhang et al. [2024b]</span>
+<span class="ltx_bibblock">
+Zeyu Zhang, Xiaohe Bo, Chen Ma, Rui Li, Xu Chen, Quanyu Dai, Jieming Zhu, Zhenhua Dong, and Ji-Rong Wen.
+
+</span>
+<span class="ltx_bibblock">A survey on the memory mechanism of large language model based agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib37.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2404.13501</em>, 2024b.
+
+</span>
+</li>
+<li id="bib.bib38" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhao et al. [2024]</span>
+<span class="ltx_bibblock">
+Andrew Zhao, Daniel Huang, Quentin Xu, Matthieu Lin, Yong-Jin Liu, and Gao Huang.
+
+</span>
+<span class="ltx_bibblock">Expel: Llm agents are experiential learners.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib38.1.1" class="ltx_emph ltx_font_italic">Proceedings of the AAAI Conference on Artificial Intelligence</em>, volume 38, pages 19632–19642, 2024.
+
+</span>
+</li>
+<li id="bib.bib39" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhong et al. [2024]</span>
+<span class="ltx_bibblock">
+Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, and Yanlin Wang.
+
+</span>
+<span class="ltx_bibblock">Memorybank: Enhancing large language models with long-term memory.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib39.1.1" class="ltx_emph ltx_font_italic">Proceedings of the AAAI conference on artificial intelligence</em>, volume 38, pages 19724–19731, 2024.
+
+</span>
+</li>
+<li id="bib.bib40" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhou et al. [2023]</span>
+<span class="ltx_bibblock">
+Yongchao Zhou, Andrei Ioan Muresanu, Ziwen Han, Keiran Paster, Silviu Pitis, Harris Chan, and Jimmy Ba.
+
+</span>
+<span class="ltx_bibblock">Large language models are human-level prompt engineers.
+
+</span>
+<span class="ltx_bibblock">In <em id="bib.bib40.1.1" class="ltx_emph ltx_font_italic">The Eleventh International Conference on Learning Representations</em>, 2023.
+
+</span>
+<span class="ltx_bibblock">URL <a href="https://openreview.net/forum?id=92gvk82DE-" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://openreview.net/forum?id=92gvk82DE-</a>.
+
+</span>
+</li>
+<li id="bib.bib41" class="ltx_bibitem">
+<span class="ltx_tag ltx_role_refnum ltx_tag_bibitem">Zhou et al. [2025]</span>
+<span class="ltx_bibblock">
+Zijian Zhou, Ao Qu, Zhaoxuan Wu, Sunghwan Kim, Alok Prakash, Daniela Rus, Jinhua Zhao, Bryan Kian Hsiang Low, and Paul Pu Liang.
+
+</span>
+<span class="ltx_bibblock">Mem1: Learning to synergize memory and reasoning for efficient long-horizon agents.
+
+</span>
+<span class="ltx_bibblock"><em id="bib.bib41.1.1" class="ltx_emph ltx_font_italic">arXiv preprint arXiv:2506.15841</em>, 2025.
+
+</span>
+</li>
+</ul>
+</section>
+<section id="A1" class="ltx_appendix">
+<h2 class="ltx_title ltx_title_appendix">
+<span class="ltx_tag ltx_tag_appendix">Appendix A </span>Implementation Details</h2>
+
+<div id="A1.p1" class="ltx_para">
+<p id="A1.p1.1" class="ltx_p">This appendix gives implementation configuration organized by components. The complete prompt templates for both outer loops, together with all code, are released in our codebase: <a href="https://github.com/autoLearnMem/AutoMem" title="" class="ltx_ref ltx_url ltx_font_typewriter">https://github.com/autoLearnMem/AutoMem</a>.</p>
+</div>
+<section id="A1.SS1" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.1 </span>Game environment configuration</h3>
+
+<section id="A1.SS1.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">BALROG environments.</h4>
+
+<div id="A1.SS1.SSS0.Px1.p1" class="ltx_para">
+<p id="A1.SS1.SSS0.Px1.p1.1" class="ltx_p">We use the BALROG harness as released <cite class="ltx_cite ltx_citemacro_citep">[Paglieri et al., <a href="#bib.bib17" title="" class="ltx_ref">2024</a>]</cite>, with minor configuration changes:
+<em id="A1.SS1.SSS0.Px1.p1.1.1" class="ltx_emph ltx_font_italic">(i)</em> We set <span id="A1.SS1.SSS0.Px1.p1.1.2" class="ltx_text ltx_font_typewriter">autopickup=True</span> on MiniHack to align with the NetHack configuration.
+<em id="A1.SS1.SSS0.Px1.p1.1.3" class="ltx_emph ltx_font_italic">(ii)</em> The default fallback action when the LLM outputs no parseable action string is set to <span id="A1.SS1.SSS0.Px1.p1.1.4" class="ltx_text ltx_font_typewriter">search</span> where the task’s action space includes it (NetHack and a subset of MiniHack tasks) instead of the BALROG default <span id="A1.SS1.SSS0.Px1.p1.1.5" class="ltx_text ltx_font_typewriter">esc</span>, and kept as <span id="A1.SS1.SSS0.Px1.p1.1.6" class="ltx_text ltx_font_typewriter">Noop</span> for Crafter.
+All baseline runs with <span id="A1.SS1.SSS0.Px1.p1.1.7" class="ltx_text ltx_font_typewriter">Qwen2.5-32B-Instruct</span> use the same updated settings as our <span id="A1.SS1.SSS0.Px1.p1.1.8" class="ltx_text ltx_font_smallcaps">AutoMem</span> method.</p>
+</div>
+<div id="A1.SS1.SSS0.Px1.p2" class="ltx_para">
+<p id="A1.SS1.SSS0.Px1.p2.5" class="ltx_p">Crafter is configured with a 64<math id="A1.SS1.SSS0.Px1.p2.1.m1" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>64 world area, a 9<math id="A1.SS1.SSS0.Px1.p2.2.m2" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>9 agent view, dense reward, <span id="A1.SS1.SSS0.Px1.p2.5.2" class="ltx_text ltx_font_typewriter">unique_items=True</span>, and <span id="A1.SS1.SSS0.Px1.p2.5.3" class="ltx_text ltx_font_typewriter">max_episode_steps=2000</span>.
+MiniHack covers eight tasks: Boxoban-Hard, Boxoban-Medium, MazeWalk-9<math id="A1.SS1.SSS0.Px1.p2.3.m3" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>9, MazeWalk-15<math id="A1.SS1.SSS0.Px1.p2.4.m4" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math>15, Corridor-R3, CorridorBattle-Dark, Quest-Easy, and Quest-Medium, with <span id="A1.SS1.SSS0.Px1.p2.5.4" class="ltx_text ltx_font_typewriter">max_episode_steps=100</span>, <span id="A1.SS1.SSS0.Px1.p2.5.1" class="ltx_text ltx_font_typewriter">penalty_step=<math id="A1.SS1.SSS0.Px1.p2.5.1.m1" class="ltx_Math" alttext="-0.01" display="inline" intent=":literal"><semantics><mrow><mo>−</mo><mn>0.01</mn></mrow><annotation encoding="application/x-tex">-0.01</annotation></semantics></math></span>.
+NetHack uses <span id="A1.SS1.SSS0.Px1.p2.5.5" class="ltx_text ltx_font_typewriter">max_episode_steps=100,000</span> and <span id="A1.SS1.SSS0.Px1.p2.5.6" class="ltx_text ltx_font_typewriter">no_progress_timeout=150</span>.
+For all three environments, <span id="A1.SS1.SSS0.Px1.p2.5.7" class="ltx_text ltx_font_typewriter">skip_more=True</span> suppresses the <span id="A1.SS1.SSS0.Px1.p2.5.8" class="ltx_text ltx_font_typewriter">--More--</span> prompt.</p>
+</div>
+</section>
+<section id="A1.SS1.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Evaluation seeds.</h4>
+
+<div id="A1.SS1.SSS0.Px2.p1" class="ltx_para">
+<p id="A1.SS1.SSS0.Px2.p1.4" class="ltx_p">We evaluate <span id="A1.SS1.SSS0.Px2.p1.4.1" class="ltx_text ltx_font_smallcaps">AutoMem</span> using a fixed list of 10 seeds, <math id="A1.SS1.SSS0.Px2.p1.1.m1" class="ltx_Math" alttext="[42,43,\ldots,51]" display="inline" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>42</mn><mo>,</mo><mn>43</mn><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mn>51</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[42,43,\ldots,51]</annotation></semantics></math>, paired with per-environment episode counts: 10 episodes for Crafter, 5 episodes per task for MiniHack (<math id="A1.SS1.SSS0.Px2.p1.2.m2" class="ltx_Math" alttext="5\times 8=40" display="inline" intent=":literal"><semantics><mrow><mrow><mn>5</mn><mo lspace="0.222em" rspace="0.222em">×</mo><mn>8</mn></mrow><mo>=</mo><mn>40</mn></mrow><annotation encoding="application/x-tex">5\times 8=40</annotation></semantics></math> episodes), and 5 episodes for NetHack.
+Episode index <math id="A1.SS1.SSS0.Px2.p1.3.m3" class="ltx_Math" alttext="i" display="inline" intent=":literal"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math> always uses seed <math id="A1.SS1.SSS0.Px2.p1.4.m4" class="ltx_Math" alttext="42+i" display="inline" intent=":literal"><semantics><mrow><mn>42</mn><mo>+</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">42+i</annotation></semantics></math>, so per-episode results are directly comparable across scaffold &amp; memory-trained versions.</p>
+</div>
+</section>
+</section>
+<section id="A1.SS2" class="ltx_subsection">
+<h3 class="ltx_title ltx_title_subsection">
+<span class="ltx_tag ltx_tag_subsection">A.2 </span>Outer-loops and training pipeline</h3>
+
+<section id="A1.SS2.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Outer-loop #1.</h4>
+
+<div id="A1.SS2.SSS0.Px1.p1" class="ltx_para">
+<p id="A1.SS2.SSS0.Px1.p1.1" class="ltx_p">The scaffold optimization is driven by Claude Opus 4.6 with <span id="A1.SS2.SSS0.Px1.p1.1.1" class="ltx_text ltx_font_typewriter">--effort max</span>. A revision is accepted only if its average progression on the same fixed eval seeds strictly exceeds the previous iteration’s. When a fresh revision fails the gate, up to 1 retry is run within the same session where the meta-LLM is given the failed evaluation log and asked to revise again. If that also fails, the meta-loop is restarted from a clean session.</p>
+</div>
+</section>
+<section id="A1.SS2.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Outer-loop #2.</h4>
+
+<div id="A1.SS2.SSS0.Px2.p1" class="ltx_para">
+<p id="A1.SS2.SSS0.Px2.p1.1" class="ltx_p">The pipeline runs in three stages: (a) training-data collection, (b) data-engine selection, and (c) LoRA finetuning followed by two-model inference deployment. Stages (a) and (b) operate on the final scaffold from Outer-loop #1 (V5 for Crafter, V4 for MiniHack, V2 for NetHack); the trained adapter is then deployed back into that same scaffold under the two-model inference architecture.</p>
+</div>
+<div id="A1.SS2.SSS0.Px2.p2" class="ltx_para">
+<p id="A1.SS2.SSS0.Px2.p2.2" class="ltx_p"><span id="A1.SS2.SSS0.Px2.p2.2.1" class="ltx_text ltx_font_bold">Stage (a) training-data collection</span>: The base model plays 100 episodes for Crafter, 50 episodes per task for MiniHack (50 <math id="A1.SS2.SSS0.Px2.p2.1.m1" class="ltx_Math" alttext="\times" display="inline" intent=":literal"><semantics><mo>×</mo><annotation encoding="application/x-tex">\times</annotation></semantics></math> 8 = 400 episodes total), and 50 episodes for NetHack under the final scaffold. Seeds are drawn randomly and explicitly disjoint from the 10 evaluation seeds <math id="A1.SS2.SSS0.Px2.p2.2.m2" class="ltx_Math" alttext="[42,\ldots,51]" display="inline" intent=":literal"><semantics><mrow><mo stretchy="false">[</mo><mn>42</mn><mo>,</mo><mi mathvariant="normal">…</mi><mo>,</mo><mn>51</mn><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[42,\ldots,51]</annotation></semantics></math>, so no train/eval seed contamination is possible.</p>
+</div>
+<div id="A1.SS2.SSS0.Px2.p3" class="ltx_para">
+<p id="A1.SS2.SSS0.Px2.p3.1" class="ltx_p"><span id="A1.SS2.SSS0.Px2.p3.1.1" class="ltx_text ltx_font_bold">Stage (b) training engine:</span> The training engine is driven by Claude Opus 4.7 with <span id="A1.SS2.SSS0.Px2.p3.1.2" class="ltx_text ltx_font_typewriter">--effort max</span>. Each iteration it (i) sets the dataset composition (<em id="A1.SS2.SSS0.Px2.p3.1.3" class="ltx_emph ltx_font_italic">e.g.,</em> which episodes to draw from, which standards to apply, minimum dataset size); (ii) selects training examples from the trace pool; and (iii) picks a LoRA training configuration. The trained model is then evaluated and the meta-LLM uses the eval trajectories to refine its choices on the next pass.
+Advisory per-environment configurations are given at the beginning of the loop as a starting prior. The training engine is free to deviate from these based on its own analysis.</p>
+</div>
+<div id="A1.SS2.SSS0.Px2.p4" class="ltx_para">
+<p id="A1.SS2.SSS0.Px2.p4.1" class="ltx_p">After the meta-LLM produces the selection, a deterministic postprocessing step is applied: format artifacts (code-block wrappers) are cleaned from assistant messages; examples containing only gameplay action commitment with no memory operations are filtered out, since they carry no memory-op training signal for the specialist; and for examples that contain both memory operations and an action commitment, the gameplay action part is trimmed, retaining only the memory-operation reasoning.
+The final training sets selected by the training engine contain 1597 examples for Crafter, 444 for MiniHack, and 800 for NetHack.</p>
+</div>
+<div id="A1.SS2.SSS0.Px2.p5" class="ltx_para">
+<p id="A1.SS2.SSS0.Px2.p5.1" class="ltx_p"><span id="A1.SS2.SSS0.Px2.p5.1.1" class="ltx_text ltx_font_bold">Stage (c) LoRA training.</span> We use <span id="A1.SS2.SSS0.Px2.p5.1.2" class="ltx_text ltx_font_typewriter">cutoff_len=16384</span>, bf16 precision, AdamW, and a cosine learning-rate schedule with <span id="A1.SS2.SSS0.Px2.p5.1.3" class="ltx_text ltx_font_typewriter">warmup_ratio=0.05</span>. We run training on two GPUs using DeepSpeed ZeRO-3. The LoRA hyperparameters differ across environments, and we report the per-environment configuration used to produce the deployed adapter:</p>
+<ul id="A1.I1" class="ltx_itemize">
+<li id="A1.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A1.I1.i1.p1" class="ltx_para">
+<p id="A1.I1.i1.p1.1" class="ltx_p"><span id="A1.I1.i1.p1.1.1" class="ltx_text ltx_font_bold">Crafter:</span> <span id="A1.I1.i1.p1.1.2" class="ltx_text ltx_font_typewriter">lora_rank=256</span>, <span id="A1.I1.i1.p1.1.3" class="ltx_text ltx_font_typewriter">lora_alpha=512</span>, <span id="A1.I1.i1.p1.1.4" class="ltx_text ltx_font_typewriter">lora_dropout=0.0</span>, <span id="A1.I1.i1.p1.1.5" class="ltx_text ltx_font_typewriter">effective_batch_size=32</span>, <span id="A1.I1.i1.p1.1.6" class="ltx_text ltx_font_typewriter">learning_rate=5e-5</span>, <span id="A1.I1.i1.p1.1.7" class="ltx_text ltx_font_typewriter">num_train_epochs=4</span>, <span id="A1.I1.i1.p1.1.8" class="ltx_text ltx_font_typewriter">target_modules=attention-only</span>.</p>
+</div>
+</li>
+<li id="A1.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A1.I1.i2.p1" class="ltx_para">
+<p id="A1.I1.i2.p1.1" class="ltx_p"><span id="A1.I1.i2.p1.1.1" class="ltx_text ltx_font_bold">MiniHack:</span> <span id="A1.I1.i2.p1.1.2" class="ltx_text ltx_font_typewriter">lora_rank=128</span>, <span id="A1.I1.i2.p1.1.3" class="ltx_text ltx_font_typewriter">lora_alpha=256</span>, <span id="A1.I1.i2.p1.1.4" class="ltx_text ltx_font_typewriter">lora_dropout=0.0</span>, <span id="A1.I1.i2.p1.1.5" class="ltx_text ltx_font_typewriter">effective_batch_size=16</span>, <span id="A1.I1.i2.p1.1.6" class="ltx_text ltx_font_typewriter">learning_rate=5e-5</span>, <span id="A1.I1.i2.p1.1.7" class="ltx_text ltx_font_typewriter">num_train_epochs=3</span>.</p>
+</div>
+</li>
+<li id="A1.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A1.I1.i3.p1" class="ltx_para">
+<p id="A1.I1.i3.p1.1" class="ltx_p"><span id="A1.I1.i3.p1.1.1" class="ltx_text ltx_font_bold">NetHack:</span> <span id="A1.I1.i3.p1.1.2" class="ltx_text ltx_font_typewriter">lora_rank=256</span>, <span id="A1.I1.i3.p1.1.3" class="ltx_text ltx_font_typewriter">lora_alpha=512</span>, <span id="A1.I1.i3.p1.1.4" class="ltx_text ltx_font_typewriter">lora_dropout=0.0</span>, <span id="A1.I1.i3.p1.1.5" class="ltx_text ltx_font_typewriter">effective_batch_size=32</span>, <span id="A1.I1.i3.p1.1.6" class="ltx_text ltx_font_typewriter">learning_rate=5e-5</span>, <span id="A1.I1.i3.p1.1.7" class="ltx_text ltx_font_typewriter">num_train_epochs=1</span>.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+<section id="A2" class="ltx_appendix">
+<h2 class="ltx_title ltx_title_appendix">
+<span class="ltx_tag ltx_tag_appendix">Appendix B </span>Memory-scaffold evolution by iteration</h2>
+
+<div id="A2.p1" class="ltx_para">
+<p id="A2.p1.1" class="ltx_p">This appendix lists the main changes Outer-loop #1 made to the agent scaffold at each iteration, for all three environments. Every change edits the agent’s prompts, its memory-file layout, or the automatic hints the scaffold computes from the observation and shows the agent; the two-phase <span id="A2.p1.1.1" class="ltx_text ltx_font_smallcaps">LOG</span>/<span id="A2.p1.1.2" class="ltx_text ltx_font_smallcaps">PLAN</span> loop and the memory-operation interface are otherwise unchanged.</p>
+</div>
+<section id="A2.SS0.SSS0.Px1" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">Crafter (v0 <math id="A2.SS0.SSS0.Px1.1.m1" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v5).</h4>
+
+<div id="A2.SS0.SSS0.Px1.p1" class="ltx_para">
+<ul id="A2.I1" class="ltx_itemize">
+<li id="A2.I1.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I1.i1.p1" class="ltx_para">
+<p id="A2.I1.i1.p1.1" class="ltx_p"><span id="A2.I1.i1.p1.1.1" class="ltx_text ltx_font_bold">v1:</span> Pre-load <span id="A2.I1.i1.p1.1.2" class="ltx_text ltx_font_typewriter">game_knowledge.txt</span> with the Crafter crafting tree and survival/placement rules, and replace the empty <span id="A2.I1.i1.p1.1.3" class="ltx_text ltx_font_typewriter">strategy.txt</span> with a <span id="A2.I1.i1.p1.1.4" class="ltx_text ltx_font_typewriter">goals.txt</span> template that the agent keeps up to date in every planning prompt. Warn automatically when health, food, or drink runs low, or when an action keeps failing.</p>
+</div>
+</li>
+<li id="A2.I1.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I1.i2.p1" class="ltx_para">
+<p id="A2.I1.i2.p1.1" class="ltx_p"><span id="A2.I1.i2.p1.1.1" class="ltx_text ltx_font_bold">v2:</span> State the inventory change since the previous step in the <span id="A2.I1.i2.p1.1.2" class="ltx_text ltx_font_smallcaps">LOG</span> prompt (<em id="A2.I1.i2.p1.1.3" class="ltx_emph ltx_font_italic">e.g.,</em> “gained +1 wood”). Add a 22-item achievement checklist (<span id="A2.I1.i2.p1.1.4" class="ltx_text ltx_font_typewriter">progress.txt</span>), and detect back-and-forth movement loops.</p>
+</div>
+</li>
+<li id="A2.I1.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I1.i3.p1" class="ltx_para">
+<p id="A2.I1.i3.p1.1" class="ltx_p"><span id="A2.I1.i3.p1.1.1" class="ltx_text ltx_font_bold">v3:</span> For crafting near a table: escalate the warning as a craft keeps failing; after a table or furnace is placed, list what can now be built; when a table is in view, list the specific items the current inventory has the materials to make.</p>
+</div>
+</li>
+<li id="A2.I1.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I1.i4.p1" class="ltx_para">
+<p id="A2.I1.i4.p1.1" class="ltx_p"><span id="A2.I1.i4.p1.1.1" class="ltx_text ltx_font_bold">v4:</span> From the inventory, estimate the next crafting step and indicate which resource to gather next. Warn when health drops or a hostile is nearby, and list untried one-step achievements.</p>
+</div>
+</li>
+<li id="A2.I1.i5" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I1.i5.p1" class="ltx_para">
+<p id="A2.I1.i5.p1.1" class="ltx_p"><span id="A2.I1.i5.p1.1.1" class="ltx_text ltx_font_bold">v5:</span> Before a craft or place action is committed, verify the agent has the required materials and otherwise block the action, so it stops attempting impossible crafts. Also block a sleep action next to a monster, reject a <span id="A2.I1.i5.p1.1.2" class="ltx_text ltx_font_typewriter">Noop</span>-action once it has repeated several times, and warn when the inventory has not grown for many steps.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<section id="A2.SS0.SSS0.Px2" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">MiniHack (v0 <math id="A2.SS0.SSS0.Px2.1.m1" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v4).</h4>
+
+<div id="A2.SS0.SSS0.Px2.p1" class="ltx_para">
+<ul id="A2.I2" class="ltx_itemize">
+<li id="A2.I2.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I2.i1.p1" class="ltx_para">
+<p id="A2.I2.i1.p1.1" class="ltx_p"><span id="A2.I2.i1.p1.1.1" class="ltx_text ltx_font_bold">v1:</span> Track the agent’s recent actions and warn it when it paces back and forth or repeats the same move. Provide per-task rules (<em id="A2.I2.i1.p1.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> a dedicated rule sheet for the Boxoban push puzzles).</p>
+</div>
+</li>
+<li id="A2.I2.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I2.i2.p1" class="ltx_para">
+<p id="A2.I2.i2.p1.1" class="ltx_p"><span id="A2.I2.i2.p1.1.1" class="ltx_text ltx_font_bold">v2:</span> Record which map cells the agent has already visited and report which neighbouring directions are still unexplored. When the game asks a follow-up question (<em id="A2.I2.i2.p1.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> “In what direction?”), prepend a directive to reply with a single direction word. Also auto-load the agent’s most recent action-log entries into its prompt.</p>
+</div>
+</li>
+<li id="A2.I2.i3" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I2.i3.p1" class="ltx_para">
+<p id="A2.I2.i3.p1.1" class="ltx_p"><span id="A2.I2.i3.p1.1.1" class="ltx_text ltx_font_bold">v3:</span> When the goal staircase is visible on the map, add a planning-prompt directive toward it. When the agent revisits the same cell, add a directive toward an unexplored passable direction. When the game asks a direction question, replace the long planning prompt with a short direction-only one.</p>
+</div>
+</li>
+<li id="A2.I2.i4" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I2.i4.p1" class="ltx_para">
+<p id="A2.I2.i4.p1.1" class="ltx_p"><span id="A2.I2.i4.p1.1.1" class="ltx_text ltx_font_bold">v4:</span> Fix the map-reading the hints above depend on: parse passable directions correctly, read tiles per task (<em id="A2.I2.i4.p1.1.2" class="ltx_emph ltx_font_italic">e.g.,</em> the <span id="A2.I2.i4.p1.1.3" class="ltx_text ltx_font_typewriter">#</span> symbol is an impassable bar in Boxoban), switch to another direction when a directed move leaves the position unchanged (<em id="A2.I2.i4.p1.1.4" class="ltx_emph ltx_font_italic">e.g.,</em> hits a wall), route around lava, and flag nearby doors.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<section id="A2.SS0.SSS0.Px3" class="ltx_paragraph">
+<h4 class="ltx_title ltx_title_paragraph">NetHack (v0 <math id="A2.SS0.SSS0.Px3.1.m1" class="ltx_Math" alttext="\to" display="inline" intent=":literal"><semantics><mo stretchy="false">→</mo><annotation encoding="application/x-tex">\to</annotation></semantics></math> v2).</h4>
+
+<div id="A2.SS0.SSS0.Px3.p1" class="ltx_para">
+<ul id="A2.I3" class="ltx_itemize">
+<li id="A2.I3.i1" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I3.i1.p1" class="ltx_para">
+<p id="A2.I3.i1.p1.1" class="ltx_p"><span id="A2.I3.i1.p1.1.1" class="ltx_text ltx_font_bold">v1:</span> Add the <span id="A2.I3.i1.p1.1.2" class="ltx_text ltx_font_typewriter">&lt;|UPSERT_MAP|&gt;</span> operation, which keeps one entry per map coordinate so a new sighting of a tile overwrites the old entry instead of piling up duplicates. Automatically trim the action log, pre-fill <span id="A2.I3.i1.p1.1.3" class="ltx_text ltx_font_typewriter">strategy.txt</span> with the main goal and safety rules, and expand the game rules (<em id="A2.I3.i1.p1.1.4" class="ltx_emph ltx_font_italic">e.g.,</em> avoiding unsafe corpses).</p>
+</div>
+</li>
+<li id="A2.I3.i2" class="ltx_item" style="list-style-type:none;">
+<span class="ltx_tag ltx_tag_item">•</span> 
+<div id="A2.I3.i2.p1" class="ltx_para">
+<p id="A2.I3.i2.p1.1" class="ltx_p"><span id="A2.I3.i2.p1.1.1" class="ltx_text ltx_font_bold">v2:</span> When the agent is on or next to a downward staircase, issue a high-priority directive to descend. Maintain two memory files from the observation every step, a <span id="A2.I3.i2.p1.1.2" class="ltx_text ltx_font_typewriter">current_status.txt</span> and an up-to-date <span id="A2.I3.i2.p1.1.3" class="ltx_text ltx_font_typewriter">inventory.txt</span>. Warn on back-and-forth movement.</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+</section>
+</article>
+</div>
+</div>
+<footer class="arxiv-html-footer">
+  <div class="ltx_page_logo">
+    Experimental support, please
+    <a href="./2607.01224v1/__stdout.txt" class="ltx_ref"
+    target="_blank" rel="nofollow">view the build logs</a>
+    for errors. Generated by
+    <a href="https://math.nist.gov/~BMiller/LaTeXML/" target="_blank" class="ltx_ref ltx_LaTeXML_logo">
+      <span style="letter-spacing: -0.2em; margin-right: 0.1em;">
+        L
+        <span style="font-size: 70%; position: relative; bottom: 2.2pt;">A</span>
+        T
+        <span style="position: relative; bottom: -0.4ex;">E</span>
+      </span>
+      <span class="ltx_font_smallcaps">xml</span>
+      <img alt="[LOGO]"
+        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAOCAYAAAD5YeaVAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9wKExQZLWTEaOUAAAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAdpJREFUKM9tkL+L2nAARz9fPZNCKFapUn8kyI0e4iRHSR1Kb8ng0lJw6FYHFwv2LwhOpcWxTjeUunYqOmqd6hEoRDhtDWdA8ApRYsSUCDHNt5ul13vz4w0vWCgUnnEc975arX6ORqN3VqtVZbfbTQC4uEHANM3jSqXymFI6yWazP2KxWAXAL9zCUa1Wy2tXVxheKA9YNoR8Pt+aTqe4FVVVvz05O6MBhqUIBGk8Hn8HAOVy+T+XLJfLS4ZhTiRJgqIoVBRFIoric47jPnmeB1mW/9rr9ZpSSn3Lsmir1fJZlqWlUonKsvwWwD8ymc/nXwVBeLjf7xEKhdBut9Hr9WgmkyGEkJwsy5eHG5vN5g0AKIoCAEgkEkin0wQAfN9/cXPdheu6P33fBwB4ngcAcByHJpPJl+fn54mD3Gg0NrquXxeLRQAAwzAYj8cwTZPwPH9/sVg8PXweDAauqqr2cDjEer1GJBLBZDJBs9mE4zjwfZ85lAGg2+06hmGgXq+j3+/DsixYlgVN03a9Xu8jgCNCyIegIAgx13Vfd7vdu+FweG8YRkjXdWy329+dTgeSJD3ieZ7RNO0VAXAPwDEAO5VKndi2fWrb9jWl9Esul6PZbDY9Go1OZ7PZ9z/lyuD3OozU2wAAAABJRU5ErkJggg==">
+    </a>.
+  </div>
+  <div class="keyboard-glossary">
+    <h2>Instructions for reporting errors</h2>
+    <p>We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below:</p>
+    <ul>
+      <li>Click the "Report Issue" <span class="mobile-only">(<svg role="presentation"
+            style="display: inline-block; vertical-align: middle; fill: var(--text-color);" aria-hidden="true"
+            height="1em" viewBox="0 0 640 640">
+            <path
+              d="M224 160C224 107 267 64 320 64C373 64 416 107 416 160L416 163.6C416 179.3 403.3 192 387.6 192L252.5 192C236.8 192 224.1 179.3 224.1 163.6L224.1 160zM569.6 172.8C580.2 186.9 577.3 207 563.2 217.6L465.4 290.9C470.7 299.8 474.7 309.6 477.2 320L576 320C593.7 320 608 334.3 608 352C608 369.7 593.7 384 576 384L480 384L480 416C480 418.6 479.9 421.3 479.8 423.9L563.2 486.4C577.3 497 580.2 517.1 569.6 531.2C559 545.3 538.9 548.2 524.8 537.6L461.7 490.3C438.5 534.5 395.2 566.5 344 574.2L344 344C344 330.7 333.3 320 320 320C306.7 320 296 330.7 296 344L296 574.2C244.8 566.5 201.5 534.5 178.3 490.3L115.2 537.6C101.1 548.2 81 545.3 70.4 531.2C59.8 517.1 62.7 497 76.8 486.4L160.2 423.9C160.1 421.3 160 418.7 160 416L160 384L64 384C46.3 384 32 369.7 32 352C32 334.3 46.3 320 64 320L162.8 320C165.3 309.6 169.3 299.8 174.6 290.9L76.8 217.6C62.7 207 59.8 186.9 70.4 172.8C81 158.7 101.1 155.8 115.2 166.4L224 248C236.3 242.9 249.8 240 264 240L376 240C390.2 240 403.7 242.8 416 248L524.8 166.4C538.9 155.8 559 158.7 569.6 172.8z" />
+          </svg>)</span> button, located in the page header.</li>
+    </ul>
+    <p><strong>Tip:</strong> You can select the relevant text first, to include it in your report.</p>
+    <p>Our team has already identified <a class="ltx_ref" href="https://github.com/arXiv/html_feedback/issues"
+        target="_blank">the following issues</a>. We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all.</p>
+    <p>Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a <a
+        class="ltx_ref" href="https://github.com/brucemiller/LaTeXML/wiki/Porting-LaTeX-packages-for-LaTeXML"
+        target="_blank">list of packages that need conversion</a>, and welcome <a class="ltx_ref"
+        href="https://github.com/brucemiller/LaTeXML/issues" target="_blank">developer contributions</a>.</p>
+  </div>
+</footer><footer class="ds-site-footer">
+  <div class="ds-site-footer-grid">
+    <div class="ds-site-footer-main">
+      <div class="ds-site-footer-ack">
+        We gratefully acknowledge support from
+        our <strong>major funders</strong>,
+        <a href="https://info.arxiv.org/about/ourmembers.html"><strong>member institutions</strong></a><span class="ack-member-inline" hidden>, <strong></strong></span>,
+        and all contributors.
+      </div>
+      <nav class="ds-site-footer-links" aria-label="Site navigation">
+        <a href="https://info.arxiv.org/about">About</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help">Help</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help/contact.html">Contact</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help/subscribe">Subscribe</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help/license/index.html">Copyright</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help/policies/privacy_policy.html">Privacy</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://info.arxiv.org/help/web_accessibility.html">Accessibility</a>
+        <span class="ds-site-footer-sep" aria-hidden="true">&middot;</span>
+        <a href="https://status.arxiv.org" target="_blank" rel="noopener noreferrer">Operational Status<span class="is-sr-only"> (opens in new tab)</span></a>
+      </nav>
+    </div>
+
+    <div class="ds-site-footer-funders" aria-label="Major funders">
+      <div class="ds-site-footer-funders-label">Major funding support from</div>
+      <div class="ds-site-footer-funders-logos">
+        <img class="ds-funder-logo" src="/static/base/1.0.1/images/funders/simons-foundation.png" alt="Simons Foundation">
+        <img class="ds-funder-logo" src="/static/base/1.0.1/images/funders/schmidt-sciences.png" alt="Schmidt Sciences">
+      </div>
+    </div>
+  </div>
+</footer><div id="fixed-buttons-container">
+  <a id="disable-reading-mode-btn" class="header-button" href="javascript:toggleReadingMode();"
+    title="Disable reading mode, show header and footer">
+    <svg role="presentation" height="1.25rem"
+      viewBox="0 0 448 512"><!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.-->
+      <path
+        d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z" />
+    </svg>
+  </a>
+</div></body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 论文精读 · 2026-07-09 · MIPU：LLM 强化学习中的"训练—推理不匹配"</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0b1020;
+    --panel:#141a30;
+    --panel-2:#1b2242;
+    --ink:#e8ecf5;
+    --ink-dim:#a9b3cf;
+    --accent:#4f8bff;
+    --accent-2:#7c5cff;
+    --good:#3ddc97;
+    --bad:#ff6b6b;
+    --warn:#ffb648;
+    --line:rgba(255,255,255,.08);
+    --pi:#4f8bff;   /* training policy π (蓝) */
+    --mu:#ff6b6b;   /* inference policy μ (红) */
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.7}
+  .wrap{max-width:1180px;margin:0 auto;padding:32px 24px 80px}
+  header.hero{
+    background:radial-gradient(1200px 400px at 10% -10%, rgba(79,139,255,.35), transparent 60%),
+               radial-gradient(900px 500px at 120% 10%, rgba(124,92,255,.28), transparent 60%),
+               linear-gradient(180deg,#0f1530,#0b1020);
+    border:1px solid var(--line);border-radius:20px;padding:36px 32px;margin-bottom:28px;
+    position:relative;overflow:hidden
+  }
+  .tag{display:inline-block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim);border:1px solid var(--line);padding:4px 10px;border-radius:999px;margin-right:6px}
+  .tag.hot{color:#ffd591;border-color:rgba(255,182,72,.35);background:rgba(255,182,72,.08)}
+  h1{font-size:30px;margin:14px 0 8px;letter-spacing:.2px}
+  h1 small{color:var(--ink-dim);font-weight:500;font-size:16px;display:block;margin-top:6px}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 22px;color:var(--ink-dim);font-size:14px;margin-top:14px}
+  .meta b{color:var(--ink);font-weight:600}
+  .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+  .stat{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:14px}
+  .stat .k{font-size:12px;color:var(--ink-dim);letter-spacing:.08em;text-transform:uppercase}
+  .stat .v{font-size:22px;font-weight:700;margin-top:6px}
+  .stat .v.good{color:var(--good)}
+  .stat .v.warn{color:var(--warn)}
+  section{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin-bottom:22px}
+  section h2{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px}
+  section h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent-2));font-size:14px;font-weight:700;color:#fff}
+  section h3{margin:22px 0 10px;font-size:16px;color:#dbe3fa}
+  p{color:#dfe4f5;margin:8px 0}
+  .lead{font-size:16px;color:#cfd6ee}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .card{background:var(--panel-2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .callout{background:linear-gradient(180deg,rgba(79,139,255,.10),rgba(124,92,255,.06));border:1px solid rgba(124,92,255,.25);border-radius:14px;padding:16px 18px;margin:14px 0}
+  .callout.warn{background:linear-gradient(180deg,rgba(255,182,72,.10),rgba(255,107,107,.05));border-color:rgba(255,182,72,.35)}
+  .callout.good{background:linear-gradient(180deg,rgba(61,220,151,.10),rgba(79,139,255,.05));border-color:rgba(61,220,151,.35)}
+  code, .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:rgba(255,255,255,.05);padding:2px 6px;border-radius:6px;font-size:13px}
+  .pi{color:var(--pi);font-weight:700}
+  .mu{color:var(--mu);font-weight:700}
+  .eq{background:#0d1330;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px;overflow-x:auto;white-space:nowrap}
+  .flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:stretch;gap:10px;margin:16px 0}
+  .flow .box{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13.5px}
+  .flow .arr{display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:22px}
+  .flow .box.pi{border-color:rgba(79,139,255,.35);background:linear-gradient(180deg,rgba(79,139,255,.10),transparent)}
+  .flow .box.mu{border-color:rgba(255,107,107,.35);background:linear-gradient(180deg,rgba(255,107,107,.10),transparent)}
+  .flow .box.mix{border-color:rgba(124,92,255,.35);background:linear-gradient(180deg,rgba(124,92,255,.10),transparent)}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:9px 8px;text-align:right}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--ink-dim);font-weight:600;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+  tr.best td{background:rgba(61,220,151,.06)}
+  tr.best td:first-child{color:var(--good);font-weight:700}
+  .badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+  .badge.ok{color:var(--good);border-color:rgba(61,220,151,.4);background:rgba(61,220,151,.08)}
+  .badge.no{color:var(--bad);border-color:rgba(255,107,107,.4);background:rgba(255,107,107,.08)}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 14px;font-size:14px}
+  .kv .k{color:var(--ink-dim)}
+  .chart-wrap{background:#0d1330;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+  .chart-title{font-size:13px;color:var(--ink-dim);margin-bottom:6px}
+  .pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .pros-cons ul{margin:6px 0 0 18px;padding:0}
+  .pros-cons li{margin:6px 0;color:#dfe4f5}
+  .footer-note{color:var(--ink-dim);font-size:13px;margin-top:12px}
+  .confidence{display:inline-flex;gap:6px;align-items:center;font-size:12px;color:var(--ink-dim);margin-left:8px}
+  .conf-h{color:var(--good)}
+  .conf-m{color:var(--warn)}
+  .conf-l{color:var(--bad)}
+  a{color:#8fb3ff;text-decoration:none;border-bottom:1px dashed rgba(143,179,255,.4)}
+  a:hover{color:#c8d8ff}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--ink-dim);font-size:13px;margin-top:8px}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  @media(max-width:820px){
+    .stat-row{grid-template-columns:repeat(2,1fr)}
+    .grid-2{grid-template-columns:1fr}
+    .flow{grid-template-columns:1fr}
+    .flow .arr{transform:rotate(90deg)}
+    .pros-cons{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<header class="hero">
+  <span class="tag hot">今日精选</span>
+  <span class="tag">arXiv · cs.LG</span>
+  <span class="tag">Trending #2 on HuggingFace (07-06)</span>
+  <span class="tag">LLM 强化学习</span>
+  <h1>
+    "训练的胜利只是海市蜃楼"——重新定义 LLM 强化学习的真正目标
+    <small>The Mirage of Optimizing Training Policies: Monotonic Inference Policies as the Real Objective for LLM Reinforcement Learning</small>
+  </h1>
+  <div class="meta">
+    <span><b>作者</b>：Jing Liang, Hongyao Tang, Yi Ma, Yancheng He 等 12 人</span>
+    <span><b>机构</b>：天津大学 · 阿里巴巴</span>
+    <span><b>发布</b>：2026-06-28（arXiv v1）</span>
+    <span><b>arXiv</b>：<a href="https://arxiv.org/abs/2606.29526" target="_blank">2606.29526</a></span>
+    <span><b>项目页</b>：<a href="https://anitaleungxx.github.io/MIPU/" target="_blank">MIPU Project</a></span>
+  </div>
+  <div class="stat-row">
+    <div class="stat"><div class="k">核心问题</div><div class="v">训练-推理不匹配</div></div>
+    <div class="stat"><div class="k">新目标函数</div><div class="v">MIPI</div></div>
+    <div class="stat"><div class="k">Qwen3-4B 平均↑</div><div class="v good">+2.29 pt</div></div>
+    <div class="stat"><div class="k">训练稳定性</div><div class="v good">未崩溃 ✓</div></div>
+  </div>
+</header>
+
+<!-- TL;DR -->
+<section>
+  <h2><span class="num">TL</span>一句话结论</h2>
+  <p class="lead">
+    这篇论文指出：LLM 强化学习里所有人都在优化"训练引擎里的策略 <span class="pi">π</span>"，但实际部署跑推理的是另一套引擎里的策略 <span class="mu">μ</span>——由于精度、后端、量化差异，两者就算参数同步、给同一条轨迹算出的概率也不一样。所以哪怕训练侧看似进步，推理侧完全可能没提升甚至恶化。作者把"推理策略单调提升"（<b>MIPI</b>）作为真正的优化目标，并给出两步算法 <b>MIPU</b>：先做 sampler-referenced 更新，再用推理侧的 gap 代理筛掉"训练涨、推理没涨"的更新。
+    在 <b>FP8 量化推理</b>（高不匹配场景）下，Qwen3-1.7B/4B 的数学推理平均分同时提升且训练不再崩溃。
+  </p>
+  <div class="callout">
+    <b>为什么值得读？</b>过去半年 RLHF/RLVR 领域几乎所有工作都在调整重要性采样、裁剪、学习率来"救训练"。这篇文章第一个明确戳破：<b>你救的策略根本不是你部署的策略</b>。这是目标层面（objective-level）而非技巧层面（trick-level）的重定义，视角新，可移植性强。
+  </div>
+</section>
+
+<!-- 问题 -->
+<section>
+  <h2><span class="num">1</span>问题：什么是"训练—推理不匹配"？</h2>
+  <p>现代 LLM RL 把生成和梯度计算分成两条工程链路：</p>
+  <div class="flow">
+    <div class="box mu">
+      <b>推理引擎 <span class="mu">μ</span></b><br>
+      vLLM / SGLang<br>
+      为吞吐做了 FP8 量化、KV-cache、连续批处理<br>
+      <span class="footer-note">→ 负责 rollout（采样轨迹）</span>
+    </div>
+    <div class="arr">→</div>
+    <div class="box mix">
+      <b>参数同步</b><br>
+      每个 step 把权重从训练侧刷到推理侧<br>
+      <span class="footer-note">同一份参数</span>
+    </div>
+    <div class="arr">→</div>
+    <div class="box pi">
+      <b>训练引擎 <span class="pi">π</span></b><br>
+      FSDP / Megatron<br>
+      BF16/FP32 高精度反传<br>
+      <span class="footer-note">→ 计算 log-prob 和梯度</span>
+    </div>
+  </div>
+  <p>问题在于：<b>参数相同 ≠ 概率相同</b>。同一条轨迹 y，两个引擎给出的对数似然会不同。</p>
+  <div class="eq">
+    <span class="pi">π<sub>k</sub></span>(y|x) &nbsp;≠&nbsp; <span class="mu">μ<sub>k</sub></span>(y|x) &nbsp; <span style="color:var(--ink-dim)">（即使参数同步）</span>
+  </div>
+  <p>这是一种<b>永远存在</b>的 off-policyness：数据是 <span class="mu">μ</span> 采的，但训练算法把它当作 <span class="pi">π</span> 采的来更新，会持续"投毒"训练。FP8 量化让这个 gap 尤其大。</p>
+</section>
+
+<!-- 洞察 -->
+<section>
+  <h2><span class="num">2</span>核心洞察：过去的工作都在优化错的对象</h2>
+  <p>过去一年主流的解决方案有三类：</p>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-top:0">修 off-policyness 的 tricks</h3>
+      <ul>
+        <li><b>MIS / TIS</b>：修正重要性采样比</li>
+        <li><b>样本过滤</b>：扔掉不稳定的 rollout</li>
+        <li><b>LR-decay</b>：降低学习率抑制爆炸</li>
+        <li><b>系统层</b>：缩小两个引擎的实现差异</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">它们的共同盲区</h3>
+      <p>都在"稳住训练策略 <span class="pi">π</span>"，但假设 <span class="pi">π</span> 涨 = <span class="mu">μ</span> 涨——这是海市蜃楼。作者形式化地指出：</p>
+      <div class="eq" style="white-space:normal">
+        J(<span class="pi">π<sub>k+1</sub></span>) − J(<span class="pi">π<sub>k</sub></span>) ≥ 0 &nbsp;⟹̸&nbsp; J(<span class="mu">μ<sub>k+1</sub></span>) − J(<span class="mu">μ<sub>k</sub></span>) ≥ 0
+      </div>
+    </div>
+  </div>
+  <div class="callout warn">
+    <b>关键设问</b>：真正该问的不是"这次更新让训练策略更好了吗？"，而是——<br>
+    <b>"参数同步过去之后，推理策略真的变好了吗？"</b>
+  </div>
+</section>
+
+<!-- MIPI -->
+<section>
+  <h2><span class="num">3</span>MIPI：新的优化目标</h2>
+  <p>作者提出把<b>推理策略的单调提升</b>作为真正目标：</p>
+  <div class="eq">
+    max &nbsp; J(<span class="mu">μ<sub>k+1</sub></span>) − J(<span class="mu">μ<sub>k</sub></span>)
+  </div>
+  <p>关键的数学动作是把它拆成三段可解释项：</p>
+  <div class="eq" style="white-space:normal">
+    J(<span class="mu">μ<sub>k+1</sub></span>) − J(<span class="mu">μ<sub>k</sub></span>) &nbsp;=&nbsp;
+    <b style="color:#ffb648">①</b> [J(<span class="mu">μ<sub>k+1</sub></span>) − J(<span class="pi">π<sub>k+1</sub></span>)] &nbsp;+&nbsp;
+    <b style="color:#4f8bff">②</b> [J(<span class="pi">π<sub>k+1</sub></span>) − J(<span class="pi">π<sub>k</sub></span>)] &nbsp;+&nbsp;
+    <b style="color:#7c5cff">③</b> [J(<span class="pi">π<sub>k</sub></span>) − J(<span class="mu">μ<sub>k</sub></span>)]
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-top:0"><span style="color:#4f8bff">②</span> + <span style="color:#7c5cff">③</span> = 训练侧更新</h3>
+      <p>两项望远镜求和后等于 J(<span class="pi">π<sub>k+1</sub></span>) − J(<span class="mu">μ<sub>k</sub></span>)——即"用 sampler <span class="mu">μ<sub>k</sub></span> 作参考"的更新，而不是用旧的 <span class="pi">π<sub>k</sub></span>。<br>
+      → 对应 <b>Step 1</b>：Sampler-Referenced Policy Update。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0"><span style="color:#ffb648">①</span> = 同步后的推理 gap</h3>
+      <p>训练更新完，把参数刷到推理侧，检查 <span class="mu">μ<sub>k+1</sub></span> 相对 <span class="pi">π<sub>k+1</sub></span> 有没有被"打回原形"。<br>
+      → 对应 <b>Step 2</b>：Inference-Gap-Aware Acceptance。</p>
+    </div>
+  </div>
+</section>
+
+<!-- MIPU -->
+<section>
+  <h2><span class="num">4</span>MIPU 算法：两步实现</h2>
+
+  <h3>Step 1 — Sampler-Referenced Policy Update</h3>
+  <p>关键在于把重要性权重因式分解为"预更新失配 <span class="mono">w<sup>k</sup></span>"和"当前更新 <span class="mono">r(θ)</span>"两部分，只裁 <span class="mono">r(θ)</span>，但对 <span class="mono">w<sup>k</sup></span> 做<b>截断（TIS）</b>控制方差：</p>
+  <div class="eq">
+    ρ(θ) = <b>w<sup>k</sup></b> · <b>r(θ)</b>, &nbsp; w̄<sup>k</sup> = min(w<sup>k</sup>, w<sub>max</sub>=2)
+  </div>
+  <p class="footer-note">作者比较了 IS / MIS / TIS 三种变体，TIS 在稳定性 vs. 性能上取得最佳权衡。</p>
+
+  <h3>Step 2 — Inference-Gap-Aware Update Acceptance</h3>
+  <p>把参数同步过去后，在验证集上估计"post-update 推理 gap"的代理量 <span class="mono">T̂<sub>post</sub></span>。逻辑很干脆：</p>
+  <div class="flow">
+    <div class="box pi">训练侧更新 <span class="pi">π<sub>k</sub></span> → <span class="pi">π<sub>k+1</sub></span></div>
+    <div class="arr">→</div>
+    <div class="box mix">同步权重<br><span class="mu">μ<sub>k+1</sub></span> ← <span class="pi">π<sub>k+1</sub></span></div>
+    <div class="arr">→</div>
+    <div class="box mu">
+      估计 T̂<sub>post</sub><br>
+      <span class="badge ok">≥ −c → 接受</span> <span class="badge no">&lt; −c → 回滚</span>
+    </div>
+  </div>
+  <p>只有"训练侧涨、同步后推理侧也真的涨"的更新才被保留。这样保证的是<b>真部署策略</b>的单调提升。</p>
+</section>
+
+<!-- 结果 -->
+<section>
+  <h2><span class="num">5</span>实验结果（FP8 量化推理，高不匹配场景）</h2>
+  <p>模型：Qwen3-1.7B / Qwen3-4B。基准：MATH500、AIME24、Olympiad、Minerva、AMC23（数学推理）。</p>
+
+  <h3>主表：Pass@1 (%)</h3>
+  <table>
+    <thead><tr><th>Qwen3-4B</th><th>MATH</th><th>AIME</th><th>Olymp.</th><th>Minerva</th><th>AMC23</th><th>Avg</th><th>稳定</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td>89.34</td><td>42.00</td><td>64.89</td><td>43.39</td><td>82.50</td><td>64.42</td><td><span class="badge no">崩</span></td></tr>
+      <tr><td>MIS</td><td>90.95</td><td>38.44</td><td>62.50</td><td>44.12</td><td>81.09</td><td>63.42</td><td><span class="badge no">崩</span></td></tr>
+      <tr><td>LR-decay</td><td>90.34</td><td>44.00</td><td>67.26</td><td>43.75</td><td>82.97</td><td>65.66</td><td><span class="badge no">崩</span></td></tr>
+      <tr class="best"><td>MIPU (本文)</td><td><b>91.15</b></td><td>43.56</td><td><b>67.86</b></td><td><b>45.96</b></td><td><b>85.00</b></td><td><b>66.71</b></td><td><span class="badge ok">✓</span></td></tr>
+    </tbody>
+    <thead><tr><th>Qwen3-1.7B</th><th>MATH</th><th>AIME</th><th>Olymp.</th><th>Minerva</th><th>AMC23</th><th>Avg</th><th>稳定</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td>83.10</td><td>25.33</td><td>56.55</td><td>31.68</td><td>57.66</td><td>50.86</td><td><span class="badge no">崩</span></td></tr>
+      <tr><td>MIS</td><td>81.29</td><td>24.67</td><td>58.33</td><td>34.19</td><td>60.16</td><td>51.73</td><td><span class="badge no">崩</span></td></tr>
+      <tr><td>LR-decay</td><td>82.09</td><td>26.00</td><td>58.93</td><td>28.68</td><td>65.47</td><td>52.23</td><td><span class="badge no">崩</span></td></tr>
+      <tr class="best"><td>MIPU (本文)</td><td><b>86.52</b></td><td>24.67</td><td><b>59.52</b></td><td>33.82</td><td>65.31</td><td><b>53.97</b></td><td><span class="badge ok">✓</span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="chart-wrap">
+    <div class="chart-title">平均 Pass@1 & 稳定性对比</div>
+    <canvas id="mainChart" height="120"></canvas>
+    <div class="legend">
+      <span><span class="dot" style="background:#4f8bff"></span>Qwen3-4B</span>
+      <span><span class="dot" style="background:#7c5cff"></span>Qwen3-1.7B</span>
+      <span style="color:var(--good)">★ = 训练不崩溃</span>
+    </div>
+  </div>
+
+  <h3>消融：两步缺一不可</h3>
+  <table>
+    <thead><tr><th>Qwen3-4B</th><th>MATH500</th><th>AIME24</th><th>Olymp.</th><th>Minerva</th><th>AMC23</th><th>Avg</th></tr></thead>
+    <tbody>
+      <tr><td>Baseline</td><td>89.34</td><td>42.00</td><td>64.89</td><td>43.39</td><td>82.50</td><td>64.42</td></tr>
+      <tr><td>+ Step 1 (只做 sampler-referenced 更新)</td><td>90.34</td><td>41.11</td><td>68.45</td><td>44.85</td><td>82.03</td><td>65.36</td></tr>
+      <tr><td>+ Step 2 (只做 gap-aware 接受)</td><td>90.34</td><td>40.44</td><td>64.88</td><td>43.38</td><td>75.00</td><td>62.81</td></tr>
+      <tr class="best"><td>MIPU (Step 1 + Step 2)</td><td><b>91.15</b></td><td><b>43.56</b></td><td>67.86</td><td><b>45.96</b></td><td><b>85.00</b></td><td><b>66.71</b></td></tr>
+    </tbody>
+  </table>
+  <p class="footer-note">作者还专门排除了"Step 2 只是随机回滚"这一质疑：用同样拒绝率的随机回滚做对照——训练依然崩溃。说明<b>接受与否条件在推理侧 gap 信号上是关键</b>。</p>
+</section>
+
+<!-- 批判性视角 -->
+<section>
+  <h2><span class="num">6</span>批判性视角：先给最强反驳</h2>
+  <div class="pros-cons">
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--good)">优点</h3>
+      <ul>
+        <li><b>问题定义扎实</b>：将"训练-推理不匹配"从工程 bug 升级为 objective-level 的错位，是概念上的进步。</li>
+        <li><b>推导干净</b>：三项分解 → 两步算法，数学与工程一一对应，读者容易 reproduce。</li>
+        <li><b>选取的 setting 有意义</b>：FP8 量化推理正是工业界降本的主流路径，正好是不匹配最严重的场景。</li>
+        <li><b>训练稳定性是稀缺属性</b>：对比方法平均分尚可但都崩，MIPU 是唯一同时"高分 + 不崩"的。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0;color:var(--bad)">最强反驳 / 局限</h3>
+      <ul>
+        <li><b>规模有限</b>：只在 1.7B / 4B 上验证，且都是 Qwen3；对 30B+ 或非 Qwen 家族是否成立<span class="confidence"><span class="conf-m">置信度：中</span></span>。</li>
+        <li><b>提升幅度不算巨大</b>：4B 上平均 +2.29 pt，1.7B 上 +3.11 pt——若把 FP8 换回 BF16 rollout，收益可能显著缩水（论文未提供此对照）。</li>
+        <li><b>Step 2 依赖验证集</b>：<span class="mono">T̂<sub>post</sub></span> 的估计质量由 <span class="mono">D<sub>val</sub></span> 决定；在通用 RLHF（无域内验证集）下可行性存疑<span class="confidence"><span class="conf-m">置信度：中</span></span>。</li>
+        <li><b>回滚代价</b>：被拒绝的 step 意味着算力浪费；论文没有报告拒绝率与总 wall-clock 开销的量化对比。</li>
+        <li><b>只测数学推理</b>：代码、对齐、多轮对话等场景未验证，泛化性未知<span class="confidence"><span class="conf-l">置信度：低</span></span>。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 影响 -->
+<section>
+  <h2><span class="num">7</span>意义与可迁移的启示</h2>
+  <div class="callout good">
+    <b>可迁移的一句话原则</b>：当训练系统和部署系统不是"同一系统"时——不管差异来自量化、编译、还是引擎实现——<b>优化目标必须锚在部署系统上</b>，而不是训练系统上。这一原则在推荐系统、量化推断、蒸馏部署里都是通用的。
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-top:0">对工业界</h3>
+      <p>直接可用：如果你的 RLHF pipeline 是 vLLM rollout + FSDP 训练 + FP8 量化推理，MIPU 的两步框架是 drop-in 改动，代码复杂度低。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">对研究界</h3>
+      <p>提供了一个新范式："训练-推理协同优化"作为独立研究方向。后续可能延伸到：更廉价的 gap proxy、on-the-fly gap 估计、多引擎联合优化。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 相关本周动态 -->
+<section>
+  <h2><span class="num">8</span>本周 AI 生态速览（同期背景）</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-top:0">大厂动态</h3>
+      <ul>
+        <li><b>Anthropic</b>：Claude Sonnet 5 上线，推出 Claude Science Workbench，连接 60+ 科研数据库。</li>
+        <li><b>Google DeepMind</b>：Gemini 2.5 Pro 增强 Deep Think 推理模式；发布 Gemini Spark 个人 AI Agent。</li>
+        <li><b>OpenAI</b>：GPT-5.6（Sol/Terra/Luna）小范围预览。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">同周其他值得看的论文</h3>
+      <ul>
+        <li><b>VLAFlow</b> (arXiv 2607.01586)：Vision-Language-Action 模型统一训练框架，聚焦机器人操纵。</li>
+        <li><b>Embodied.cpp</b>：跨异构机器人的可移植 VLA 推理运行时。</li>
+        <li><b>Toward Trustworthy LLM Agents in Healthcare</b> (2607.05055)：医疗场景 agent 安全护栏设计。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 事实/推断标注 -->
+<section>
+  <h2><span class="num">✎</span>事实 / 推断标注</h2>
+  <div class="kv">
+    <div class="k">事实</div><div>论文标题、作者、机构、arXiv ID、方法名（MIPI/MIPU）、公式结构、实验数值均来自 arXiv 摘要 + 官方项目页 <span class="confidence"><span class="conf-h">置信度：高</span></span></div>
+    <div class="k">事实</div><div>HuggingFace Papers 07-06 排名 #2，Trending 榜单来自搜索结果 <span class="confidence"><span class="conf-h">置信度：高</span></span></div>
+    <div class="k">推断</div><div>"目标层面 vs. 技巧层面"的定性对比、局限性分析、可迁移原则均为解读者观点 <span class="confidence"><span class="conf-m">置信度：中</span></span></div>
+    <div class="k">未知</div><div>是否已被顶会（NeurIPS 2026 / ICLR 2027）接收；是否已开源代码 <span class="confidence"><span class="conf-l">置信度：低</span></span></div>
+  </div>
+  <p class="footer-note" style="margin-top:14px">
+    来源：
+    <a href="https://arxiv.org/abs/2606.29526" target="_blank">arXiv:2606.29526</a> ·
+    <a href="https://anitaleungxx.github.io/MIPU/" target="_blank">MIPU 项目页</a> ·
+    <a href="https://huggingface.co/papers/2606.29526" target="_blank">HuggingFace Paper Page</a>
+    <br>本报告由自动化流程生成于 2026-07-09。数值直接引自作者项目页表格，未做二次计算。
+  </p>
+</section>
+
+</div>
+
+<script>
+  // 主对比图
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels:['Baseline','MIS','LR-decay','MIPU (本文)'],
+      datasets:[
+        {label:'Qwen3-4B 平均分', data:[64.42,63.42,65.66,66.71], backgroundColor:'#4f8bff', borderRadius:6},
+        {label:'Qwen3-1.7B 平均分', data:[50.86,51.73,52.23,53.97], backgroundColor:'#7c5cff', borderRadius:6}
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{color:'#a9b3cf'}},
+        tooltip:{callbacks:{
+          afterLabel:function(ctx){
+            const stable = ctx.label === 'MIPU (本文)' ? '✓ 训练稳定' : '✘ 训练崩溃';
+            return stable;
+          }
+        }}
+      },
+      scales:{
+        x:{ticks:{color:'#a9b3cf'},grid:{display:false}},
+        y:{min:45,max:70,ticks:{color:'#a9b3cf'},grid:{color:'rgba(255,255,255,.06)'}}
+      }
+    }
+  });
+</script>
+</body>
+</html>

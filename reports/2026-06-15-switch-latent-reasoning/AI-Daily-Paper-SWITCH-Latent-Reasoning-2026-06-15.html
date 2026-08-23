@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选｜SWITCH：让 AI 学会在“脑内草稿纸”上思考</title>
+  <style>
+    :root {
+      --ink: #14181f;
+      --muted: #5d6675;
+      --line: #d9dee7;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-2: #eef3f8;
+      --blue: #2157a8;
+      --cyan: #3a8aa4;
+      --green: #497c5f;
+      --red: #a34d4b;
+      --gold: #9a6b1f;
+      --shadow: 0 18px 50px rgba(20, 24, 31, .08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.68;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 24px; }
+    .hero {
+      min-height: 520px;
+      color: #fff;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(9, 15, 24, .94), rgba(17, 41, 64, .82) 52%, rgba(20, 24, 31, .28)),
+        url("SWITCH-latent-reasoning-hero.png") center / cover no-repeat,
+        #111820;
+    }
+    .hero-inner { max-width: 1080px; margin: 0 auto; padding: 52px 24px 42px; }
+    .eyebrow { font-size: 13px; color: #b7d0ee; font-weight: 700; text-transform: uppercase; }
+    h1 { margin: 16px 0 14px; max-width: 780px; font-size: clamp(32px, 6vw, 68px); line-height: 1.04; letter-spacing: 0; }
+    .subtitle { max-width: 720px; font-size: 20px; color: #d9e8f7; }
+    .hero-grid {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      max-width: 900px;
+    }
+    .metric {
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.1);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .metric b { display: block; font-size: 24px; line-height: 1.1; }
+    .metric span { display: block; margin-top: 6px; font-size: 13px; color: #d5e5f6; }
+    main { max-width: 1080px; margin: -30px auto 0; padding: 0 24px 48px; }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin: 18px 0;
+    }
+    h2 { margin: 0 0 16px; font-size: 26px; line-height: 1.22; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 19px; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .lead { font-size: 18px; color: #2b3442; }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+    .card strong { display: block; margin-bottom: 7px; }
+    .callout {
+      border-left: 5px solid var(--blue);
+      background: #eef4fb;
+      padding: 16px 18px;
+      border-radius: 8px;
+      margin: 14px 0;
+    }
+    .plain {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1.28;
+      padding: 22px;
+      border: 1px solid #cad5e4;
+      background: linear-gradient(135deg, #ffffff, #edf4fa);
+      border-radius: 8px;
+    }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+    th, td { border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; padding: 12px 10px; }
+    th { color: #334050; background: #f1f4f8; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e5edf7; color: #23456f; font-size: 12px; font-weight: 700; }
+    .risk { border-left-color: var(--red); background: #fbefef; }
+    .impact { border-left-color: var(--green); background: #eef6f1; }
+    .diagram { width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: #fbfcfe; margin: 16px 0; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .small { color: var(--muted); font-size: 13px; }
+    .source-list li { margin: 8px 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #edf1f5;
+      padding: 1px 5px;
+      border-radius: 5px;
+      font-size: .94em;
+    }
+    @media (max-width: 760px) {
+      .wrap, .hero-inner, main { padding-left: 16px; padding-right: 16px; }
+      .hero { min-height: 620px; }
+      .hero-grid, .grid, .grid.two { grid-template-columns: 1fr; }
+      section { padding: 20px; }
+      .plain { font-size: 22px; }
+      table { font-size: 14px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">AI Daily Paper · 2026-06-15</div>
+      <h1>SWITCH：让 AI 学会在“脑内草稿纸”上思考</h1>
+      <p class="subtitle">今天精选论文不是在追一个更高的数学分数，而是在回答一个更底层的问题：AI 能不能把一部分推理搬进隐藏状态里，同时仍然可以被训练、被检查、被解释？</p>
+      <div class="hero-grid">
+        <div class="metric"><b>79.3%</b><span>MATH-500 报告成绩</span></div>
+        <div class="metric"><b>89.2%</b><span>GSM8K 报告成绩</span></div>
+        <div class="metric"><b>+25.7</b><span>对同规模 Coconut-style 基线</span></div>
+        <div class="metric"><b>2 个</b><span>进入/退出隐藏推理的边界词</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. 标题区</h2>
+      <div class="grid two">
+        <div class="card">
+          <strong>论文</strong>
+          <p>Demystifying Hidden-State Recurrence: Switchable Latent Reasoning with On-Policy Reinforcement Learning</p>
+          <p><b>中文理解：</b>揭开隐藏状态递归的面纱：用在线强化学习训练可切换的潜在推理</p>
+        </div>
+        <div class="card">
+          <strong>作者与机构</strong>
+          <p>Jiayu Yang, Chao Chen, Shengen Wu, Yinhong Liu, Yuxuan Fan, Lujundong Li, Songning Lai, Chengwei Qin, Zhijiang Guo</p>
+          <p>HKUST(GZ), University of Cambridge, NTU, JoinQuant, HKUST</p>
+        </div>
+      </div>
+      <table>
+        <tr><th>项目</th><th>信息</th></tr>
+        <tr><td>发布时间</td><td>arXiv v1: 2026-06-11</td></tr>
+        <tr><td>平台</td><td>arXiv / Hugging Face Papers / GitHub / Hugging Face Model & Dataset</td></tr>
+        <tr><td>论文链接</td><td><a href="https://arxiv.org/abs/2606.13106">arxiv.org/abs/2606.13106</a></td></tr>
+        <tr><td>代码与模型</td><td><a href="https://github.com/LARK-AI-Lab/SWITCH">GitHub: LARK-AI-Lab/SWITCH</a>；<a href="https://huggingface.co/LARK-Lab/SWITCH-Phase3-GRPO-LoRA-Qwen3-8B">Hugging Face 模型卡</a></td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">因为它踩中了 2026 年 AI 推理研究的一条主线：模型不只要“把思考写出来”，还要学会在内部状态里进行更紧凑、更可控的计算。</p>
+      <div class="grid">
+        <div class="card">
+          <strong>行业意义</strong>
+          <p>今天的推理模型经常输出很长的思考链。长思考链有用，但也贵、慢、容易泄露推理过程。SWITCH 试图让一部分思考进入模型内部，就像人在心算时不会把每一步都写出来。</p>
+        </div>
+        <div class="card">
+          <strong>技术突破</strong>
+          <p>此前“隐藏推理”最大的问题是不好训练，也不好证明它真的在思考。SWITCH 用 <code>&lt;swi&gt;</code> 和 <code>&lt;/swi&gt;</code> 两个普通词元当开关，让强化学习和机制分析都有了落点。</p>
+        </div>
+        <div class="card">
+          <strong>长期价值</strong>
+          <p>如果这条路成立，未来模型可能同时拥有三件事：更少输出、更低延迟、更少暴露中间草稿，同时仍能被研究者检查内部计算。</p>
+        </div>
+      </div>
+      <div class="callout impact">
+        <b>今天的判断：</b>SWITCH 的价值不在于“马上替代显式 CoT”，而在于它把潜在推理从一个难以训练的黑盒方向，推向“可以开关、可以奖励、可以做因果干预”的工程对象。
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 一句话讲透论文</h2>
+      <div class="plain">这篇论文给 AI 装了一个“思考模式开关”：该写给人看的时候写出来，该在脑内草稿纸上算的时候就切进隐藏状态里算。</div>
+    </section>
+
+    <section>
+      <h2>4. 核心贡献拆解</h2>
+      <table>
+        <tr><th>问题</th><th>旧方法为什么卡住</th><th>SWITCH 怎么处理</th><th>为什么重要</th></tr>
+        <tr>
+          <td>隐藏推理难训练</td>
+          <td>隐藏步骤不吐出文字，强化学习很难计算“这个动作的概率变化”。</td>
+          <td>让模型先吐出 <code>&lt;swi&gt;</code> 进入隐藏模式，再吐出 <code>&lt;/swi&gt;</code> 出来；边界词是普通离散 token。</td>
+          <td>GRPO 这类在线强化学习终于有了稳定的训练锚点。</td>
+        </tr>
+        <tr>
+          <td>隐藏推理难解释</td>
+          <td>如果模型只是在隐空间里滚动，人很难知道那一步是不是有效计算。</td>
+          <td>围绕边界 token 做 probe、logit lens 和因果干预。</td>
+          <td>可以追问：“它切进去的那一刻到底发生了什么？”</td>
+        </tr>
+        <tr>
+          <td>固定隐藏推理太死板</td>
+          <td>不是每个问题都需要内部长思考。</td>
+          <td>模型自己决定是否进入隐藏模式、何时退出。</td>
+          <td>更接近人类：简单题直接答，难题才拿草稿纸。</td>
+        </tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. 工作原理：把“写出来的草稿”压进脑内</h2>
+      <p>想象一个学生做数学题。普通 Chain-of-Thought 像是学生把每一步都写在纸上；潜在推理像是学生在脑子里心算。SWITCH 的关键不是“让学生闭嘴”，而是教会他什么时候开始心算、心算多久、什么时候回到纸面写答案。</p>
+      <div class="diagram">
+        <svg viewBox="0 0 1040 390" role="img" aria-label="SWITCH latent reasoning flow">
+          <defs>
+            <linearGradient id="g1" x1="0" x2="1">
+              <stop offset="0" stop-color="#f6f9fc"/>
+              <stop offset="1" stop-color="#e9f2f7"/>
+            </linearGradient>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+              <path d="M0,0 L9,3 L0,6 Z" fill="#496176"></path>
+            </marker>
+          </defs>
+          <rect x="20" y="22" width="1000" height="346" rx="18" fill="url(#g1)" stroke="#d8e0ea"/>
+          <rect x="58" y="92" width="150" height="72" rx="12" fill="#fff" stroke="#c7d2df"/>
+          <text x="133" y="122" text-anchor="middle" font-size="19" font-weight="700" fill="#17202b">题目输入</text>
+          <text x="133" y="148" text-anchor="middle" font-size="14" fill="#596678">普通文字 token</text>
+          <line x1="208" y1="128" x2="285" y2="128" stroke="#496176" stroke-width="3" marker-end="url(#arrow)"/>
+          <rect x="286" y="82" width="148" height="92" rx="14" fill="#e8f2fb" stroke="#7da4cc"/>
+          <text x="360" y="117" text-anchor="middle" font-size="20" font-weight="800" fill="#173b66">&lt;swi&gt;</text>
+          <text x="360" y="146" text-anchor="middle" font-size="14" fill="#415a72">切入隐藏推理</text>
+          <line x1="434" y1="128" x2="505" y2="128" stroke="#496176" stroke-width="3" marker-end="url(#arrow)"/>
+          <rect x="506" y="58" width="230" height="140" rx="18" fill="#102033" stroke="#3a8aa4"/>
+          <text x="621" y="93" text-anchor="middle" font-size="20" font-weight="800" fill="#dff6ff">潜在推理区</text>
+          <text x="621" y="122" text-anchor="middle" font-size="15" fill="#b9dceb">不输出完整草稿</text>
+          <text x="621" y="150" text-anchor="middle" font-size="15" fill="#b9dceb">隐藏状态反复喂给下一步</text>
+          <circle cx="572" cy="174" r="7" fill="#7fd0df"/>
+          <circle cx="622" cy="174" r="7" fill="#7fd0df"/>
+          <circle cx="672" cy="174" r="7" fill="#7fd0df"/>
+          <path d="M579 174 C595 154 602 154 615 174 C632 194 642 194 665 174" fill="none" stroke="#7fd0df" stroke-width="3"/>
+          <line x1="736" y1="128" x2="806" y2="128" stroke="#496176" stroke-width="3" marker-end="url(#arrow)"/>
+          <rect x="807" y="82" width="148" height="92" rx="14" fill="#eef7ef" stroke="#83aa90"/>
+          <text x="881" y="117" text-anchor="middle" font-size="20" font-weight="800" fill="#2b623d">&lt;/swi&gt;</text>
+          <text x="881" y="146" text-anchor="middle" font-size="14" fill="#42604b">回到可见回答</text>
+          <path d="M354 192 C370 250 442 283 522 284 C642 285 735 252 878 194" fill="none" stroke="#9a6b1f" stroke-width="3" stroke-dasharray="8 8"/>
+          <text x="618" y="326" text-anchor="middle" font-size="17" font-weight="700" fill="#6c4b1a">训练时，奖励从最终答案反向推动“何时切入、隐藏算多久、何时退出”</text>
+        </svg>
+      </div>
+
+      <h3>三阶段训练像教学生从“全写出来”过渡到“会心算”</h3>
+      <table>
+        <tr><th>阶段</th><th>直觉类比</th><th>技术含义</th></tr>
+        <tr><td>Phase 1: SFT 定位开关</td><td>老师先在解题草稿上标出“这里适合心算”。</td><td>把高熵推理片段包进 <code>&lt;swi&gt;</code> / <code>&lt;/swi&gt;</code>。</td></tr>
+        <tr><td>Phase 2: 潜在课程</td><td>慢慢把一部分草稿擦掉，让学生在脑子里补上。</td><td>逐步用 <code>&lt;latent&gt;</code> 占位替代可见推理文本。</td></tr>
+        <tr><td>Phase 3: Switch-GRPO</td><td>看最终答案给分，同时奖励格式正确和合理使用隐藏区。</td><td>用在线 RL 在真实隐藏递归 rollout 上优化。</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>6. 关键术语解释</h2>
+      <div class="grid two">
+        <div class="card"><strong>Latent Reasoning 潜在推理</strong><p><b>专业：</b>模型在连续隐藏状态中进行多步计算，而不是把每一步都解码成自然语言 token。</p><p><b>白话：</b>AI 在脑子里打草稿，不全写出来。</p></div>
+        <div class="card"><strong>Hidden-State Recurrence 隐藏状态递归</strong><p><b>专业：</b>把上一步最后一层 hidden state 重新作为下一步输入 embedding。</p><p><b>白话：</b>上一秒脑内产生的想法，直接喂给下一秒继续想。</p></div>
+        <div class="card"><strong>GRPO</strong><p><b>专业：</b>一种用多条候选回答相互比较来优化策略的强化学习方法。</p><p><b>白话：</b>让模型多做几份答案，看哪份更好，再朝好答案的做法靠近。</p></div>
+        <div class="card"><strong>Boundary Tokens 边界词元</strong><p><b>专业：</b>标记潜在块开始和结束的离散 token。</p><p><b>白话：</b>像会议室门牌：进门开始闭门讨论，出门开始公开汇报。</p></div>
+        <div class="card"><strong>Mechanistic Analysis 机制分析</strong><p><b>专业：</b>用探针、干预、logit lens 等方法研究模型内部表征。</p><p><b>白话：</b>不是只看答案对不对，而是拆开机器看看齿轮怎么转。</p></div>
+        <div class="card"><strong>LoRA</strong><p><b>专业：</b>低秩适配微调方法，用少量新增参数调整大模型。</p><p><b>白话：</b>不给整台机器大改，只加一小套可拆卸调校组件。</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. 实验结果解读：分数背后真正说明什么</h2>
+      <table>
+        <tr><th>基准</th><th>SWITCH 报告结果</th><th>最强 Coconut-style 同规模基线</th><th>差距</th><th>怎么理解</th></tr>
+        <tr><td>MATH-500</td><td>79.3%</td><td>53.6%</td><td>+25.7</td><td>在数学推理任务上，隐藏推理不是“少写点字而已”，可能真的保留了有效计算。</td></tr>
+        <tr><td>GSM8K</td><td>89.2%</td><td>78.5%</td><td>+10.7</td><td>小学/初中风格应用题也受益，但提升幅度小于 MATH-500，说明高难推理更需要这种内部计算。</td></tr>
+      </table>
+      <div class="diagram">
+        <svg viewBox="0 0 1000 310" role="img" aria-label="Benchmark comparison">
+          <rect x="20" y="18" width="960" height="260" rx="16" fill="#fbfcfe" stroke="#d8e0ea"/>
+          <text x="70" y="60" font-size="20" font-weight="800" fill="#17202b">同规模对比：隐藏推理是否真的有效？</text>
+          <line x1="220" y1="236" x2="900" y2="236" stroke="#cbd5e1"/>
+          <text x="80" y="120" font-size="17" fill="#344052">MATH-500</text>
+          <rect x="220" y="94" width="397" height="38" rx="6" fill="#d8e5f4"/>
+          <rect x="220" y="144" width="587" height="38" rx="6" fill="#2157a8"/>
+          <text x="630" y="120" font-size="15" fill="#2e4057">基线 53.6%</text>
+          <text x="820" y="170" font-size="15" fill="#2157a8">SWITCH 79.3%</text>
+          <text x="80" y="210" font-size="17" fill="#344052">GSM8K</text>
+          <rect x="220" y="194" width="581" height="38" rx="6" fill="#d8e5f4"/>
+          <rect x="220" y="244" width="660" height="38" rx="6" fill="#3a8aa4"/>
+          <text x="815" y="220" font-size="15" fill="#2e4057">基线 78.5%</text>
+          <text x="885" y="270" font-size="15" fill="#1f6172">SWITCH 89.2%</text>
+        </svg>
+      </div>
+      <p>更关键的是机制分析：论文声称 <code>&lt;swi&gt;</code> 不是一个装饰性符号，而是局部化的开关策略；隐藏步骤也不是空转占位，而是对最终答案有因果作用的计算。这一点比单纯跑分更重要，因为它把“AI 的内心活动”变成可实验研究的对象。</p>
+    </section>
+
+    <section>
+      <h2>8. 局限性与问题</h2>
+      <div class="callout risk">
+        <b>客观提醒：</b>这仍是一篇早期研究论文，不应被解读为“隐藏推理已经全面成熟”。
+      </div>
+      <table>
+        <tr><th>风险/瓶颈</th><th>为什么要警惕</th><th>现实影响</th></tr>
+        <tr><td>任务范围偏数学</td><td>主要结果集中在 MATH-500、GSM8K 等推理基准。</td><td>写代码、法律、医学、多轮工具调用是否同样有效，还需要验证。</td></tr>
+        <tr><td>隐藏推理可解释性有限</td><td>有 probe 和干预，不等于完全读懂内部想法。</td><td>不能把它当成透明可审计系统。</td></tr>
+        <tr><td>推理循环实现更复杂</td><td>模型卡提醒，朴素 <code>generate()</code> 不会真正执行隐藏状态递归。</td><td>落地需要专门推理循环，工程门槛高于普通模型调用。</td></tr>
+        <tr><td>安全与监管问题</td><td>隐藏推理减少可见中间链，也可能减少外部审计线索。</td><td>企业应用中需要新的日志、探针和异常检测方法。</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>9. 产业影响分析</h2>
+      <div class="grid">
+        <div class="card">
+          <strong>谁会受益</strong>
+          <p>推理模型平台、数学/代码模型团队、企业 AI 助手、低延迟推理服务商。它们都希望模型少吐字、多算事。</p>
+        </div>
+        <div class="card">
+          <strong>谁会被冲击</strong>
+          <p>只依赖“输出完整思考链”来做质量控制的应用。未来需要转向探针、结果验证器和行为审计。</p>
+        </div>
+        <div class="card">
+          <strong>可能改变什么</strong>
+          <p>推理成本结构、模型服务接口、可解释性研究工具链，以及“是否必须展示 CoT 才算可靠”的行业默认假设。</p>
+        </div>
+      </div>
+      <h3>从产品角度看</h3>
+      <p>如果把 AI 产品比作一个咨询顾问，今天很多模型像是把所有草稿都投屏给客户看。SWITCH 代表另一种路径：顾问可以在脑中推演几轮，只把必要结论和可审计证据交给客户。对普通用户，这可能意味着更快、更短、更少泄露；对企业，这意味着必须建立新的内部质量监控。</p>
+    </section>
+
+    <section>
+      <h2>10. 延伸阅读</h2>
+      <ul class="source-list">
+        <li><a href="https://arxiv.org/abs/2606.13106">原论文：Demystifying Hidden-State Recurrence: Switchable Latent Reasoning with On-Policy Reinforcement Learning</a></li>
+        <li><a href="https://arxiv.org/html/2606.13106v1">arXiv HTML 版本</a></li>
+        <li><a href="https://github.com/LARK-AI-Lab/SWITCH">官方 GitHub：LARK-AI-Lab/SWITCH</a></li>
+        <li><a href="https://huggingface.co/LARK-Lab/SWITCH-Phase3-GRPO-LoRA-Qwen3-8B">Hugging Face 模型卡：SWITCH Phase 3 GRPO LoRA Qwen3-8B</a></li>
+        <li><a href="https://huggingface.co/datasets/LARK-Lab/SWITCH-Math-Train">Hugging Face 数据集：SWITCH Math Train</a></li>
+        <li><a href="https://huggingface.co/papers/2606.13106">Hugging Face Papers 页面与社区讨论</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>11. 引用来源</h2>
+      <p>本报告优先使用英文原始信息源，主要事实来自 arXiv 论文页/HTML/PDF、官方 GitHub README、Hugging Face Papers、Hugging Face 模型卡和数据集卡。所有解释性类比、产业判断与中文图示为本报告基于上述来源的重构分析。</p>
+      <table>
+        <tr><th>来源</th><th>用途</th></tr>
+        <tr><td>arXiv:2606.13106</td><td>论文标题、作者、机构、摘要、方法与结论</td></tr>
+        <tr><td>GitHub: LARK-AI-Lab/SWITCH</td><td>代码结构、训练阶段、公开 artifact、核心结果复核</td></tr>
+        <tr><td>Hugging Face 模型卡</td><td>模型发布、训练细节、推理限制、基准数字复核</td></tr>
+        <tr><td>Hugging Face Papers</td><td>发布时间、社区关注度、相关论文推荐</td></tr>
+        <tr><td>Hugging Face 数据集卡</td><td>训练数据公开状态与复现线索</td></tr>
+      </table>
+      <p class="small">生成时间：2026-06-15 07:04 CST。报告目录包含一张由图像生成工具生成的首图资产；正文关键图示均为重新设计的中文 SVG，不是论文截图。</p>
+    </section>
+  </main>
+</body>
+</html>

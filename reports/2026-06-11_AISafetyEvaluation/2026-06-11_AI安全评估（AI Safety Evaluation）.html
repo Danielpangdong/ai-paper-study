@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-06-11_AI安全评估（AI Safety Evaluation）</title>
+  <style>
+    :root {
+      --ink: #0f172a; --muted: #475569; --quiet: #64748b; --line: #e2e8f0;
+      --soft: #f8fafc; --navy: #1e3a8a; --teal: #0d9488; --amber: #d97706; --red: #e11d48;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink); background: #f8fafc; line-height: 1.78;
+    }
+    header { background: #fff; border-bottom: 1px solid var(--line); padding: 56px 24px 42px; }
+    .wrap { max-width: 1040px; margin: 0 auto; }
+    .eyebrow { color: var(--teal); font-weight: 700; letter-spacing: 0; }
+    h1 { margin: 16px 0 10px; font-size: clamp(38px, 6vw, 72px); line-height: 1.08; letter-spacing: 0; }
+    .subtitle { font-size: 26px; color: var(--muted); margin: 0 0 24px; }
+    .core { margin-top: 24px; padding: 18px 22px; border: 1px solid #99f6e4; background: #f0fdfa; border-radius: 8px; font-weight: 700; color: var(--teal); }
+    nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 28px 0 8px; }
+    nav a { color: var(--navy); text-decoration: none; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; }
+    main { padding: 34px 24px 72px; }
+    section { max-width: 1040px; margin: 0 auto 28px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 28px; }
+    h2 { font-size: 32px; line-height: 1.25; margin: 0 0 16px; letter-spacing: 0; }
+    p { margin: 12px 0; font-size: 18px; }
+    figure { margin: 20px 0; }
+    img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+    figcaption { color: var(--quiet); font-size: 14px; margin-top: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 16px; }
+    th, td { border: 1px solid var(--line); padding: 12px; vertical-align: top; }
+    th { width: 16%; background: #f8fafc; color: var(--navy); text-align: left; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 10px 0; font-size: 18px; }
+    .note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; border-radius: 8px; padding: 14px 18px; margin-top: 18px; }
+    @media print {
+      body { background: #fff; }
+      section { break-inside: avoid; border-color: #ddd; }
+      nav a { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">AI每日深度科普 · 2026-06-11</div>
+      <h1>AI安全评估<br><span style="color:var(--navy)">AI Safety Evaluation</span></h1>
+      <p class="subtitle">为什么 AI 上线前也要“考试”？</p>
+      <div class="core">核心一句话：AI安全评估的本质，是用系统化测试提前发现模型会在哪里失控、退步或误伤用户。</div>
+      <nav><a href="#why">为什么这个概念重要？</a>
+<a href="#analogy">一个直观类比：AI 上线前的驾驶考试</a>
+<a href="#mechanism">工作原理：安全评估怎样运作？</a>
+<a href="#terms">关键术语解释</a>
+<a href="#case">真实应用案例：AI 客服上线前怎么评估？</a>
+<a href="#mistakes">常见误区</a>
+<a href="#summary">3句话总结</a>
+<a href="#quiz">复习问题</a></nav>
+    </div>
+  </header>
+  <main>
+    <section id="why"><h2>为什么这个概念重要？</h2><p>AI安全评估解决的是一个现实问题：模型看起来会聊天、会写代码、会调用工具，但它到底会在什么场景里误导用户、泄露隐私、越权操作，或被一句诱导话术带偏？</p>
+<p>如果说昨天的 AI 安全护栏像机场安检，今天的安全评估就像给安检系统做压力测试。它不是等事故发生才补救，而是在上线前和上线后反复检查：哪些风险已经可控，哪些风险还不能放行。</p>
+<p>这件事改变了我们对 AI 产品的判断标准：不能只问“它聪不聪明”，还要问“它在危险题、边界题、真实流程里稳不稳”。</p></section>
+    <section id="analogy"><h2>一个直观类比：AI 上线前的驾驶考试</h2><figure><img src="chatgpt_safety_eval_driving_test.png" alt="AI安全评估驾驶考试类比图"><figcaption>驾驶考试类比：会开车不等于可以直接上路，AI 会回答也不等于可以直接上线。</figcaption></figure><p>一个人会开车，不等于可以马上独自上路。驾校会先让他学规则，再在考试路线中处理转弯、变道、礼让、突发障碍。考试不是为了保证他今后一定不出事，而是确认他达到可上路的最低安全线。</p>
+<p>AI安全评估也是这样。模型会回答问题，只代表它有能力；通过安全评估，才说明它在隐私、事实、工具调用、敏感建议和对抗诱导里达到可接受标准。</p>
+<p>所以，安全评估不是“挑刺”，而是 AI 产品的驾驶考试。考不过就不能直接上路；上路之后路况变化，还要继续复测。</p></section>
+    <section id="mechanism"><h2>工作原理：安全评估怎样运作？</h2><figure><img src="chatgpt_safety_eval_loop.png" alt="AI安全评估闭环流程图"><figcaption>安全评估闭环：定义风险、设计测试、运行模型、记录失败、修复护栏、回归复测。</figcaption></figure><p>第一步，定义风险。团队先列出这个 AI 可能伤害谁、在哪里犯错、错误后果有多严重。例如客服 AI 可能泄露订单信息，医疗问答 AI 可能给出不该给的诊断建议。</p>
+<p>第二步，设计测试。评估不是随便问几道题，而是准备一组覆盖真实场景、边界场景和故意诱导场景的测试题库。</p>
+<p>第三步，运行模型并记录失败。每道题不仅看回答对不对，还要看是否过度自信、是否引用来源、是否该拒绝、是否该转人工。</p>
+<p>第四步，设定通过线。不是要求 100 分，而是按风险等级定阈值：低风险可以容忍小错，高风险必须非常严格。</p>
+<p>第五步，修复并回归复测。改了提示词、知识库、护栏或模型后，要重新跑旧测试，确认新版本没有把老问题带回来。</p></section>
+    <section id="terms"><h2>关键术语解释</h2><table><thead><tr><th>术语</th><th>专业解释</th><th>白话解释</th></tr></thead><tbody><tr><th>测试集</th><td>专业解释：用于系统检查模型表现的一组标准化样本。</td><td>白话解释：像考试卷，专门用来看看 AI 在不同题型下会不会出错。</td></tr>
+<tr><th>通过线</th><td>专业解释：模型上线前必须达到的最低安全或质量阈值。</td><td>白话解释：像驾照考试的及格线，没过就不能直接上路。</td></tr>
+<tr><th>严重度</th><td>专业解释：对模型失败后果轻重程度的分级。</td><td>白话解释：错一个标点和泄露客户隐私不是一回事，要分轻重。</td></tr>
+<tr><th>误报/漏报</th><td>专业解释：把安全内容误判为危险是误报；放过危险内容是漏报。</td><td>白话解释：误报是把好人拦住，漏报是把真正的风险放过去。</td></tr>
+<tr><th>回归复测</th><td>专业解释：修改系统后重新运行旧测试，确认老问题没有复发。</td><td>白话解释：修完一道错题后，还要再考一次，看看是不是又错了。</td></tr></tbody></table></section>
+    <section id="case"><h2>真实应用案例：AI 客服上线前怎么评估？</h2><p>假设一家电商公司要上线 AI 客服，让它回答物流、退款、发票和会员问题。能力测试会问它“能不能答对规则”；安全评估会继续问更难的问题：能不能拒绝查看别人的订单？能不能避免承诺不存在的赔偿？能不能把投诉升级给人工？</p>
+<p>评估团队会准备几类测试：正常咨询、模糊投诉、诱导泄露隐私、越权退款、极端情绪用户、规则冲突和系统故障。每个回答都会被记录：答对了什么，哪里不确定，是否应该转人工。</p>
+<p>如果模型在普通问题上 95 分，但在隐私和退款越权上经常失误，它仍然不能直接上线。因为真实世界里最贵的错误，往往不是答错知识点，而是做了不该做的动作。</p><div class="note">安全评估的价值：把“它能回答”推进到“它能负责地进入真实业务”。</div></section>
+    <section id="mistakes"><h2>常见误区</h2><ul><li><strong>误区一：安全评估就是普通 Benchmark。</strong><br>普通评测更关心答题能力；安全评估更关心风险、边界、严重后果和真实流程。</li>
+<li><strong>误区二：通过一次评估就万事大吉。</strong><br>不对。模型、用户、业务规则和攻击方式都会变化，安全评估必须持续复测。</li>
+<li><strong>误区三：分数越高就一定越适合上线。</strong><br>要看错在哪里。一个低风险小错可能可接受，一个高风险漏报就可能必须拦下。</li>
+<li><strong>误区四：评估只是安全团队的事。</strong><br>产品、法务、运营、客服、工程和业务负责人都要参与，因为他们最了解真实后果。</li></ul></section>
+    <section id="summary"><h2>3句话总结</h2><ol><li>AI安全评估的本质，是用系统化考试提前发现模型在真实和高风险场景里的失败方式。</li>
+<li>它不是给 AI 发终身安全证明，而是确认风险是否可控、是否达到上线阈值、出问题后能否复盘。</li>
+<li>理解安全评估，能帮助普通人看懂为什么企业 AI 不能只拼聪明，还要拼可靠性、责任和持续改进。</li></ol></section>
+    <section id="quiz"><h2>复习问题</h2><ol><li>为什么一个 AI 在普通问题上表现很好，仍然可能不能直接上线？</li>
+<li>“误报”和“漏报”哪个更危险？答案为什么要看具体场景？</li>
+<li>如果你要评估一个能发邮件的 AI 助手，你会设计哪三类安全测试？</li></ol></section>
+  </main>
+</body>
+</html>

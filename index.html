@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 论文学习站 · 每日精读与概念精讲</title>
+<meta name="description" content="每日 AI 论文精读 · 概念精讲 · 论文精选 —— 把每天的前沿 AI 研究整理成可学习的中文笔记">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234fd8ff'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='22' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-size='52' text-anchor='middle'%3E%F0%9F%93%9A%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<canvas id="stars"></canvas>
+<div id="nebula"></div>
+
+<header class="topbar">
+  <div class="inner">
+    <div class="logo"><span class="mark">📚</span><em>AI 论文学习站</em></div>
+    <nav class="topnav">
+      <button class="navbtn active" data-view="grid" id="navGrid">卡片视图</button>
+      <button class="navbtn" data-view="timeline" id="navTimeline">时间线</button>
+      <button class="navbtn keep" id="btnRandom">🎲 随机一篇</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow"><span class="dot"></span>DAILY AI PAPER STUDY · 2026</div>
+    <h1>把每一天的 AI 前沿<br>变成<span class="grad"> 你的学习路径</span></h1>
+    <p class="sub">每天精读一篇 AI 论文/报告，配 <b>概念精讲</b> 与 <b>论文精选</b> 深度笔记 ——
+    从 Anthropic 的机制可解释性、OpenAI 的数学突破，到 DeepMind 的 AI 控制路线图，全部整理为中文学习站。</p>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section class="controls">
+    <div class="searchwrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="搜索标题、摘要、主题标签…（比如：J-Space / 对齐 / RAG / 数学）" autocomplete="off">
+      <span class="hint">/ 快速搜索</span>
+    </div>
+    <div class="chips" id="typeChips"></div>
+    <div class="chips" id="orgChips"></div>
+    <div class="chips" id="tagChips"></div>
+    <div class="resultbar">
+      <span>共 <b class="count" id="resCount">0</b> 篇</span>
+      <span id="resInfo" style="opacity:.8"></span>
+      <span class="spacer"></span>
+      <div class="viewbar">
+        <button class="iconbtn on" id="btnGrid" title="卡片视图">▦ 卡片</button>
+        <button class="iconbtn" id="btnTL" title="时间线视图">≡ 时间线</button>
+        <button class="iconbtn" id="btnClear" title="清除筛选">✕ 清除</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid" id="grid"></section>
+
+  <section class="timeline" id="timeline"></section>
+
+  <footer class="footer">
+    <b>AI 论文学习站</b> · 收录 <span id="footTotal">0</span> 篇文章<br>
+    内容为人工 + AI 整理的论文解读笔记，仅供学习交流 · 数据由 <code>tools/build.py</code> 自动索引生成
+  </footer>
+</main>
+
+<script src="data/papers.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>

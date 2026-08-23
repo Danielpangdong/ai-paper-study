@@ -1,0 +1,6 @@
+今天精选的论文是《LoopCoder-v2: Only Loop Once for Efficient Test-Time Computation Scaling》。
+
+一句话推荐理由：
+它把“测试时计算”讲清楚了一个关键现实问题：AI 不是想得越久越好，而是要知道什么时候多想一轮、什么时候该停。
+
+这对代码模型、Agent 工程、推理成本和未来小模型能力提升都很重要。附件为中文深度拆解 HTML 报告，适合非技术读者、产品经理、投资研究者和工程团队阅读。

@@ -1,0 +1,30 @@
+# Run Summary
+
+- Date: 2026-06-27 Asia/Shanghai.
+- Automation ID: `ai-pdf`.
+- Selected concept: 上下文工程（Context Engineering）.
+- Rationale: prior concept reports already covered Context Window, Prompt Engineering, RAG, AI Memory, Agent, Tool Use, KV Cache, Inference Routing, Batching/Throughput, Quantization, Edge AI, and AI Chips. Context Engineering is the next bridge concept: it explains how finite context windows, retrieval, memory, tools, and task rules are organized into usable model input.
+- Built files:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/2026-06-27_上下文工程（Context Engineering）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/2026-06-27_上下文工程（Context Engineering）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/context_engineering_exam_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/context_engineering_pipeline.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/email_body.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-27_ContextEngineering/sources.md`
+- Image generation: used built-in ChatGPT image generation for two Chinese science diagrams; regenerated the analogy image once to correct a title glyph issue, then copied final PNGs into the report directory.
+- Validation:
+  - HTML parse and required-section anchor check passed.
+  - Source links returned HTTP 200.
+  - PDF exported via Playwright + Chrome.
+  - `pdfinfo` reported 8 A4 pages, unencrypted, 5.2 MB.
+  - `pdftotext` confirmed title, core line, required sections, quiz, and source names are extractable.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - Rendered and visually checked previews of pages 1, 3, and 4.
+  - SHA256 PDF: `4f66e7ce7ae516794e778e268e313bef6841c321754db1217800fffd2daee118`.
+- Delivery:
+  - Sent by Gmail with PDF attachment to `pangdong@sf-express.com,seekiingforhappiness@gmail.com`.
+  - Subject: `【AI每日深度科普】上下文工程：为什么聪明的AI要先把资料摆对？`
+  - Gmail message id: `19f066eef1eb1b47`; thread id: `19f066eef1eb1b47`.
+- Sources used for factual grounding: Anthropic Engineering context engineering article, OpenAI Cookbook context personalization example, Anthropic long context prompting docs, OpenAI text-generation docs.
+- Completed: 2026-06-27 08:16:20 CST.

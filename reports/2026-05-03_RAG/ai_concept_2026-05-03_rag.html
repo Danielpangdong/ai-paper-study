@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI概念精讲｜RAG（检索增强生成）</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm 16mm;
+      }
+      :root {
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #e2e8f0;
+        --soft: #f8fafc;
+        --accent: #0ea5a3;
+        --accent2: #2563eb;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        padding: 0;
+        margin: 0;
+        color: var(--ink);
+        font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+          "Microsoft YaHei", "Noto Sans CJK SC", "Noto Sans SC", Arial, sans-serif;
+        line-height: 1.6;
+        background: #fff;
+      }
+      header {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px 16px 14px;
+        background: linear-gradient(120deg, rgba(14, 165, 163, 0.10), rgba(37, 99, 235, 0.06));
+      }
+      header .kicker {
+        font-size: 12px;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      header h1 {
+        margin: 6px 0 8px;
+        font-size: 24px;
+        line-height: 1.25;
+      }
+      header .meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      header .pill {
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.65);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+      main {
+        margin-top: 14px;
+      }
+      section {
+        margin: 14px 0 0;
+        padding: 14px 14px 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+      }
+      section h2 {
+        margin: 0 0 8px;
+        font-size: 16px;
+        line-height: 1.35;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      section h2 .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px rgba(14, 165, 163, 0.14);
+        flex: 0 0 auto;
+      }
+      p {
+        margin: 8px 0;
+      }
+      ul {
+        margin: 8px 0 0;
+        padding-left: 18px;
+      }
+      li {
+        margin: 6px 0;
+      }
+      .callout {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: var(--soft);
+        color: var(--ink);
+      }
+      .callout strong {
+        color: var(--accent2);
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 10px;
+      }
+      figure {
+        margin: 0;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+        background: #fff;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      figcaption {
+        padding: 8px 10px;
+        font-size: 12px;
+        color: var(--muted);
+        border-top: 1px solid var(--line);
+      }
+      .term {
+        display: grid;
+        grid-template-columns: 92px 1fr;
+        gap: 8px 12px;
+        margin-top: 8px;
+      }
+      .term dt {
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .term dd {
+        margin: 0;
+        color: var(--muted);
+      }
+      footer {
+        margin-top: 12px;
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+      }
+      .avoid-break {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="kicker">每日AI概念精讲</div>
+      <h1>RAG（检索增强生成）：让大模型“先翻资料再答题”</h1>
+      <div class="meta">
+        <div class="pill">日期：2026-05-03</div>
+        <div class="pill">难度：高中友好</div>
+        <div class="pill">关键词：检索 / 向量 / 资料依据</div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <h2><span class="dot"></span>为什么重要</h2>
+        <p>
+          大模型很像“口才很好、见多识广的同学”，但它有两个常见问题：<strong>记不住你公司/课堂/书里的最新资料</strong>，以及
+          <strong>遇到不确定时可能会编得很像真的</strong>（这就是大家常说的“胡编”）。
+        </p>
+        <p>
+          RAG 的核心思想是：<strong>不要让模型闭眼作答</strong>，而是让它在回答前先去你的资料库里“找证据”，再基于证据组织答案。
+        </p>
+        <div class="callout">
+          <strong>一句话记住：</strong>RAG = 检索（找资料） + 生成（写答案）。
+        </div>
+      </section>
+
+      <section class="avoid-break">
+        <h2><span class="dot"></span>直观类比</h2>
+        <p>
+          想象你在做一道历史题：如果你<strong>先翻课本</strong>找到相关段落，再用自己的话总结，正确率通常更高；如果你<strong>不翻书凭感觉写</strong>，
+          很可能写得流畅但细节错。
+        </p>
+        <p>RAG 就是把“先翻书”这一步做成系统：让模型自动去“课本”（知识库）里翻到最相关的几页，再回答。</p>
+      </section>
+
+      <section class="avoid-break">
+        <h2><span class="dot"></span>工作原理（看图更清楚）</h2>
+        <div class="grid-2">
+          <figure>
+            <img src="rag_flow.png" alt="RAG流程图" />
+            <figcaption>图1：RAG 的整体流程（先检索，再生成）。</figcaption>
+          </figure>
+          <figure>
+            <img src="embedding_map.png" alt="Embedding语义地图" />
+            <figcaption>图2：向量/Embedding：把“意思”变成可计算的距离。</figcaption>
+          </figure>
+        </div>
+        <p>
+          关键点在于：系统会把“问题”和“资料片段”都变成一串数字（向量），再用“距离”判断谁更像谁，从而找出最相关的资料片段（Top‑K），最后交给大模型写答案。
+        </p>
+      </section>
+
+      <section>
+        <h2><span class="dot"></span>关键术语解释（不背术语也能懂）</h2>
+        <dl class="term">
+          <dt>知识库</dt>
+          <dd>你自己的资料集合：课件、文档、FAQ、制度、论文、笔记等。</dd>
+          <dt>切片</dt>
+          <dd>把长文档切成小段（例如每段 200～500 字）。就像把一本书拆成很多“便签纸”。</dd>
+          <dt>Embedding（向量）</dt>
+          <dd>把一句话的“意思”变成一串数字。数字之间的距离可以表示“语义相似”。</dd>
+          <dt>向量数据库</dt>
+          <dd>专门用来做“按相似度快速找内容”的数据库，就像超快的“按意思检索”的图书馆检索系统。</dd>
+          <dt>Top‑K</dt>
+          <dd>最相似的前 K 段资料（比如前 3 段、前 5 段）。</dd>
+          <dt>提示词（Prompt）</dt>
+          <dd>给大模型的说明：包含用户问题 + 找到的资料 + 回答要求（比如要引用资料）。</dd>
+        </dl>
+      </section>
+
+      <section class="avoid-break">
+        <h2><span class="dot"></span>一个实际应用案例：公司制度问答机器人</h2>
+        <p>
+          假设你要做一个“公司制度问答”机器人：员工问“加班调休怎么申请？”如果只用大模型，它可能回答得很像真的，但和公司最新流程不一致。
+        </p>
+        <ul>
+          <li>把制度文档、流程说明、常见问题整理进知识库，并按段切片。</li>
+          <li>员工提问后，检索器从知识库里找出最相关的几段制度原文。</li>
+          <li>大模型基于这些原文，用更好理解的语言整理步骤，并提醒关键信息（例如审批人、截止时间）。</li>
+        </ul>
+        <div class="callout">
+          <strong>效果：</strong>答案更贴合“你自己的资料”，更新制度后只需更新知识库，不必重新训练大模型。
+        </div>
+      </section>
+
+      <section>
+        <h2><span class="dot"></span>常见误区（很容易踩坑）</h2>
+        <ul>
+          <li><strong>误区1：RAG = 绝对不会胡编。</strong>其实不一定。检索到的资料如果不相关、或资料本身有误，生成仍会出错。</li>
+          <li><strong>误区2：把整本书不切片直接塞进去。</strong>资料太长会被截断，也会变慢；切片更利于精确检索。</li>
+          <li><strong>误区3：只看“检索到没”，不看“是否用上了”。</strong>要让模型明确“只能依据资料回答”，否则它可能忽略资料。</li>
+          <li><strong>误区4：资料越多越好。</strong>资料多但杂，会把“噪音”也检索出来；更重要的是资料质量与组织方式。</li>
+        </ul>
+      </section>
+
+      <section class="avoid-break">
+        <h2><span class="dot"></span>3个复习问题（自测一下）</h2>
+        <ol>
+          <li>用一句话解释：为什么 RAG 能减少大模型“胡编”？</li>
+          <li>Embedding（向量）在 RAG 里主要负责做什么？</li>
+          <li>如果检索出来的 Top‑K 资料不相关，你会优先从哪三件事排查？</li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>本页为科普讲解材料：面向高中生友好，强调直观理解与可视化。</footer>
+  </body>
+</html>

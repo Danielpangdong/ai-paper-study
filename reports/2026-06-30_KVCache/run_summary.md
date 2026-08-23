@@ -1,0 +1,32 @@
+# Run Summary
+
+- Date: 2026-06-30 Asia/Shanghai.
+- Automation ID: `ai-pdf`.
+- Selected concept: KV Cache（键值缓存）.
+- Rationale: follows recent Context Engineering and Chain-of-Thought reports by explaining the hidden inference-efficiency mechanism that makes long conversations and streaming output practical. Not present in recent automation memory.
+- Built files:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/2026-06-30_KV Cache（键值缓存）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/2026-06-30_KV Cache（键值缓存）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/assets/kv_cache_library_labeled.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/assets/kv_cache_workflow_labeled.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/email_body.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-30_KVCache/sources.md`
+- Image generation: used built-in ChatGPT image generation for two educational raster diagram bases, then overlaid verified Chinese labels locally with Pillow for reliable typography.
+- Validation:
+  - HTML parsed successfully; required sections passed: 标题页, 为什么这个概念重要, 一个直观类比, 工作原理, 关键术语解释, 一个真实应用案例, 常见误区, 3句话总结, 复习问题, 来源与说明.
+  - HTML contains two image references and no script tags.
+  - Source links returned HTTP 200.
+  - PDF exported via Playwright + Chrome.
+  - `pdfinfo` reported 10 A4 pages, unencrypted, 4.0 MB.
+  - `pdftotext` confirmed title, required sections, quiz, and source text are extractable.
+  - `pdfimages -list` confirmed two large embedded diagrams: 1672 x 941 and 1536 x 1024.
+  - Rendered and visually checked previews of pages 1, 3, 4, and 8.
+  - SHA256 PDF: `d17ee01b3f2cb58128bc8d53c9a0bf1d3d63ce0dd56aec0f6572489d22bce3e9`.
+- Delivery:
+  - Sent by Gmail with PDF attachment to `pangdong@sf-express.com,seekiingforhappiness@gmail.com`.
+  - Subject: `【AI每日深度科普】KV Cache：为什么AI聊天能越聊越快？`
+  - Gmail message id: `19f15df7d0c8f025`; thread id: `19f15df7d0c8f025`.
+  - Sent search proof: `in:sent subject:"KV Cache" has:attachment newer_than:1d` returned `19f15df7d0c8f025`.
+- Sources used for factual grounding: Hugging Face Transformers KV cache docs/cache explanation/LLM optimization tutorial, Attention Is All You Need, and PagedAttention.
+- Completed: 2026-06-30 08:13:56 CST.

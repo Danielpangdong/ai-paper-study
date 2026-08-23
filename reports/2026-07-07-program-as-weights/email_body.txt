@@ -1,0 +1,8 @@
+今天精选的论文是 Program-as-Weights，来自 University of Waterloo、Cornell University 与 Harvard University。
+
+一句话推荐理由：
+它把大模型从“每次都远程回答问题”，改造成“先把模糊任务编译成一个本地可运行的小权重函数”。
+
+这可能改变 AI 工程的成本结构、隐私边界和端侧部署方式。
+
+附件为中文深度拆解 HTML 报告，适合非技术读者阅读。

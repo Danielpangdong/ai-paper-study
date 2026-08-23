@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>每日AI概念精讲（2026-05-04）：MoE（混合专家模型）</title>
+    <style>
+      :root{
+        --ink:#0f172a; --muted:#475569; --line:#e2e8f0; --soft:#f8fafc;
+        --accent:#0ea5a3; --accent2:#2563eb;
+      }
+      body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+        color:var(--ink); margin:0; background:#fff; line-height:1.75;}
+      .page{max-width:860px; margin:0 auto; padding:40px 22px 60px;}
+      .hero{border:2px solid var(--line); border-radius:18px; padding:18px 18px 14px; background:#f7fcfc;}
+      .kicker{color:var(--muted); font-size:14px; letter-spacing:.08em;}
+      h1{margin:.4rem 0 .2rem; font-size:34px; line-height:1.25;}
+      .meta{color:var(--muted); font-size:14px;}
+      h2{margin:26px 0 8px; font-size:22px;}
+      h2 .dot{display:inline-block; width:12px; height:12px; border-radius:6px; background:var(--accent); margin-right:10px; transform:translateY(-1px);}
+      .callout{border:2px solid var(--line); background:var(--soft); border-radius:14px; padding:14px 14px; color:var(--accent2); font-weight:650;}
+      .grid{display:grid; grid-template-columns:1fr; gap:14px;}
+      .img{border:2px solid var(--line); border-radius:16px; overflow:hidden; background:#fff;}
+      .img img{display:block; width:100%; height:auto;}
+      .note{color:var(--muted); font-size:13px;}
+      ul{margin:8px 0 0; padding-left:1.2rem;}
+      code{background:#f1f5f9; padding:1px 6px; border-radius:8px;}
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="hero">
+        <div class="kicker">每日AI概念精讲</div>
+        <h1>MoE（混合专家模型）：让大模型像“多位专科老师”一样工作</h1>
+        <div class="meta">日期：2026-05-04 · 难度：高中友好 · 关键词：专家 / 分流 / 省算力</div>
+      </div>
+
+      <h2><span class="dot"></span>为什么重要</h2>
+      <p>
+        近几年模型越做越大，能力会变强，但训练/推理也更“费电费时间”。MoE 的思路很像现实生活中的分工：
+        不是每次都叫“全班同学一起做同一道题”，而是让<strong>最擅长的少数几位</strong>来处理这次问题。
+      </p>
+      <div class="callout">一句话记住：MoE = 很多“专家” + 一个“分流器”，每次只调用少数专家。</div>
+
+      <h2><span class="dot"></span>直观类比</h2>
+      <p>
+        你在学校问问题：如果你问“作文怎么立意”，最好去找语文老师；问“函数题怎么做”，最好去找数学老师。
+        你不会每次都把所有老师都叫来开会。MoE 就把这种“找对人干对事”的逻辑变成了模型结构。
+      </p>
+
+      <div class="grid">
+        <div class="img"><img src="moe_router_experts.png" alt="MoE 路由器与专家示意图" /></div>
+        <div class="img"><img src="moe_canteen_analogy.png" alt="MoE 食堂类比图" /></div>
+      </div>
+      <p class="note">配图说明：上图用“路由器选专家”展示 MoE 的核心流程；下图用“食堂点餐”帮助你记忆 Top‑K 只开少数灶台。</p>
+
+      <h2><span class="dot"></span>工作原理（不用堆术语版）</h2>
+      <ul>
+        <li><strong>很多专家（Experts）</strong>：可以理解为很多个“擅长不同东西的小脑袋”，每个都能对输入做一次处理。</li>
+        <li><strong>分流器（Router / Gate）</strong>：像一个“分诊台”，看一眼输入，就决定把这次任务交给哪几个专家。</li>
+        <li><strong>Top‑K 选择</strong>：通常只选 <code>K=1</code> 或 <code>K=2</code> 个专家参与，其他专家这次不工作，从而省算力。</li>
+        <li><strong>合并输出</strong>：被选中的专家给出结果后，再把它们“加权合并”成最终输出。</li>
+      </ul>
+      <p class="note">关键点：MoE 并不是“减少模型能力”，而是让模型在保持大容量的同时，每次计算更省。</p>
+
+      <h2><span class="dot"></span>关键术语解释（高中生能懂版）</h2>
+      <ul>
+        <li><strong>参数（Parameters）</strong>：模型里的“可调旋钮”。越多通常越能学到复杂规律，但也更耗资源。</li>
+        <li><strong>算力/计算量（Compute）</strong>：可以理解为“做题要用多少电、多少时间”。</li>
+        <li><strong>稀疏（Sparse）</strong>：不是每次都用全部部件，而是只用一部分。MoE 的稀疏体现在“只启用少数专家”。</li>
+        <li><strong>负载均衡（Load Balancing）</strong>：别让所有请求都挤到同一个专家，否则它会“排队爆满”。训练时会用技巧让各专家都有活干。</li>
+      </ul>
+
+      <h2><span class="dot"></span>一个实际应用案例</h2>
+      <p>
+        假设你做一个“学习助手”App：它既要讲解数学题、又要润色作文、还要写一点代码。
+        如果只用一个“通才模型”，每次都要完整地算一遍，成本很高；用 MoE 的思路，你可以让模型内部形成不同擅长方向的专家，
+        回答作文时更多调用“写作专家”，回答函数题时更多调用“数学专家”。这样更像“校内多学科老师协作”，并且更省算力。
+      </p>
+
+      <h2><span class="dot"></span>常见误区</h2>
+      <ul>
+        <li><strong>误区 1：MoE 就是把模型拆成很多份，随便挑两份。</strong> 实际上路由器需要学习“怎么挑”，挑错会影响质量。</li>
+        <li><strong>误区 2：专家越多越好。</strong> 专家太多会带来训练复杂度、通信开销、负载不均等问题。</li>
+        <li><strong>误区 3：MoE 天生更准确。</strong> MoE 的优势主要是“容量大但每次算得省”；准确率还依赖数据、训练方法和路由设计。</li>
+      </ul>
+
+      <h2><span class="dot"></span>3 个复习问题</h2>
+      <ol>
+        <li>用一句话解释 MoE 的核心想法，并说出它想解决的“资源问题”是什么？</li>
+        <li>为什么 MoE 需要一个“路由器”？如果没有路由器会发生什么？</li>
+        <li>你能举一个生活中的“Top‑2 只找两位专家”的例子吗？</li>
+      </ol>
+      <p class="note">提示：能把“专家”“分流器”“只启用少数专家=省算力”讲清楚，就掌握了 MoE 的精髓。</p>
+    </div>
+  </body>
+</html>
+

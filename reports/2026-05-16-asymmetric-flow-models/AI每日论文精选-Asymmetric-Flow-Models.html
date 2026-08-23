@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI每日论文精选｜Asymmetric Flow Models</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #10141b;
+      --muted: #5d6675;
+      --line: #dbe2ec;
+      --blue: #1769e0;
+      --green: #08785f;
+      --red: #b53a3a;
+      --amber: #9a6a12;
+      --violet: #5d4fd6;
+      --soft: #f0f4f8;
+      --chip: #eaf2ff;
+      --shadow: 0 18px 48px rgba(16, 20, 27, .09);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --paper: #151b23;
+        --ink: #eef3f8;
+        --muted: #a9b5c4;
+        --line: #2c3746;
+        --soft: #101923;
+        --chip: #10233d;
+        --shadow: 0 20px 52px rgba(0,0,0,.3);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(23,105,224,.08), transparent 360px), var(--bg);
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 28px 18px 58px; }
+    header {
+      display: grid;
+      grid-template-columns: 1.04fr .96fr;
+      gap: 24px;
+      align-items: stretch;
+      padding: 28px 0 18px;
+    }
+    .hero-copy, .hero-art, .section, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { padding: 30px; }
+    .hero-art { padding: 18px; display: grid; place-items: center; background: #10141b; color: #fff; }
+    .kicker {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h1 { margin: 18px 0 14px; font-size: clamp(32px, 5vw, 56px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 0 0 16px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0 0 13px; }
+    .subtitle { color: var(--muted); font-size: 18px; max-width: 820px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 22px; }
+    .meta-grid div { border-top: 1px solid var(--line); padding-top: 10px; font-size: 14px; color: var(--muted); }
+    .meta-grid strong { color: var(--ink); }
+    .section { margin-top: 24px; padding: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-12 { grid-column: span 12; }
+    .card { padding: 16px; box-shadow: none; }
+    .blue { background: #eef5ff; border-color: #c9ddff; }
+    .green { background: #eaf8f3; border-color: #c8eadf; }
+    .amber { background: #fff7df; border-color: #efdca4; }
+    .red { background: #fff0ee; border-color: #ffd0cc; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0; margin-bottom: 6px; }
+    .big { font-size: 24px; line-height: 1.25; font-weight: 820; margin-bottom: 8px; }
+    .lead { font-size: 18px; color: var(--ink); }
+    .muted { color: var(--muted); }
+    .quote {
+      border-left: 5px solid var(--blue);
+      background: var(--soft);
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 22px;
+      line-height: 1.48;
+      font-weight: 780;
+    }
+    .pill { display: inline-flex; padding: 4px 9px; border-radius: 8px; background: var(--chip); color: var(--blue); font-size: 13px; font-weight: 750; margin: 0 6px 8px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: var(--muted); font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .figure { border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 16px 0; background: #fbfcfe; overflow-x: auto; }
+    .caption { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    svg { display: block; max-width: 100%; height: auto; }
+    .term { display: grid; grid-template-columns: 160px 1fr 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .term:last-child { border-bottom: 0; }
+    li { margin-bottom: 8px; }
+    .footer { margin-top: 26px; text-align: center; color: var(--muted); font-size: 13px; }
+    @media (max-width: 860px) {
+      header, .meta-grid, .grid { grid-template-columns: 1fr; }
+      .span-4, .span-5, .span-6, .span-7, .span-12 { grid-column: 1; }
+      .hero-copy, .section { padding: 21px; }
+      .term { grid-template-columns: 1fr; gap: 5px; }
+      table { font-size: 13px; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="hero-copy">
+        <div class="kicker">AI DAILY PAPER PICK · 2026-05-16</div>
+        <h1>AI每日论文精选：图像生成，可能不必一直“先压缩再还原”</h1>
+        <p class="subtitle">今日论文：<strong>Asymmetric Flow Models</strong><br />中文标题：<strong>非对称流模型：让像素级图像生成摆脱高维噪声负担</strong></p>
+        <div class="meta-grid">
+          <div><strong>作者</strong><br />Hansheng Chen, Jan Ackermann, Minseo Kim, Gordon Wetzstein, Leonidas Guibas</div>
+          <div><strong>机构</strong><br />Stanford University</div>
+          <div><strong>发布时间</strong><br />2026-05-13 · arXiv:2605.12964</div>
+          <div><strong>平台</strong><br />arXiv · cs.CV · 项目页与代码已公开</div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg width="470" height="380" viewBox="0 0 470 380" role="img" aria-label="AsymFlow 核心思想图">
+          <defs>
+            <linearGradient id="heroG" x1="0" x2="1"><stop stop-color="#4f8cff"/><stop offset="1" stop-color="#20c997"/></linearGradient>
+            <filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".3"/></filter>
+          </defs>
+          <rect x="18" y="20" width="434" height="340" rx="18" fill="#111827" stroke="#334155"/>
+          <text x="235" y="58" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">像素生成的“省力路线”</text>
+          <text x="235" y="84" fill="#b8c4d8" font-size="13" text-anchor="middle">不是少看图片细节，而是少学无意义的高维噪声</text>
+          <rect x="46" y="120" width="135" height="88" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="114" y="148" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">完整像素细节</text>
+          <text x="114" y="174" fill="#9fb0c8" font-size="12" text-anchor="middle">颜色、纹理、边缘</text>
+          <text x="114" y="193" fill="#9fb0c8" font-size="12" text-anchor="middle">保留全维表达</text>
+          <rect x="288" y="120" width="135" height="88" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="356" y="148" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">压缩后的噪声</text>
+          <text x="356" y="174" fill="#9fb0c8" font-size="12" text-anchor="middle">只学关键方向</text>
+          <text x="356" y="193" fill="#9fb0c8" font-size="12" text-anchor="middle">低秩子空间</text>
+          <path d="M181 164 C224 137 249 137 288 164" fill="none" stroke="url(#heroG)" stroke-width="4"/>
+          <path d="M181 164 C226 214 251 214 288 164" fill="none" stroke="url(#heroG)" stroke-width="4" opacity=".65"/>
+          <circle cx="235" cy="164" r="42" fill="#0f172a" stroke="url(#heroG)" stroke-width="3" filter="url(#s)"/>
+          <text x="235" y="159" fill="#fff" font-size="16" font-weight="800" text-anchor="middle">AsymFlow</text>
+          <text x="235" y="181" fill="#b7c6da" font-size="11" text-anchor="middle">非对称速度参数化</text>
+          <rect x="86" y="252" width="298" height="48" rx="10" fill="#eef5ff"/>
+          <text x="235" y="282" fill="#1769e0" font-size="16" font-weight="800" text-anchor="middle">结果：像素级生成更清晰，同时不重写整套模型</text>
+        </svg>
+      </div>
+    </header>
+
+    <section class="section" id="title">
+      <h2>1. 标题区</h2>
+      <div class="grid">
+        <div class="card span-7">
+          <div class="label">Paper Card</div>
+          <p><strong>英文标题：</strong>Asymmetric Flow Models</p>
+          <p><strong>中文标题：</strong>非对称流模型：让像素级生成不再被高维噪声拖累</p>
+          <p><strong>作者：</strong>Hansheng Chen, Jan Ackermann, Minseo Kim, Gordon Wetzstein, Leonidas Guibas</p>
+          <p><strong>机构：</strong>Stanford University</p>
+          <p><strong>发布时间：</strong>2026-05-13</p>
+          <p><strong>论文链接：</strong><a href="https://arxiv.org/abs/2605.12964">https://arxiv.org/abs/2605.12964</a></p>
+          <p><strong>会议/平台：</strong>arXiv · Computer Vision and Pattern Recognition；项目页、GitHub 与 Hugging Face demo 已公开。</p>
+        </div>
+        <div class="card blue span-5">
+          <div class="label">今天的关键词</div>
+          <div class="big">直接在像素里生成，但别让模型背完整噪声。</div>
+          <p class="muted">传统做法常把图片压到潜在空间再生成，因为直接处理像素太贵。AsymFlow 的思路是：图像细节保留全量表达，噪声预测只看关键低维方向。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">这篇论文值得读，不是因为它又做出一个漂亮图像 demo，而是因为它挑战了图像生成领域一个很常见的默认选择：为了省算力，我们是不是必须先把图片压缩到 latent space，再从压缩表示里生成？</p>
+      <div class="grid">
+        <div class="card green span-4">
+          <div class="label">行业意义</div>
+          <p><strong>创意工具最怕“看起来差一点”。</strong>广告、海报、商品图、影视概念图里，材质、字形、边缘、光泽这些像素细节会直接影响可用性。</p>
+        </div>
+        <div class="card blue span-4">
+          <div class="label">技术突破</div>
+          <p><strong>它不是换一个更大的模型。</strong>论文提出 rank-asymmetric flow parameterization，让模型少预测高维噪声，但仍能恢复完整速度场。</p>
+        </div>
+        <div class="card amber span-4">
+          <div class="label">长期价值</div>
+          <p><strong>它提供了一条 latent-to-pixel 的迁移路线。</strong>已有 latent 模型的语义能力可以保留，微调主要用来修正像素级纹理和细节。</p>
+        </div>
+      </div>
+      <p>我今天选它，是因为它把“图像生成质量提升”从堆模型、堆数据、堆算力，转向了更底层的表示方式问题：哪些东西必须全分辨率学习，哪些东西其实只需要学关键方向？这类问题往往会影响未来几年的生成模型工程范式。</p>
+    </section>
+
+    <section class="section" id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">AsymFlow 像是在教 AI 画高清图：画面细节要认真画，但随机噪声不用每一粒灰尘都背下来，只抓住最重要的方向就够了。</div>
+    </section>
+
+    <section class="section" id="contrib">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>贡献一：重新设计“模型要预测什么”</h3>
+          <p>标准 flow matching 往往让模型预测完整速度：既要理解图片本身，也要处理高维噪声。AsymFlow 改成“数据项全维、噪声项低秩”。白话讲：画面内容照样认真处理，但随机噪声只在少数关键方向上处理。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献二：不需要换掉网络结构</h3>
+          <p>论文强调这种非对称预测可以解析地恢复完整速度，因此不用重做训练流程、采样流程或网络架构。这对产业很重要：如果一个方法必须推翻现有系统，落地成本会高很多。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献三：给 latent 模型一条进入像素空间的桥</h3>
+          <p>当前很多强图像模型在压缩空间工作。AsymFlow 通过把低秩像素子空间对齐到 latent space，让已有模型的语义能力能被迁移到像素级模型里，而不是从零开始学。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献四：实验结果不是小修小补</h3>
+          <p>项目页列出 ImageNet 256×256 上 AsymFlow-H/16 达到 1.57 FID；文本到图像系统 AsymFLUX.2 klein 在 HPSv3、DPG-Bench、GenEval 上超过其 latent base，显示它不只是理论漂亮。</p>
+        </div>
+      </div>
+
+      <table>
+        <thead><tr><th>问题</th><th>旧路线</th><th>AsymFlow 的改变</th><th>直觉理解</th></tr></thead>
+        <tbody>
+          <tr><td>像素空间太大</td><td>先压缩成 latent，再生成</td><td>直接做像素生成，但降低噪声预测负担</td><td>不把整张海报缩小后再放大，而是在高清画布上工作</td></tr>
+          <tr><td>噪声预测太难</td><td>让模型处理完整高维噪声</td><td>只在低秩子空间预测噪声</td><td>不要求记住每个杂点，只抓主要干扰方向</td></tr>
+          <tr><td>已有 latent 模型难复用</td><td>重新训练或艰难迁移</td><td>将低秩像素子空间与 latent space 对齐</td><td>把旧导航地图接到新高清摄像头上</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2>5. 工作原理：深入浅出</h2>
+      <p>先用一个生活类比：你要把一张模糊草图变成高清商品图。真正重要的是物体结构、材质、边缘、光照这些“画面信息”；随机噪声像灰尘，很多是无意义的。如果让学徒把每一粒灰尘都编号记住，他会累死，也不会更会画画。</p>
+      <p>AsymFlow 的做法就是把任务拆开：图片本身仍然完整表达；噪声只保留一个“低维摘要”。最后再用数学方式把完整生成方向恢复出来。</p>
+      <div class="figure">
+        <svg width="980" height="390" viewBox="0 0 980 390" role="img" aria-label="AsymFlow 工作流程">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1769e0"/></marker>
+          </defs>
+          <rect x="20" y="30" width="190" height="98" rx="10" fill="#eef5ff" stroke="#bdd5ff"/>
+          <text x="115" y="64" font-size="18" font-weight="800" fill="#1769e0" text-anchor="middle">输入：带噪图像</text>
+          <text x="115" y="92" font-size="13" fill="#45576e" text-anchor="middle">像一张还没洗干净的底片</text>
+          <rect x="278" y="30" width="190" height="98" rx="10" fill="#eaf8f3" stroke="#bfe7da"/>
+          <text x="373" y="64" font-size="18" font-weight="800" fill="#08785f" text-anchor="middle">数据项：全维</text>
+          <text x="373" y="92" font-size="13" fill="#45576e" text-anchor="middle">保留颜色、纹理、轮廓</text>
+          <rect x="278" y="178" width="190" height="98" rx="10" fill="#fff7df" stroke="#ead79c"/>
+          <text x="373" y="212" font-size="18" font-weight="800" fill="#9a6a12" text-anchor="middle">噪声项：低秩</text>
+          <text x="373" y="240" font-size="13" fill="#45576e" text-anchor="middle">只抓住关键噪声方向</text>
+          <rect x="536" y="104" width="190" height="98" rx="10" fill="#f2f0ff" stroke="#cfc9ff"/>
+          <text x="631" y="138" font-size="18" font-weight="800" fill="#5d4fd6" text-anchor="middle">非对称速度</text>
+          <text x="631" y="166" font-size="13" fill="#45576e" text-anchor="middle">Pε - x0，而不是 ε - x0</text>
+          <rect x="794" y="104" width="160" height="98" rx="10" fill="#10141b" stroke="#334155"/>
+          <text x="874" y="138" font-size="18" font-weight="800" fill="#fff" text-anchor="middle">完整速度恢复</text>
+          <text x="874" y="166" font-size="13" fill="#b8c4d8" text-anchor="middle">训练/采样流程基本不变</text>
+          <path d="M210 79 H268" stroke="#1769e0" stroke-width="3" marker-end="url(#arrow)"/>
+          <path d="M210 79 C245 126 245 210 268 227" stroke="#1769e0" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M468 79 C500 89 512 119 526 143" stroke="#1769e0" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M468 227 C505 213 516 184 526 163" stroke="#1769e0" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+          <path d="M726 153 H784" stroke="#1769e0" stroke-width="3" marker-end="url(#arrow)"/>
+          <rect x="108" y="318" width="764" height="42" rx="8" fill="#f0f4f8" stroke="#dbe2ec"/>
+          <text x="490" y="344" font-size="15" font-weight="800" fill="#243447" text-anchor="middle">核心：画面信息不打折；噪声学习减负；最后仍恢复完整生成方向。</text>
+        </svg>
+        <p class="caption">图 1：AsymFlow 的简化流程。重点不是“少生成细节”，而是“少把算力浪费在高维噪声上”。</p>
+      </div>
+
+      <div class="figure">
+        <svg width="980" height="360" viewBox="0 0 980 360" role="img" aria-label="从 latent 模型迁移到像素模型">
+          <rect x="36" y="48" width="240" height="210" rx="12" fill="#eef5ff" stroke="#bdd5ff"/>
+          <text x="156" y="86" font-size="20" font-weight="800" fill="#1769e0" text-anchor="middle">已有 latent 模型</text>
+          <text x="156" y="120" font-size="14" fill="#45576e" text-anchor="middle">懂语义、构图、风格</text>
+          <text x="156" y="150" font-size="14" fill="#45576e" text-anchor="middle">但细节经过压缩</text>
+          <rect x="370" y="78" width="240" height="150" rx="12" fill="#10141b" stroke="#334155"/>
+          <text x="490" y="116" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">低秩像素子空间对齐</text>
+          <text x="490" y="150" font-size="14" fill="#b8c4d8" text-anchor="middle">把 latent 的“路线图”</text>
+          <text x="490" y="178" font-size="14" fill="#b8c4d8" text-anchor="middle">接到高清像素画布</text>
+          <rect x="704" y="48" width="240" height="210" rx="12" fill="#eaf8f3" stroke="#bfe7da"/>
+          <text x="824" y="86" font-size="20" font-weight="800" fill="#08785f" text-anchor="middle">像素级 AsymFLUX</text>
+          <text x="824" y="120" font-size="14" fill="#45576e" text-anchor="middle">保留语义能力</text>
+          <text x="824" y="150" font-size="14" fill="#45576e" text-anchor="middle">微调纹理、材质、真实感</text>
+          <path d="M276 153 H360" stroke="#1769e0" stroke-width="4"/>
+          <path d="M610 153 H694" stroke="#1769e0" stroke-width="4"/>
+          <circle cx="318" cy="153" r="8" fill="#1769e0"/>
+          <circle cx="652" cy="153" r="8" fill="#1769e0"/>
+          <rect x="210" y="292" width="560" height="38" rx="8" fill="#fff7df" stroke="#ead79c"/>
+          <text x="490" y="317" font-size="15" font-weight="800" fill="#6f4a00" text-anchor="middle">不是推倒重训，而是把旧模型的“理解力”搬到高清像素世界。</text>
+        </svg>
+        <p class="caption">图 2：latent-to-pixel 微调路线。它的产业价值在于复用已有模型能力，而不是从零训练。</p>
+      </div>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term"><strong>Flow Matching</strong><span>专业解释：训练模型学习从噪声分布流向数据分布的速度场。</span><span>白话：教模型一步步把乱麻整理成一张图片。</span></div>
+      <div class="term"><strong>Velocity Prediction</strong><span>专业解释：在生成轨迹中预测当前位置应该往哪个方向移动。</span><span>白话：每一步都问“接下来该往哪里改，图片会更像真的？”</span></div>
+      <div class="term"><strong>Low-Rank Subspace</strong><span>专业解释：用较少维度表示主要变化方向的子空间。</span><span>白话：一首歌不用记录每个空气振动，只记录旋律和关键节奏。</span></div>
+      <div class="term"><strong>Latent Model</strong><span>专业解释：在压缩后的隐藏空间里生成，再解码成图像。</span><span>白话：先在缩略图世界里画，再放大成高清图。</span></div>
+      <div class="term"><strong>Pixel-Space Model</strong><span>专业解释：直接在像素空间建模与生成。</span><span>白话：直接在高清画布上画，不先压成缩略图。</span></div>
+      <div class="term"><strong>FID</strong><span>专业解释：衡量生成图像分布与真实图像分布距离的指标，越低通常越好。</span><span>白话：看一批 AI 图片整体上像不像真实图片集合。</span></div>
+      <div class="term"><strong>HPSv3 / DPG / GenEval</strong><span>专业解释：文本到图像模型的偏好、提示词遵循与组合能力评测。</span><span>白话：不只看图漂不漂亮，还看它是否真的听懂提示词。</span></div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p>论文和项目页给出的结果可以分成两类：一类是标准图像生成基准，另一类是系统级文本到图像评测。真正值得注意的是：AsymFlow 的改进不是靠明显增加算力，项目页显示 AsymFlow-H/16 与 JiT-H/16 同为 953M 参数、363 GFLOPs，但 FID 从 1.86 改到 1.57。</p>
+
+      <table>
+        <thead><tr><th>模型/方法</th><th>参数</th><th>GFLOPs</th><th>FID↓</th><th>怎么理解</th></tr></thead>
+        <tbody>
+          <tr><td>JiT-H/16 x0</td><td>953M</td><td>363</td><td>1.86*</td><td>强基线，但仍受像素空间预测目标限制。</td></tr>
+          <tr><td>PixelREPA-H/16 x0</td><td>953M</td><td>363</td><td>1.81*</td><td>加入表示对齐，提升有限。</td></tr>
+          <tr><td><strong>AsymFlow-H/16 Pε - x0</strong></td><td>953M</td><td>363</td><td><strong>1.57</strong></td><td>在相近模型规模下，通过预测目标设计带来明显改善。</td></tr>
+        </tbody>
+      </table>
+
+      <table>
+        <thead><tr><th>文本到图像系统</th><th>HPSv3↑</th><th>DPG↑</th><th>GenEval↑</th><th>结果含义</th></tr></thead>
+        <tbody>
+          <tr><td>FLUX.2 klein Base</td><td>9.50</td><td>85.2</td><td>0.80</td><td>latent base 已经很强。</td></tr>
+          <tr><td><strong>AsymFLUX.2 klein</strong></td><td><strong>10.66</strong></td><td><strong>86.8</strong></td><td><strong>0.82</strong></td><td>迁移到像素空间后，偏好与提示词遵循都有提升。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="figure">
+        <svg width="980" height="340" viewBox="0 0 980 340" role="img" aria-label="结果对比图">
+          <line x1="110" y1="260" x2="880" y2="260" stroke="#dbe2ec" stroke-width="2"/>
+          <line x1="110" y1="60" x2="110" y2="260" stroke="#dbe2ec" stroke-width="2"/>
+          <text x="110" y="292" font-size="13" fill="#5d6675" text-anchor="middle">JiT-H</text>
+          <text x="350" y="292" font-size="13" fill="#5d6675" text-anchor="middle">PixelREPA-H</text>
+          <text x="590" y="292" font-size="13" fill="#5d6675" text-anchor="middle">AsymFlow-H</text>
+          <text x="800" y="292" font-size="13" fill="#5d6675" text-anchor="middle">越低越好</text>
+          <rect x="70" y="80" width="80" height="180" rx="6" fill="#c8d9f5"/>
+          <rect x="310" y="94" width="80" height="166" rx="6" fill="#9fc3ff"/>
+          <rect x="550" y="122" width="80" height="138" rx="6" fill="#1769e0"/>
+          <text x="110" y="70" font-size="16" font-weight="800" fill="#243447" text-anchor="middle">1.86</text>
+          <text x="350" y="84" font-size="16" font-weight="800" fill="#243447" text-anchor="middle">1.81</text>
+          <text x="590" y="112" font-size="16" font-weight="800" fill="#1769e0" text-anchor="middle">1.57</text>
+          <rect x="705" y="84" width="210" height="116" rx="10" fill="#eef5ff" stroke="#bdd5ff"/>
+          <text x="810" y="118" font-size="17" font-weight="800" fill="#1769e0" text-anchor="middle">重点不是“更大”</text>
+          <text x="810" y="149" font-size="13" fill="#45576e" text-anchor="middle">而是同类规模下</text>
+          <text x="810" y="174" font-size="13" fill="#45576e" text-anchor="middle">预测目标更聪明</text>
+        </svg>
+        <p class="caption">图 3：ImageNet 256×256 的 FID 对比。报告重新绘制为直观柱状图，便于手机阅读。</p>
+      </div>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid">
+        <div class="card red span-6">
+          <h3>算力门槛仍然高</h3>
+          <p>AsymFlow 降低了像素生成里“噪声预测”的负担，但不等于普通团队可以轻松训练 9B 级图像模型。训练、数据、评测、推理部署仍是高门槛工程。</p>
+        </div>
+        <div class="card amber span-6">
+          <h3>评测指标不能代表所有真实使用场景</h3>
+          <p>FID、HPSv3、DPG、GenEval 能说明质量与提示词遵循，但企业真实需求还包括文字准确性、可控编辑、版权风险、风格一致性、批量稳定性。</p>
+        </div>
+        <div class="card span-6">
+          <h3>从图片到视频还有距离</h3>
+          <p>像素级细节对视频更重要，但视频还有时间一致性、运动、镜头、声音与可控剪辑问题。AsymFlow 的思想可能有启发，但不能直接等于视频生成突破。</p>
+        </div>
+        <div class="card span-6">
+          <h3>开源可用性还要看后续生态</h3>
+          <p>代码和 demo 已公开，项目页也写到 ComfyUI coming soon。真正产业扩散，还要看推理成本、模型权重、插件生态与社区复现情况。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="industry">
+      <h2>9. 产业影响分析</h2>
+      <p>如果这个方向继续成立，它会影响的不只是学术基准，而是整个图像生成工具链的取舍。</p>
+      <table>
+        <thead><tr><th>受益方</th><th>可能变化</th><th>原因</th></tr></thead>
+        <tbody>
+          <tr><td>设计与广告工具</td><td>更重视像素级质感和可交付图</td><td>商品材质、字体边缘、真实感是商业图的重要门槛。</td></tr>
+          <tr><td>图像模型创业公司</td><td>可能出现“latent 模型 + 像素微调”的新产品路线</td><td>不用完全推翻已有模型，可复用语义能力再补细节。</td></tr>
+          <tr><td>开源生成社区</td><td>ComfyUI、微调、工作流插件可能跟进</td><td>项目已有 GitHub 与 demo，社区复现条件较好。</td></tr>
+          <tr><td>云推理平台</td><td>需要重新比较 latent 与 pixel 模型的质量/成本曲线</td><td>如果像素模型在同等成本下更好，部署策略会变化。</td></tr>
+        </tbody>
+      </table>
+      <p>它不会马上淘汰 latent diffusion。更现实的判断是：未来一段时间，强语义模型仍可能在 latent 空间里发展，而高质量商业交付会越来越关注如何把 latent 能力迁移到更细致的像素级生成与编辑流程。</p>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.12964">原论文：Asymmetric Flow Models</a></li>
+        <li><a href="https://hanshengchen.com/asymflow/">官方项目页：AsymFlow</a></li>
+        <li><a href="https://github.com/Lakonik/LakonLab">官方代码：Lakonik/LakonLab</a></li>
+        <li><a href="https://huggingface.co/papers/2605.12964">Hugging Face Papers 页面与社区讨论</a></li>
+        <li><a href="https://papers.cool/arxiv/2605.12964">Papers.cool 论文聚合页</a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <ol>
+        <li>arXiv: <a href="https://arxiv.org/abs/2605.12964">Asymmetric Flow Models, submitted on 13 May 2026</a>。</li>
+        <li>作者项目页：<a href="https://hanshengchen.com/asymflow/">AsymFlow: Asymmetric Flow Models</a>，包含方法、结果表、demo 与 citation。</li>
+        <li>GitHub: <a href="https://github.com/Lakonik/LakonLab">Lakonik/LakonLab</a>，官方 PyTorch implementation，显示 AsymFlow 于 2026-05-14 released。</li>
+        <li>Hugging Face Papers: <a href="https://huggingface.co/papers/2605.12964">Asymmetric Flow Models</a>，用于交叉确认摘要、社区关注和公开模型/space 链接。</li>
+        <li>Papers.cool: <a href="https://papers.cool/arxiv/2605.12964">Asymmetric Flow Models 聚合页</a>，用于交叉确认发布时间与摘要。</li>
+      </ol>
+    </section>
+
+    <p class="footer">《AI每日论文精选》· 2026-05-16 · 本报告为中文重构解读，图示为基于论文方法重新设计的中文解释图，不是论文截图。</p>
+  </main>
+</body>
+</html>

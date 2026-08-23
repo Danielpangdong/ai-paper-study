@@ -1,0 +1,22 @@
+# 2026-06-16 AI Concept Run Summary
+
+- Run time: 2026-06-16 08:10:33 CST / 2026-06-16T08:10:33+0800.
+- Automation ID: `ai-pdf`.
+- Selected concept: `AI记忆（AI Memory）`.
+- Rationale: recent concept reports covered `提示词工程（Prompt Engineering）`, `AI工作流（AI Workflow）`, and `多Agent系统（Multi-Agent System）`; `AI记忆` is the next practical foundation because it explains how AI applications preserve reusable context, preferences, goals, procedures, and corrections across sessions without confusing memory with unlimited human-like recall.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/2026-06-16_AI记忆（AI Memory）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/2026-06-16_AI记忆（AI Memory）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/chatgpt_ai_memory_notebook.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/chatgpt_ai_memory_architecture.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-16_AIMemory/email_body.txt`
+- Visuals: generated ChatGPT Image 2.0 diagrams under `/Users/mac/.codex/generated_images/019ecdbb-e207-73f3-811d-6604e922df36/` and copied the two selected AI-memory diagrams into the report directory. One unrelated generated candidate under `/Users/mac/.codex/generated_images/019ecdba-fe56-7310-a9e6-39d5cc9aed83/` was inspected and not used.
+- Verification:
+  - `python3 reports/2026-06-16_AIMemory/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 8 A4 pages and a ~4.5 MB PDF.
+  - `pdftotext` confirmed readable Chinese text and all required section headings.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed all required sections and both image references are present.
+  - Playwright screenshot previews were written to `html_preview.png` and `html_midpage_preview.png`; both were spot-checked.
+- Delivery: Gmail sent successfully with the PDF attachment to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ecdc3b68e3d6ef`.

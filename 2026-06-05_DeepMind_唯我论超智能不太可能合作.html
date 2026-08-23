@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文精读 · 2026-06-05｜唯我论超智能不太可能合作 — Google DeepMind</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b0d14;
+  --bg-2:#11141d;
+  --card:#161a25;
+  --card-2:#1c2230;
+  --line:#2a3142;
+  --txt:#e7ecf3;
+  --txt-2:#aab3c5;
+  --muted:#6b7488;
+  --accent:#7c5cff;
+  --accent-2:#22d3ee;
+  --warn:#ff7a59;
+  --ok:#22c55e;
+  --bad:#ef4444;
+  --grad:linear-gradient(135deg,#7c5cff 0%,#22d3ee 100%);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+.container{max-width:1180px;margin:0 auto;padding:48px 28px 80px}
+
+/* Header */
+header.hero{
+  background:radial-gradient(1200px 600px at 20% -20%,rgba(124,92,255,.35),transparent 60%),
+             radial-gradient(900px 500px at 100% 0%,rgba(34,211,238,.25),transparent 60%),
+             var(--bg-2);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:42px 40px;
+  position:relative;
+  overflow:hidden;
+}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--txt-2);background:rgba(255,255,255,.04);border:1px solid var(--line);padding:6px 12px;border-radius:999px}
+.kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 12px var(--ok)}
+h1.title{font-size:38px;line-height:1.25;margin:18px 0 8px;letter-spacing:-.5px}
+h1.title span.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{color:var(--txt-2);font-size:16px;max-width:820px}
+.meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.meta-pill{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--txt-2)}
+.meta-pill b{color:var(--txt);font-weight:600}
+
+/* Section */
+section{margin-top:36px}
+.section-title{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.section-title .num{font-family:"SF Mono",ui-monospace,monospace;font-size:12px;color:var(--accent-2);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.25);padding:4px 8px;border-radius:6px}
+.section-title h2{font-size:22px;letter-spacing:-.2px}
+.section-title .hr{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* Cards */
+.grid{display:grid;gap:16px}
+.g-2{grid-template-columns:repeat(2,1fr)}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-4{grid-template-columns:repeat(4,1fr)}
+@media (max-width:880px){.g-2,.g-3,.g-4{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card h3{font-size:16px;margin-bottom:8px;color:var(--txt)}
+.card p{color:var(--txt-2);font-size:14.5px}
+.card .icon{width:36px;height:36px;border-radius:10px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0b0d14;margin-bottom:12px;font-size:18px}
+
+/* TLDR */
+.tldr{background:linear-gradient(135deg,rgba(124,92,255,.12),rgba(34,211,238,.06));border:1px solid rgba(124,92,255,.3);border-radius:16px;padding:24px;position:relative}
+.tldr .label{font-size:12px;letter-spacing:2px;color:var(--accent-2);font-weight:700;margin-bottom:8px}
+.tldr p{font-size:16px;color:var(--txt)}
+
+/* KV */
+.kv{display:grid;grid-template-columns:160px 1fr;gap:10px 18px;font-size:14.5px}
+.kv .k{color:var(--muted)}
+.kv .v{color:var(--txt-2)}
+
+/* Quote */
+blockquote{border-left:3px solid var(--accent);background:rgba(124,92,255,.06);padding:14px 18px;border-radius:8px;color:var(--txt);font-style:italic;margin:14px 0}
+
+/* Table */
+table{width:100%;border-collapse:separate;border-spacing:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:14px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--card-2);color:var(--txt-2);font-weight:600;font-size:13px;letter-spacing:.3px}
+tr:last-child td{border-bottom:none}
+td.col-1{color:var(--txt);font-weight:600;width:200px}
+
+/* Diagram */
+.flow{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;align-items:stretch;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.flow .node{flex:1;min-width:160px;background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:center}
+.flow .node h4{font-size:13px;color:var(--accent-2);margin-bottom:6px;letter-spacing:.5px}
+.flow .node p{font-size:13px;color:var(--txt-2)}
+.flow .arrow{display:flex;align-items:center;color:var(--muted);font-size:20px}
+
+/* Confidence Pills */
+.conf{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;font-weight:600;letter-spacing:.4px;margin-left:8px}
+.conf.high{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
+.conf.med{background:rgba(255,191,67,.12);color:#fbbf24;border:1px solid rgba(255,191,67,.3)}
+.conf.low{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+
+/* Chart wrapper */
+.chart-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.chart-wrap h3{font-size:15px;margin-bottom:14px;color:var(--txt-2)}
+
+/* Footer */
+footer{margin-top:60px;padding:24px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;color:var(--muted);font-size:13px}
+footer a{color:var(--accent-2);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* Lists */
+ul.checklist{list-style:none;padding:0}
+ul.checklist li{padding:8px 0 8px 28px;position:relative;color:var(--txt-2);font-size:14.5px}
+ul.checklist li::before{content:"";position:absolute;left:0;top:14px;width:14px;height:14px;background:var(--grad);border-radius:4px}
+
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--txt-2);margin-right:6px}
+.badge.accent{background:rgba(34,211,238,.08);border-color:rgba(34,211,238,.3);color:var(--accent-2)}
+
+a.link{color:var(--accent-2);text-decoration:none}
+a.link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ========= HERO ========= -->
+<header class="hero">
+  <span class="kicker"><span class="dot"></span> AI论文每日精读 · 2026-06-05 · 自动化日报</span>
+  <h1 class="title">当超级智能<span class="grad">只会自言自语</span><br>它就不太可能学会合作</h1>
+  <p class="subtitle">来自 Google DeepMind 的立场论文（ICML 2026 接收），重新定义了"超级智能"的真正约束：从"能力"转向"共存"。作者论证：以"唯我论"假设训练出来的强 AI，即便单点任务无敌，部署到多主体世界中也会自我消解、撕裂均衡、损害人类能动性。</p>
+  <div class="meta-row">
+    <div class="meta-pill">📄 论文：<b>Solipsistic Superintelligence is Unlikely to be Cooperative</b></div>
+    <div class="meta-pill">🏛 机构：<b>Google DeepMind</b></div>
+    <div class="meta-pill">📅 提交：<b>2026-06-02</b></div>
+    <div class="meta-pill">📚 收录：<b>ICML 2026</b></div>
+    <div class="meta-pill">🔗 arXiv：<b>2606.03237</b></div>
+    <div class="meta-pill">👥 作者：<b>Trivedi · Jaques · Cross · Vezhnevets · Leibo</b></div>
+  </div>
+</header>
+
+<!-- ========= TLDR ========= -->
+<section>
+  <div class="tldr">
+    <div class="label">▎一句话读懂</div>
+    <p>当前主流 AI 范式把世界当成一个"不会回应"的静态题库去刷分，可一旦部署到真实世界，人、机构、其他算法都会反过来"接招"，规则就被改写——这就是 <b>train-test-deploy gap（训练-测试-部署鸿沟）</b>。论文的核心论断：能力可以靠规模继续涨，但<b>合作不会</b>。AI 必须从"独自最优化"转向"参与均衡选择"。</p>
+  </div>
+</section>
+
+<!-- ========= 为什么值得看 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">01</span>
+    <h2>为什么这篇论文值得看 <span class="conf high">置信度 高</span></h2>
+    <div class="hr"></div>
+  </div>
+  <div class="grid g-3">
+    <div class="card">
+      <div class="icon">①</div>
+      <h3>来自 DeepMind 主流派</h3>
+      <p>作者 Joel Z. Leibo 是多智能体强化学习方向的旗帜性研究者（Melting Pot 系列负责人）；Natasha Jaques 长期做人机合作与 RLHF 的批判性研究。不是边缘小组的呼喊，而是<b>从内部对 scaling 路线提质疑</b>。</p>
+    </div>
+    <div class="card">
+      <div class="icon">②</div>
+      <h3>它把"对齐 vs 合作"挑明</h3>
+      <p>过去 3 年 AI 安全话语被"对齐 (alignment)"占据。本文把对齐重新定位为<b>必要但不充分</b>：一个完美对齐的个体仍可能在集体层面把社会推入坏均衡。这是范式之争。</p>
+    </div>
+    <div class="card">
+      <div class="icon">③</div>
+      <h3>ICML 2026 接收 + 立场论文</h3>
+      <p>立场论文（position paper）在 ICML 上极少接收，且要求论证锋利、可证伪。这意味着本文将影响 2026-2027 年 AI 评测、对齐、治理三个领域的研究议程设定。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========= 核心论点 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">02</span>
+    <h2>核心论点拆解</h2>
+    <div class="hr"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <h3>▎核心命题（论文原文转译）</h3>
+    <blockquote>"合作不是一种可以靠扩张来获得的额外能力，也不是一个待解决的任务，而是<b>多个智能体在不可化约的相互依赖中导航</b>时所涌现的均衡属性。因此，唯我论范式下产出的超级智能，不太可能具备合作性。"</blockquote>
+    <p style="margin-top:10px;color:var(--txt-2);font-size:14.5px">关键词：均衡属性（equilibrium property）、相互依赖（interdependence）、唯我论范式（solipsistic paradigm）。</p>
+  </div>
+
+  <div class="grid g-2">
+    <div class="card">
+      <h3>▎"唯我论"AI 的三大隐含假设</h3>
+      <ul class="checklist">
+        <li><b>外生性（Exogeneity）</b>：环境的数据生成过程与所学策略无关。</li>
+        <li><b>平稳性（Stationarity）</b>：训练分布 ≈ 测试分布 ≈ 部署分布。</li>
+        <li><b>单体框架（Singleton framing）</b>：其他智能体被吸收进"状态"，只是要预测的对象，不是会回应的策略主体。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>▎现实世界打破假设的三条通道</h3>
+      <ul class="checklist">
+        <li><b>行为适应</b>：人改变行为（学生绕开 AI 改作弊路径、飞行员丧失手飞技能）。</li>
+        <li><b>制度适应</b>：组织改规则（监管修法、版权制度被生成式 AI 反复重塑）。</li>
+        <li><b>算法适应</b>：其他 AI 协同/对抗演化（推荐系统-推荐系统博弈、LLM 定价代理隐式合谋）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========= 概念可视化 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">03</span>
+    <h2>关键概念可视化：自我消解循环</h2>
+    <div class="hr"></div>
+  </div>
+  <div class="flow">
+    <div class="node">
+      <h4>① 训练</h4>
+      <p>在静态数据集 / 冻结奖励模型上优化 π</p>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="node">
+      <h4>② 评测</h4>
+      <p>在固定测试集 / benchmark 上刷分</p>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="node">
+      <h4>③ 部署</h4>
+      <p>π 作用于真实世界<br>人/机构/其他AI 开始回应</p>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="node" style="border-color:var(--warn)">
+      <h4 style="color:var(--warn)">④ 分布漂移</h4>
+      <p>P 和 R 都依赖于 π<br><code style="font-size:11px;color:var(--txt-2)">Pπ(s'|s,a) ≠ P(s'|s,a)</code></p>
+    </div>
+    <div class="arrow">➜</div>
+    <div class="node" style="border-color:var(--bad)">
+      <h4 style="color:var(--bad)">⑤ 自我消解</h4>
+      <p>π 越激进地利用历史规律，越快诱导出让那些规律失效的反应</p>
+    </div>
+  </div>
+  <p style="text-align:center;color:var(--muted);margin-top:14px;font-size:13px">▲ 论文将 MDP 重写为 Markov Game，正式定义"内生非平稳性"和"train-test-deploy gap"。</p>
+</section>
+
+<!-- ========= 三个真实场景 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">04</span>
+    <h2>三个真实场景：你可能正在经历</h2>
+    <div class="hr"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>场景</th><th>每个 AI 各自最优</th><th>系统整体出现的坏均衡</th><th>属于哪一通道</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="col-1">餐厅预订竞赛</td>
+        <td>每个预订 AI 完美执行用户目标</td>
+        <td>幽灵预订 + 动态加价，最终满座空桌、上百人没饭吃</td>
+        <td><span class="badge accent">算法适应</span></td>
+      </tr>
+      <tr>
+        <td class="col-1">放射科 AI 辅助</td>
+        <td>诊断准确率指标持续上升</td>
+        <td>资深医生独立判读能力退化，AI 与医生的错误同步出现</td>
+        <td><span class="badge accent">行为适应</span></td>
+      </tr>
+      <tr>
+        <td class="col-1">LLM 定价代理</td>
+        <td>每个代理寻找最优定价响应</td>
+        <td>无显式通信即出现超竞争性定价（隐式合谋）<br><span style="color:var(--muted);font-size:12px">Fish et al. 2026; Bertrand et al. 2025</span></td>
+        <td><span class="badge accent">算法适应</span></td>
+      </tr>
+      <tr>
+        <td class="col-1">推荐系统</td>
+        <td>用户停留时长、点击率持续优化</td>
+        <td>极化加剧、信息茧房、公共讨论质量塌缩</td>
+        <td><span class="badge accent">行为 × 制度适应</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========= 数据图 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">05</span>
+    <h2>论点强度速览 <span class="conf med">置信度 中（部分为解读性可视化）</span></h2>
+    <div class="hr"></div>
+  </div>
+  <div class="grid g-2">
+    <div class="chart-wrap"><h3>论文核心论证模块的篇幅与权重（按章节字数占比估算）</h3>
+      <canvas id="chartWeights" height="220"></canvas>
+    </div>
+    <div class="chart-wrap"><h3>解决方案三支柱：现状成熟度（解读者主观评分）</h3>
+      <canvas id="chartRadar" height="220"></canvas>
+    </div>
+  </div>
+  <p style="color:var(--muted);font-size:12px;margin-top:10px">⚠️ 第二张雷达图为解读者基于论文 §5 的成熟度判断，不是论文原始数据；仅用于直观对比方向投入差距。</p>
+</section>
+
+<!-- ========= 解决方案 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">06</span>
+    <h2>解决方案：非唯我论研究范式</h2>
+    <div class="hr"></div>
+  </div>
+  <div class="grid g-3">
+    <div class="card">
+      <div class="icon">D</div>
+      <h3>动态评测（Dynamic Evaluation）</h3>
+      <p>测试分布 𝒟<sub>π</sub> 必须依赖被测策略 π。设计要点：<br>• 对手策略要"会回应"，而非脚本化<br>• 显式声明目标均衡概念<br>• 评分要能跨运行/系统/对手群体比较</p>
+      <p style="margin-top:8px;color:var(--muted);font-size:12px">代表工作：Melting Pot、Concordia、Moltbook、Virtual Agent Economies。</p>
+    </div>
+    <div class="card">
+      <div class="icon">I</div>
+      <h3>制度作为设计原语（Institutions）</h3>
+      <p>不要再把"制度"当成 AI 之外的事后约束。把它内嵌进训练：<br>• 共同演化的 rubrics（替换静态 RLHF reward）<br>• 智能体市场协议、声誉系统<br>• 数字制度提供共享的行为分类</p>
+      <p style="margin-top:8px;color:var(--muted);font-size:12px">代表工作：DR Tulu (Shao 2026)、Adaptive incentive design (Yang 2022)。</p>
+    </div>
+    <div class="card">
+      <div class="icon">H</div>
+      <h3>保留人类能动性（Human Agency）</h3>
+      <p>不能只看"人机协同输出"。还要追踪 AI 长期对人类技能/认知的影响：<br>• 工具扩张选项空间，而非替代决策<br>• 评测纳入"人类技能、自主性、有意义选择"指标<br>• 警惕仅保留形式上的人类否决权</p>
+      <p style="margin-top:8px;color:var(--muted);font-size:12px">背景：Kulveit 2025 "Gradual Disempowerment"。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========= 最强反驳 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">07</span>
+    <h2>论文自带的"最强反驳" vs 反驳的反驳</h2>
+    <div class="hr"></div>
+  </div>
+  <table>
+    <thead><tr><th>反驳</th><th>原文回应（精简）</th><th>解读者评估</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="col-1">多主体设计失败模式更糟（单体可控）</td>
+        <td>对比错了对象：现实是单体 AI 被部署到多主体世界，不是真空环境。"对齐+单体"≠"安全"。监管的存在本身证明多主体协调工具必要。</td>
+        <td><span class="conf high">高</span> 论证有力</td>
+      </tr>
+      <tr>
+        <td class="col-1">竞争压力会自然生出合作</td>
+        <td>仅在有重复互动、可识别身份、有声誉与惩罚机制时成立。LLM 部署普遍违反这些前提（匿名、可重训、外部性大），证据：LLM 隐式合谋。</td>
+        <td><span class="conf high">高</span> 有实证</td>
+      </tr>
+      <tr>
+        <td class="col-1">实证记录还没显示需要警报</td>
+        <td>Collingridge 困境：等到灾难显化时技术已锁定。极化、闪崩、合谋已是事实，并非完全没问题。</td>
+        <td><span class="conf med">中</span> 政策性判断</td>
+      </tr>
+      <tr>
+        <td class="col-1">规模化最终会"涌现"出合作能力</td>
+        <td>这把博弈论里的"均衡选择"误解成了"任务"。规模解决的是单步预测，不解决参与权和合法性问题。</td>
+        <td><span class="conf high">高</span> 范畴错误</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ========= 局限 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">08</span>
+    <h2>解读者的诚实评估：论文的局限</h2>
+    <div class="hr"></div>
+  </div>
+  <div class="grid g-2">
+    <div class="card">
+      <h3>1. 仍属"立场论文"，没有给硬实验 <span class="conf med">中</span></h3>
+      <p>论文给出形式化（MDP→Markov game），但没有提出新的算法、新的 benchmark 数据集或实验结果。"动态评测"的具体设计仍待社区填充。短期它影响议程，不直接影响 leaderboard。</p>
+    </div>
+    <div class="card">
+      <h3>2. "合作"的可操作度量缺失 <span class="conf med">中</span></h3>
+      <p>"是否走向有益均衡"在工程上如何客观打分？论文承认对手策略类选择、递归建模深度、对手群体校准都是开放问题。这意味着任何首批"动态评测套件"都会有较强主观性。</p>
+    </div>
+    <div class="card">
+      <h3>3. 对工业激励的现实约束讨论偏轻 <span class="conf med">中</span></h3>
+      <p>动态评测显著抬升评测成本（需要会回应的对手）。在 frontier lab 卷模型速度的环境里，谁来承担？论文未充分讨论"经济可行的最小可用版本"。</p>
+    </div>
+    <div class="card">
+      <h3>4. 政策建议未充分识别可能的反噬 <span class="conf low">低</span></h3>
+      <p>"把制度做进训练循环"本身也是一种权力集中——谁来定义这些 rubrics 和数字制度？论文提到了合法性，但未深入讨论谁来制度化"制度作为设计原语"。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========= 启示 ========= -->
+<section>
+  <div class="section-title">
+    <span class="num">09</span>
+    <h2>对不同角色的可操作启示</h2>
+    <div class="hr"></div>
+  </div>
+  <div class="grid g-3">
+    <div class="card">
+      <h3>🔬 研究者</h3>
+      <ul class="checklist">
+        <li>把单智能体 benchmark 用"会回应的对手"包一层做对比实验。</li>
+        <li>关注 Melting Pot、Concordia 等多智能体评测平台。</li>
+        <li>RLHF/RLAIF 时考虑 rubric 共演化（参考 DR Tulu）。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🏗 工程/产品</h3>
+      <ul class="checklist">
+        <li>上线前思考：当 X% 用户/竞品也接入相同能力，会出现哪些新均衡？</li>
+        <li>关键功能加"分布漂移监控"，不仅监控模型 drift，也监控用户行为 drift。</li>
+        <li>UI 设计倾向于"展示选项而非端到端代办"，保留人的判断接口。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>📜 政策/治理</h3>
+      <ul class="checklist">
+        <li>评估框架引入"部署后回访"环节，承认 train-test-deploy gap。</li>
+        <li>关注算法合谋、推荐极化等已有证据的领域。</li>
+        <li>把"是否保留人的能动性"作为可审计指标，不只是伦理原则。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ========= 一句话外卖 ========= -->
+<section>
+  <div class="tldr" style="background:linear-gradient(135deg,rgba(34,211,238,.12),rgba(124,92,255,.06))">
+    <div class="label">▎ONE-LINE TAKEAWAY</div>
+    <p>能力会继续被 scaling 解决，但合作不会。下一代 AI 的真正竞争，不在更高的 benchmark 分数，而在<b>它能不能参与到一个会回应它的世界里去</b>。</p>
+  </div>
+</section>
+
+<!-- ========= 来源 ========= -->
+<footer>
+  <div style="margin-bottom:10px"><b style="color:var(--txt)">来源</b>（所有内容基于英文一手资料）</div>
+  <div>• 论文 arXiv 页：<a href="https://arxiv.org/abs/2606.03237">arXiv:2606.03237 - Solipsistic Superintelligence is Unlikely to be Cooperative</a></div>
+  <div>• 全文 HTML：<a href="https://arxiv.org/html/2606.03237v1">arxiv.org/html/2606.03237v1</a></div>
+  <div>• Google DeepMind 出版列表：<a href="https://deepmind.google/research/publications/">deepmind.google/research/publications</a></div>
+  <div style="margin-top:14px;color:var(--muted)">本报告由"AI论文每日精读"自动化任务生成 · 报告日期 2026-06-05 · 仅做学术解读，不构成投资或政策建议 · 不确定性已用置信度标注。</div>
+</footer>
+
+</div>
+
+<script>
+// Chart 1 - Bar
+const ctx1 = document.getElementById('chartWeights');
+new Chart(ctx1, {
+  type:'bar',
+  data:{
+    labels:['§3 唯我论陷阱','§4 预测≠参与','§5 非唯我论范式','§6 替代观点','§2 从能力到共存'],
+    datasets:[{
+      label:'章节权重 (相对估值)',
+      data:[28,22,24,16,10],
+      backgroundColor:['rgba(124,92,255,.85)','rgba(34,211,238,.85)','rgba(34,197,94,.8)','rgba(255,122,89,.8)','rgba(170,179,197,.6)'],
+      borderRadius:6, borderSkipped:false
+    }]
+  },
+  options:{
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'#aab3c5'},grid:{display:false}},
+      y:{ticks:{color:'#aab3c5',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.06)'},beginAtZero:true,max:35}
+    }
+  }
+});
+
+// Chart 2 - Radar
+const ctx2 = document.getElementById('chartRadar');
+new Chart(ctx2, {
+  type:'radar',
+  data:{
+    labels:['动态评测\n方法学','制度作为\n训练目标','人类能动性\n度量','开源工具\n生态','工业落地\n激励','跨学科\n人才储备'],
+    datasets:[
+      {label:'当前主流投入',data:[2,1,1,3,2,2],backgroundColor:'rgba(255,122,89,.18)',borderColor:'rgba(255,122,89,.9)',borderWidth:2,pointBackgroundColor:'rgba(255,122,89,1)'},
+      {label:'论文倡导方向',data:[5,5,5,4,3,4],backgroundColor:'rgba(34,211,238,.15)',borderColor:'rgba(34,211,238,.9)',borderWidth:2,pointBackgroundColor:'rgba(34,211,238,1)'}
+    ]
+  },
+  options:{
+    plugins:{legend:{labels:{color:'#aab3c5'}}},
+    scales:{
+      r:{
+        suggestedMin:0,suggestedMax:5,
+        angleLines:{color:'rgba(255,255,255,.08)'},
+        grid:{color:'rgba(255,255,255,.08)'},
+        pointLabels:{color:'#aab3c5',font:{size:11}},
+        ticks:{color:'#6b7488',backdropColor:'transparent',stepSize:1}
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

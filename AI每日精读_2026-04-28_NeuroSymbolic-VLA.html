@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 每日精读 · 2026-04-28 · 神经符号 vs VLA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg-0: #0b0d12;
+    --bg-1: #11141b;
+    --bg-2: #161a23;
+    --line: #232836;
+    --text: #e6e9ef;
+    --text-dim: #9aa3b2;
+    --accent: #7c5cff;
+    --accent-2: #22d3ee;
+    --accent-3: #f59e0b;
+    --good: #22c55e;
+    --bad: #ef4444;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: radial-gradient(1200px 600px at 10% -10%, rgba(124,92,255,0.15), transparent 60%),
+                radial-gradient(900px 500px at 110% 10%, rgba(34,211,238,0.12), transparent 60%),
+                var(--bg-0);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 48px 28px 96px; }
+  .meta-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    color: var(--text-dim); font-size: 13px; margin-bottom: 18px;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border: 1px solid var(--line);
+    border-radius: 999px; background: rgba(255,255,255,0.02);
+    color: var(--text-dim); font-size: 12px;
+  }
+  .pill.accent { color: var(--accent-2); border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.06); }
+  .pill.warn { color: var(--accent-3); border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.06); }
+  .pill.good { color: var(--good); border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.06); }
+  h1.title {
+    font-size: 38px; line-height: 1.25; margin: 8px 0 12px;
+    background: linear-gradient(135deg, #fff 0%, #c8c2ff 50%, #7ad7ee 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    letter-spacing: -0.5px;
+  }
+  .subtitle { color: var(--text-dim); font-size: 16px; max-width: 860px; }
+  .authors { margin-top: 14px; color: var(--text-dim); font-size: 14px; }
+  .authors strong { color: var(--text); font-weight: 600; }
+
+  section { margin-top: 44px; }
+  h2 {
+    font-size: 22px; margin: 0 0 14px; letter-spacing: -0.2px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  h2::before {
+    content: ""; width: 4px; height: 22px; border-radius: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  }
+  h3 { font-size: 16px; margin: 18px 0 8px; color: var(--text); }
+  p { margin: 8px 0; }
+  .lead { font-size: 16.5px; color: var(--text); }
+  .dim { color: var(--text-dim); }
+
+  .card {
+    background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .grid { display: grid; gap: 16px; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-2-uneven { grid-template-columns: 1.2fr 1fr; }
+  @media (max-width: 860px) {
+    .grid-3, .grid-2, .grid-2-uneven { grid-template-columns: 1fr; }
+    h1.title { font-size: 30px; }
+  }
+
+  .kpi {
+    background: linear-gradient(180deg, rgba(124,92,255,0.10), rgba(34,211,238,0.06));
+    border: 1px solid rgba(124,92,255,0.25);
+    border-radius: 14px; padding: 18px 18px;
+  }
+  .kpi .num {
+    font-size: 30px; font-weight: 700; letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #fff, #b8c5ff);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .kpi .label { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 13px; }
+  tr:last-child td { border-bottom: none; }
+  td.good { color: var(--good); font-weight: 600; }
+  td.bad { color: var(--bad); font-weight: 600; }
+
+  .code {
+    background: var(--code-bg); border: 1px solid var(--line);
+    border-radius: 10px; padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 13px; color: #e3e8f0; overflow-x: auto; white-space: pre;
+  }
+
+  .chart-wrap { position: relative; height: 320px; }
+
+  .flow-svg { width: 100%; height: auto; display: block; }
+
+  ul.clean { padding-left: 18px; margin: 6px 0; }
+  ul.clean li { margin: 4px 0; }
+  .quote {
+    border-left: 3px solid var(--accent);
+    padding: 6px 14px;
+    color: var(--text-dim);
+    background: rgba(124,92,255,0.06);
+    border-radius: 6px;
+    margin: 10px 0;
+  }
+  .quote strong { color: var(--text); }
+
+  .vs-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 14px; align-items: stretch;
+  }
+  @media (max-width: 860px) {
+    .vs-grid { grid-template-columns: 1fr; }
+  }
+  .vs-card {
+    border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px;
+    background: var(--bg-1);
+  }
+  .vs-card.left { border-color: rgba(239,68,68,0.35); background: linear-gradient(180deg, rgba(239,68,68,0.08), transparent); }
+  .vs-card.right { border-color: rgba(34,197,94,0.35); background: linear-gradient(180deg, rgba(34,197,94,0.08), transparent); }
+  .vs-tag {
+    font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+    color: var(--text-dim); margin-bottom: 6px;
+  }
+  .vs-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .vs-divider {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-3); font-weight: 800; font-size: 18px;
+  }
+
+  footer {
+    margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
+    color: var(--text-dim); font-size: 13px;
+  }
+  footer a { color: var(--accent-2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 顶部元信息 -->
+  <div class="meta-bar">
+    <span class="pill accent">📅 2026-04-28 · 周二</span>
+    <span class="pill">来源 · arXiv (cs.RO)</span>
+    <span class="pill">机构 · Tufts HRILab · AIT</span>
+    <span class="pill warn">主题 · 具身智能 · 能效 · 神经符号</span>
+    <span class="pill good">将于 ICRA 2026 (Vienna) 报告</span>
+  </div>
+
+  <h1 class="title">「价格不对」：神经符号方法在长程操作任务上以 1% 能耗碾压 VLA</h1>
+  <p class="subtitle">当全行业还在用百亿参数视觉-语言-动作大模型暴力堆叠机器人能力时，Tufts 与 AIT 的团队
+  把一篇结构化操作任务的对照实验拍在了桌面上：训练时间从 36 小时降到 34 分钟、训练能耗只用 1%、
+  推理能耗只用 5%，而成功率却从 34% 跃升到 95%。这不仅是一篇 ICRA 论文，更是 2026 年「规模就是
+  一切」叙事的一记反向警钟。</p>
+
+  <div class="authors">
+    📄 <strong>The Price Is Not Right: Neuro-Symbolic Methods Outperform VLAs on Structured
+    Long-Horizon Manipulation Tasks with Significantly Lower Energy Consumption</strong>
+    · arXiv:2602.19260（2026-02-22）·
+    作者：<strong>Timothy Duggan</strong>、<strong>Pierrick Lorang</strong>、<strong>Hong Lu</strong>、<strong>Matthias Scheutz</strong>
+    （Tufts HRILab；AIT Austrian Institute of Technology）
+  </div>
+
+  <!-- KPI 关键指标 -->
+  <section>
+    <h2>一图看完核心结论</h2>
+    <div class="grid grid-3">
+      <div class="kpi">
+        <div class="num">95% vs 34%</div>
+        <div class="label">3 块汉诺塔任务成功率：神经符号 vs 最佳 VLA（π0 微调）</div>
+      </div>
+      <div class="kpi">
+        <div class="num">1% / 5%</div>
+        <div class="label">训练能耗 / 推理能耗，相对 VLA 基线（约 100× 与 20× 的下降）</div>
+      </div>
+      <div class="kpi">
+        <div class="num">34 min vs 1.5+ 天</div>
+        <div class="label">训练时长：单任务 LoRA 微调 vs 学习低层控制器</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 一句话总结 -->
+  <section>
+    <h2>一句话讲清楚这篇文章在做什么</h2>
+    <div class="card">
+      <p class="lead">把高层任务规划交给 <strong>PDDL 经典符号规划器</strong>（确定性、可解释、不需训练），
+      把「拿起这块、放到那个柱子」这种<strong>低层运动控制交给一个小型神经网络</strong>去学；
+      然后把这个神经-符号组合体（NSM）和当前最强开源视觉-语言-动作模型 <strong>π0</strong>
+      在<strong>同一台机器、同一份汉诺塔仿真任务、同一份能耗测量协议</strong>下做端到端正面比试。</p>
+      <p class="dim">结论很扎心：在结构化、长程、需要严格执行规划的任务上，
+      把一切都端到端塞进 VLA 大模型不仅<strong>不更聪明，反而更笨、更贵、更慢</strong>。
+      这不是「神经 vs 符号」的老路口之争，而是一份给「具身大模型一统天下」叙事降温的实验账单。</p>
+    </div>
+  </section>
+
+  <!-- 背景与动机 -->
+  <section>
+    <h2>研究背景：VLA 的甜蜜陷阱</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>2024–2026：VLA 的爆发与狂热</h3>
+        <p>从 RT-2、OpenVLA 到 Physical Intelligence 的 π0 / π0.5，
+        视觉-语言-动作模型成了具身智能里最耀眼的故事——
+        把图像、自然语言指令和机器人关节动作放进同一个 Transformer，靠规模和数据获得通用性。</p>
+        <p>2026 ICLR 上，VLA 工作占据了机器人方向的半壁江山。
+        主流的隐含信念是：「<em>scale is all you need for embodiment, too</em>」。</p>
+      </div>
+      <div class="card">
+        <h3>但代价开始浮出水面</h3>
+        <ul class="clean">
+          <li>训练一个 7B 级 VLA 微调，单任务往往 <strong>几十 GPU 小时</strong>，能耗以 kWh 计。</li>
+          <li>推理时长 horizon 任务<strong>错误会复合</strong>：一步错、步步错。</li>
+          <li>在 <strong>汉诺塔、积木堆叠</strong>这种规则严格、状态空间明确的任务上，
+          连「不能把大盘子放小盘子上」这种硬约束都需要从数据中再学一遍。</li>
+          <li>面对训练分布外（如从 3 块变 4 块）几乎完全失败。</li>
+        </ul>
+        <p class="dim">作者抛出的核心追问：<strong>当问题本身可以被精确符号化时，
+        我们到底为什么要让一个百亿参数模型去重新发明规划？</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 方法对比 -->
+  <section>
+    <h2>方法对照：两种世界观</h2>
+    <div class="vs-grid">
+      <div class="vs-card left">
+        <div class="vs-tag">基线 · 端到端神经</div>
+        <div class="vs-title">π0 + LoRA 微调（VLA 路线）</div>
+        <ul class="clean">
+          <li>输入：第三人称 RGB 图像 + 自然语言指令「把所有盘子从 A 移到 C」</li>
+          <li>骨干：<strong>π0</strong>（开源权重，3B+ 级 VLM 基础 + 流匹配动作头）</li>
+          <li>训练：在 3 块汉诺塔的成功演示上做 LoRA 微调</li>
+          <li>输出：直接预测连续关节/末端速度</li>
+          <li>规划与控制都隐式藏在网络权重里</li>
+        </ul>
+        <p class="dim">优点：通用、无需任务建模；缺点：硬约束靠样本学习、训练昂贵、可解释性差。</p>
+      </div>
+      <div class="vs-divider">VS</div>
+      <div class="vs-card right">
+        <div class="vs-tag">提案 · 神经符号混合</div>
+        <div class="vs-title">PDDL 规划器 + 学习低层控制器（NSM）</div>
+        <ul class="clean">
+          <li>感知：用现成检测器把场景抽象成符号状态（块的位置、栈关系）</li>
+          <li>规划：<strong>PDDL 域模型</strong>（移动规则、约束）由经典规划器解出最优动作序列</li>
+          <li>动作：每一个抽象动作<code>move(block, peg)</code>由<strong>小型策略网络</strong>执行</li>
+          <li>这个低层网络只学「如何安全地把一块拿起放下」——一次学习，跨任务复用</li>
+        </ul>
+        <p class="dim">优点：硬约束 0 违反、组合泛化好、训练快；缺点：需要任务可符号化的先验。</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>系统流程示意</h3>
+      <svg class="flow-svg" viewBox="0 0 1000 230" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L0,6 L9,3 z" fill="#9aa3b2"/>
+          </marker>
+          <linearGradient id="vlaG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#ef4444" stop-opacity="0.25"/>
+            <stop offset="1" stop-color="#ef4444" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="nsmG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#22c55e" stop-opacity="0.25"/>
+            <stop offset="1" stop-color="#22c55e" stop-opacity="0.05"/>
+          </linearGradient>
+        </defs>
+
+        <!-- VLA 路 -->
+        <text x="20" y="30" fill="#9aa3b2" font-size="13">VLA 路线</text>
+        <rect x="20" y="40" width="160" height="60" rx="10" fill="url(#vlaG)" stroke="#ef4444" stroke-opacity="0.5"/>
+        <text x="100" y="68" fill="#e6e9ef" text-anchor="middle" font-size="13">RGB + 指令</text>
+        <text x="100" y="88" fill="#9aa3b2" text-anchor="middle" font-size="11">「把全部盘子搬到 C」</text>
+
+        <line x1="180" y1="70" x2="240" y2="70" stroke="#9aa3b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="240" y="40" width="240" height="60" rx="10" fill="url(#vlaG)" stroke="#ef4444" stroke-opacity="0.5"/>
+        <text x="360" y="68" fill="#e6e9ef" text-anchor="middle" font-size="13">π0 大模型（端到端）</text>
+        <text x="360" y="88" fill="#9aa3b2" text-anchor="middle" font-size="11">隐式规划 + 隐式控制</text>
+
+        <line x1="480" y1="70" x2="540" y2="70" stroke="#9aa3b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="540" y="40" width="200" height="60" rx="10" fill="url(#vlaG)" stroke="#ef4444" stroke-opacity="0.5"/>
+        <text x="640" y="68" fill="#e6e9ef" text-anchor="middle" font-size="13">连续动作</text>
+        <text x="640" y="88" fill="#9aa3b2" text-anchor="middle" font-size="11">关节速度 / 末端轨迹</text>
+
+        <text x="760" y="75" fill="#ef4444" font-size="13">→ 34% 成功率</text>
+
+        <!-- NSM 路 -->
+        <text x="20" y="155" fill="#9aa3b2" font-size="13">神经符号 (NSM) 路线</text>
+        <rect x="20" y="165" width="140" height="50" rx="10" fill="url(#nsmG)" stroke="#22c55e" stroke-opacity="0.5"/>
+        <text x="90" y="195" fill="#e6e9ef" text-anchor="middle" font-size="12">符号感知</text>
+        <line x1="160" y1="190" x2="200" y2="190" stroke="#9aa3b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="200" y="165" width="180" height="50" rx="10" fill="url(#nsmG)" stroke="#22c55e" stroke-opacity="0.5"/>
+        <text x="290" y="190" fill="#e6e9ef" text-anchor="middle" font-size="12">PDDL 规划器</text>
+        <text x="290" y="206" fill="#9aa3b2" text-anchor="middle" font-size="10">解出动作序列</text>
+        <line x1="380" y1="190" x2="420" y2="190" stroke="#9aa3b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="420" y="165" width="200" height="50" rx="10" fill="url(#nsmG)" stroke="#22c55e" stroke-opacity="0.5"/>
+        <text x="520" y="190" fill="#e6e9ef" text-anchor="middle" font-size="12">小型神经控制器</text>
+        <text x="520" y="206" fill="#9aa3b2" text-anchor="middle" font-size="10">执行 move(block, peg)</text>
+        <line x1="620" y1="190" x2="660" y2="190" stroke="#9aa3b2" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+        <rect x="660" y="165" width="100" height="50" rx="10" fill="url(#nsmG)" stroke="#22c55e" stroke-opacity="0.5"/>
+        <text x="710" y="195" fill="#e6e9ef" text-anchor="middle" font-size="12">连续动作</text>
+
+        <text x="780" y="200" fill="#22c55e" font-size="13">→ 95% 成功率</text>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 实验设计 -->
+  <section>
+    <h2>实验设计：为什么是「汉诺塔」？</h2>
+    <div class="card">
+      <p>作者刻意选了一个看似玩具、实则极有代表性的任务：<strong>机械臂版汉诺塔</strong>。
+      它具备一切能让评估变得「严格而干净」的特征：</p>
+      <ul class="clean">
+        <li><strong>长程</strong>：3 块需要 7 步、4 块需要 15 步——错一步则整局功亏一篑。</li>
+        <li><strong>结构化</strong>：状态、约束、最优解都可以用规则精确刻画。</li>
+        <li><strong>可分布外</strong>：把 3 块换成 4 块，规则不变但状态空间爆炸——
+        是检验「真泛化」还是「记住了序列」的天然试金石。</li>
+        <li><strong>可测能量</strong>：仿真环境里能逐步统计 GPU 功耗与时长，做出可比的 J/Wh 数字。</li>
+      </ul>
+      <p>两种系统在仿真器中训练、在仿真器中评估，所有 GPU 能耗用 NVIDIA SMI 工具采样。
+      π0 用了多种分辨率的视觉编码器与多组 LoRA 设置取最佳，神经符号侧只训练一次低层控制器。</p>
+    </div>
+  </section>
+
+  <!-- 结果可视化 -->
+  <section>
+    <h2>结果一览：三张图说完全部</h2>
+
+    <div class="grid grid-2" style="margin-top:6px;">
+      <div class="card">
+        <h3>① 任务成功率（%）</h3>
+        <div class="chart-wrap"><canvas id="successChart"></canvas></div>
+        <p class="dim">3 块任务里 NSM 是 VLA 最佳点位的 ~2.8 倍；
+        4 块（训练分布外）VLA 全军覆没，NSM 还有 78%。</p>
+      </div>
+      <div class="card">
+        <h3>② 训练时长（分钟，对数轴）</h3>
+        <div class="chart-wrap"><canvas id="trainTimeChart"></canvas></div>
+        <p class="dim">π0 LoRA 单次微调 &gt; 36 小时（≈2160 分钟）；
+        NSM 低层控制器训练 34 分钟即收敛。</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3>③ 训练 / 推理能耗占比（VLA = 100）</h3>
+      <div class="chart-wrap" style="height:280px;"><canvas id="energyChart"></canvas></div>
+      <p class="dim">把 VLA 的训练能耗、推理能耗各归一为 100：
+      NSM 在训练阶段只消耗 ~1，在推理阶段只消耗 ~5。
+      推理侧的差距来自 PDDL 规划器几乎零功耗，仅低层网络吃 GPU。</p>
+    </div>
+
+    <h3 style="margin-top:24px;">关键数据汇总</h3>
+    <div class="card" style="padding:6px 0;">
+      <table>
+        <thead>
+          <tr><th>指标</th><th>VLA（π0 + LoRA）</th><th>神经符号 (NSM)</th><th>对比</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>3 块任务成功率</td><td class="bad">34%</td><td class="good">95%</td><td>+61 pp</td></tr>
+          <tr><td>4 块（OOD）成功率</td><td class="bad">~0%</td><td class="good">78%</td><td>从「不可用」到「可用」</td></tr>
+          <tr><td>训练时长</td><td>1.5+ 天 (≈36 h)</td><td>34 分钟</td><td>~63× 更快</td></tr>
+          <tr><td>训练能耗</td><td>100%</td><td class="good">~1%</td><td>~100× 更省</td></tr>
+          <tr><td>推理能耗</td><td>100%</td><td class="good">~5%</td><td>~20× 更省</td></tr>
+          <tr><td>硬约束违反</td><td>偶发（大盘压小盘等）</td><td class="good">0（PDDL 保证）</td><td>定性差异</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 第一性原理 -->
+  <section>
+    <h2>第一性原理：这件事为什么会成立？</h2>
+    <div class="grid grid-2-uneven">
+      <div class="card">
+        <p>大模型的优势是<strong>从无结构数据中学习可组合表征</strong>。
+        但当任务的结构本身已经被人类用规则精确刻画——例如「物体不能穿透」、「拿之前要松爪」、
+        「只能把小盘放大盘上」——再让网络从样本中重新发现这些规则，
+        本质上是用<strong>统计的方式逼近一个已经存在的解析解</strong>。</p>
+        <p>这就像让神经网络去学「2+3=5」：当然可以学会，但你为什么不直接调用加法？
+        作者把这件事在机器人控制上做实了。</p>
+        <div class="quote">
+          <strong>核心信号：</strong>VLA 的失败不是「数据不够多」，而是<strong>结构错配</strong>——
+          把规划、推理、控制全部塞进一个连续函数逼近器，相当于强迫它在隐空间里同时
+          「想清楚下一步该做什么」和「让电机往哪转」。把前者交还给规划器，后者立即变得简单。
+        </div>
+      </div>
+      <div class="card">
+        <h3>三条第一性结论</h3>
+        <ul class="clean">
+          <li><strong>结构是免费的午餐。</strong>能符号化的部分别让网络重学。</li>
+          <li><strong>能量就是真理的代价。</strong>当一个方法用 100× 能耗换 -60pp 成功率时，
+          它在功效维度上已经输了。</li>
+          <li><strong>泛化的本质不是参数量，而是组合性。</strong>NSM 在 4 块任务上不需要新数据就能跑，
+          因为「移动一块」是个原子动作；VLA 需要重新见过这种序列。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 局限与争议 -->
+  <section>
+    <h2>但这篇论文也不是「神经网络已死」</h2>
+    <div class="card">
+      <p>必须公允地指出几条局限——这些恰恰是 VLA 阵营会用来反击的弹药：</p>
+      <ul class="clean">
+        <li><strong>任务高度结构化。</strong>汉诺塔几乎是为符号规划量身定做的：状态可枚举、约束可写。
+        换到「叠衣服」「整理凌乱厨房」这种<strong>难以符号化</strong>的任务，PDDL 域模型本身就写不出来。</li>
+        <li><strong>感知接口被简化。</strong>NSM 假定能从场景中可靠抽出符号状态。
+        现实里这一步常常就是最难的（开放世界识别、遮挡、形变）。</li>
+        <li><strong>仿真环境。</strong>π0 在真机上的优势之一是吸收了大量真实数据；
+        本研究是仿真对比，真机上能耗与成功率差距可能收窄。</li>
+        <li><strong>VLA 的可扩展能力。</strong>VLA 的卖点是<strong>跨任务泛化</strong>——
+        一个模型干一切。NSM 每换一类任务，需要重新设计 PDDL 域模型。</li>
+      </ul>
+      <p class="dim">所以更精准的解读是：
+      <strong>「在已知结构的窄任务上，神经符号是更优工程选择；
+      在开放未知的长尾任务上，VLA 仍然不可替代。」</strong>
+      作者本人也明确把工作定位为 head-to-head 的「对照实验」，而不是宣告替代。</p>
+    </div>
+  </section>
+
+  <!-- 行业意义 -->
+  <section>
+    <h2>对行业的启示：2026 的两条岔路</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>对学术与算法</h3>
+        <ul class="clean">
+          <li>「神经符号」不是 1990 年代的复古词，而是 <strong>2026 解 VLA 能耗危机的实用解法</strong>。</li>
+          <li>未来一年值得跟踪的方向：<strong>LLM 自动生成 PDDL 域模型</strong>
+          （把符号建模的人力成本降到接近零）、<strong>可微分规划器</strong>、
+          <strong>分层 VLA</strong>（VLA 做高层意图、轻量控制器做低层动作）。</li>
+          <li>评测维度需要扩展：<strong>能耗、训练时长、组合泛化</strong>
+          应当与成功率并列为标准报告项。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>对产业与机器人公司</h3>
+        <ul class="clean">
+          <li><strong>仓储、装配、料箱搬运</strong>等结构化任务，建神经符号系统的 ROI 远高于堆 VLA。</li>
+          <li>对自研团队：先盘点哪些任务<strong>可符号化</strong>，把它们从大模型里剥离，能立刻拿到能耗与可解释性红利。</li>
+          <li>电力受限场景（移动机器人、电池供电、边缘部署）尤其值得优先尝试。</li>
+          <li>VLA 路线仍然适用于<strong>开放任务、家庭服务、长尾通用性</strong>——
+          本文不是要砍掉 VLA，而是要砍掉「凡事都用 VLA」。</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 我的观点 -->
+  <section>
+    <h2>编者观点：这是一篇被严重低估的论文</h2>
+    <div class="card">
+      <p>2026 年 4 月行业讨论的焦点都在新一代 VLA、Gemini 3.1 Ultra、TurboQuant 这些「更大更快」的故事。
+      但这篇 12 页的小论文，提出的是一个<strong>方向性的反命题</strong>：
+      规模不能解决一切，<strong>把问题的结构还回去</strong>反而是更优雅的解法。</p>
+      <p>它的力量不在于哪一个绝对数字（数字本身可以争论），
+      而在于<strong>把能耗作为一等公民</strong>放进了机器人评测——
+      这恰是行业过去两年系统性回避的问题。</p>
+      <p class="dim">一句话总结今天的精读：
+      <strong>「The price is not right」</strong> 不只是论文的标题，更是 2026 年所有 AI 工程师值得贴在屏幕上的一句提醒——
+      <em>当一个方法用百倍代价换一个不优的解，它就没资格说自己是 SOTA。</em></p>
+    </div>
+  </section>
+
+  <!-- 一段代码示意 -->
+  <section>
+    <h2>附录：PDDL 域模型示意（汉诺塔片段）</h2>
+    <div class="card">
+      <p class="dim">这就是 NSM 系统里替代了「VLA 隐式学习规则」的那一小段「人类先验」——
+      不到 30 行，就能让规划器解出全部最优动作序列。</p>
+<div class="code">(define (domain hanoi)
+  (:requirements :strips :typing)
+  (:types disk peg)
+  (:predicates
+    (on-disk ?d1 - disk ?d2 - disk)
+    (on-peg  ?d  - disk ?p  - peg)
+    (clear   ?x)
+    (smaller ?d1 - disk ?d2 - disk))
+  (:action move-disk
+    :parameters (?d - disk ?from - peg ?to - peg ?below - disk)
+    :precondition (and (clear ?d) (on-peg ?d ?from)
+                       (clear ?below) (smaller ?d ?below))
+    :effect       (and (not (on-peg ?d ?from)) (on-peg ?d ?to)
+                       (clear ?from) (not (clear ?below))
+                       (on-disk ?d ?below))))</div>
+      <p class="dim">这段 30 行规则比一个 3B 参数 VLA 模型「永远学不会偶尔会犯」的「不能把大盘放小盘上」
+      约束还要硬。这就是结构化先验的力量。</p>
+    </div>
+  </section>
+
+  <footer>
+    <div>📚 <strong>主要来源（英文一手资料）</strong></div>
+    <div class="badge-row">
+      <span class="pill">arXiv 2602.19260（论文原文）</span>
+      <span class="pill">Tufts HRILab 公开 PDF</span>
+      <span class="pill">ScienceDaily 2026-04-05</span>
+      <span class="pill">EurekAlert! / Tufts Now</span>
+      <span class="pill">ICRA 2026 Vienna</span>
+    </div>
+    <p style="margin-top:14px;">
+      • <a href="https://arxiv.org/abs/2602.19260" target="_blank" rel="noopener">arxiv.org/abs/2602.19260 — 论文摘要页</a><br/>
+      • <a href="https://arxiv.org/html/2602.19260v1" target="_blank" rel="noopener">arxiv.org/html/2602.19260v1 — HTML 全文</a><br/>
+      • <a href="https://hrilab.tufts.edu/publications/dugganetal26icra.pdf" target="_blank" rel="noopener">hrilab.tufts.edu — Tufts HRI Lab 出版物 PDF</a><br/>
+      • <a href="https://www.sciencedaily.com/releases/2026/04/260405003952.htm" target="_blank" rel="noopener">ScienceDaily — AI breakthrough cuts energy use by 100x while boosting accuracy</a><br/>
+      • <a href="https://now.tufts.edu/2026/03/17/new-ai-models-could-slash-energy-use-while-dramatically-improving-performance" target="_blank" rel="noopener">Tufts Now — 官方机构稿</a><br/>
+      • <a href="https://www.eurekalert.org/news-releases/1120833" target="_blank" rel="noopener">EurekAlert! — 学术新闻稿</a><br/>
+      • <a href="https://price-is-not-right.github.io/" target="_blank" rel="noopener">price-is-not-right.github.io — 项目主页</a>
+    </p>
+    <p class="dim" style="margin-top:18px;">
+      本日报由 AI 自动生成 · 选题逻辑：每日扫描 arXiv (cs.RO/cs.AI/cs.LG)、各大厂研究博客、学术新闻聚合站，
+      选取一篇英文一手资料、当天最具方向性意义的工作进行深读。中文呈现，可视化排版。
+    </p>
+  </footer>
+
+</div>
+
+<script>
+  // 图表通用风格
+  Chart.defaults.color = "#9aa3b2";
+  Chart.defaults.borderColor = "#232836";
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif';
+
+  // ① 成功率
+  new Chart(document.getElementById("successChart"), {
+    type: "bar",
+    data: {
+      labels: ["3 块（训练内）", "4 块（OOD 泛化）"],
+      datasets: [
+        { label: "VLA (π0 + LoRA)", data: [34, 0], backgroundColor: "rgba(239,68,68,0.7)", borderRadius: 6 },
+        { label: "神经符号 (NSM)", data: [95, 78], backgroundColor: "rgba(34,197,94,0.7)", borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%" } }
+      },
+      plugins: { legend: { position: "bottom" } }
+    }
+  });
+
+  // ② 训练时长（对数轴）
+  new Chart(document.getElementById("trainTimeChart"), {
+    type: "bar",
+    data: {
+      labels: ["VLA (π0 LoRA)", "神经符号 (NSM)"],
+      datasets: [{
+        label: "训练时长 (分钟)",
+        data: [2160, 34],
+        backgroundColor: ["rgba(239,68,68,0.7)", "rgba(34,197,94,0.7)"],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      indexAxis: "y", responsive: true, maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: "logarithmic",
+          ticks: {
+            callback: v => {
+              const allowed = [10, 30, 100, 300, 1000, 3000];
+              return allowed.includes(v) ? v + " min" : null;
+            }
+          }
+        }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // ③ 能耗对比
+  new Chart(document.getElementById("energyChart"), {
+    type: "bar",
+    data: {
+      labels: ["训练能耗", "推理能耗"],
+      datasets: [
+        { label: "VLA", data: [100, 100], backgroundColor: "rgba(239,68,68,0.7)", borderRadius: 6 },
+        { label: "神经符号 (NSM)", data: [1, 5], backgroundColor: "rgba(34,197,94,0.7)", borderRadius: 6 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, max: 110, ticks: { callback: v => v } }
+      },
+      plugins: {
+        legend: { position: "bottom" },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ": " + ctx.parsed.y + " (相对 VLA=100)" } }
+      }
+    }
+  });
+</script>
+</body>
+</html>

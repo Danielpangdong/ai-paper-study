@@ -1,0 +1,25 @@
+# 2026-06-24 AI Concept Run Summary
+
+- Run time: 2026-06-24 08:11:59 CST / 2026-06-24T08:11:59+0800.
+- Automation ID: `ai-pdf`.
+- Automation: `每日AI概念精讲HTML`.
+- Selected concept: `AI芯片（AI Chips）`.
+- Rationale: the recent concept path covered `模型量化（Quantization）`, `推测解码（Speculative Decoding）`, `模型压缩（Model Compression）`, `边缘AI（Edge AI）`, `批处理与吞吐量（Batching and Throughput）`, and `推理路由（Inference Routing）`; today's concept continues the inference/deployment infrastructure path by explaining why AI systems depend on CPU/GPU/NPU/TPU roles, matrix multiplication, memory bandwidth, and energy efficiency.
+- Outputs:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/2026-06-24_AI芯片（AI Chips）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/2026-06-24_AI芯片（AI Chips）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/chatgpt_ai_chips_analogy.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/chatgpt_ai_chips_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-24_AIChips/email_body.txt`
+- Visuals: generated with ChatGPT Image 2.0 under `/Users/mac/.codex/generated_images/019ef6ee-a24a-7951-b8d2-a7b076938f82/`; selected the kitchen-role analogy and chip computation workflow variants and copied them into the report directory.
+- Verification:
+  - `python3 reports/2026-06-24_AIChips/build_pdf.py` completed successfully.
+  - `pdfinfo` reports 9 A4 pages and a 5,708,947 byte PDF.
+  - `pdftotext` confirmed readable Chinese text and all required sections.
+  - `pdfimages -list` confirmed two embedded 1672 x 941 images.
+  - HTML checks confirmed two inline base64 image data URIs, two image tags, eight table-of-contents links, and the required sections.
+  - PDF pages rendered to `rendered/page-*.png`; cover, analogy figure, workflow figure, terminology table, misconception page, summary, quiz, and sources were spot-checked.
+- Delivery: Gmail sent successfully with PDF and self-contained HTML attachments to `pangdong@sf-express.com` and `seekiingforhappiness@gmail.com`; message id `19ef6f7f28f35067`.
+- Continuity note: avoid repeating `AI芯片`, `推理路由`, `批处理与吞吐量`, `边缘AI`, `模型压缩`, `推测解码`, and `模型量化` soon. Strong next candidates for the learning path: `端云协同（Edge-cloud Collaboration）`, `负载均衡（Load Balancing）`, `模型服务监控（Model Serving Observability）`, or `AI Benchmark（基准测试）`.
+- Git: `/Users/mac/Desktop/AI论文解读` is not a git repository.

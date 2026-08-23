@@ -1,0 +1,31 @@
+# Run Summary
+
+- Date: 2026-06-29 Asia/Shanghai.
+- Automation ID: `ai-pdf`.
+- Selected concept: 思维链（Chain-of-Thought）.
+- Rationale: prior concept reports already covered Context Window, Prompt Engineering, RAG, AI Memory, Agent, Tool Use, Guardrails, Context Engineering, Prompt Injection, and core model/inference concepts. Chain-of-Thought is the next high-value bridge concept because it explains why complex AI tasks need decomposed, checkable intermediate reasoning rather than direct answer guessing.
+- Built files:
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/2026-06-29_思维链（Chain-of-Thought）.html`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/2026-06-29_思维链（Chain-of-Thought）.pdf`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/chain_of_thought_comparison.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/chain_of_thought_workflow.png`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/email_subject.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/email_body.txt`
+  - `/Users/mac/Desktop/AI论文解读/reports/2026-06-29_ChainOfThought/sources.md`
+- Image generation: used built-in ChatGPT image generation for two Chinese science diagrams and copied the valid Chain-of-Thought outputs into the report directory.
+- Validation:
+  - HTML required-section and image-reference check passed.
+  - Source links returned HTTP 200.
+  - PDF exported via Playwright + Chrome.
+  - `pdfinfo` reported 11 A4 pages, unencrypted, 3.6 MB.
+  - `pdftotext` confirmed title, required sections, quiz, and source text are extractable.
+  - `pdfimages -list` confirmed two embedded images: 1536 x 1024 and 1568 x 1003.
+  - Rendered and visually checked previews of pages 1, 3, 4, 6, 7, 8, 10, and 11.
+  - SHA256 PDF: `2fbdd5036b91755d0cc7c511160b068c95fa4dab58421e50544e8d0e016c5b72`.
+- Delivery:
+  - Sent by Gmail with PDF attachment to `pangdong@sf-express.com,seekiingforhappiness@gmail.com`.
+  - Subject: `【AI每日深度科普】思维链：为什么AI也需要“先写草稿，再交卷”？`
+  - Gmail message id: `19f10ba2a01e3318`; thread id: `19f10ba2a01e3318`.
+  - Sent search proof: `in:sent subject:"思维链" has:attachment newer_than:1d` returned `19f10ba2a01e3318`.
+- Sources used for factual grounding: Wei et al. Chain-of-Thought Prompting paper, Google Research Chain-of-Thought blog, Kojima et al. Zero-shot-CoT paper, OpenAI reasoning models docs, Anthropic extended thinking docs.
+- Completed: 2026-06-29 08:14:56 CST.

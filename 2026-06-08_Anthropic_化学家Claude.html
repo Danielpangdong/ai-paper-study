@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI论文日报 · 2026-06-08 · 让 Claude 成为化学家</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0f1115;
+  --panel:#171a21;
+  --panel-2:#1f242d;
+  --line:#2a313d;
+  --text:#e6e8ec;
+  --muted:#9aa3b2;
+  --accent:#7ee2c3;
+  --accent-2:#7cb8ff;
+  --warn:#ffb86b;
+  --danger:#ff6b6b;
+  --ok:#5dd39e;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Helvetica,Arial,sans-serif;line-height:1.7;font-size:15px}
+a{color:var(--accent-2);text-decoration:none;border-bottom:1px dotted var(--accent-2)}
+a:hover{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
+header{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.brand{font-size:13px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+h1{font-size:30px;line-height:1.3;margin:8px 0 4px;font-weight:700}
+.sub{color:var(--muted);font-size:14px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.tag{padding:3px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted);background:var(--panel)}
+.tag.hot{color:var(--accent);border-color:rgba(126,226,195,.35)}
+.tag.src{color:var(--accent-2);border-color:rgba(124,184,255,.35)}
+
+.tldr{background:linear-gradient(135deg,rgba(126,226,195,.07),rgba(124,184,255,.05));border:1px solid var(--line);border-left:3px solid var(--accent);padding:18px 22px;border-radius:8px;margin-bottom:28px}
+.tldr h2{margin:0 0 8px;font-size:16px;color:var(--accent)}
+.tldr p{margin:6px 0}
+
+section{margin-bottom:32px}
+h2.section{font-size:20px;margin:0 0 14px;display:flex;align-items:center;gap:10px}
+h2.section::before{content:"";display:inline-block;width:4px;height:18px;background:var(--accent);border-radius:2px}
+h3{font-size:15px;color:var(--accent-2);margin:18px 0 8px}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card .k{font-size:12px;color:var(--muted);margin-bottom:6px}
+.card .v{font-size:22px;font-weight:700;color:var(--text)}
+.card .n{font-size:12px;color:var(--muted);margin-top:6px}
+
+.chartbox{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:10px}
+.chartbox h4{margin:0 0 10px;font-size:13px;color:var(--muted);font-weight:500}
+.chartrow{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.chartrow{grid-template-columns:1fr}}
+
+table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:13.5px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--panel-2);color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+tr:last-child td{border-bottom:none}
+td.num{font-variant-numeric:tabular-nums;color:var(--accent)}
+
+.callout{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);padding:14px 18px;border-radius:8px;margin:14px 0}
+.callout.bad{border-left-color:var(--danger)}
+.callout.ok{border-left-color:var(--ok)}
+.callout .h{font-weight:600;margin-bottom:4px;color:var(--warn)}
+.callout.bad .h{color:var(--danger)}
+.callout.ok .h{color:var(--ok)}
+
+ul.clean{padding-left:20px;margin:8px 0}
+ul.clean li{margin:6px 0}
+
+.confidence{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);background:var(--panel-2);padding:2px 8px;border-radius:6px;border:1px solid var(--line);margin-left:6px}
+.dot{width:8px;height:8px;border-radius:50%}
+.c-high .dot{background:var(--ok)}
+.c-med .dot{background:var(--warn)}
+.c-low .dot{background:var(--danger)}
+
+footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted);line-height:1.7}
+footer a{color:var(--muted)}
+.kbd{background:var(--panel-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+
+.note{font-size:12px;color:var(--muted);margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <div class="brand">AI 论文日报 · DAILY</div>
+    <h1>让 Claude 成为化学家：在 NMR 任务上对决专业软件</h1>
+    <div class="sub">Anthropic · Science · 2026 年 6 月 5 日（解读日期 2026-06-08）</div>
+    <div class="meta">
+      <span class="tag src">来源：Anthropic Research</span>
+      <span class="tag">领域：AI for Science / 化学</span>
+      <span class="tag">模型：Claude Opus 4.7 / 4.6 / Sonnet 4.6</span>
+      <span class="tag hot">基准对手：ChemDraw、MestReNova</span>
+    </div>
+  </div>
+</header>
+
+<section class="tldr">
+  <h2>一句话结论</h2>
+  <p>未经化学专项微调的通用模型 <b>Claude Opus 4.7</b>，在 20 个化合物的 <b>1D NMR 正向预测</b>上整体已经追平甚至小幅超过化学家日常使用的 <b>ChemDraw / MestReNova</b>；并且能完成这两款软件不直接支持的 <b>逆向结构解析</b>——8 个简单分子在仅给光谱和分子式时<b>100% 还原</b>，7 个复杂分子在额外给出起始物时多数也能在 3 次尝试内正确还原。</p>
+  <p><b>但请注意：</b>样本仅 20+15 个化合物、4 类骨架、3 种溶剂，2D NMR 与立体化学未评估；这是<b>指示性</b>结果，不是工业级结论。<span class="confidence c-high"><span class="dot"></span>结论置信度：高（基于原文，证据充分）</span></p>
+</section>
+
+<section>
+  <h2 class="section">为什么这件事值得关注</h2>
+  <p>化学家日常工作的大半时间，花在<b>"表征翻译"</b>上：把白板手绘结构变成 SMILES，把仪器原始谱图比对到提议结构，把专利里乱写的命名查回数据库。CAS 注册库已超 <b>2.9 亿</b>种物质，每天还在新增约 <b>1.5 万</b>种 —— 单靠人工不可能跟上。</p>
+  <p>过去十年，retrosynthesis、反应预测一类 ML 工具被反复"画饼"，但因数据稀疏、负样本缺失、文献付费墙等问题，<b>真正在小型实验室普及率极低</b>。这篇博文的实际增量是：第一次把"通用多模态推理模型"放到 NMR 这个化学家最日常的输入上，用<b>训练截止之后</b>发表的 ChemRxiv 预印本来避免数据泄漏，做了一次相对干净的对照基准。</p>
+
+  <div class="callout">
+    <div class="h">最强反驳（值得先听）</div>
+    <div>1) 样本规模太小（n=20），单一骨架 5 个化合物，类内方差吃不掉类间差异；2) 选 ChemRxiv 而非高质量期刊，可能压低 ChemDraw/MestReNova 的相对水平；3) 1D NMR 在真实合成场景中往往只是第一道筛选，2D NMR（COSY/HSQC/HMBC）和立体化学才是难点，而这些<b>本次没测</b>。所以"Claude 已能替代专业软件"是<b>过度解读</b>。</div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section">关键数字一览</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="k">¹H 平均误差（MAE）· Opus 4.7</div>
+      <div class="v">±0.079 <span style="font-size:14px;color:var(--muted)">ppm</span></div>
+      <div class="n">容差窗口 ±0.20 ppm 的 &lt; 40%</div>
+    </div>
+    <div class="card">
+      <div class="k">¹³C 平均误差 · Opus 4.7 / MestReNova</div>
+      <div class="v">±1.37 / ±1.48 <span style="font-size:14px;color:var(--muted)">ppm</span></div>
+      <div class="n">实质并列，容差 ±1.0 ppm</div>
+    </div>
+    <div class="card">
+      <div class="k">耦合裂分子峰间距预测准确率</div>
+      <div class="v">~80%</div>
+      <div class="n">三款 Claude 均接近；ChemDraw / MestReNova 仅 26–35%</div>
+    </div>
+    <div class="card">
+      <div class="k">逆向结构解析（简单 8 题）</div>
+      <div class="v">8 / 8 · 3 次全中</div>
+      <div class="n">仅给光谱 + 高分辨质谱分子式</div>
+    </div>
+    <div class="card">
+      <div class="k">逆向解析（复杂 7 题，提示起始物）</div>
+      <div class="v">4 题 3/3 · 其余 2/3</div>
+      <div class="n">融合环、螺环类，密度高的分子</div>
+    </div>
+    <div class="card">
+      <div class="k">评估样本量 / 骨架类别</div>
+      <div class="v">20 + 15 / 4 类</div>
+      <div class="n">每类 5 个化合物，3 种溶剂覆盖</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="section">实验设计（一图速览）</h2>
+  <table>
+    <tr><th>项目</th><th>设置</th></tr>
+    <tr><td>正向预测样本</td><td>20 个化合物，4 类骨架（P1 氯哒嗪 / P2 Boc 马来酰亚胺与炔胺 / P3 螺酮 / P4 α-硅基甲磺酰胺），每类 5 个</td></tr>
+    <tr><td>逆向解析样本</td><td>15 题：8 个简单（仅给谱 + 分子式），7 个复杂（额外给起始物 SMILES）</td></tr>
+    <tr><td>样本来源</td><td>ChemRxiv 预印本，<b>发表时间 &gt; 模型训练截止</b>，规避记忆泄漏</td></tr>
+    <tr><td>对照工具</td><td>ChemDraw、MestReNova（行业标准；确定性输出，跑一次即可）</td></tr>
+    <tr><td>Claude 模型</td><td>Opus 4.7 / Opus 4.6 / Sonnet 4.6；每题独立跑 3 次取均值并记录 min–max</td></tr>
+    <tr><td>判定标准</td><td>¹H 峰位差 ±0.20 ppm 内为命中；¹³C ±1.0 ppm 内为命中</td></tr>
+    <tr><td>溶剂覆盖</td><td>DMSO-d₆、CDCl₃、D₂O（甲醇-d₄、苯-d₆、丙酮-d₆ 未测）</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2 class="section">关键图表（数字化复刻）</h2>
+  <div class="chartrow">
+    <div class="chartbox">
+      <h4>¹H 平均绝对误差（ppm，越低越好；红虚线为 ±0.20 容差）</h4>
+      <canvas id="chartH" height="220"></canvas>
+    </div>
+    <div class="chartbox">
+      <h4>¹³C 平均绝对误差（ppm，越低越好；红虚线为 ±1.0 容差）</h4>
+      <canvas id="chartC" height="220"></canvas>
+    </div>
+  </div>
+  <div class="chartrow" style="margin-top:14px">
+    <div class="chartbox">
+      <h4>耦合 sub-peak 间距预测精确度（&lt; 0.5 Hz 内命中比例）</h4>
+      <canvas id="chartSplit" height="220"></canvas>
+    </div>
+    <div class="chartbox">
+      <h4>逆向结构解析成功率（按问题难度分组）</h4>
+      <canvas id="chartInv" height="220"></canvas>
+    </div>
+  </div>
+  <p class="note">说明：图中数据基于原文文字描述提取（Opus 4.7 ¹H MAE = 0.079，¹³C ≈ 1.37；MestReNova ¹³C ≈ 1.48）。其它具体柱高为按"Sonnet &lt; Opus 4.6 &lt; Opus 4.7"的相对排序合理估算的可视化辅助值，<b>非论文原始数字</b>。原始精确数值请以 <a href="https://www-cdn.anthropic.com/07441e654ad3dfeb0cd090e9361511562825d012.pdf" target="_blank">官方 PDF 白皮书</a> 为准。</p>
+</section>
+
+<section>
+  <h2 class="section">为什么 Claude 这次"够用了"</h2>
+  <h3>1. 多模态 + 显式推理改变了任务形态</h3>
+  <p>过去的化学 ML 工具依赖<b>结构化、清洗过的分子数据库</b>。Claude 这一代模型可以直接读期刊插图、手绘结构、方法学正文与 Supporting Information 原文，把"数据稀缺"问题部分绕过去——不是解决数据缺失，而是<b>允许在更脏的数据上工作</b>。</p>
+  <h3>2. 链式推理可审计</h3>
+  <p>这点比"分数高"更重要。化学家可以一步步看 Claude 的思路：它先把 SMILES 拆官能团 → 估计电子环境 → 调用经验经验位移规律 → 对溶剂效应作微调。审计性意味着<b>用户可以采纳推理结论而非仅相信黑箱输出</b>，这是 ChemDraw 的"经验加性规则"做不到的。</p>
+  <h3>3. 逆向解析的低门槛优势</h3>
+  <p>传统结构解析软件（ACD/Labs、Bruker CMC-Assist）需要 2D NMR 数据、专门训练和付费许可。Claude 用同一份化学家随手能复制的 1D 峰列 + HRMS 分子式就能跑，<b>这是工具链层面的可达性变化</b>，比纸面分数更有现实意义。</p>
+</section>
+
+<section>
+  <h2 class="section">局限与值得警惕的地方</h2>
+  <div class="callout bad">
+    <div class="h">原文承认的局限</div>
+    <ul class="clean">
+      <li><b>样本规模</b>：每个骨架只有 5 个化合物，类内方差无法与工具间差异分离。</li>
+      <li><b>难题失稳</b>：复杂逆向问题如果不给起始物，模型会陷入"反复推理但不收敛"。</li>
+      <li><b>骨架覆盖</b>：慢交换 NH 杂芳烃只通过氯哒嗪取样，吡啶醇、氨基噻唑等未覆盖。</li>
+      <li><b>未测 2D NMR / 立体化学</b>：复杂天然产物（结构鉴定的真正难题）未被评估。</li>
+      <li><b>溶剂覆盖窄</b>：仅 DMSO-d₆ / CDCl₃ / D₂O。</li>
+    </ul>
+  </div>
+  <div class="callout">
+    <div class="h">独立观察（解读者补充）</div>
+    <ul class="clean">
+      <li>"ChemRxiv 训练截止后样本" 能减少但不能消除泄漏：相关化学家在公开会议、Twitter/X、组会幻灯片上的<b>前置讨论</b>仍可能进入训练数据，导致模型对某些反应路径"似曾相识"。<span class="confidence c-med"><span class="dot"></span>置信度：中</span></li>
+      <li>"3 次跑取均值"对 LLM 来说是非常少的采样次数，min–max 区间不能等同于统计置信区间。<span class="confidence c-high"><span class="dot"></span>置信度：高</span></li>
+      <li>"通用模型 vs 专用软件"在<b>分数接近但成本天差地别</b>时尤其值得审视：Opus 4.7 单次结构解析的推理 token 成本与延迟，相对一次 MestReNova 本地计算很可能高出 2–3 个数量级。原文未给成本对比。<span class="confidence c-med"><span class="dot"></span>置信度：中</span></li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2 class="section">对谁有用，怎么用</h2>
+  <table>
+    <tr><th>角色</th><th>可立即做的事</th><th>暂时仍要靠传统工具</th></tr>
+    <tr><td>合成化学家</td><td>把 Claude 当作"1D NMR 峰位估计 + 结构猜测"的第一道筛子，节省反复 ChemDraw 输入的时间</td><td>立体化学、复杂天然产物、2D NMR 解谱</td></tr>
+    <tr><td>药化 / 工艺研究</td><td>批量阅读专利、文献 SI 的反应条件归一化，自动配出 SMILES</td><td>反应放大、杂质归属、晶型表征</td></tr>
+    <tr><td>研究生 / 教学</td><td>用作"结构-谱图对应关系"的练习与即时反馈工具</td><td>仍需自己手算耦合常数、做误差判断</td></tr>
+    <tr><td>AI / 工具构建者</td><td>把 NMR 任务作为多模态 + 显式推理的<b>评测基准</b>来比较模型</td><td>不要直接当生产 API 替代专业软件出售</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2 class="section">Anthropic 接下来的方向</h2>
+  <ul class="clean">
+    <li><b>结构识别与渲染</b>：把图、专利图样、PPT 截图、手绘自动转成机器可读的结构。</li>
+    <li><b>反应与合成推理</b>：retrosynthesis 路径提议、副产物预测、选择性分析。</li>
+    <li><b>机理</b>：以电子推移、中间体、过渡态的化学家"母语"形式解释反应。</li>
+    <li><b>文献理解</b>：跨表征（图、命名、缩写、编号）抽取化学事实。</li>
+  </ul>
+  <p>翻译成产品判断：未来 12 个月，<b>retrosynthesis 是下一个高概率战场</b>，但作者自己也承认它"还在 scoping 阶段"，意味着公开基准尚未出现 —— 这也是值得每天追踪的方向。</p>
+</section>
+
+<section>
+  <h2 class="section">事实 / 推断 / 观点 分层</h2>
+  <table>
+    <tr><th>类型</th><th>内容</th><th>置信度</th></tr>
+    <tr><td>事实</td><td>Opus 4.7 在 20 化合物 1D ¹H NMR 上 MAE = 0.079 ppm，¹³C ≈ 1.37 ppm</td><td><span class="confidence c-high"><span class="dot"></span>高</span></td></tr>
+    <tr><td>事实</td><td>Claude 能用 1D 峰列 + HRMS 完成逆向解析；专业软件通常需要 2D NMR</td><td><span class="confidence c-high"><span class="dot"></span>高</span></td></tr>
+    <tr><td>推断</td><td>多模态 + CoT 是 Claude 化学能力的两个直接来源</td><td><span class="confidence c-med"><span class="dot"></span>中</span></td></tr>
+    <tr><td>推断</td><td>训练截止后的 ChemRxiv 样本仍可能存在间接泄漏</td><td><span class="confidence c-med"><span class="dot"></span>中</span></td></tr>
+    <tr><td>观点</td><td>"通用模型已可替代专业 NMR 软件"是过度解读</td><td><span class="confidence c-high"><span class="dot"></span>高</span></td></tr>
+    <tr><td>观点</td><td>retrosynthesis 是下一阶段最值得追踪的化学 AI 基准</td><td><span class="confidence c-med"><span class="dot"></span>中</span></td></tr>
+  </table>
+</section>
+
+<section>
+  <h2 class="section">原文与延伸阅读</h2>
+  <ul class="clean">
+    <li>Anthropic 博客原文：<a href="https://www.anthropic.com/research/making-claude-a-chemist" target="_blank">Making Claude a chemist (Jun 5, 2026)</a></li>
+    <li>白皮书 PDF（含完整数据表）：<a href="https://www-cdn.anthropic.com/07441e654ad3dfeb0cd090e9361511562825d012.pdf" target="_blank">Anthropic White Paper · NMR Benchmark</a></li>
+    <li>AI for Science 计划：<a href="https://www.anthropic.com/news/ai-for-science-program" target="_blank">Anthropic AI for Science</a></li>
+    <li>同期相关：<a href="https://www.anthropic.com/research/natural-language-autoencoders" target="_blank">Natural Language Autoencoders (May 7, 2026)</a>· 把模型"想法"翻译成自然语言的可解释性工具</li>
+  </ul>
+</section>
+
+<footer>
+  自动化日报 · 由 Claude 在 Cowork 模式下生成 · 2026-06-08。<br>
+  本日报严格基于已发布的英文一手资料（Anthropic Research 官方网页），所有数字均来自原文；图表中的相对柱高若非原文直接给出，已在说明里标注为可视化估算。请以官方 PDF 为最终引用源。<br>
+  本文不构成投资、医疗或化学操作建议。
+</footer>
+
+</div>
+
+<script>
+const text='#e6e8ec', muted='#9aa3b2', line='#2a313d', accent='#7ee2c3', accent2='#7cb8ff', warn='#ffb86b', danger='#ff6b6b';
+Chart.defaults.color=muted;
+Chart.defaults.borderColor=line;
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif';
+
+function bar(id,labels,data,toleranceY,colors){
+  return new Chart(document.getElementById(id),{
+    type:'bar',
+    data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:6,borderSkipped:false}]},
+    options:{
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>` ${c.parsed.y} ppm`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:muted,font:{size:11}}},
+        y:{beginAtZero:true,grid:{color:line},ticks:{color:muted}}
+      }
+    },
+    plugins:[{
+      id:'tol',
+      afterDraw(chart){
+        if(toleranceY==null)return;
+        const {ctx,chartArea:{left,right},scales:{y}}=chart;
+        const yp=y.getPixelForValue(toleranceY);
+        ctx.save();ctx.strokeStyle=danger;ctx.setLineDash([4,4]);ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(left,yp);ctx.lineTo(right,yp);ctx.stroke();
+        ctx.fillStyle=danger;ctx.font='11px sans-serif';
+        ctx.fillText('容差 '+toleranceY+' ppm',right-95,yp-4);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+bar('chartH',
+  ['Opus 4.7','Opus 4.6','Sonnet 4.6','ChemDraw','MestReNova'],
+  [0.079, 0.13, 0.21, 0.16, 0.15],
+  0.20,
+  [accent, accent2, warn, '#6e7686', '#6e7686']
+);
+
+bar('chartC',
+  ['Opus 4.7','Opus 4.6','Sonnet 4.6','ChemDraw','MestReNova'],
+  [1.37, 1.95, 2.6, 1.95, 1.48],
+  1.0,
+  [accent, accent2, warn, '#6e7686', '#6e7686']
+);
+
+new Chart(document.getElementById('chartSplit'),{
+  type:'bar',
+  data:{labels:['Opus 4.7','Opus 4.6','Sonnet 4.6','ChemDraw','MestReNova'],
+        datasets:[{data:[82,80,78,35,26],backgroundColor:[accent,accent2,warn,'#6e7686','#6e7686'],borderRadius:6,borderSkipped:false}]},
+  options:{
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:(c)=>` ${c.parsed.y}%`}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:muted,font:{size:11}}},
+      y:{beginAtZero:true,max:100,grid:{color:line},ticks:{color:muted,callback:v=>v+'%'}}
+    }
+  }
+});
+
+new Chart(document.getElementById('chartInv'),{
+  type:'bar',
+  data:{
+    labels:['简单 8 题（仅给谱+分子式）','复杂 7 题（加起始物提示）'],
+    datasets:[
+      {label:'3/3 全中',data:[8,4],backgroundColor:accent,borderRadius:4,stack:'s'},
+      {label:'2/3 命中',data:[0,2],backgroundColor:accent2,borderRadius:4,stack:'s'},
+      {label:'1/3 命中',data:[0,1],backgroundColor:warn,borderRadius:4,stack:'s'},
+      {label:'0/3',data:[0,0],backgroundColor:danger,borderRadius:4,stack:'s'}
+    ]
+  },
+  options:{
+    plugins:{legend:{labels:{color:muted,font:{size:11}}}},
+    scales:{
+      x:{stacked:true,grid:{display:false},ticks:{color:muted,font:{size:11}}},
+      y:{stacked:true,beginAtZero:true,grid:{color:line},ticks:{color:muted,stepSize:1}}
+    }
+  }
+});
+</script>
+
+</body>
+</html>

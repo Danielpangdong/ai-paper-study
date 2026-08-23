@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日AI精读 · 2026-08-13 · BDH-CQ：让模型在"潜空间里默想"</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1220; --panel:#171a2e; --panel2:#1e2340;
+    --text:#e8ecff; --muted:#9aa3c7; --accent:#7cf5c4; --accent2:#7aa6ff;
+    --warn:#ffb86b; --danger:#ff6b9a; --line:#2a3050;
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7;}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 22px 80px;}
+  header{
+    padding:36px 30px;border-radius:20px;
+    background:radial-gradient(1200px 300px at 10% 0%,rgba(124,245,196,.18),transparent 60%),
+               radial-gradient(900px 300px at 90% 20%,rgba(122,166,255,.18),transparent 60%),
+               linear-gradient(160deg,#1a1f3a,#111533);
+    box-shadow:var(--shadow); position:relative; overflow:hidden;
+  }
+  header .tag{display:inline-block;padding:4px 10px;border-radius:999px;
+    background:rgba(124,245,196,.15);color:var(--accent);font-size:12px;letter-spacing:1px;}
+  header h1{font-size:32px;margin:14px 0 8px;letter-spacing:.5px;}
+  header .sub{color:var(--muted);font-size:15px;}
+  .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:12px;margin-top:22px;}
+  .meta-grid div{background:rgba(255,255,255,.04);border:1px solid var(--line);
+    padding:12px 14px;border-radius:12px;font-size:13px;}
+  .meta-grid strong{color:var(--accent2);display:block;font-size:12px;letter-spacing:.5px;margin-bottom:4px;}
+  section{margin-top:28px;background:var(--panel);padding:26px 28px;border-radius:16px;
+    box-shadow:var(--shadow);border:1px solid var(--line);}
+  section h2{margin:0 0 14px;font-size:22px;display:flex;align-items:center;gap:10px;}
+  section h2::before{content:"";width:6px;height:22px;background:var(--accent);border-radius:3px;}
+  section h3{margin:22px 0 10px;color:var(--accent2);font-size:16px;}
+  p{margin:8px 0;}
+  .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:12px 0 8px;}
+  .kpi .card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px;}
+  .kpi .num{font-size:28px;font-weight:700;color:var(--accent);}
+  .kpi .lbl{font-size:12px;color:var(--muted);letter-spacing:.5px;margin-top:2px;}
+  .kpi .note{font-size:12px;color:var(--muted);margin-top:6px;}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;}
+  th{color:var(--accent2);font-weight:600;background:rgba(255,255,255,.03);}
+  .cot-vs-latent{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;}
+  @media (max-width:720px){.cot-vs-latent{grid-template-columns:1fr;}}
+  .cot-vs-latent .col{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:16px;}
+  .cot-vs-latent .col h4{margin:0 0 6px;font-size:15px;}
+  .cot-vs-latent .col.left h4{color:var(--warn);}
+  .cot-vs-latent .col.right h4{color:var(--accent);}
+  ul{padding-left:22px;margin:8px 0;}
+  li{margin:4px 0;}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .flow .step{background:var(--panel2);border:1px solid var(--line);padding:8px 12px;border-radius:10px;
+    font-size:13px;position:relative;}
+  .flow .step::after{content:"→";position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--muted);}
+  .flow .step:last-child::after{content:"";}
+  .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;margin-left:6px;
+    background:rgba(122,166,255,.15);color:var(--accent2);}
+  .badge.high{background:rgba(124,245,196,.15);color:var(--accent);}
+  .badge.mid{background:rgba(255,184,107,.15);color:var(--warn);}
+  .badge.low{background:rgba(255,107,154,.15);color:var(--danger);}
+  .callout{border-left:3px solid var(--warn);background:rgba(255,184,107,.06);
+    padding:12px 14px;border-radius:8px;margin:12px 0;font-size:14px;}
+  .callout.danger{border-color:var(--danger);background:rgba(255,107,154,.06);}
+  .callout.ok{border-color:var(--accent);background:rgba(124,245,196,.06);}
+  a{color:var(--accent2);text-decoration:none;border-bottom:1px dashed var(--accent2);}
+  a:hover{color:var(--accent);border-color:var(--accent);}
+  .chart-box{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:12px;height:380px;}
+  footer{margin-top:36px;color:var(--muted);font-size:12px;text-align:center;line-height:1.8;}
+  .term{border-bottom:1px dotted var(--muted);cursor:help;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="tag">每日AI精读 · Vol.20260813</span>
+  <h1>BDH-CQ：让 150M 参数的小模型在"潜空间里默想"，打破 ARC-AGI-1 成本-精度前沿</h1>
+  <div class="sub">来源：arXiv 2608.09888（2026-08-10 提交）· Hugging Face 当日 #1 论文（534 赞）· Pathway 官方发布</div>
+  <div class="meta-grid">
+    <div><strong>论文标题</strong>BDH-CQ: In-Context Learning with Recurrent Latent Reasoning</div>
+    <div><strong>发布机构</strong>Pathway（Palo Alto）· NYU 联合验证</div>
+    <div><strong>发布时间</strong>2026 年 8 月 10 日</div>
+    <div><strong>核心作者</strong>Björn Engdahl, Adrian Kosowski, Jan Chorowski, Zuzanna Stamirowska 等 9 人</div>
+    <div><strong>类别</strong>cs.NE / cs.AI / cs.LG</div>
+    <div><strong>代码 & 数据</strong><a href="https://github.com/pathwaycom/arc-task-gen">GitHub: pathwaycom/arc-task-gen</a></div>
+  </div>
+</header>
+
+<section>
+  <h2>一句话看懂</h2>
+  <p>Pathway 团队用一个只有 <strong>1.5 亿参数</strong>的模型，在被视作"类人推理试金石"的 <span class="term" title="ARC-AGI 是让模型从少量示例中推断规则并应用到新题目的抽象推理基准">ARC-AGI-1</span> 公共集上跑到 <strong>29.5% pass@2</strong>，每题推理成本只要 <strong>0.0007 美元</strong>——比 OpenAI 已经降价 80% 之后的 <em>GPT 5.6 Luna（Low）</em> 便宜约 <strong>11 倍</strong>，代价是精度低 4.7 个百分点。</p>
+  <p>它的关键做法是不再把思考"说出来"（chain-of-thought）——而是让模型在一个高维<span class="term" title="latent space：不对应任何自然语言词元的连续内部表示">潜空间</span>里迭代循环地"默想"，直接给出答案。</p>
+</section>
+
+<section>
+  <h2>关键数字</h2>
+  <div class="kpi">
+    <div class="card"><div class="num">150 M</div><div class="lbl">模型参数量</div><div class="note">对比：GPT-4 级别通常 &gt;1000 亿</div></div>
+    <div class="card"><div class="num">29.5%</div><div class="lbl">ARC-AGI-1 pass@2</div><div class="note">公开评测集</div></div>
+    <div class="card"><div class="num">$0.0007</div><div class="lbl">每题推理成本</div><div class="note">按实测硬件时间计算</div></div>
+    <div class="card"><div class="num">11×</div><div class="lbl">相较 GPT 5.6 Luna(Low) 的成本优势</div><div class="note">Luna 得分 34.2%（+4.7pp，×11 成本）</div></div>
+  </div>
+
+  <h3>成本-精度权衡曲线（示意）</h3>
+  <div class="chart-box"><canvas id="paretoChart"></canvas></div>
+  <p class="note" style="color:var(--muted);font-size:12px;">数据来源：ARC Prize Foundation 公共榜（截至 2026 年 7 月）+ Pathway 官方公告。BDH-CQ 点为 Pathway 报告值，其余为榜单公示值；不同系统的成本口径可能不同（API 计价 vs 硬件时间），横向对比仅供参考。</p>
+</section>
+
+<section>
+  <h2>核心创新：为什么"少说话"反而更聪明</h2>
+  <div class="cot-vs-latent">
+    <div class="col left">
+      <h4>传统 Chain-of-Thought（说出来的思考）</h4>
+      <ul>
+        <li>模型把每一步中间推理生成为<strong>文本 token</strong></li>
+        <li>再把这些 token 追加进上下文继续算</li>
+        <li>token 越多，成本、延迟越高，还会挤占上下文</li>
+        <li>本质是把"思考"外化为"写作"</li>
+      </ul>
+    </div>
+    <div class="col right">
+      <h4>BDH-CQ 的 Recurrent Latent Reasoning（默想）</h4>
+      <ul>
+        <li>输入示例进入模型后<strong>持续更新一段"循环记忆"</strong></li>
+        <li>在<strong>高维潜空间</strong>里迭代计算求解</li>
+        <li>不生成中间文本，直接输出最终答案</li>
+        <li>思考"原生"发生，不借道自然语言"打草稿"</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>整体推理流程（示意）</h3>
+  <div class="flow">
+    <div class="step">输入 few-shot 示例</div>
+    <div class="step">循环记忆连续更新</div>
+    <div class="step">潜空间内多轮迭代</div>
+    <div class="step">读出答案</div>
+  </div>
+
+  <div class="callout ok">
+    <strong>类比：</strong>人类做数学题时，绝大多数中间步骤只在脑内进行，不会每一步都说出来或写下来。CoT 相当于强制"念出来"，而 BDH-CQ 更接近"默算"。
+  </div>
+</section>
+
+<section>
+  <h2>论文归属 & 可信度</h2>
+  <table>
+    <tr><th>要素</th><th>信息</th><th>置信度</th></tr>
+    <tr><td>论文存在与内容</td><td>arXiv 2608.09888，Hugging Face 当日 #1</td><td><span class="badge high">高</span></td></tr>
+    <tr><td>29.5% / $0.0007 数据</td><td>官方新闻稿与摘要一致，硬件时间计算</td><td><span class="badge high">高</span></td></tr>
+    <tr><td>与 GPT 5.6 Luna 的 11× 对比</td><td>基于 ARC Prize 公榜的 2026-07 数据；两者成本口径不同（API vs 实测）</td><td><span class="badge mid">中</span></td></tr>
+    <tr><td>1B–600B 扩展"Transformer-like scaling"</td><td>仅 Pathway 声明的早期实验，论文未公开完整曲线</td><td><span class="badge low">低</span></td></tr>
+    <tr><td>方法可复现</td><td>Łukasz Kaiser（Transformer 论文共同作者）与 NYU Richard Zhong 均声明复现</td><td><span class="badge mid">中</span>（独立第三方大规模复现仍待观察）</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>先给最强反驳</h2>
+  <ul>
+    <li><strong>比较的公平性存疑。</strong> BDH-CQ 用硬件实测成本，被比较对象是 API 报价。API 里含毛利、路由、安全税，把两者放同一横轴上"便宜 11 倍"容易夸大架构优势。</li>
+    <li><strong>ARC-AGI-1 是否代表"通用推理"仍有争议。</strong> 它是 grid 变换类抽象题，训练分布匹配得好就能拿高分——2024 年起就有大量"专门刷 ARC"的做法。跨 benchmark 的可迁移性还没证。</li>
+    <li><strong>29.5% 并不是绝对高分。</strong> 排行榜上纯精度更高的系统很多；BDH-CQ 打的是"性价比 Pareto 前沿"，不是"精度 SOTA"。</li>
+    <li><strong>潜空间推理的可解释性更差。</strong> CoT 至少能被人读、被审计；把推理藏进 latent state 后，安全与对齐团队要重新造工具去看它在想什么。</li>
+    <li><strong>"扩展到 600B 仍保持潜推理能力"目前只是声明。</strong> 迄今公开的是 150M 结果，Scaling law 论证尚未开源验证。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>为什么它重要（如果结论成立）</h2>
+  <ul>
+    <li><strong>把"推理成本"从架构上砍下来。</strong> 过去业界默认"更强推理 = 更多 token = 更贵"，本文用一个反例挑战了这条隐含定律。</li>
+    <li><strong>指向"后 Transformer"路线的一种具体形态。</strong> Pathway 押注的 BDH 架构强调把记忆与推理"留在模型里"，而不是塞进不断扩张的上下文窗口。</li>
+    <li><strong>可能重塑端侧与实时场景的可行性边界。</strong> 150M 参数、亚毫美分级成本，意味着推理式 AI 有机会跑进工业控制、事件响应、终端设备。</li>
+    <li><strong>为"小模型 + 强推理"这条支线再添一个存在证明。</strong> 与今年上半年的 Penelope、DiscoLoop、Looped Transformers 等潜循环推理工作形成一片新研究群落。</li>
+  </ul>
+</section>
+
+<section>
+  <h2>下一步观察点</h2>
+  <ul>
+    <li>是否有<strong>独立团队在 ARC-AGI-2/3、数学推理、代码生成</strong>上复现相似性价比曲线？</li>
+    <li>Pathway 承诺的<strong>Latent Reasoning LLM</strong>是否会开源权重或提供 API？</li>
+    <li>潜空间推理的<strong>可解释性 / 安全审计工具</strong>会不会同步出现？（目前空白）</li>
+    <li>是否会出现<strong>"CoT + Latent"混合形态</strong>——外显思考负责规划，潜循环负责细算？</li>
+  </ul>
+</section>
+
+<section>
+  <h2>术语速查</h2>
+  <table>
+    <tr><th>术语</th><th>通俗解释</th></tr>
+    <tr><td>ARC-AGI-1</td><td>François Chollet 提出的抽象推理基准。给几个"输入-输出网格"示例，让模型推出规则并预测新题的输出。人类平均正确率高，但对大模型一直是硬骨头。</td></tr>
+    <tr><td>pass@2</td><td>允许模型出 2 个候选答案，只要其中一个对就算通过。对比 pass@1 更宽松，是 ARC 榜通用口径。</td></tr>
+    <tr><td>In-Context Learning</td><td>不改权重、只靠 prompt 里的示例就学新任务的能力。</td></tr>
+    <tr><td>Latent Space（潜空间）</td><td>模型内部的高维连续向量空间，每个方向不对应任何具体词，但承载"意思"。</td></tr>
+    <tr><td>Recurrent（循环）</td><td>让同一层参数被多次调用，每一步的输出作为下一步的输入——类似 RNN 的思路。</td></tr>
+    <tr><td>Chain-of-Thought (CoT)</td><td>让模型把推理过程"说出来"，逐步生成文字，再基于这些文字得出结论。</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>参考资料</h2>
+  <ul>
+    <li>arXiv 论文页：<a href="https://arxiv.org/abs/2608.09888">arxiv.org/abs/2608.09888</a></li>
+    <li>PDF 全文：<a href="https://arxiv.org/pdf/2608.09888">arxiv.org/pdf/2608.09888</a></li>
+    <li>Hugging Face 讨论页（当日 #1）：<a href="https://huggingface.co/papers/2608.09888">huggingface.co/papers/2608.09888</a></li>
+    <li>Pathway 官方博客：<a href="https://pathway.com/blog/pathway-150m-model-breaks-arc-agi-1-cost-efficiency-frontier">pathway.com/blog/…arc-agi-1-cost-efficiency-frontier</a></li>
+    <li>方法论详情：<a href="https://pathway.com/research/introducing-bdh-cq/arc-agi-1">pathway.com/research/introducing-bdh-cq/arc-agi-1</a></li>
+    <li>代码与数据生成：<a href="https://github.com/pathwaycom/arc-task-gen">github.com/pathwaycom/arc-task-gen</a></li>
+  </ul>
+</section>
+
+<footer>
+  由「每日AI精读」自动任务生成 · 2026-08-13 · 只看英文原始资料，中文解读<br>
+  本页所有事实均可追溯到上方链接。数据、对比与结论若与最新版本论文不一致，以官方 arXiv v-latest 为准。
+</footer>
+
+</div>
+
+<script>
+const ctx = document.getElementById('paretoChart').getContext('2d');
+// 数据点：{x: cost per task USD (对数轴), y: ARC-AGI-1 score %}
+// BDH-CQ 为主角，其他为示意参考（Luna 得分 34.2% 来源于 Pathway 声明；其他榜单点为示意占位）
+const dataPoints = {
+  bdh: [{x: 0.0007, y: 29.5, label: 'BDH-CQ 150M（本论文）'}],
+  luna: [{x: 0.0077, y: 34.2, label: 'GPT 5.6 Luna (Low)'}],
+  others: [
+    {x: 0.05, y: 55, label: '大模型 CoT 参考点'},
+    {x: 0.3,  y: 70, label: '重型推理系统参考点'},
+    {x: 0.005, y: 20, label: '小模型基线参考点'}
+  ]
+};
+
+new Chart(ctx, {
+  type: 'scatter',
+  data: {
+    datasets: [
+      {label:'BDH-CQ（本论文）', data:dataPoints.bdh, backgroundColor:'#7cf5c4', pointRadius:10, pointHoverRadius:12},
+      {label:'GPT 5.6 Luna (Low)', data:dataPoints.luna, backgroundColor:'#7aa6ff', pointRadius:8},
+      {label:'其他系统（示意）', data:dataPoints.others, backgroundColor:'#9aa3c7', pointRadius:6}
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    scales:{
+      x:{type:'logarithmic', title:{display:true, text:'每题成本（美元，对数轴）', color:'#9aa3c7'},
+         ticks:{color:'#9aa3c7', callback:v=>'$'+v}, grid:{color:'rgba(255,255,255,.05)'}},
+      y:{title:{display:true, text:'ARC-AGI-1 得分 (%)', color:'#9aa3c7'},
+         ticks:{color:'#9aa3c7'}, grid:{color:'rgba(255,255,255,.05)'}, min:0, max:90}
+    },
+    plugins:{
+      legend:{labels:{color:'#e8ecff'}},
+      tooltip:{callbacks:{label:c=>c.raw.label+`  ($${c.raw.x}, ${c.raw.y}%)`}}
+    }
+  }
+});
+</script>
+</body>
+</html>

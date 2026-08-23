@@ -1,0 +1,13 @@
+今日概念：PKCE（Proof Key for Code Exchange）
+
+当 AI 助手在电脑或手机上连接日历、云盘等外部服务时，浏览器会把授权码带回应用。PKCE 在授权开始时留下一个只在原应用手里的随机“钥匙”，让截获授权码的人因为没有这把钥匙而无法兑换访问令牌。
+
+本期用“寄存柜回执 + 取件暗号”的贯穿类比，讲清：
+1. 为什么 HTTPS 之外仍需要 PKCE；
+2. code_verifier、code_challenge、授权码与 Access Token 各自的职责；
+3. 为什么应优先 S256，以及 PKCE 不能替代哪些安全控制；
+4. 它和 state、client secret、DPoP 的区别与配合。
+
+附件含可阅读 HTML 与 PDF 版本。
+
+说明：协议事实来自 RFC 7636、RFC 8252、RFC 9700 与 Google 官方开发文档；AI 助手案例为教学推演。

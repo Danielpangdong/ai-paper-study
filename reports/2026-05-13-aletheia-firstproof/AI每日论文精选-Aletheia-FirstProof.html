@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI每日论文精选 | Aletheia 自主挑战 FirstProof</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --ink: #101418;
+      --muted: #5b6672;
+      --paper: #f6f7f8;
+      --panel: #ffffff;
+      --line: #d9dee5;
+      --blue: #1d5fd1;
+      --green: #0d7c66;
+      --red: #b53030;
+      --gold: #8a6500;
+      --soft-blue: #eaf2ff;
+      --soft-green: #e9f7f2;
+      --soft-red: #fff0ef;
+      --soft-gold: #fff6dc;
+      --shadow: 0 18px 50px rgba(16, 20, 24, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      background: #0d1117;
+      color: #f7fbff;
+      border-radius: 18px;
+      padding: 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .hero:after {
+      content: "";
+      position: absolute;
+      inset: auto -80px -120px auto;
+      width: 360px;
+      height: 360px;
+      background: radial-gradient(circle, rgba(63, 135, 255, 0.32), rgba(13, 17, 23, 0) 62%);
+      pointer-events: none;
+    }
+    .kicker { letter-spacing: 0.08em; font-size: 13px; color: #9fb8ff; font-weight: 700; text-transform: uppercase; }
+    h1 { margin: 10px 0 12px; font-size: 38px; line-height: 1.16; letter-spacing: 0; }
+    h2 { margin: 38px 0 14px; font-size: 26px; line-height: 1.28; letter-spacing: 0; }
+    h3 { margin: 22px 0 10px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0 0 14px; }
+    .subtitle { color: #c6d2e1; max-width: 780px; font-size: 17px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 24px; }
+    .meta {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 88px;
+    }
+    .meta small { display: block; color: #9fb0c5; margin-bottom: 4px; }
+    .meta strong { color: #fff; font-size: 15px; }
+    .section { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px; margin-top: 18px; box-shadow: 0 8px 28px rgba(16, 20, 24, 0.045); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card { border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: #fff; }
+    .card.blue { background: var(--soft-blue); border-color: #bfd6ff; }
+    .card.green { background: var(--soft-green); border-color: #bfe5d8; }
+    .card.red { background: var(--soft-red); border-color: #f2c3bf; }
+    .card.gold { background: var(--soft-gold); border-color: #ead086; }
+    .label { font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .big { font-size: 22px; line-height: 1.42; font-weight: 800; margin: 6px 0 0; }
+    .muted { color: var(--muted); }
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #f3f7ff;
+      padding: 18px 20px;
+      border-radius: 12px;
+      margin: 18px 0;
+    }
+    .quote { font-size: 22px; line-height: 1.55; font-weight: 800; }
+    table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 15px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 12px 10px; vertical-align: top; text-align: left; }
+    th { color: var(--muted); font-size: 13px; background: #f8fafc; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+    .ok { background: #dff6ed; color: #087057; }
+    .warn { background: #fff0c2; color: #735500; }
+    .miss { background: #eceff3; color: #5b6672; }
+    .bad { background: #ffe0dc; color: #9a2424; }
+    .figure {
+      background: #fbfcfe;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 14px;
+      overflow-x: auto;
+    }
+    .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    svg { max-width: 100%; height: auto; display: block; }
+    .term { display: grid; grid-template-columns: 180px 1fr 1fr; gap: 12px; border-bottom: 1px solid var(--line); padding: 14px 0; }
+    .term:last-child { border-bottom: 0; }
+    .term b { color: var(--ink); }
+    .toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .toc a { color: #dbe7ff; border: 1px solid rgba(255,255,255,0.18); padding: 6px 10px; border-radius: 999px; font-size: 13px; }
+    .source-list li { margin-bottom: 10px; }
+    .footer { color: var(--muted); text-align: center; margin-top: 24px; font-size: 13px; }
+    @media (max-width: 820px) {
+      h1 { font-size: 30px; }
+      .hero { padding: 24px; border-radius: 14px; }
+      .meta-grid, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .section { padding: 20px; border-radius: 14px; }
+      .term { grid-template-columns: 1fr; gap: 4px; }
+      table { font-size: 14px; }
+      th, td { padding: 10px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div class="kicker">AI DAILY PAPER PICK · 2026-05-13</div>
+      <h1>AI每日论文精选：当 AI Agent 第一次像研究员一样“交作业”</h1>
+      <p class="subtitle">今日论文：<strong>Aletheia tackles FirstProof autonomously</strong><br />中文标题：<strong>Aletheia 自主挑战 FirstProof：让 AI 在真实数学研究题上生成、验证并提交证明</strong></p>
+      <div class="toc">
+        <a href="#why">为什么选它</a>
+        <a href="#one">一句话</a>
+        <a href="#contrib">核心贡献</a>
+        <a href="#how">工作原理</a>
+        <a href="#terms">术语解释</a>
+        <a href="#results">实验结果</a>
+        <a href="#limits">局限性</a>
+        <a href="#impact">产业影响</a>
+      </div>
+      <div class="meta-grid">
+        <div class="meta"><small>作者</small><strong>Tony Feng, Junehyuk Jung, Sang-hyun Kim, Carlo Pagano, Sergei Gukov 等 17 位作者</strong></div>
+        <div class="meta"><small>机构</small><strong>Google DeepMind，另含 UC Berkeley、Brown、Caltech、CMU 等外部作者</strong></div>
+        <div class="meta"><small>发布时间</small><strong>2026-02-24 提交，2026-03-15 v3</strong></div>
+        <div class="meta"><small>平台</small><strong>arXiv · cs.AI / cs.CL / cs.LG</strong></div>
+      </div>
+    </section>
+
+    <section class="section" id="info">
+      <h2>1. 标题区</h2>
+      <div class="grid-2">
+        <div class="card">
+          <div class="label">Paper Card</div>
+          <p><strong>英文标题：</strong>Aletheia tackles FirstProof autonomously</p>
+          <p><strong>中文标题：</strong>Aletheia 自主挑战 FirstProof</p>
+          <p><strong>论文链接：</strong><a href="https://arxiv.org/abs/2602.21201">https://arxiv.org/abs/2602.21201</a></p>
+          <p><strong>原始输出与提示：</strong><a href="https://github.com/google-deepmind/superhuman/tree/main/aletheia">Google DeepMind GitHub / Aletheia</a></p>
+        </div>
+        <div class="card blue">
+          <div class="label">今天的关键词</div>
+          <p class="big">自治科研 Agent、可拒答、验证闭环、研究级数学、专家审稿</p>
+          <p class="muted">它的重点不是“AI 会不会做数学题”，而是“AI 能不能像研究员一样，产出可被专家审查的知识工作”。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p>AI 研究每天都有新模型、新榜单、新参数。但这篇论文值得精读，是因为它把问题从“模型答题”推进到“AI 参与真实科研”。</p>
+      <div class="grid-3">
+        <div class="card green">
+          <div class="label">行业意义</div>
+          <p><strong>科研工作流开始被 Agent 化。</strong>过去的 AI 更像会查资料的助手，这里更像一个会写初稿、会自查、会放弃不靠谱答案的研究助理。</p>
+        </div>
+        <div class="card blue">
+          <div class="label">技术突破</div>
+          <p><strong>关键不是一次生成答案，而是闭环。</strong>Generator 负责想方案，Verifier 负责找漏洞，Reviser 负责修正，最后还可以选择“没有解”。</p>
+        </div>
+        <div class="card gold">
+          <div class="label">长期价值</div>
+          <p><strong>它指向“可验证的智能”。</strong>未来最有用的 AI 不是最会说的 AI，而是能把复杂工作拆成可检查步骤的 AI。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p><strong>我的判断：</strong>这篇论文的长期价值不在数学本身，而在它展示了一种 Agent 产品范式：面对高风险、高复杂任务时，AI 应该先学会“证明自己没有胡说”。</p>
+      </div>
+    </section>
+
+    <section class="section" id="one">
+      <h2>3. 一句话讲透论文</h2>
+      <p class="quote">这篇论文本质上是在让 AI 像研究员一样工作：先提出证明，再自己挑错，能修就修，不能保证就宁可交白卷，最后接受专家审稿。</p>
+    </section>
+
+    <section class="section" id="contrib">
+      <h2>4. 核心贡献拆解</h2>
+      <table>
+        <thead>
+          <tr><th>问题</th><th>旧方式</th><th>Aletheia 的做法</th><th>为什么更重要</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AI 数学能力怎么测？</td>
+            <td>做竞赛题、标准题、已有答案题。</td>
+            <td>挑战 FirstProof：10 道此前未公开的研究级数学问题。</td>
+            <td>更接近真实科研，不容易被“背题”污染。</td>
+          </tr>
+          <tr>
+            <td>AI 怎么避免自信胡说？</td>
+            <td>生成一个答案，然后人类自己判断。</td>
+            <td>内置验证与抽取提示，对候选证明进行筛选、修正或拒绝。</td>
+            <td>把“可信度”放进工作流，而不是事后补救。</td>
+          </tr>
+          <tr>
+            <td>失败时怎么办？</td>
+            <td>硬凑答案，容易产生幻觉。</td>
+            <td>允许输出 No solution found 或超时无输出。</td>
+            <td>在科研和企业场景里，“不知道”往往比编造更有价值。</td>
+          </tr>
+          <tr>
+            <td>结果如何评估？</td>
+            <td>看 benchmark 分数。</td>
+            <td>由数学专家逐题评审，标准接近“少量修改后可发表”。</td>
+            <td>从“考试分”走向“审稿制”。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="how">
+      <h2>5. 工作原理：把 AI 想象成一个小型研究组</h2>
+      <p>最简单的类比：Aletheia 不是一个孤立的学生，而是一间小型研究办公室。</p>
+      <p>办公室里有三类角色：一个人负责大胆提出证明，一个人负责像审稿人一样挑错，一个人负责把可修的问题补完整。如果证明漏洞太大，就退回重来。如果一直过不了关，就不提交。</p>
+      <div class="figure">
+        <svg width="980" height="360" viewBox="0 0 980 360" role="img" aria-label="Aletheia 工作流中文图示">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#1d5fd1" />
+            </marker>
+            <style>
+              .box { fill: #fff; stroke: #cfd8e3; stroke-width: 2; rx: 14; }
+              .box2 { fill: #eaf2ff; stroke: #9fc0ff; stroke-width: 2; rx: 14; }
+              .box3 { fill: #e9f7f2; stroke: #8fd0bd; stroke-width: 2; rx: 14; }
+              .box4 { fill: #fff6dc; stroke: #e0c76d; stroke-width: 2; rx: 14; }
+              .txt { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill: #101418; }
+              .sub { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill: #5b6672; }
+              .line { stroke: #1d5fd1; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+              .back { stroke: #b53030; stroke-width: 3; fill: none; stroke-dasharray: 7 7; marker-end: url(#arrow); }
+            </style>
+          </defs>
+          <rect class="box" x="20" y="120" width="140" height="82" />
+          <text class="txt" x="48" y="154">研究题目</text>
+          <text class="sub" x="42" y="181">原样输入</text>
+          <path class="line" d="M160 161 H230" />
+          <rect class="box2" x="230" y="106" width="150" height="110" />
+          <text class="txt" x="270" y="146">生成器</text>
+          <text class="sub" x="258" y="174">提出证明路线</text>
+          <text class="sub" x="266" y="196">写出候选答案</text>
+          <path class="line" d="M380 161 H450" />
+          <rect class="box" x="450" y="106" width="150" height="110" />
+          <text class="txt" x="489" y="146">候选证明</text>
+          <text class="sub" x="482" y="174">像论文初稿</text>
+          <path class="line" d="M600 161 H670" />
+          <rect class="box3" x="670" y="92" width="160" height="138" />
+          <text class="txt" x="710" y="132">验证器</text>
+          <text class="sub" x="697" y="160">查逻辑漏洞</text>
+          <text class="sub" x="697" y="182">查引用与细节</text>
+          <text class="sub" x="697" y="204">判断能否修</text>
+          <path class="line" d="M830 142 H910 V92" />
+          <rect class="box4" x="820" y="20" width="140" height="72" />
+          <text class="txt" x="858" y="51">提交</text>
+          <text class="sub" x="844" y="76">专家评审</text>
+          <path class="line" d="M750 230 V286 H525 V218" />
+          <rect class="box4" x="468" y="274" width="170" height="66" />
+          <text class="txt" x="515" y="304">修订器</text>
+          <text class="sub" x="498" y="326">小漏洞自动补齐</text>
+          <path class="back" d="M710 230 C675 300 305 300 305 216" />
+          <text class="sub" x="305" y="286" fill="#b53030">严重错误：退回重想</text>
+          <path class="back" d="M750 230 C815 294 920 280 930 220" />
+          <text class="sub" x="804" y="276" fill="#b53030">过不了关：拒答</text>
+        </svg>
+        <div class="caption">图 1：Aletheia 的核心不是“灵光一现”，而是把生成、验证、修订、拒答做成闭环。</div>
+      </div>
+      <h3>步骤化理解</h3>
+      <ol>
+        <li><strong>给题：</strong>研究人员把 FirstProof 的 LaTeX 原题原样输入，不改写、不提示。</li>
+        <li><strong>生成：</strong>Aletheia 基于 Gemini 3 Deep Think 生成候选证明。</li>
+        <li><strong>验证：</strong>预设的验证与抽取提示检查候选证明，决定它是正确、可修，还是错误。</li>
+        <li><strong>修订：</strong>如果只是细节不足，系统自动补齐并输出 LaTeX。</li>
+        <li><strong>拒答：</strong>如果找不到可靠解法，就不提交答案。</li>
+        <li><strong>审稿：</strong>最终答案交给数学专家判断，类似真实论文审稿。</li>
+      </ol>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term">
+        <b>Agent</b>
+        <span><strong>专业解释：</strong>能围绕目标执行多步任务、调用工具、迭代调整策略的 AI 系统。</span>
+        <span><strong>白话解释：</strong>不是只回答一句话的聊天机器人，而是会办一整件事的“数字员工”。</span>
+      </div>
+      <div class="term">
+        <b>Verifier</b>
+        <span><strong>专业解释：</strong>用于检查候选答案是否满足逻辑、格式、引用和严谨性要求的验证模块。</span>
+        <span><strong>白话解释：</strong>像一个很挑剔的审稿人，专门找你证明里的漏洞。</span>
+      </div>
+      <div class="term">
+        <b>Inference-time compute</b>
+        <span><strong>专业解释：</strong>模型在推理阶段为了搜索、生成和验证答案所消耗的计算量。</span>
+        <span><strong>白话解释：</strong>AI 答题时花了多少“脑力”和时间，而不是训练它时花了多少资源。</span>
+      </div>
+      <div class="term">
+        <b>Best-of-2</b>
+        <span><strong>专业解释：</strong>运行两个版本或两次尝试，再从候选输出中选择更好的结果。</span>
+        <span><strong>白话解释：</strong>像同一题让两位研究助理各写一版，再挑更靠谱的一版交上去。</span>
+      </div>
+      <div class="term">
+        <b>FirstProof</b>
+        <span><strong>专业解释：</strong>由数学家提出的 10 道此前未公开的研究级数学问题，用于测试 AI 是否能产生可审查证明。</span>
+        <span><strong>白话解释：</strong>不是刷题库，而是把真实研究中的难点拿出来让 AI 试试。</span>
+      </div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p>论文最醒目的数字是：Aletheia 在 10 道 FirstProof 问题中，提交了 6 道候选解，并在专家多数意见下被认为解决了这 6 道。它不是每题都答，而是把 4 道问题留空。</p>
+      <table>
+        <thead>
+          <tr><th>问题</th><th>Aletheia best-of-2</th><th>专家评价</th><th>如何解读</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>P1</td><td><span class="badge miss">No Output</span></td><td>无提交</td><td>系统选择不答，体现拒答机制。</td></tr>
+          <tr><td>P2</td><td><span class="badge ok">Correct</span></td><td>4/4</td><td>专家一致认可。</td></tr>
+          <tr><td>P3</td><td><span class="badge miss">No Output</span></td><td>无提交</td><td>没有硬凑证明。</td></tr>
+          <tr><td>P4</td><td><span class="badge miss">No Output</span></td><td>无提交</td><td>保守策略优先。</td></tr>
+          <tr><td>P5</td><td><span class="badge ok">Correct</span></td><td>4/4</td><td>其中一个版本误读术语，但 best-of-2 选中了正确方向。</td></tr>
+          <tr><td>P6</td><td><span class="badge miss">No Output</span></td><td>无提交</td><td>仍有明显能力边界。</td></tr>
+          <tr><td>P7</td><td><span class="badge ok">Correct</span></td><td>3/3</td><td>一个版本严重错误，另一个版本解决，显示多版本筛选很关键。</td></tr>
+          <tr><td>P8</td><td><span class="badge warn">Correct?</span></td><td>5/7</td><td>争议不在大方向，而在细节是否足够达到“少量修改”。</td></tr>
+          <tr><td>P9</td><td><span class="badge ok">Correct</span></td><td>4/4</td><td>专家一致认可。</td></tr>
+          <tr><td>P10</td><td><span class="badge ok">Correct</span></td><td>2/2</td><td>专家一致认可。</td></tr>
+        </tbody>
+      </table>
+      <div class="figure">
+        <svg width="980" height="260" viewBox="0 0 980 260" role="img" aria-label="Aletheia FirstProof 结果图">
+          <style>
+            .axis { stroke:#cfd8e3; stroke-width:2; }
+            .bar { fill:#1d5fd1; }
+            .bar2 { fill:#0d7c66; }
+            .bar3 { fill:#b53030; }
+            .t { font: 700 16px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill:#101418; }
+            .s { font: 13px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill:#5b6672; }
+          </style>
+          <text class="t" x="24" y="32">FirstProof 十题结果：关键不是 10/10，而是 6 个可审查证明 + 4 个克制拒答</text>
+          <line class="axis" x1="80" y1="205" x2="900" y2="205" />
+          <rect class="bar2" x="110" y="85" width="230" height="120" rx="8" />
+          <text class="t" x="168" y="132" fill="#fff">6 道</text>
+          <text class="s" x="145" y="160" fill="#fff">专家多数认为正确</text>
+          <rect class="bar" x="390" y="125" width="170" height="80" rx="8" />
+          <text class="t" x="438" y="158" fill="#fff">4 道</text>
+          <text class="s" x="420" y="184" fill="#fff">无可靠输出</text>
+          <rect class="bar3" x="610" y="165" width="105" height="40" rx="8" />
+          <text class="t" x="644" y="190" fill="#fff">1 道</text>
+          <text class="s" x="600" y="230">P8 存在专家分歧</text>
+          <text class="s" x="116" y="230">P2 / P5 / P7 / P8 / P9 / P10</text>
+          <text class="s" x="390" y="230">P1 / P3 / P4 / P6</text>
+        </svg>
+        <div class="caption">图 2：Aletheia 的成绩不是完美，但它把“可靠拒答”纳入了能力评估。</div>
+      </div>
+      <div class="callout">
+        <p><strong>结果意味着什么：</strong>AI 正从“会给答案”转向“会管理答案质量”。这对科研、代码审查、法律、医药、财务审计这类高风险场景，比单纯提高答题率更重要。</p>
+      </div>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid-2">
+        <div class="card red">
+          <h3>不是完全无争议</h3>
+          <p>P8 只有 5/7 专家认为可算正确，争议集中在证明细节是否足够。对数学而言，“大体对”并不等于“严格完成”。</p>
+        </div>
+        <div class="card gold">
+          <h3>Best-of-2 有选择优势</h3>
+          <p>两个版本中挑更好答案会提高成功率。论文也承认，这种指定 preferred solution 的过程用到了团队自身专业判断。</p>
+        </div>
+        <div class="card">
+          <h3>可复现性有限</h3>
+          <p>核心模型、调用预算、随机性、完整运行参数并未完全开放。外部团队很难逐步复现同样结果。</p>
+        </div>
+        <div class="card">
+          <h3>没有形式化证明系统兜底</h3>
+          <p>专家审稿很强，但还不是 Lean、Coq 这类机器可验证证明。未来如果能连接形式化验证，可信度会更高。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="impact">
+      <h2>9. 产业影响分析</h2>
+      <table>
+        <thead>
+          <tr><th>影响对象</th><th>可能变化</th><th>原因</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>科研机构与高校</td>
+            <td>出现“研究 Agent + 人类 PI”的新协作模式。</td>
+            <td>AI 可以先跑大量证明路线、找反例、整理引用，让人类集中判断核心思想。</td>
+          </tr>
+          <tr>
+            <td>AI 产品公司</td>
+            <td>Agent 产品会从“能操作工具”升级为“能交付可审查成果”。</td>
+            <td>企业不只需要自动化，还需要证据链、失败边界、审计记录。</td>
+          </tr>
+          <tr>
+            <td>代码与工程研发</td>
+            <td>更强的自动代码审查、复杂 bug 定位、架构证明工具。</td>
+            <td>软件工程也像数学：复杂结论必须被测试、验证、反驳。</td>
+          </tr>
+          <tr>
+            <td>投资与产业竞争</td>
+            <td>“推理 + 验证 + 长任务执行”会成为下一代模型护城河。</td>
+            <td>单次回答能力会商品化，闭环可靠性更难复制。</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="figure">
+        <svg width="980" height="310" viewBox="0 0 980 310" role="img" aria-label="产业影响路径图">
+          <style>
+            .node { fill:#fff; stroke:#cfd8e3; stroke-width:2; rx:14; }
+            .nblue { fill:#eaf2ff; stroke:#9fc0ff; }
+            .ngreen { fill:#e9f7f2; stroke:#8fd0bd; }
+            .ngold { fill:#fff6dc; stroke:#e0c76d; }
+            .edge { stroke:#1d5fd1; stroke-width:3; fill:none; marker-end:url(#arrow2); }
+            .tx { font:700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill:#101418; }
+            .sm { font:13px -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; fill:#5b6672; }
+          </style>
+          <defs>
+            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" fill="#1d5fd1" />
+            </marker>
+          </defs>
+          <rect class="node nblue" x="30" y="92" width="180" height="110" />
+          <text class="tx" x="70" y="130">复杂任务</text>
+          <text class="sm" x="62" y="160">数学、代码、药物、审计</text>
+          <path class="edge" d="M210 147 H290" />
+          <rect class="node ngreen" x="290" y="70" width="190" height="154" />
+          <text class="tx" x="338" y="112">Agent 闭环</text>
+          <text class="sm" x="322" y="144">生成</text>
+          <text class="sm" x="322" y="168">验证</text>
+          <text class="sm" x="322" y="192">拒答与修订</text>
+          <path class="edge" d="M480 147 H560" />
+          <rect class="node ngold" x="560" y="92" width="180" height="110" />
+          <text class="tx" x="604" y="130">证据链</text>
+          <text class="sm" x="596" y="160">过程可追踪</text>
+          <text class="sm" x="596" y="182">输出可审查</text>
+          <path class="edge" d="M740 147 H820" />
+          <rect class="node" x="820" y="92" width="130" height="110" />
+          <text class="tx" x="852" y="130">生产力</text>
+          <text class="sm" x="848" y="160">更少试错</text>
+          <text class="sm" x="848" y="182">更高信任</text>
+        </svg>
+        <div class="caption">图 3：真正有商业价值的 Agent，不是“自动点按钮”，而是能在复杂任务中留下可验证证据链。</div>
+      </div>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul class="source-list">
+        <li><a href="https://arxiv.org/abs/2602.21201">Aletheia tackles FirstProof autonomously</a>，Tony Feng 等，arXiv:2602.21201。</li>
+        <li><a href="https://github.com/google-deepmind/superhuman/tree/main/aletheia">Google DeepMind Aletheia 项目页</a>，包含原始 prompts 与 outputs。</li>
+        <li><a href="https://deepmind.google/blog/accelerating-mathematical-and-scientific-discovery-with-gemini-deep-think/">Google DeepMind 官方博客：Accelerating Mathematical and Scientific Discovery with Gemini Deep Think</a>。</li>
+        <li><a href="https://arxiv.org/abs/2602.05192">First Proof</a>，Mohammed Abouzaid 等，FirstProof 挑战原始论文。</li>
+        <li><a href="https://openai.com/index/first-proof-submissions/">OpenAI: Our First Proof submissions</a>，用于对比不同机构对 FirstProof 的参与方式。</li>
+        <li><a href="https://www.infoq.com/news/2026/04/deepmind-aletheia-agentic-math/">InfoQ: Google’s Aletheia Advances the State of the Art of Fully Autonomous Agentic Math Research</a>。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <ul class="source-list">
+        <li>arXiv 论文页确认标题、作者、提交日期、版本、摘要与项目链接：<a href="https://arxiv.org/abs/2602.21201">arXiv:2602.21201</a>。</li>
+        <li>论文 PDF 确认核心结果：10 道 FirstProof 问题中 best-of-2 解决 6 道，P8 专家意见非一致，且工作由 Google DeepMind 进行：<a href="https://arxiv.org/pdf/2602.21201">PDF</a>。</li>
+        <li>FirstProof 原论文确认挑战性质：10 道此前未公开、来自真实研究过程的数学问题：<a href="https://arxiv.org/abs/2602.05192">arXiv:2602.05192</a>。</li>
+        <li>Google DeepMind 官方博客确认 Aletheia 的生成、验证、修订流程，以及其在数学和科学发现中的定位：<a href="https://deepmind.google/blog/accelerating-mathematical-and-scientific-discovery-with-gemini-deep-think/">DeepMind blog</a>。</li>
+        <li>OpenAI First Proof 页面用于横向参考 FirstProof 任务难度与其他机构提交情况：<a href="https://openai.com/index/first-proof-submissions/">OpenAI First Proof submissions</a>。</li>
+      </ul>
+    </section>
+
+    <p class="footer">本报告由 AI每日论文精选自动化生成，面向非技术读者，重点解释“为什么重要”而不是搬运摘要。</p>
+  </main>
+</body>
+</html>

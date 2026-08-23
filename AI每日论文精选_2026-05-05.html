@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 - 2026-05-05</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      color: #18202a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.62;
+    }
+    .page {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 16px 44px;
+    }
+    .hero {
+      background: #0d1b2a;
+      color: #f7fbff;
+      border-radius: 8px;
+      padding: 28px;
+      border-left: 6px solid #3db7a3;
+    }
+    .kicker {
+      font-size: 13px;
+      letter-spacing: 0;
+      color: #b9d7ef;
+      margin: 0 0 8px;
+    }
+    h1 {
+      font-size: 26px;
+      line-height: 1.25;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0;
+      color: #d8e6f1;
+      font-size: 15px;
+    }
+    .section {
+      background: #ffffff;
+      border: 1px solid #dde5ee;
+      border-radius: 8px;
+      margin-top: 16px;
+      padding: 22px;
+    }
+    h2 {
+      font-size: 18px;
+      margin: 0 0 12px;
+      color: #102235;
+      letter-spacing: 0;
+    }
+    h3 {
+      font-size: 15px;
+      margin: 18px 0 8px;
+      color: #17324d;
+      letter-spacing: 0;
+    }
+    p {
+      margin: 8px 0;
+    }
+    a {
+      color: #0b6ea8;
+      text-decoration: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .card {
+      border: 1px solid #dbe4ed;
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfdff;
+    }
+    .label {
+      display: block;
+      font-size: 12px;
+      color: #5d7084;
+      margin-bottom: 4px;
+    }
+    .value {
+      font-weight: 650;
+      color: #122334;
+    }
+    .score {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #e7f6f2;
+      color: #166052;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #d9e2ec;
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      background: #edf3f8;
+      color: #17324d;
+      font-weight: 650;
+    }
+    .note {
+      background: #fff8e8;
+      border: 1px solid #ead9a3;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #4a3a13;
+      margin: 12px 0;
+    }
+    .pillrow {
+      margin: 10px 0 0;
+    }
+    .pill {
+      display: inline-block;
+      margin: 4px 6px 4px 0;
+      padding: 4px 9px;
+      border: 1px solid #cdd9e5;
+      border-radius: 999px;
+      background: #f7fafc;
+      font-size: 12px;
+      color: #34495e;
+    }
+    .svg-wrap {
+      overflow-x: auto;
+      margin-top: 10px;
+      border: 1px solid #dbe4ed;
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 10px;
+    }
+    .small {
+      font-size: 12px;
+      color: #607286;
+    }
+    .sources li {
+      margin-bottom: 8px;
+    }
+    @media (max-width: 720px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero, .section { padding: 18px; }
+      h1 { font-size: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="hero">
+      <p class="kicker">AI每日论文精选 · 2026-05-05 · 今日精读</p>
+      <h1>To Call or Not to Call: A Framework to Assess and Optimize LLM Tool Calling</h1>
+      <p class="subtitle">一句话推荐：这篇论文把“LLM 什么时候该调用工具”从工程直觉变成了可测量、可优化的决策问题，对搜索增强问答、Agent、RAG、代码助手和企业自动化都有直接参考价值。</p>
+      <div class="pillrow">
+        <span class="pill">Agentic AI</span>
+        <span class="pill">Tool Calling</span>
+        <span class="pill">RAG / Web Search</span>
+        <span class="pill">Decision Theory</span>
+        <span class="pill">Hidden-State Controller</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>论文基本信息</h2>
+      <div class="grid">
+        <div class="card"><span class="label">标题</span><span class="value">To Call or Not to Call: A Framework to Assess and Optimize LLM Tool Calling</span></div>
+        <div class="card"><span class="label">arXiv</span><span class="value"><a href="https://arxiv.org/abs/2605.00737">2605.00737</a> · cs.AI</span></div>
+        <div class="card"><span class="label">作者</span><span class="value">Qinyuan Wu, Soumi Das, Mahsa Amani, Arijit Nag, Seungeon Lee, Krishna P. Gummadi, Abhilasha Ravichander, Muhammad Bilal Zafar</span></div>
+        <div class="card"><span class="label">机构</span><span class="value">Max Planck Institute for Software Systems; Ruhr University Bochum; UAR RC Trust</span></div>
+        <div class="card"><span class="label">时间</span><span class="value">提交：2026-05-01；更新：2026-05-04</span></div>
+        <div class="card"><span class="label">今日推荐强度</span><span class="value"><span class="score">9.0 / 10</span></span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>为什么选它</h2>
+      <table>
+        <tr>
+          <th>筛选维度</th>
+          <th>判断</th>
+        </tr>
+        <tr>
+          <td>影响力</td>
+          <td>AI Quick Bites 在 2026-05-04 的 weekly intelligence 中把它列入当天五个最重要 AI 研究亮点之一，并特别指出它对构建搜索增强 Agent “directly actionable”。</td>
+        </tr>
+        <tr>
+          <td>技术新颖性</td>
+          <td>论文不是只比较“开工具 vs 不开工具”的平均分，而是把工具调用拆成必要性、效用和可负担性三个可分析变量，并区分“真实需要”和“模型自以为需要”。</td>
+        </tr>
+        <tr>
+          <td>产业落地</td>
+          <td>当前 Agent 产品普遍接入搜索、数据库、代码执行、CRM、支付等工具。错误调用会增加延迟、成本、噪声和安全暴露面；这篇论文给出轻量控制器思路，可直接转化为中间件或网关策略。</td>
+        </tr>
+        <tr>
+          <td>长期价值</td>
+          <td>随着模型越来越像“会调度工具的操作系统”，工具调用策略会成为能力、成本和安全之间的核心控制层。</td>
+        </tr>
+      </table>
+      <div class="note">同日另一个强候选是 Themis 代码奖励模型论文，它的数据集和多语言代码偏好建模很重要；但今日首选仍是本篇，因为“是否调用工具”覆盖面更广，影响所有 Agent/RAG 产品链路。</div>
+    </div>
+
+    <div class="section">
+      <h2>核心贡献</h2>
+      <table>
+        <tr>
+          <th>贡献</th>
+          <th>简明解释</th>
+          <th>为什么重要</th>
+        </tr>
+        <tr>
+          <td>评估框架</td>
+          <td>用必要性、效用、可负担性来评价一次工具调用是否合理。</td>
+          <td>把“调用工具是不是有帮助”变成实例级诊断，而不是只看总体准确率。</td>
+        </tr>
+        <tr>
+          <td>规范视角 vs 描述视角</td>
+          <td>规范视角看“理想策略应该怎么做”，描述视角看“模型实际上怎么做”。</td>
+          <td>能定位模型是过度调用、调用不足，还是不会在预算有限时排序。</td>
+        </tr>
+        <tr>
+          <td>隐藏状态估计器</td>
+          <td>用模型内部 hidden states 训练轻量分类器，预测真实需要和真实效用。</td>
+          <td>不必微调整个 LLM，就能外挂一个控制器改进工具调用策略。</td>
+        </tr>
+        <tr>
+          <td>跨任务和跨模型验证</td>
+          <td>论文在三类任务和六个模型上实验，观察到模型“自我感知”和真实收益常常错位。</td>
+          <td>说明问题不是某个模型的偶发现象，而是当前工具增强 LLM 的共性短板。</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>技术路线</h2>
+      <div class="svg-wrap">
+        <svg width="860" height="280" viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="工具调用决策框架重构图">
+          <defs>
+            <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#315d7d"/>
+            </marker>
+          </defs>
+          <rect x="18" y="30" width="150" height="70" rx="8" fill="#eaf3fb" stroke="#8ab3d3"/>
+          <text x="93" y="58" text-anchor="middle" font-size="15" font-weight="700" fill="#18344f">输入问题 x</text>
+          <text x="93" y="82" text-anchor="middle" font-size="12" fill="#315d7d">用户请求 / 任务</text>
+          <line x1="168" y1="65" x2="235" y2="65" stroke="#315d7d" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="235" y="22" width="175" height="86" rx="8" fill="#eef8f4" stroke="#75b89f"/>
+          <text x="322" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#174d40">LLM 自主判断</text>
+          <text x="322" y="77" text-anchor="middle" font-size="12" fill="#2c6b5d">是否调用搜索工具</text>
+          <line x1="410" y1="65" x2="488" y2="65" stroke="#315d7d" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="488" y="22" width="156" height="86" rx="8" fill="#fff5df" stroke="#d6aa4f"/>
+          <text x="566" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#654a0a">三种基线</text>
+          <text x="566" y="77" text-anchor="middle" font-size="12" fill="#765c1a">不调用 / 总调用 / 自决策</text>
+          <line x1="644" y1="65" x2="716" y2="65" stroke="#315d7d" stroke-width="2" marker-end="url(#arrow)"/>
+          <rect x="716" y="22" width="126" height="86" rx="8" fill="#f0ecff" stroke="#9b8de3"/>
+          <text x="779" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#43328a">输出 y</text>
+          <text x="779" y="77" text-anchor="middle" font-size="12" fill="#5f50a8">回答质量评分</text>
+
+          <rect x="82" y="158" width="192" height="86" rx="8" fill="#ffffff" stroke="#c9d6e2"/>
+          <text x="178" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#17324d">规范视角</text>
+          <text x="178" y="213" text-anchor="middle" font-size="12" fill="#4e647a">真实需要 / 真实效用</text>
+          <text x="178" y="232" text-anchor="middle" font-size="12" fill="#4e647a">由最优分配推断</text>
+
+          <rect x="334" y="158" width="192" height="86" rx="8" fill="#ffffff" stroke="#c9d6e2"/>
+          <text x="430" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#17324d">描述视角</text>
+          <text x="430" y="213" text-anchor="middle" font-size="12" fill="#4e647a">模型自以为需要</text>
+          <text x="430" y="232" text-anchor="middle" font-size="12" fill="#4e647a">由自决策行为推断</text>
+
+          <rect x="586" y="158" width="192" height="86" rx="8" fill="#ffffff" stroke="#c9d6e2"/>
+          <text x="682" y="188" text-anchor="middle" font-size="15" font-weight="700" fill="#17324d">处方视角</text>
+          <text x="682" y="213" text-anchor="middle" font-size="12" fill="#4e647a">hidden-state 估计器</text>
+          <text x="682" y="232" text-anchor="middle" font-size="12" fill="#4e647a">预算内选择最高收益调用</text>
+
+          <line x1="322" y1="108" x2="178" y2="158" stroke="#88a2b8" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="430" y1="108" x2="430" y2="158" stroke="#88a2b8" stroke-width="2" marker-end="url(#arrow)"/>
+          <line x1="566" y1="108" x2="682" y2="158" stroke="#88a2b8" stroke-width="2" marker-end="url(#arrow)"/>
+        </svg>
+      </div>
+      <p class="small">图示为报告重构，不是原论文图片。核心思想：先比较不同调用策略的真实表现，再找出模型自我判断与真实收益之间的差距，最后用轻量控制器修正。</p>
+    </div>
+
+    <div class="section">
+      <h2>关键术语：高中生也能懂</h2>
+      <table>
+        <tr>
+          <th>术语</th>
+          <th>通俗解释</th>
+        </tr>
+        <tr>
+          <td>工具调用</td>
+          <td>就像考试时能不能查资料。LLM 可以选择查网页、调用计算器、查数据库或运行代码。</td>
+        </tr>
+        <tr>
+          <td>必要性</td>
+          <td>模型自己脑子里的知识够不够。如果它本来就知道答案，查资料可能是多余的。</td>
+        </tr>
+        <tr>
+          <td>效用</td>
+          <td>查资料之后答案有没有变好。不是每次查询都会有帮助，有时还会把错误信息带进来。</td>
+        </tr>
+        <tr>
+          <td>可负担性</td>
+          <td>查资料要花时间和钱，也可能带来风险。只有收益大于成本，才值得查。</td>
+        </tr>
+        <tr>
+          <td>隐藏状态</td>
+          <td>模型在生成文字前内部形成的一串数字信号。它像“脑电波”，有时比模型嘴上说的“我知道/不知道”更诚实。</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>实验结果怎么读</h2>
+      <table>
+        <tr>
+          <th>发现</th>
+          <th>解读</th>
+          <th>对工程实践的启发</th>
+        </tr>
+        <tr>
+          <td>模型的“感知需要”经常偏离“真实需要”</td>
+          <td>有些模型明明不需要查也会查，有些模型该查时又不查。</td>
+          <td>不能只靠提示词让模型自己判断是否调用工具，需要外部评估和路由层。</td>
+        </tr>
+        <tr>
+          <td>工具调用可能带来负效用</td>
+          <td>当模型原本已经答得好时，引入搜索结果可能造成噪声、冲突和答案退化。ChatPaper 摘要提到，在某些“本来表现好”的样本中加入搜索会出现明显退化。</td>
+          <td>RAG/搜索不是默认越多越好，应做查询门控、结果质量评估和冲突检测。</td>
+        </tr>
+        <tr>
+          <td>预算约束下，排序能力很关键</td>
+          <td>如果只能调用少量工具，理想策略应该优先给高收益样本；模型自决策通常不会这么理性。</td>
+          <td>企业系统可以把工具调用看作稀缺资源，做 top-K 分配，而不是每轮都开放全部工具。</td>
+        </tr>
+        <tr>
+          <td>隐藏状态估计器能改进决策</td>
+          <td>轻量 LNE/LUE 估计器比模型显式自述更能预测真实需要和效用。</td>
+          <td>可做成无需微调主模型的外挂 controller，适合多模型网关、Agent 平台和成本优化系统。</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>局限性</h2>
+      <ul>
+        <li>主要围绕 web search 类工具展开，能否直接推广到代码执行、支付、数据库写入、机器人控制等高风险工具，还需要额外验证。</li>
+        <li>hidden-state 估计器通常需要访问模型内部表示；对闭源 API 用户来说，落地方式可能要改成 logprob、置信度、反思样本或代理模型特征。</li>
+        <li>“真实效用”的标签依赖比较 NO TOOL 和 ALWAYS TOOL 的结果；在开放式、长链路、多工具任务中，构造这种监督信号会更昂贵。</li>
+        <li>论文关注的是调用决策本身，并不解决工具返回内容的可信度、来源偏差、提示注入和隐私泄漏等下游问题。</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>产业影响</h2>
+      <table>
+        <tr>
+          <th>应用场景</th>
+          <th>可落地动作</th>
+        </tr>
+        <tr>
+          <td>企业 RAG 问答</td>
+          <td>在检索前增加“是否真的需要检索”的门控，减少无意义查询和知识库噪声。</td>
+        </tr>
+        <tr>
+          <td>客服 / 销售 Agent</td>
+          <td>把 CRM、订单、退款、工单工具设为有成本和风险的资源，优先调用高收益工具。</td>
+        </tr>
+        <tr>
+          <td>AI 编程助手</td>
+          <td>区分“模型可直接修改的小任务”和“必须搜索仓库、跑测试、查文档的任务”，降低延迟和误操作。</td>
+        </tr>
+        <tr>
+          <td>多模型网关</td>
+          <td>把 LNE/LUE 类控制器做成统一路由层：模型选择、工具选择、预算分配一起优化。</td>
+        </tr>
+        <tr>
+          <td>安全治理</td>
+          <td>减少不必要外部调用，降低提示注入、数据外泄和越权操作的暴露面。</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.00737">论文：To Call or Not to Call: A Framework to Assess and Optimize LLM Tool Calling</a></li>
+        <li><a href="https://chatpaper.com/paper/274435">ChatPaper 摘要与图表解读</a></li>
+        <li><a href="https://aiquickbites.com/">AI Quick Bites 2026-05-04 Weekly Intelligence</a></li>
+        <li><a href="https://huggingface.co/papers?q=THEMIS">同日强候选：Themis 代码奖励模型论文</a></li>
+        <li><a href="https://huggingface.co/datasets/project-themis/Themis-CodeRewardBench">Themis-CodeRewardBench 数据集页</a></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>引用来源</h2>
+      <ol class="sources">
+        <li>arXiv Troller 页面记录该论文的作者、arXiv ID、分类、提交时间和 2026-05-04 更新信息，并给出摘要：<a href="https://arxiv-troller.com/paper/3160211/">arxiv-troller.com/paper/3160211</a></li>
+        <li>ChatPaper 页面列出作者机构，并对论文框架、实验现象、LNE/LUE 控制器和图表进行摘要：<a href="https://chatpaper.com/paper/274435">chatpaper.com/paper/274435</a></li>
+        <li>AI Quick Bites 2026-05-04 weekly intelligence 将该论文列入当天五个重点 AI 研究亮点之一，并说明其对搜索增强 Agent 的直接工程价值：<a href="https://aiquickbites.com/">aiquickbites.com</a></li>
+        <li>Hugging Face Papers 记录 Themis 为同日重要候选，并摘要其 350k+ 代码偏好对和多语言多标准代码奖励模型：<a href="https://huggingface.co/papers?q=THEMIS">huggingface.co/papers?q=THEMIS</a></li>
+        <li>Hugging Face Dataset 页面提供 Themis-CodeRewardBench 的数据规模、语言分布、质量维度和 Apache 2.0 许可信息：<a href="https://huggingface.co/datasets/project-themis/Themis-CodeRewardBench">project-themis/Themis-CodeRewardBench</a></li>
+      </ol>
+      <p class="small">检索时间：2026-05-05 Asia/Shanghai。本报告使用英文网页来源交叉验证，并以中文重写分析。</p>
+    </div>
+  </div>
+</body>
+</html>

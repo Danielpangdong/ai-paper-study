@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI每日论文精选 | Agents' Last Exam</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #101827;
+      --muted: #607086;
+      --line: #dbe3ee;
+      --blue: #2457d6;
+      --cyan: #0f8a9d;
+      --amber: #c78216;
+      --green: #177245;
+      --red: #b83939;
+      --soft-blue: #eaf0ff;
+      --soft-cyan: #e7f7f9;
+      --soft-amber: #fff4dc;
+      --soft-red: #fff0f0;
+      --shadow: 0 16px 44px rgba(22, 34, 57, .08);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.72;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1060px; margin: 0 auto; padding: 28px 18px 56px; }
+    .hero {
+      background: linear-gradient(135deg, #ffffff 0%, #f1f5ff 56%, #e7f7f9 100%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 34px;
+      overflow: hidden;
+    }
+    .kicker {
+      color: var(--blue);
+      font-weight: 800;
+      letter-spacing: .08em;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 10px 0 12px;
+      font-size: 40px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0;
+      max-width: 760px;
+      color: #263348;
+      font-size: 18px;
+    }
+    .meta-grid, .card-grid, .impact-grid, .term-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .meta-grid { grid-template-columns: repeat(4, 1fr); margin-top: 24px; }
+    .card-grid { grid-template-columns: repeat(3, 1fr); margin-top: 16px; }
+    .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    .term-grid { grid-template-columns: repeat(2, 1fr); }
+    .metric, .card, .term, .callout {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .metric b, .card b, .term b { display: block; margin-bottom: 4px; }
+    .metric span, .card span, .term span { color: var(--muted); font-size: 14px; }
+    section {
+      margin-top: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 8px 28px rgba(22, 34, 57, .05);
+    }
+    h2 { margin: 0 0 14px; font-size: 26px; line-height: 1.3; }
+    h3 { margin: 22px 0 10px; font-size: 18px; }
+    p { margin: 0 0 12px; }
+    .lead { font-size: 17px; color: #263348; }
+    .quote {
+      border-left: 5px solid var(--blue);
+      background: var(--soft-blue);
+      padding: 16px 18px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .callout { margin: 16px 0; }
+    .callout.blue { background: var(--soft-blue); border-color: #c9d7ff; }
+    .callout.cyan { background: var(--soft-cyan); border-color: #bdebf0; }
+    .callout.amber { background: var(--soft-amber); border-color: #f2d99e; }
+    .callout.red { background: var(--soft-red); border-color: #f0c5c5; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      overflow-wrap: anywhere;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 11px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f2f5fa; font-weight: 800; }
+    .tag {
+      display: inline-block;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 999px;
+      padding: 4px 10px;
+      margin: 3px 4px 3px 0;
+      color: #314158;
+      font-size: 13px;
+    }
+    .svg-wrap {
+      margin: 18px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fbfcff;
+      padding: 10px;
+      overflow-x: auto;
+    }
+    svg { max-width: 100%; height: auto; display: block; }
+    .caption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 46px;
+      height: 28px;
+      border-radius: 999px;
+      font-weight: 800;
+      background: var(--soft-blue);
+      color: var(--blue);
+    }
+    ul { padding-left: 20px; margin-top: 8px; }
+    li { margin: 7px 0; }
+    .footer { color: var(--muted); font-size: 13px; text-align: center; margin-top: 22px; }
+    @media (max-width: 760px) {
+      .page { padding: 14px 10px 40px; }
+      .hero, section { padding: 20px; }
+      h1 { font-size: 30px; }
+      h2 { font-size: 22px; }
+      .meta-grid, .card-grid, .impact-grid, .term-grid { grid-template-columns: 1fr; }
+      table { font-size: 13px; }
+      th, td { padding: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="kicker">AI每日论文精选 | 2026-06-13</div>
+      <h1>Agents' Last Exam<br>AI Agent 的“职场期末考”来了</h1>
+      <p class="subtitle">这篇论文不再问 AI “会不会答题”，而是问：给它一台真实电脑、真实软件、真实资料和一个真实交付目标，它能不能把工作做完，并留下可验证的成果？</p>
+      <div class="meta-grid">
+        <div class="metric"><b>论文</b><span>Agents' Last Exam</span></div>
+        <div class="metric"><b>平台</b><span>arXiv:2606.05405</span></div>
+        <div class="metric"><b>当前版本</b><span>v2, 2026-06-11</span></div>
+        <div class="metric"><b>主线</b><span>真实职业工作流 Agent 评测</span></div>
+      </div>
+    </header>
+
+    <section id="info">
+      <h2>1. 标题区</h2>
+      <table>
+        <tr><th>项目</th><th>信息</th></tr>
+        <tr><td>英文标题</td><td>Agents' Last Exam</td></tr>
+        <tr><td>中文标题</td><td>Agent 的最后一场考试：真实职业工作流评测</td></tr>
+        <tr><td>核心作者与组织</td><td>Yiyou Sun, Xinyang Han, Weichen Zhang, Yuanbo Pang, Tianyu Wang, Yuhan Cao, Yixiao Huang, Chris Duroiu, Dawn Song 等；主导机构为 University of California, Berkeley / Berkeley RDI，联合大量产业与学术专家。</td></tr>
+        <tr><td>发布时间</td><td>arXiv 初版 2026-06-03；本文使用当前下载到的 v2 PDF，日期为 2026-06-11。</td></tr>
+        <tr><td>论文链接</td><td><a href="https://arxiv.org/abs/2606.05405">https://arxiv.org/abs/2606.05405</a></td></tr>
+        <tr><td>官方站点</td><td><a href="https://agents-last-exam.org/">https://agents-last-exam.org/</a></td></tr>
+        <tr><td>代码与任务框架</td><td><a href="https://github.com/rdi-berkeley/agents-last-exam">rdi-berkeley/agents-last-exam</a></td></tr>
+        <tr><td>会议/平台</td><td>arXiv / Hugging Face Daily Papers / 官方 benchmark 项目</td></tr>
+      </table>
+      <div>
+        <span class="tag">Agent Benchmark</span>
+        <span class="tag">Computer-Use Agent</span>
+        <span class="tag">Real-World Workflow</span>
+        <span class="tag">Verifiable Outcome</span>
+        <span class="tag">GDP-Relevant AI</span>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">因为它击中了 2026 年 AI 行业最真实的问题：我们已经有很多“考试很强”的模型，但企业真正关心的是它能不能把一件工作交付出来。</p>
+      <div class="card-grid">
+        <div class="card"><b>行业意义</b><span>把评测目标从“模型知道多少”转向“Agent 能交付什么”。这比又一个选择题榜单更接近企业预算、岗位变化和生产力提升。</span></div>
+        <div class="card"><b>技术突破</b><span>提出 Generalist Computer-Use Agent 评测面：同一个 Agent 要同时会看 GUI、写代码、调工具、管理文件和跑长任务。</span></div>
+        <div class="card"><b>长期价值</b><span>它像 ImageNet 之于视觉那样，可能成为 Agent 时代的方向盘：谁能在真实工作流上进步，谁才更接近产业价值。</span></div>
+      </div>
+      <div class="callout amber">
+        <b>今天的判断：</b>这篇论文不是因为“新模型分数更高”而重要，而是因为它重新定义了“Agent 真的有用”应该怎么测。
+      </div>
+    </section>
+
+    <section id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">ALE 本质上是在给 AI Agent 一台真实办公室电脑，让它完成专家真的做过的工作，然后只问一句：活儿交付了吗？</div>
+      <p style="margin-top:14px">可以把它想成驾照路考。过去很多 benchmark 像笔试：问你交通规则、让你判断图片。ALE 更像路考：给你车、路况、目的地和考官，最后看你有没有安全到达。</p>
+    </section>
+
+    <section id="contribution">
+      <h2>4. 核心贡献拆解</h2>
+      <table>
+        <tr><th>贡献</th><th>它解决的问题</th><th>为什么更好</th></tr>
+        <tr>
+          <td>真实职业工作流任务库</td>
+          <td>很多 benchmark 是短题、网页小任务或代码补丁，离真实工作还有距离。</td>
+          <td>ALE 收集 1,490 个任务实例，覆盖 13 个行业集群、55 个子领域，任务来自真实专家工作流。</td>
+        </tr>
+        <tr>
+          <td>可验证结果</td>
+          <td>真实工作输出很复杂，可能是表格、报告、3D 模型、游戏工程、医学图像分析结果，不容易自动评分。</td>
+          <td>它尽量用隐藏参考答案、确定性评分脚本、gate-and-score 规则来判断，减少“让另一个模型凭感觉打分”。</td>
+        </tr>
+        <tr>
+          <td>Generalist CUA Agent 概念</td>
+          <td>CLI Agent 会写代码但看不了图形界面；GUI Agent 会点屏幕但常缺少长期工程能力。</td>
+          <td>ALE 要求 Agent 同时拥有 Brain、Eyes、Body、Hands、Feet 五层能力，接近真实数字劳动。</td>
+        </tr>
+        <tr>
+          <td>滚动私有任务池</td>
+          <td>公开 benchmark 很快会被训练集污染，模型可能“背题”。</td>
+          <td>只公开约 10% 任务，其余保留为私有池，并计划轮换，维持长期有效性。</td>
+        </tr>
+      </table>
+    </section>
+
+    <section id="how">
+      <h2>5. 工作原理：深入浅出</h2>
+      <p>想象一个真实的外包平台。客户不是问你“什么是 CAD”，而是给你一份零件文件，让你用专业软件改出一个能生产的模型。ALE 把这个过程标准化成三件东西：</p>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 920 310" role="img" aria-label="ALE evaluation pipeline">
+          <rect x="20" y="30" width="250" height="230" rx="12" fill="#eaf0ff" stroke="#9fb5ff"/>
+          <rect x="335" y="30" width="250" height="230" rx="12" fill="#e7f7f9" stroke="#8ed9e0"/>
+          <rect x="650" y="30" width="250" height="230" rx="12" fill="#fff4dc" stroke="#e6c273"/>
+          <text x="145" y="65" text-anchor="middle" font-size="22" font-weight="800" fill="#2457d6">任务 Task</text>
+          <text x="460" y="65" text-anchor="middle" font-size="22" font-weight="800" fill="#0f8a9d">Agent</text>
+          <text x="775" y="65" text-anchor="middle" font-size="22" font-weight="800" fill="#a66c0d">环境 Sandbox</text>
+          <text x="145" y="105" text-anchor="middle" font-size="16" fill="#263348">说明 + 输入文件</text>
+          <text x="145" y="137" text-anchor="middle" font-size="16" fill="#263348">目标软件 + 输出要求</text>
+          <text x="145" y="169" text-anchor="middle" font-size="16" fill="#263348">隐藏参考答案</text>
+          <text x="460" y="105" text-anchor="middle" font-size="16" fill="#263348">读任务</text>
+          <text x="460" y="137" text-anchor="middle" font-size="16" fill="#263348">点屏幕 / 写代码 / 调工具</text>
+          <text x="460" y="169" text-anchor="middle" font-size="16" fill="#263348">持续工作直到交付</text>
+          <text x="775" y="105" text-anchor="middle" font-size="16" fill="#263348">真实 Windows / Linux</text>
+          <text x="775" y="137" text-anchor="middle" font-size="16" fill="#263348">真实专业软件</text>
+          <text x="775" y="169" text-anchor="middle" font-size="16" fill="#263348">隔离可复现实验</text>
+          <path d="M270 145 L335 145" stroke="#607086" stroke-width="3" marker-end="url(#arrow)"/>
+          <path d="M585 145 L650 145" stroke="#607086" stroke-width="3" marker-end="url(#arrow)"/>
+          <path d="M775 260 C775 292 145 292 145 260" fill="none" stroke="#607086" stroke-width="3" marker-end="url(#arrow)"/>
+          <text x="460" y="294" text-anchor="middle" font-size="15" fill="#607086">完成后再放入隐藏参考答案，用 evaluate() 给 0 到 1 分</text>
+          <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#607086"/></marker></defs>
+        </svg>
+        <div class="caption">图解 1：ALE 的核心不是“提示词评测”，而是任务、Agent、真实环境三者解耦，最后用隐藏参考与评分器评估产物。</div>
+      </div>
+      <h3>普通人版流程</h3>
+      <ol>
+        <li><b>专家贡献真实任务：</b>比如做一个 3D 模型、处理医学影像、生成制造刀路、做金融表格。</li>
+        <li><b>工程化成可运行任务：</b>把输入文件、软件环境、输出目录、评分规则写进一个任务规格。</li>
+        <li><b>Agent 只看到任务描述：</b>它不能看到隐藏答案，只能像人一样操作电脑完成工作。</li>
+        <li><b>结束后评分：</b>系统把隐藏参考答案放进来，用脚本、几何距离、文件校验、窄问题视觉判断等方式评分。</li>
+      </ol>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 920 360" role="img" aria-label="Generalist Computer-Use Agent layers">
+          <rect x="30" y="35" width="860" height="285" rx="14" fill="#fbfcff" stroke="#dbe3ee"/>
+          <text x="460" y="72" text-anchor="middle" font-size="24" font-weight="800" fill="#101827">Generalist Computer-Use Agent 五层能力</text>
+          <g font-size="16" fill="#263348">
+            <rect x="80" y="115" width="140" height="140" rx="10" fill="#eaf0ff" stroke="#9fb5ff"/>
+            <text x="150" y="150" text-anchor="middle" font-size="20" font-weight="800" fill="#2457d6">Brain</text>
+            <text x="150" y="185" text-anchor="middle">推理和规划</text>
+            <text x="150" y="215" text-anchor="middle">知道下一步</text>
+            <rect x="240" y="115" width="140" height="140" rx="10" fill="#e7f7f9" stroke="#8ed9e0"/>
+            <text x="310" y="150" text-anchor="middle" font-size="20" font-weight="800" fill="#0f8a9d">Eyes</text>
+            <text x="310" y="185" text-anchor="middle">看屏幕</text>
+            <text x="310" y="215" text-anchor="middle">理解 GUI</text>
+            <rect x="400" y="115" width="140" height="140" rx="10" fill="#fff4dc" stroke="#e6c273"/>
+            <text x="470" y="150" text-anchor="middle" font-size="20" font-weight="800" fill="#a66c0d">Body</text>
+            <text x="470" y="185" text-anchor="middle">组织流程</text>
+            <text x="470" y="215" text-anchor="middle">长期会话</text>
+            <rect x="560" y="115" width="140" height="140" rx="10" fill="#edf8f1" stroke="#93d2aa"/>
+            <text x="630" y="150" text-anchor="middle" font-size="20" font-weight="800" fill="#177245">Hands</text>
+            <text x="630" y="185" text-anchor="middle">调用工具</text>
+            <text x="630" y="215" text-anchor="middle">读写文件</text>
+            <rect x="720" y="115" width="140" height="140" rx="10" fill="#fff0f0" stroke="#e8a8a8"/>
+            <text x="790" y="150" text-anchor="middle" font-size="20" font-weight="800" fill="#b83939">Feet</text>
+            <text x="790" y="185" text-anchor="middle">运行环境</text>
+            <text x="790" y="215" text-anchor="middle">Shell / VM</text>
+          </g>
+          <text x="460" y="292" text-anchor="middle" font-size="15" fill="#607086">ALE 的关键判断：真正的职场 Agent 不能只会其中一两层，而要把五层连成一个稳定行动循环。</text>
+        </svg>
+        <div class="caption">图解 2：CLI Agent 缺 Eyes，GUI Agent 常缺 Body/Hands/Feet，ALE 评测的是更完整的通用电脑使用 Agent。</div>
+      </div>
+    </section>
+
+    <section id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term-grid">
+        <div class="term"><b>Computer-Use Agent</b><span>专业解释：能通过屏幕、键盘、鼠标、文件系统和工具接口操作电脑的 AI Agent。白话：不是只聊天，而是真的能“上机干活”的 AI。</span></div>
+        <div class="term"><b>GCUA</b><span>专业解释：Generalist Computer-Use Agent，结合 GUI 感知、代码执行、工具调用和长期规划的通用电脑使用 Agent。白话：既会看屏幕，又会写代码，还能把任务做完的“数字员工”。</span></div>
+        <div class="term"><b>Verifiable Outcome</b><span>专业解释：输出结果可以被脚本、参考答案或明确指标验证。白话：不是看起来像完成，而是真的能检查过关。</span></div>
+        <div class="term"><b>Sandbox</b><span>专业解释：隔离的虚拟运行环境，预装所需软件和任务文件。白话：给 AI 的临时办公室，里面东西齐全，但不会污染真实系统。</span></div>
+        <div class="term"><b>Gate-and-Score</b><span>专业解释：先过硬门槛，再算连续分数；关键门槛失败则归零。白话：像飞机维修，螺丝没装对，外观再漂亮也不能算合格。</span></div>
+        <div class="term"><b>Benchmark Contamination</b><span>专业解释：测试题进入训练数据，模型可能记住答案。白话：考试题泄露了，分数就不可信了。</span></div>
+      </div>
+    </section>
+
+    <section id="results">
+      <h2>7. 实验结果解读</h2>
+      <p>论文给出的结果很“冷水”：主流 Agent 在真实职业任务上还远没有准备好。v2 PDF 摘要写到 hardest tier 的平均 full pass rate 低于 1%；正文表格里，不同配置在 Last-Exam 难度下经常是 0%，少数能到 2.6%。这说明当前 Agent 不是“已经能替代大多数白领”，而是“开始能在部分任务上产生可用片段”。</p>
+      <table>
+        <tr><th>实验信号</th><th>数字</th><th>怎么理解</th></tr>
+        <tr><td>任务规模</td><td>1,490 个任务实例，55 子领域，13 行业集群</td><td>覆盖面很宽，不是只测代码或网页。</td></tr>
+        <tr><td>公开比例</td><td>150 / 1,490，约 10%</td><td>大部分留作私有滚动评测，降低背题风险。</td></tr>
+        <tr><td>最难档</td><td>多数系统 0% full pass；少数 2.6%</td><td>真实复杂工作仍是 Agent 的硬边界。</td></tr>
+        <tr><td>ALE-CLI 对比</td><td>某强配置 Terminal-Bench 82%，ALE-CLI overall pass 25.2%</td><td>即使把问题限制到 CLI，真实任务也比传统终端测试难得多。</td></tr>
+        <tr><td>失败原因</td><td>Approach 47%，Understanding 31%，Execution 22%</td><td>主要不是鼠标点错，而是不懂领域、策略错、过早放弃。</td></tr>
+      </table>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 900 320" role="img" aria-label="Result interpretation bars">
+          <rect x="60" y="40" width="780" height="230" rx="12" fill="#fbfcff" stroke="#dbe3ee"/>
+          <line x1="160" y1="230" x2="760" y2="230" stroke="#98a6ba"/>
+          <text x="160" y="260" text-anchor="middle" font-size="14" fill="#607086">Last-Exam</text>
+          <text x="360" y="260" text-anchor="middle" font-size="14" fill="#607086">Full-Spectrum</text>
+          <text x="560" y="260" text-anchor="middle" font-size="14" fill="#607086">Near-Term</text>
+          <text x="760" y="260" text-anchor="middle" font-size="14" fill="#607086">传统短任务</text>
+          <rect x="130" y="222" width="60" height="8" fill="#b83939"/>
+          <rect x="330" y="175" width="60" height="55" fill="#c78216"/>
+          <rect x="530" y="140" width="60" height="90" fill="#0f8a9d"/>
+          <rect x="730" y="60" width="60" height="170" fill="#2457d6"/>
+          <text x="160" y="210" text-anchor="middle" font-size="14" font-weight="800" fill="#b83939">0-2.6%</text>
+          <text x="360" y="162" text-anchor="middle" font-size="14" font-weight="800" fill="#a66c0d">低</text>
+          <text x="560" y="128" text-anchor="middle" font-size="14" font-weight="800" fill="#0f8a9d">可部分完成</text>
+          <text x="760" y="48" text-anchor="middle" font-size="14" font-weight="800" fill="#2457d6">常被刷高</text>
+          <text x="450" y="302" text-anchor="middle" font-size="15" fill="#607086">越接近真实职业交付，现有 Agent 的能力落差越明显。</text>
+        </svg>
+        <div class="caption">图解 3：ALE 的价值在于把分数拉回现实，不让我们被“传统短 benchmark 高分”误导。</div>
+      </div>
+      <div class="callout blue">
+        <b>结果意味着什么：</b>AI Agent 已经能做很多局部工作，但距离“稳定完成跨软件、跨文件、跨专业知识的完整项目”还有明显距离。企业部署时，应该先从近端任务、人机协作、可验证交付开始，而不是直接假设端到端替代。
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2>8. 局限性与问题</h2>
+      <table>
+        <tr><th>问题</th><th>为什么重要</th><th>读者应该怎么看</th></tr>
+        <tr><td>任务工程成本很高</td><td>真实软件、专家参考答案、评分脚本都很贵。</td><td>ALE 更像基础设施，不像普通论文 benchmark 那样容易复制。</td></tr>
+        <tr><td>私有任务池降低透明度</td><td>防污染需要私有题，但私有题也让外部复核更难。</td><td>需要持续公开抽样、审计机制和统计代表性验证。</td></tr>
+        <tr><td>授权软件与云环境限制</td><td>很多专业软件需要许可证和复杂环境。</td><td>小团队复现实验可能有成本门槛。</td></tr>
+        <tr><td>LLM-as-judge 仍未完全消失</td><td>视觉、视频、复杂设计有时难以纯脚本评分。</td><td>论文用窄问题 yes/no probes 缓解，但这仍是可争议点。</td></tr>
+        <tr><td>“工作可自动化”不等于“岗位会消失”</td><td>任务、流程、责任和组织协作不是一回事。</td><td>不要把 benchmark 分数直接翻译成裁员比例。</td></tr>
+      </table>
+    </section>
+
+    <section id="industry">
+      <h2>9. 产业影响分析</h2>
+      <div class="impact-grid">
+        <div class="callout cyan">
+          <b>谁会受益？</b>
+          <ul>
+            <li>Agent 平台：可以用 ALE 证明自己不是只会 demo。</li>
+            <li>企业 AI 团队：能把“自动化候选任务”拆成可验证工作流。</li>
+            <li>垂直软件公司：可以围绕真实软件场景构建 Agent 接口。</li>
+            <li>投资研究者：多了一个判断 Agent 落地进度的硬指标。</li>
+          </ul>
+        </div>
+        <div class="callout red">
+          <b>谁会被冲击？</b>
+          <ul>
+            <li>只靠聊天框包装的 Agent 产品。</li>
+            <li>只在简单网页/终端任务上刷分的评测叙事。</li>
+            <li>没有真实验收标准的企业 PoC。</li>
+            <li>过早宣称“AI 已能全面替代专业岗位”的营销。</li>
+          </ul>
+        </div>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 920 330" role="img" aria-label="Industry adoption ladder">
+          <rect x="40" y="50" width="840" height="220" rx="12" fill="#fbfcff" stroke="#dbe3ee"/>
+          <g font-size="15" fill="#263348">
+            <rect x="80" y="130" width="150" height="80" rx="8" fill="#eaf0ff" stroke="#9fb5ff"/>
+            <text x="155" y="160" text-anchor="middle" font-weight="800" fill="#2457d6">短任务助手</text>
+            <text x="155" y="190" text-anchor="middle">查资料 / 改小段</text>
+            <rect x="280" y="115" width="150" height="95" rx="8" fill="#e7f7f9" stroke="#8ed9e0"/>
+            <text x="355" y="147" text-anchor="middle" font-weight="800" fill="#0f8a9d">可验证子流程</text>
+            <text x="355" y="178" text-anchor="middle">输出可检查</text>
+            <rect x="480" y="95" width="150" height="115" rx="8" fill="#fff4dc" stroke="#e6c273"/>
+            <text x="555" y="132" text-anchor="middle" font-weight="800" fill="#a66c0d">跨软件项目</text>
+            <text x="555" y="164" text-anchor="middle">GUI + CLI + 文件</text>
+            <rect x="680" y="70" width="150" height="140" rx="8" fill="#edf8f1" stroke="#93d2aa"/>
+            <text x="755" y="114" text-anchor="middle" font-weight="800" fill="#177245">岗位级交付</text>
+            <text x="755" y="148" text-anchor="middle">长期可靠</text>
+            <text x="755" y="178" text-anchor="middle">责任清晰</text>
+          </g>
+          <path d="M230 170 L280 163 M430 163 L480 153 M630 153 L680 140" stroke="#607086" stroke-width="3" marker-end="url(#arrow2)"/>
+          <text x="460" y="292" text-anchor="middle" font-size="15" fill="#607086">ALE 更适合作为第 3 阶段到第 4 阶段的路标：从“能帮忙”到“能负责”。</text>
+          <defs><marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#607086"/></marker></defs>
+        </svg>
+        <div class="caption">图解 4：Agent 商业化不是一步到位，而是沿着“短任务、可验证子流程、跨软件项目、岗位级交付”爬坡。</div>
+      </div>
+      <p>我的判断：ALE 会推动 Agent 公司从“演示一个漂亮过程”转向“交付一个可复核结果”。这会让产品路线更工程化：任务拆分、沙箱环境、权限控制、交付验收、审计日志，会比单纯提升聊天体验更重要。</p>
+    </section>
+
+    <section id="extended">
+      <h2>10. 延伸阅读</h2>
+      <table>
+        <tr><th>类型</th><th>链接</th><th>阅读建议</th></tr>
+        <tr><td>原论文</td><td><a href="https://arxiv.org/abs/2606.05405">arXiv: Agents' Last Exam</a></td><td>重点看 Abstract、Introduction、Benchmark Design、Evaluation Pipeline、Main Results。</td></tr>
+        <tr><td>官方站点</td><td><a href="https://agents-last-exam.org/">Agents' Last Exam</a></td><td>看任务示例、行业覆盖和 leaderboard。</td></tr>
+        <tr><td>代码框架</td><td><a href="https://github.com/rdi-berkeley/agents-last-exam">GitHub: agents-last-exam</a></td><td>看 ale_run、任务结构、sandbox 和 quickstart。</td></tr>
+        <tr><td>HF 讨论</td><td><a href="https://huggingface.co/papers/2606.05405">Hugging Face Papers</a></td><td>用于观察社区关注度和作者补充说明。</td></tr>
+        <tr><td>对照阅读</td><td><a href="https://agi.safe.ai/">Humanity's Last Exam</a></td><td>对比“知识边界考试”和“真实工作流考试”的差别。</td></tr>
+      </table>
+    </section>
+
+    <section id="sources">
+      <h2>11. 引用来源</h2>
+      <ul>
+        <li>arXiv: <a href="https://arxiv.org/abs/2606.05405">Agents' Last Exam, arXiv:2606.05405</a></li>
+        <li>arXiv HTML: <a href="https://arxiv.org/html/2606.05405v1">Agents' Last Exam HTML version</a></li>
+        <li>Official website: <a href="https://agents-last-exam.org/">Agents' Last Exam official site</a></li>
+        <li>Official GitHub: <a href="https://github.com/rdi-berkeley/agents-last-exam">rdi-berkeley/agents-last-exam</a></li>
+        <li>Hugging Face Daily Papers: <a href="https://huggingface.co/papers/date/2026-06-12">Daily Papers, Jun 12</a> and <a href="https://huggingface.co/papers/2606.05405">paper page</a></li>
+      </ul>
+      <div class="callout blue">
+        <b>本地工件：</b>英文源副本、PDF 文本、官方 README、生成封面图已保存在 <code>/Users/mac/Desktop/AI论文解读/reports/2026-06-13-agents-last-exam/</code>。
+      </div>
+    </section>
+
+    <p class="footer">AI每日论文精选 | 不是搬运论文，而是把 AI 前沿拆成能被普通人理解的判断框架。</p>
+  </main>
+</body>
+</html>

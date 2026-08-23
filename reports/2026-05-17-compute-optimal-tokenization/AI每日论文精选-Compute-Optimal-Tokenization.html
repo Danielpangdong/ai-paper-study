@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI每日论文精选｜Compute Optimal Tokenization</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #10141b;
+      --muted: #5b6676;
+      --line: #dbe2ec;
+      --blue: #1769e0;
+      --green: #08785f;
+      --red: #b53a3a;
+      --amber: #9a6a12;
+      --cyan: #087ea4;
+      --soft: #f0f4f8;
+      --chip: #eaf2ff;
+      --shadow: 0 18px 48px rgba(16, 20, 27, .09);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --paper: #151b23;
+        --ink: #eef3f8;
+        --muted: #a9b5c4;
+        --line: #2c3746;
+        --soft: #101923;
+        --chip: #10233d;
+        --shadow: 0 20px 52px rgba(0,0,0,.3);
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, rgba(23,105,224,.08), transparent 360px), var(--bg);
+      line-height: 1.72;
+      letter-spacing: 0;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 28px 18px 58px; }
+    header {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 24px;
+      align-items: stretch;
+      padding: 28px 0 18px;
+    }
+    .hero-copy, .hero-art, .section, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .hero-copy { padding: 30px; }
+    .hero-art { padding: 18px; display: grid; place-items: center; background: #10141b; color: #fff; }
+    .kicker {
+      display: inline-flex;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--chip);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    h1 { margin: 18px 0 14px; font-size: clamp(32px, 5vw, 56px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 0 0 16px; font-size: 26px; line-height: 1.25; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0 0 13px; }
+    .subtitle { color: var(--muted); font-size: 18px; max-width: 820px; }
+    .meta-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 22px; }
+    .meta-grid div { border-top: 1px solid var(--line); padding-top: 10px; font-size: 14px; color: var(--muted); }
+    .meta-grid strong { color: var(--ink); }
+    .section { margin-top: 24px; padding: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-12 { grid-column: span 12; }
+    .card { padding: 16px; box-shadow: none; }
+    .blue { background: #eef5ff; border-color: #c9ddff; }
+    .green { background: #eaf8f3; border-color: #c8eadf; }
+    .amber { background: #fff7df; border-color: #efdca4; }
+    .red { background: #fff0ee; border-color: #ffd0cc; }
+    .cyan { background: #eaf8fb; border-color: #c8e7ef; }
+    .label { color: var(--muted); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0; margin-bottom: 6px; }
+    .big { font-size: 24px; line-height: 1.25; font-weight: 820; margin-bottom: 8px; }
+    .lead { font-size: 18px; color: var(--ink); }
+    .muted { color: var(--muted); }
+    .quote {
+      border-left: 5px solid var(--blue);
+      background: var(--soft);
+      border-radius: 8px;
+      padding: 18px;
+      font-size: 22px;
+      line-height: 1.48;
+      font-weight: 780;
+    }
+    .pill { display: inline-flex; padding: 4px 9px; border-radius: 8px; background: var(--chip); color: var(--blue); font-size: 13px; font-weight: 750; margin: 0 6px 8px 0; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 15px 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--line); vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: var(--muted); font-size: 13px; }
+    tr:last-child td { border-bottom: 0; }
+    .figure { border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 16px 0; background: #fbfcfe; overflow-x: auto; }
+    .caption { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+    svg { display: block; max-width: 100%; height: auto; }
+    .term { display: grid; grid-template-columns: 150px 1fr 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .term:last-child { border-bottom: 0; }
+    li { margin-bottom: 8px; }
+    .footer { margin-top: 26px; text-align: center; color: var(--muted); font-size: 13px; }
+    @media (max-width: 860px) {
+      header, .meta-grid, .grid { grid-template-columns: 1fr; }
+      .span-4, .span-5, .span-6, .span-7, .span-12 { grid-column: 1; }
+      .hero-copy, .section { padding: 21px; }
+      .term { grid-template-columns: 1fr; gap: 5px; }
+      table { font-size: 13px; }
+      h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="hero-copy">
+        <div class="kicker">AI DAILY PAPER PICK · 2026-05-17</div>
+        <h1>AI每日论文精选：训练大模型，可能一直数错了单位</h1>
+        <p class="subtitle">今日论文：<strong>Compute Optimal Tokenization</strong><br />中文标题：<strong>计算最优分词：当“token”不再是训练大模型的可靠尺子</strong></p>
+        <div class="meta-grid">
+          <div><strong>作者</strong><br />Tomasz Limisiewicz, Artidoro Pagnoni, Srini Iyer, Mike Lewis, Sachin Mehta, Alisa Liu, Margaret Li, Gargi Ghosh, Luke Zettlemoyer</div>
+          <div><strong>机构</strong><br />FAIR at Meta；University of Washington</div>
+          <div><strong>发布时间</strong><br />2026-05-02 · arXiv:2605.01188；Meta AI 页面 2026-05-04</div>
+          <div><strong>平台</strong><br />arXiv · Meta AI Research · 项目页</div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg width="470" height="380" viewBox="0 0 470 380" role="img" aria-label="Compute Optimal Tokenization 核心图">
+          <defs>
+            <linearGradient id="heroG" x1="0" x2="1"><stop stop-color="#4f8cff"/><stop offset="1" stop-color="#15b8a6"/></linearGradient>
+            <filter id="s"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000" flood-opacity=".3"/></filter>
+          </defs>
+          <rect x="18" y="20" width="434" height="340" rx="18" fill="#111827" stroke="#334155"/>
+          <text x="235" y="58" fill="#fff" font-size="24" font-weight="800" text-anchor="middle">从数 token 到数 bytes</text>
+          <text x="235" y="84" fill="#b8c4d8" font-size="13" text-anchor="middle">训练预算的尺子，可能要重新校准</text>
+          <rect x="44" y="118" width="130" height="88" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="109" y="146" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">旧尺子</text>
+          <text x="109" y="172" fill="#9fb0c8" font-size="12" text-anchor="middle">20 tokens / 参数</text>
+          <text x="109" y="192" fill="#9fb0c8" font-size="12" text-anchor="middle">依赖分词器</text>
+          <rect x="296" y="118" width="130" height="88" rx="10" fill="#182235" stroke="#496075"/>
+          <text x="361" y="146" fill="#d8e6ff" font-size="15" font-weight="800" text-anchor="middle">新尺子</text>
+          <text x="361" y="172" fill="#9fb0c8" font-size="12" text-anchor="middle">约 60 bytes / 参数</text>
+          <text x="361" y="192" fill="#9fb0c8" font-size="12" text-anchor="middle">跨分词器更稳</text>
+          <path d="M174 162 C218 132 252 132 296 162" fill="none" stroke="url(#heroG)" stroke-width="4"/>
+          <path d="M174 162 C218 213 252 213 296 162" fill="none" stroke="url(#heroG)" stroke-width="4" opacity=".65"/>
+          <circle cx="235" cy="162" r="44" fill="#0f172a" stroke="url(#heroG)" stroke-width="3" filter="url(#s)"/>
+          <text x="235" y="156" fill="#fff" font-size="15" font-weight="800" text-anchor="middle">压缩率</text>
+          <text x="235" y="180" fill="#b7c6da" font-size="11" text-anchor="middle">bytes / token</text>
+          <rect x="68" y="250" width="334" height="58" rx="10" fill="#eef5ff"/>
+          <text x="235" y="274" fill="#1769e0" font-size="15" font-weight="800" text-anchor="middle">关键结论：token 不是自然常数</text>
+          <text x="235" y="296" fill="#1769e0" font-size="12" text-anchor="middle">不同语言、预算、分词器会改变最优训练配方</text>
+        </svg>
+      </div>
+    </header>
+
+    <section class="section" id="title">
+      <h2>1. 标题区</h2>
+      <div class="grid">
+        <div class="card span-7">
+          <div class="label">Paper Card</div>
+          <p><strong>英文标题：</strong>Compute Optimal Tokenization</p>
+          <p><strong>中文标题：</strong>计算最优分词：当“token”不再是训练大模型的可靠尺子</p>
+          <p><strong>作者：</strong>Tomasz Limisiewicz, Artidoro Pagnoni, Srini Iyer, Mike Lewis, Sachin Mehta, Alisa Liu, Margaret Li, Gargi Ghosh, Luke Zettlemoyer</p>
+          <p><strong>机构：</strong>FAIR at Meta；University of Washington</p>
+          <p><strong>发布时间：</strong>arXiv 2026-05-02；Meta AI Research 2026-05-04</p>
+          <p><strong>论文链接：</strong><a href="https://arxiv.org/abs/2605.01188">https://arxiv.org/abs/2605.01188</a></p>
+          <p><strong>项目页：</strong><a href="https://co-tok.github.io/">https://co-tok.github.io/</a></p>
+          <p><strong>会议/平台：</strong>arXiv · Computation and Language；Meta AI Research</p>
+        </div>
+        <div class="card blue span-5">
+          <div class="label">今天的关键词</div>
+          <div class="big">大模型训练配方里的“米尺”可能换了。</div>
+          <p class="muted">过去很多人按 token 数安排训练数据。论文认为更稳的单位是 byte：同一段文字被不同分词器切法不同，但底层字节更像统一重量单位。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="why">
+      <h2>2. 为什么今天选它？</h2>
+      <p class="lead">这篇论文值得今天精读，因为它不是在问“模型再大一点会怎样”，而是在问一个更底层的问题：我们训练大模型时，到底应该用什么单位来衡量数据？</p>
+      <div class="grid">
+        <div class="card green span-4">
+          <div class="label">行业意义</div>
+          <p><strong>训练预算会被重新估算。</strong>如果 token 数受分词器影响，那么“我需要多少数据配多少参数”的旧经验，就可能只是某个 tokenizer 下的巧合。</p>
+        </div>
+        <div class="card blue span-4">
+          <div class="label">技术突破</div>
+          <p><strong>它把 token 压缩率变成可研究变量。</strong>作者系统训练 988 个 BLT 模型，并用子词模型补充验证，比较不同压缩率下的最优训练点。</p>
+        </div>
+        <div class="card amber span-4">
+          <div class="label">长期价值</div>
+          <p><strong>它影响多语言模型与成本结构。</strong>英文、阿拉伯语、俄语、印地语等语言的最优压缩率不同，这会改变全球化 LLM 的 tokenizer 设计。</p>
+        </div>
+      </div>
+      <p>我今天选它，是因为分词器平时像水管一样被藏在系统底层，很少被产品经理、投资人或普通读者注意。但它决定了文本被模型“吞进去”的颗粒度，也决定训练和推理账单怎么算。越基础的尺子，一旦换掉，影响越广。</p>
+    </section>
+
+    <section class="section" id="one-sentence">
+      <h2>3. 一句话讲透论文</h2>
+      <div class="quote">这篇论文本质上是在说：训练大模型时别只数切出来的“词块”，要数原始文字本身有多少“字节重量”，因为刀法不同，切出来的块数会变。</div>
+    </section>
+
+    <section class="section" id="contrib">
+      <h2>4. 核心贡献拆解</h2>
+      <div class="grid">
+        <div class="card span-6">
+          <h3>贡献一：把分词器从“背景设置”变成“训练变量”</h3>
+          <p>过去的 scaling law 常默认分词器固定，然后研究模型参数、训练数据、算力预算怎么匹配。论文指出：如果切词方式变了，同样一篇文章会变成不同数量的 token，旧公式就不再是统一尺子。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献二：提出 byte-based 的更稳规则</h3>
+          <p>论文发现，在计算最优配置下，模型参数量更稳定地随训练数据的 bytes 增长，而不是随 token 增长。对英文数据，一个直观近似是约 60 bytes / parameter。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献三：发现压缩率不是越高越好</h3>
+          <p>token 越“压缩”，句子越短，推理可能更便宜；但压得过头，模型每一步要猜的信息太多。论文显示每个算力预算都有一个最优 compression rate，且更大算力下最优压缩率会下降。</p>
+        </div>
+        <div class="card span-6">
+          <h3>贡献四：多语言 tokenizer 需要重新校准</h3>
+          <p>不同语言表达同一含义所需字节数不同。论文发现最优压缩率与语言的 byte parity 相关，这意味着一个通用 multilingual tokenizer 可能对某些语言天然不公平或不省算力。</p>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>问题</th><th>旧思路</th><th>论文新思路</th><th>白话解释</th></tr></thead>
+        <tbody>
+          <tr><td>训练数据单位</td><td>数 token</td><td>数 bytes 更稳</td><td>不要按“切了几块”称重，要按“原材料重量”称重。</td></tr>
+          <tr><td>分词器角色</td><td>固定预处理工具</td><td>影响 scaling law 的核心变量</td><td>切菜刀法会改变烹饪时间和口感，不是小事。</td></tr>
+          <tr><td>最佳压缩率</td><td>通常跟随 BPE 默认值</td><td>随算力和语言变化</td><td>不同饭店、不同菜系，不该用同一把刀。</td></tr>
+          <tr><td>多语言训练</td><td>一套 tokenizer 覆盖所有语言</td><td>需要考虑语言字节密度差异</td><td>英文、中文、阿拉伯语在机器眼里不是同样长度。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="mechanism">
+      <h2>5. 工作原理：深入浅出</h2>
+      <p>可以把分词器想成“把书切成便利贴”的机器。token 越大，一页纸被切成的便利贴越少，模型读起来步数更少；但每张便利贴包含的信息更多，猜下一张时压力也更大。论文真正研究的是：在给定训练预算下，便利贴应该切多大？</p>
+      <div class="figure">
+        <svg width="980" height="390" viewBox="0 0 980 390" role="img" aria-label="token 与 byte 的差异">
+          <rect x="20" y="22" width="940" height="346" rx="16" fill="#f8fbff" stroke="#dbe2ec"/>
+          <text x="490" y="58" font-size="24" font-weight="800" text-anchor="middle" fill="#10141b">同一段文字，两把刀切出不同 token 数</text>
+          <text x="490" y="86" font-size="14" text-anchor="middle" fill="#5b6676">bytes 像原材料重量；tokens 像切块数量，取决于刀法</text>
+          <rect x="70" y="126" width="220" height="62" rx="10" fill="#10141b"/>
+          <text x="180" y="162" font-size="17" font-weight="800" text-anchor="middle" fill="#fff">原始文本 bytes</text>
+          <text x="180" y="212" font-size="14" text-anchor="middle" fill="#5b6676">同一段话：底层字节基本固定</text>
+          <path d="M300 158 L410 158" stroke="#1769e0" stroke-width="4" marker-end="url(#arr)"/>
+          <path d="M300 158 C360 240 420 250 470 258" stroke="#08785f" stroke-width="4" fill="none" marker-end="url(#arr2)"/>
+          <defs>
+            <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#1769e0"/></marker>
+            <marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#08785f"/></marker>
+          </defs>
+          <rect x="430" y="120" width="190" height="76" rx="10" fill="#eef5ff" stroke="#c9ddff"/>
+          <text x="525" y="148" font-size="16" font-weight="800" text-anchor="middle" fill="#1769e0">刀法 A：细切</text>
+          <text x="525" y="174" font-size="13" text-anchor="middle" fill="#5b6676">更多 token</text>
+          <text x="525" y="191" font-size="13" text-anchor="middle" fill="#5b6676">每步信息少</text>
+          <rect x="490" y="228" width="190" height="76" rx="10" fill="#eaf8f3" stroke="#c8eadf"/>
+          <text x="585" y="256" font-size="16" font-weight="800" text-anchor="middle" fill="#08785f">刀法 B：粗切</text>
+          <text x="585" y="282" font-size="13" text-anchor="middle" fill="#5b6676">更少 token</text>
+          <text x="585" y="299" font-size="13" text-anchor="middle" fill="#5b6676">每步信息多</text>
+          <rect x="740" y="156" width="170" height="92" rx="12" fill="#fff7df" stroke="#efdca4"/>
+          <text x="825" y="187" font-size="16" font-weight="800" text-anchor="middle" fill="#9a6a12">论文要找</text>
+          <text x="825" y="214" font-size="13" text-anchor="middle" fill="#5b6676">给定算力下</text>
+          <text x="825" y="233" font-size="13" text-anchor="middle" fill="#5b6676">哪种切法最省且效果好</text>
+        </svg>
+        <p class="caption">图 1：token 数不是文本本身的自然属性，它取决于分词器如何切分。</p>
+      </div>
+
+      <div class="figure">
+        <svg width="980" height="410" viewBox="0 0 980 410" role="img" aria-label="Compute Optimal Tokenization 工作流程">
+          <rect x="20" y="24" width="940" height="360" rx="16" fill="#fbfcfe" stroke="#dbe2ec"/>
+          <text x="490" y="58" font-size="24" font-weight="800" text-anchor="middle" fill="#10141b">论文的实验路线：像调音台一样调压缩率</text>
+          <g>
+            <rect x="55" y="118" width="170" height="92" rx="10" fill="#eef5ff" stroke="#c9ddff"/>
+            <text x="140" y="148" font-size="16" font-weight="800" text-anchor="middle" fill="#1769e0">1. 固定预算</text>
+            <text x="140" y="176" font-size="13" text-anchor="middle" fill="#5b6676">FLOPs 不变</text>
+            <text x="140" y="195" font-size="13" text-anchor="middle" fill="#5b6676">像给定总学费</text>
+          </g>
+          <g>
+            <rect x="285" y="118" width="170" height="92" rx="10" fill="#eaf8f3" stroke="#c8eadf"/>
+            <text x="370" y="148" font-size="16" font-weight="800" text-anchor="middle" fill="#08785f">2. 扫压缩率</text>
+            <text x="370" y="176" font-size="13" text-anchor="middle" fill="#5b6676">bytes / token</text>
+            <text x="370" y="195" font-size="13" text-anchor="middle" fill="#5b6676">细切到粗切都试</text>
+          </g>
+          <g>
+            <rect x="515" y="118" width="170" height="92" rx="10" fill="#fff7df" stroke="#efdca4"/>
+            <text x="600" y="148" font-size="16" font-weight="800" text-anchor="middle" fill="#9a6a12">3. 调模型大小</text>
+            <text x="600" y="176" font-size="13" text-anchor="middle" fill="#5b6676">50M 到 7B</text>
+            <text x="600" y="195" font-size="13" text-anchor="middle" fill="#5b6676">看参数该多大</text>
+          </g>
+          <g>
+            <rect x="745" y="118" width="170" height="92" rx="10" fill="#fff0ee" stroke="#ffd0cc"/>
+            <text x="830" y="148" font-size="16" font-weight="800" text-anchor="middle" fill="#b53a3a">4. 找最低损失</text>
+            <text x="830" y="176" font-size="13" text-anchor="middle" fill="#5b6676">IsoFLOP 曲面</text>
+            <text x="830" y="195" font-size="13" text-anchor="middle" fill="#5b6676">找最划算组合</text>
+          </g>
+          <path d="M225 164 L285 164 M455 164 L515 164 M685 164 L745 164" stroke="#1769e0" stroke-width="4"/>
+          <rect x="135" y="272" width="710" height="62" rx="12" fill="#10141b"/>
+          <text x="490" y="297" font-size="18" font-weight="800" text-anchor="middle" fill="#fff">最终读数：数据量应按 bytes 与参数量匹配；压缩率有最佳点</text>
+          <text x="490" y="321" font-size="13" text-anchor="middle" fill="#b8c4d8">这就是把“20 tokens/参数”升级成更通用的“bytes/参数 + 压缩率”框架</text>
+        </svg>
+        <p class="caption">图 2：论文不是只看一个模型，而是在固定算力预算下系统扫模型大小和压缩率。</p>
+      </div>
+
+      <table>
+        <thead><tr><th>步骤</th><th>专业说法</th><th>高中生版解释</th></tr></thead>
+        <tbody>
+          <tr><td>控制压缩率</td><td>使用 BLT 等方法设置平均 bytes/token</td><td>控制每张“便利贴”能装多少字。</td></tr>
+          <tr><td>固定算力</td><td>在相同 FLOPs 下比较不同模型与数据组合</td><td>每个学生学费一样，看怎么分配最有效。</td></tr>
+          <tr><td>拟合曲面</td><td>用 IsoFLOP loss surface 找最优点</td><td>画出一张地形图，最低谷就是最划算方案。</td></tr>
+          <tr><td>推广规则</td><td>比较 latent tokenization、subword tokenization 和多语言</td><td>换刀、换语言后，看规律是不是还成立。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="terms">
+      <h2>6. 关键术语解释</h2>
+      <div class="term"><strong>Token</strong><div>专业解释：语言模型处理文本时的离散输入单位，可是词、词片段、符号或字节片段。</div><div>白话解释：把一段话切成一小块一小块，模型每次读的“小纸片”。</div></div>
+      <div class="term"><strong>Byte</strong><div>专业解释：计算机存储文本的基础单位，比 token 更接近原始数据长度。</div><div>白话解释：文字在电脑里的“重量单位”。切法会变，重量更稳。</div></div>
+      <div class="term"><strong>Compression Rate</strong><div>专业解释：平均每个 token 包含多少 bytes，常写作 bytes/token。</div><div>白话解释：每张小纸片上塞了多少原始文字。塞得越多，纸片越少，但每片更难读。</div></div>
+      <div class="term"><strong>Scaling Law</strong><div>专业解释：描述模型大小、数据量、算力与损失之间关系的经验规律。</div><div>白话解释：像做饭配方：多少米、多少水、多少火力，最后饭会多好吃。</div></div>
+      <div class="term"><strong>BLT</strong><div>专业解释：Byte Latent Transformer，一类能在 byte 层面动态聚合 patch 的模型。</div><div>白话解释：不先用固定词表切词，而是让模型按内容把字节临时打包。</div></div>
+      <div class="term"><strong>BPE</strong><div>专业解释：Byte Pair Encoding，常用子词分词算法，会把常见字符组合合并成 token。</div><div>白话解释：看到常见组合就打包，比如把常出现的词根、词缀合在一起。</div></div>
+      <div class="term"><strong>IsoFLOP</strong><div>专业解释：在相同计算预算下比较不同模型配置的实验曲面。</div><div>白话解释：每组都给同样油费，看哪辆车跑得最远。</div></div>
+    </section>
+
+    <section class="section" id="results">
+      <h2>7. 实验结果解读</h2>
+      <p class="lead">论文最重要的结果不是某个 benchmark 多了几个点，而是给训练大模型的“成本账本”换了单位。</p>
+      <table>
+        <thead><tr><th>结果</th><th>论文发现</th><th>意味着什么</th></tr></thead>
+        <tbody>
+          <tr><td>R1：bytes 比 tokens 更稳</td><td>计算最优配置中，数据 bytes 与参数量近似成比例；英文约 60 bytes/parameter。</td><td>Chinchilla 的 20 tokens/parameter 更像特定 tokenizer 下的特例，而不是宇宙常数。</td></tr>
+          <tr><td>R2：压缩率有最佳点</td><td>压缩率太低或太高都不理想；最优 compression rate 随算力增加而下降。</td><td>模型越大，可能越需要更细的文本颗粒度，而不是盲目压缩 token 数。</td></tr>
+          <tr><td>R3：规律跨 tokenizer 成立</td><td>latent tokenization 与 subword tokenization 显示相似趋势。</td><td>这不是 BLT 单一架构的偶然，而可能是更基础的数据表示规律。</td></tr>
+          <tr><td>R4：多语言最优点不同</td><td>法语、越南语、阿拉伯语、俄语、印地语等语言的最优压缩率与 parity 相关。</td><td>多语言模型不能只用英语经验设计分词器，否则成本和效果都可能失衡。</td></tr>
+        </tbody>
+      </table>
+      <div class="figure">
+        <svg width="980" height="360" viewBox="0 0 980 360" role="img" aria-label="结果解读图">
+          <rect x="20" y="22" width="940" height="314" rx="16" fill="#f8fbff" stroke="#dbe2ec"/>
+          <text x="490" y="58" font-size="24" font-weight="800" text-anchor="middle" fill="#10141b">三个结果，一条主线：训练效率取决于“切多细”</text>
+          <line x1="110" y1="250" x2="870" y2="250" stroke="#cbd5e1" stroke-width="3"/>
+          <line x1="130" y1="268" x2="130" y2="115" stroke="#cbd5e1" stroke-width="3"/>
+          <path d="M160 214 C260 120 355 118 455 210 C555 304 655 304 805 140" fill="none" stroke="#1769e0" stroke-width="5"/>
+          <circle cx="355" cy="135" r="10" fill="#08785f"/>
+          <circle cx="650" cy="287" r="10" fill="#b53a3a"/>
+          <circle cx="805" cy="140" r="10" fill="#9a6a12"/>
+          <text x="355" y="105" font-size="14" font-weight="800" text-anchor="middle" fill="#08785f">最佳 bytes/参数</text>
+          <text x="650" y="318" font-size="14" font-weight="800" text-anchor="middle" fill="#b53a3a">压缩过度会失真</text>
+          <text x="805" y="110" font-size="14" font-weight="800" text-anchor="middle" fill="#9a6a12">语言会移动最优点</text>
+          <text x="500" y="286" font-size="13" text-anchor="middle" fill="#5b6676">横轴：压缩率 bytes/token；纵轴：训练损失/效率</text>
+          <rect x="170" y="78" width="640" height="34" rx="8" fill="#10141b"/>
+          <text x="490" y="100" font-size="14" font-weight="800" text-anchor="middle" fill="#fff">直觉：不是 token 越少越好，也不是越细越好，而是要找“合适颗粒度”</text>
+        </svg>
+        <p class="caption">图 3：压缩率像旋钮，向左太细、向右太粗都不一定最优。</p>
+      </div>
+      <p>对产业来说，这个结果很实际：训练一个模型前，团队可能不该只问“我们有多少 token 数据”，而要问“这些数据有多少 bytes、目标语言是什么、压缩率是否适合我们的算力预算”。</p>
+    </section>
+
+    <section class="section" id="limits">
+      <h2>8. 局限性与问题</h2>
+      <div class="grid">
+        <div class="card red span-6">
+          <h3>不是立刻推翻所有 tokenizer</h3>
+          <p>论文给出的是训练最优规律，不代表所有现有 BPE 模型都要马上重训。既有生态、推理框架、数据管线、模型兼容性仍然很重。</p>
+        </div>
+        <div class="card amber span-6">
+          <h3>实验规模大，但仍不是前沿最大模型</h3>
+          <p>论文覆盖 50M 到 7B 参数范围，已很有说服力；但对万亿参数级别或闭源 frontier model，仍需要更多外部验证。</p>
+        </div>
+        <div class="card span-6">
+          <h3>最优训练不等于最便宜推理</h3>
+          <p>高压缩率会减少序列长度，可能降低推理成本；较低压缩率可能带来更好效果。产品落地要在训练质量、推理成本、延迟之间取舍。</p>
+        </div>
+        <div class="card span-6">
+          <h3>多语言公平会带来工程复杂度</h3>
+          <p>如果每种语言都需要不同压缩策略，多语言模型的 tokenizer、数据配比、评测和部署都会更复杂。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="industry">
+      <h2>9. 产业影响分析</h2>
+      <table>
+        <thead><tr><th>对象</th><th>可能受益</th><th>可能被冲击</th><th>观察点</th></tr></thead>
+        <tbody>
+          <tr><td>大模型公司</td><td>更精准规划训练数据、模型大小和 tokenizer</td><td>旧的 token-based 训练预算经验需要复核</td><td>下一代开源模型是否公开 bytes/parameter 配方</td></tr>
+          <tr><td>多语言模型团队</td><td>可为低资源语言设计更合理的压缩率</td><td>“一套 tokenizer 打天下”的简化方案会受挑战</td><td>非英语能力提升是否来自 tokenizer 改造</td></tr>
+          <tr><td>AI Infra / FinOps</td><td>成本核算从 token 数扩展到 bytes、压缩率、语言组合</td><td>只按 token 计价和估算可能隐藏真实成本差异</td><td>API 定价和内部训练账本是否更细化</td></tr>
+          <tr><td>产品经理与创业者</td><td>理解为什么同样长度文本，不同语言/模型成本和效果不同</td><td>简单比较“上下文 token 数”会越来越不够</td><td>是否出现面向语言/场景优化的 tokenizer 产品</td></tr>
+        </tbody>
+      </table>
+      <p>更大的趋势是：AI 竞争正在从“模型参数越大越好”转向“每一单位算力到底花在哪里”。tokenization 看似底层，却正好连接训练成本、推理延迟、多语言公平和产品体验。</p>
+    </section>
+
+    <section class="section" id="reading">
+      <h2>10. 延伸阅读</h2>
+      <ul>
+        <li><a href="https://arxiv.org/abs/2605.01188">Compute Optimal Tokenization · arXiv</a></li>
+        <li><a href="https://co-tok.github.io/">Compute Optimal Tokenization · 官方项目页</a></li>
+        <li><a href="https://ai.meta.com/research/publications/compute-optimal-tokenization/">Compute Optimal Tokenization · Meta AI Research</a></li>
+        <li><a href="https://arxiv.org/abs/2203.15556">Training Compute-Optimal Large Language Models · Chinchilla</a></li>
+        <li><a href="https://arxiv.org/abs/2412.09871">Byte Latent Transformer: Patches Scale Better Than Tokens</a></li>
+        <li><a href="https://arxiv.org/abs/2605.08044">Fast Byte Latent Transformer</a></li>
+        <li><a href="https://arxiv.org/abs/2503.13423">SuperBPE: Space Travel for Language Models</a></li>
+      </ul>
+    </section>
+
+    <section class="section" id="sources">
+      <h2>11. 引用来源</h2>
+      <ul>
+        <li>arXiv：<a href="https://arxiv.org/abs/2605.01188">Compute Optimal Tokenization</a>，用于核对标题、作者、摘要、提交日期与 arXiv 编号。</li>
+        <li>官方项目页：<a href="https://co-tok.github.io/">co-tok.github.io</a>，用于核对三条核心发现、机构与可视化结论。</li>
+        <li>Meta AI Research：<a href="https://ai.meta.com/research/publications/compute-optimal-tokenization/">Compute Optimal Tokenization</a>，用于核对 Meta 发布日期、作者与摘要。</li>
+        <li>The AI Tea：<a href="https://theaitea.news/">May 2026 Edition</a>，用于观察该论文在英文 AI 新闻源中的行业关注度。</li>
+        <li>Digg / KRO 聚合：<a href="https://di.gg/ai/wiuqq2dz">Researchers dispute Chinchilla token scaling guideline</a>，用于辅助观察英文 X 讨论方向。</li>
+        <li>Moonlight review：<a href="https://www.themoonlight.io/en/review/compute-optimal-tokenization">Literature Review</a>，用于交叉核对实验规模、关键数值和多语言结论。</li>
+      </ul>
+    </section>
+
+    <p class="footer">AI每日论文精选 · 2026-05-17 · 面向非技术读者的 AI 前沿研究解读</p>
+  </main>
+</body>
+</html>

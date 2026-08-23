@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>每日AI论文精读 · From AGI to ASI（DeepMind, 2026）</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --bg-2:#111935;
+    --card:#151c3a;
+    --card-2:#1b2347;
+    --text:#e9ecf5;
+    --muted:#9aa3c7;
+    --accent:#7c5cff;
+    --accent-2:#22d3ee;
+    --gold:#f5b945;
+    --green:#34d399;
+    --red:#f87171;
+    --border:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:radial-gradient(1200px 600px at 10% -10%,#1d2455 0%,transparent 60%),radial-gradient(1000px 500px at 110% 10%,#0e3a47 0%,transparent 55%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 28px 80px}
+  header.hero{padding:36px 32px;border-radius:24px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(34,211,238,.10));border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.35);position:relative;overflow:hidden}
+  header.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;width:380px;height:380px;background:conic-gradient(from 120deg,rgba(124,92,255,.35),rgba(34,211,238,.25),transparent 70%);filter:blur(40px);border-radius:50%;pointer-events:none}
+  .tag{display:inline-flex;align-items:center;gap:8px;background:rgba(124,92,255,.18);color:#cfc6ff;border:1px solid rgba(124,92,255,.35);padding:6px 12px;font-size:12px;border-radius:999px;letter-spacing:.4px}
+  h1{font-size:34px;margin:14px 0 8px;line-height:1.25;letter-spacing:.5px}
+  h1 .en{display:block;font-size:18px;color:var(--muted);font-weight:500;margin-top:6px;letter-spacing:1px}
+  .meta{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:14px;margin-top:14px}
+  .meta span{display:inline-flex;align-items:center;gap:6px}
+  .pill{display:inline-block;background:rgba(255,255,255,.06);border:1px solid var(--border);padding:4px 10px;border-radius:999px;font-size:12px;color:#cdd3ee}
+
+  .grid{display:grid;gap:20px;margin-top:24px}
+  .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  @media(max-width:780px){.grid.cols-2,.grid.cols-4{grid-template-columns:1fr}}
+
+  .card{background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid var(--border);border-radius:18px;padding:22px}
+  .card h3{margin:0 0 8px;font-size:18px;color:#fff}
+  .card p,.card li{color:#dde2f6}
+  .kpi .num{font-size:30px;font-weight:700;color:var(--accent-2)}
+  .kpi .lbl{font-size:13px;color:var(--muted);margin-top:4px}
+
+  section{margin-top:36px}
+  section h2{font-size:22px;margin:0 0 10px;display:flex;align-items:center;gap:10px}
+  section h2::before{content:"";width:6px;height:22px;background:linear-gradient(180deg,var(--accent),var(--accent-2));border-radius:4px;display:inline-block}
+  .lead{color:var(--muted);font-size:15px;margin-bottom:16px}
+
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:14px;vertical-align:top}
+  th{background:rgba(124,92,255,.12);color:#dcd6ff;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  td .small{color:var(--muted);font-size:12px}
+
+  .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:12px;border:1px solid var(--border)}
+  .b-high{background:rgba(248,113,113,.12);color:#fda4a4;border-color:rgba(248,113,113,.35)}
+  .b-mid{background:rgba(245,185,69,.12);color:#fcd58a;border-color:rgba(245,185,69,.35)}
+  .b-low{background:rgba(52,211,153,.12);color:#86efac;border-color:rgba(52,211,153,.35)}
+
+  .quote{border-left:3px solid var(--accent);background:rgba(124,92,255,.08);padding:14px 16px;border-radius:8px;color:#e9eaff;font-style:italic}
+
+  .flow{position:relative;padding:20px;background:var(--card);border:1px solid var(--border);border-radius:18px}
+  .flow .row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .node{background:linear-gradient(180deg,#1c2553,#212a5e);border:1px solid var(--border);padding:14px;border-radius:14px;text-align:center}
+  .node .ti{font-weight:700;color:#fff}
+  .node .de{font-size:12px;color:var(--muted);margin-top:4px}
+  .arrow{text-align:center;color:var(--accent-2);font-size:22px;margin:8px 0}
+
+  ul.clean{padding-left:18px}
+  ul.clean li{margin:6px 0}
+
+  .footer{margin-top:40px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);padding-top:18px}
+  .footer a{color:var(--accent-2)}
+  .src a{color:#cdd3ee;text-decoration:none;border-bottom:1px dashed rgba(255,255,255,.2)}
+  .src a:hover{color:#fff;border-color:#fff}
+
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .toc a{font-size:12px;color:#cdd3ee;text-decoration:none;padding:6px 10px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:999px}
+  .toc a:hover{background:rgba(124,92,255,.18);color:#fff}
+
+  .conf{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .conf .dot{width:8px;height:8px;border-radius:50%}
+  .dot.high{background:var(--green)}
+  .dot.mid{background:var(--gold)}
+  .dot.low{background:var(--red)}
+
+  details{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-top:10px}
+  details summary{cursor:pointer;font-weight:600;color:#fff;font-size:15px}
+  details[open] summary{margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="tag">每日AI论文精读 · 2026-06-29</span>
+  <h1>
+    从 AGI 到 ASI：DeepMind 绘出通向超级智能的四条路径
+    <span class="en">From AGI to ASI — Pathways, Frictions and Open Questions</span>
+  </h1>
+  <div class="meta">
+    <span class="pill">机构：Google DeepMind</span>
+    <span class="pill">发布：2026-06-12（arXiv 2026-06-10）</span>
+    <span class="pill">arXiv: 2606.12683</span>
+    <span class="pill">类型：技术报告 / 立场论文（约 60 页）</span>
+    <span class="pill">领域：AI 战略 · 安全 · 通用人工智能</span>
+  </div>
+  <div class="toc">
+    <a href="#why">为何选它</a>
+    <a href="#tldr">一句话精华</a>
+    <a href="#bg">背景与定义</a>
+    <a href="#paths">四条路径</a>
+    <a href="#friction">摩擦与瓶颈</a>
+    <a href="#interact">路径之间的耦合</a>
+    <a href="#safety">对安全与治理的含义</a>
+    <a href="#critique">批判性评估</a>
+    <a href="#takeaway">对从业者的实操启示</a>
+    <a href="#sources">来源</a>
+  </div>
+</header>
+
+<section id="why">
+  <h2>为何今天选这篇</h2>
+  <p class="lead">6 月有多篇值得关注的工作（OpenAI o3 在儿科未解病例中实现 4.8% 增量诊断率、Anthropic 经济指数 6 月报告、DeepMind AI Control Roadmap 等）。最终选取 DeepMind 的 <b>《From AGI to ASI》</b>——理由有三：</p>
+  <div class="grid cols-2">
+    <div class="card"><h3>① 议题层级最高</h3><p>它不是某个新模型或新基准，而是当前 AGI 讨论之后唯一具备<strong>系统性框架</strong>的"下一步路线图"，决定了未来若干年的研究优先级与治理叙事。</p></div>
+    <div class="card"><h3>② 作者权威</h3><p>署名包括 <b>Shane Legg</b>（DeepMind 联合创始人、"机器超级智能"概念提出者）、<b>Marcus Hutter</b>（AIXI 通用智能理论作者）、<b>Joel Z. Leibo</b>、<b>Allan Dafoe</b>、<b>Iason Gabriel</b> 等 14 位作者——这是 DeepMind 罕见把理论、对齐与治理三条线放在一起发声。</p></div>
+    <div class="card"><h3>③ 可验证、可下载</h3><p>论文已经在 DeepMind Publications 页与 arXiv（2606.12683）公开，便于核对原文，避免二手摘要的误传。</p></div>
+    <div class="card"><h3>④ 与近期工程动态强相关</h3><p>同月 DeepMind 推出 <i>AI Control Roadmap</i> 把"假设 AI 不完全对齐"作为内部部署前提；这篇论文为该工程实践提供了上游理论支撑。</p></div>
+  </div>
+</section>
+
+<section id="tldr">
+  <h2>一句话精华</h2>
+  <div class="quote">DeepMind 主张：从"人类级 AGI"到"超人 ASI"<b>不是单一阈值跨越，而是连续谱</b>；推动这一跨越可能来自<b>四种并不互斥的机制</b>（继续放缩、范式革新、递归自我改进、多智能体集体智能），它们之间存在<b>正反馈耦合</b>，因此真正决定时间表的是"瓶颈/摩擦"——而非"突破点"。</div>
+</section>
+
+<section id="bg">
+  <h2>背景与关键定义</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>AGI（人类级通用智能）</h3>
+      <p>能在<em>几乎所有</em>认知任务上达到人类专家水平的系统。论文沿用 DeepMind 2023 年提出的"AGI 层级"框架，并把当前前沿模型大致定位在 Level 1–2。<span class="conf"><span class="dot mid"></span>置信度：中</span></p>
+    </div>
+    <div class="card">
+      <h3>ASI（通用超级智能）</h3>
+      <p>在<em>实质上所有</em>认知领域<strong>持续超过最强人类乃至大型人类组织</strong>的系统。论文把"宇宙通用智能 Universal AI（AIXI）"作为理论上限，从而给 ASI 留出可被形式化讨论的空间。<span class="conf"><span class="dot high"></span>置信度：高（已与原文核对）</span></p>
+    </div>
+    <div class="card">
+      <h3>关键反共识</h3>
+      <p>很多公众叙事把 AGI 视为"奇点"——一次性的跃迁。论文明确反对该图景：更可能的是<strong>一系列前后相继的转型</strong>，由 AI 在科学、技术、组织等多个领域同时催化。</p>
+    </div>
+    <div class="card">
+      <h3>论文方法</h3>
+      <p>这是一份<strong>结构化综述 + 立场论文</strong>，而非新的模型/算法。其价值在于：① 把零散的 ASI 讨论形式化；② 提出可被独立检验的<strong>开放研究问题清单</strong>；③ 把瓶颈分析显性化，避免"必然/不可能"两极化。</p>
+    </div>
+  </div>
+</section>
+
+<section id="paths">
+  <h2>四条通向 ASI 的路径</h2>
+  <p class="lead">论文将所有可见机制压缩为四条主线。下表是核心对比，再分别展开关键论点与原文未明确给出但读者最容易混淆的边界。</p>
+  <table>
+    <thead><tr><th>路径</th><th>核心机制</th><th>已经发生的证据</th><th>主要瓶颈</th><th>突变可能性</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>① Scaling AGI</b><br/><span class="small">继续放大</span></td>
+        <td>更多算力 + 更多/更优数据 + 更大模型，沿现有曲线外推</td>
+        <td>GPT-4 → Gemini → Claude 系列的 scaling laws；推理时算力（test-time compute）红利</td>
+        <td>高质量数据耗尽；前沿训练单次成本已达数亿美元；边际收益压缩</td>
+        <td><span class="badge b-low">渐进为主</span></td>
+      </tr>
+      <tr>
+        <td><b>② AI Paradigm Shifts</b><br/><span class="small">范式革新</span></td>
+        <td>训练目标、记忆架构、推理框架、样本效率上的结构性突破</td>
+        <td>Transformer 取代 LSTM；CoT/工具使用/世界模型；MoE 与稀疏注意力</td>
+        <td>突破不可预测、不连续；评估迟滞——突破出现到被识别有时延</td>
+        <td><span class="badge b-mid">中等但具突变性</span></td>
+      </tr>
+      <tr>
+        <td><b>③ Recursive Improvement</b><br/><span class="small">递归自我改进</span></td>
+        <td>AI 参与 AI 研发（自动写代码、提架构、跑实验），形成 R&D 飞轮</td>
+        <td>AlphaEvolve 等"AI for AI 研究"原型；自动化机器学习；自动证明</td>
+        <td>元认知能力门槛、验证瓶颈、计算成本、安全可控性</td>
+        <td><span class="badge b-high">最具"爆发"潜质，但条件苛刻</span></td>
+      </tr>
+      <tr>
+        <td><b>④ Multi-Agent Collectives</b><br/><span class="small">多智能体涌现</span></td>
+        <td>大量子超人的智能体组成分工/协调网络，集体能力跨越人类组织水平</td>
+        <td>AutoGen、CrewAI、LangGraph、Sakana Fugu 等多智能体工程化</td>
+        <td>协调成本与失败模式；涌现的群体行为难以监督；个体对齐 ≠ 集体对齐</td>
+        <td><span class="badge b-mid">最贴近当下、最容易低估</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid cols-2" style="margin-top:18px">
+    <div class="card">
+      <h3>关于"递归自我改进"的最强反驳</h3>
+      <p>论文并不接受最戏剧化的"foom（智能爆炸）"叙事——理由是：自我改进系统仍要做实验、要验证、要分配算力，这些环节本身是<strong>串行瓶颈</strong>；同时改进未必单调（每一轮都更聪明），可能陷入"局部最优 + 自我退化"。这是一个比强 AGI 叙事更克制的判断。</p>
+    </div>
+    <div class="card">
+      <h3>关于"多智能体"的独特风险</h3>
+      <p>即使<strong>每一个</strong>智能体都对齐，群体的<em>涌现行为</em>仍可能不对齐——类似"无人作恶但市场失灵"。这是论文在四条路径里给出的<strong>最具操作含义</strong>的安全判断：今天的多智能体框架就是 ASI 时代治理结构的<strong>预演场</strong>。</p>
+    </div>
+  </div>
+</section>
+
+<section id="friction">
+  <h2>瓶颈与摩擦：决定时间表的真正变量</h2>
+  <p class="lead">论文反复强调：判断 ASI 是否"很快"，不应去预测"突破日期"，而应去刻画"瓶颈强度"。下面是论文涉及的主要摩擦项，以及笔者对当前现实强度的标注。</p>
+  <table>
+    <thead><tr><th>瓶颈类别</th><th>具体形式</th><th>当前强度</th><th>是否可被 AI 自身缓解</th></tr></thead>
+    <tbody>
+      <tr><td>算力</td><td>芯片产能、电力、数据中心选址</td><td><span class="badge b-high">强</span></td><td>部分（如 AlphaEvolve 优化算子）</td></tr>
+      <tr><td>数据</td><td>高质量人类文本接近耗尽；合成数据质量风险</td><td><span class="badge b-mid">中—强</span></td><td>部分（自我对弈、模拟环境）</td></tr>
+      <tr><td>验证</td><td>对自我改进结果的真伪/安全验证速度</td><td><span class="badge b-high">强</span></td><td>有限（验证比生成更难）</td></tr>
+      <tr><td>对齐</td><td>系统目标稳定性、欺骗与隐式推理</td><td><span class="badge b-high">强</span></td><td>否（属外生约束）</td></tr>
+      <tr><td>协调</td><td>多智能体之间的通信、信任与策略均衡</td><td><span class="badge b-mid">中</span></td><td>部分</td></tr>
+      <tr><td>制度</td><td>监管、出口管制、责任归属</td><td><span class="badge b-mid">中</span></td><td>否</td></tr>
+      <tr><td>经济</td><td>边际收益与训练成本的剪刀差</td><td><span class="badge b-mid">中</span></td><td>部分（推理优化、蒸馏）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="interact">
+  <h2>四条路径之间的耦合</h2>
+  <div class="flow">
+    <div class="row">
+      <div class="node"><div class="ti">Scaling</div><div class="de">更强基座</div></div>
+      <div class="node"><div class="ti">Paradigm</div><div class="de">更高效架构</div></div>
+      <div class="node"><div class="ti">Recursive</div><div class="de">AI 做 AI</div></div>
+      <div class="node"><div class="ti">Multi-Agent</div><div class="de">分工 × 协调</div></div>
+    </div>
+    <div class="arrow">▼ 任意一条加速 → 其他三条都被放大 ▼</div>
+    <div class="row">
+      <div class="node"><div class="ti">更便宜的推理</div><div class="de">让多智能体可负担</div></div>
+      <div class="node"><div class="ti">更强的代码/数学能力</div><div class="de">驱动递归改进</div></div>
+      <div class="node"><div class="ti">更高的样本效率</div><div class="de">缓解 Scaling 瓶颈</div></div>
+      <div class="node"><div class="ti">更广的协调机制</div><div class="de">放大 Paradigm 实验吞吐</div></div>
+    </div>
+  </div>
+  <p class="lead" style="margin-top:14px">这就是论文最被低估的判断：<b>真正的不确定性不在于"哪条路径胜出"，而在于"四条路径同时推进时产生的复合曲线"</b>。任何只盯一条路径的安全方案都会被低估的耦合效应绕过。</p>
+</section>
+
+<section id="safety">
+  <h2>对 AI 安全与治理的含义</h2>
+  <div class="grid cols-2">
+    <div class="card"><h3>路径化的安全策略</h3><p>不存在"通用对齐方案"。Scaling 路径需要更强的能力评测与红队；递归路径需要可解释性与权限边界；多智能体路径需要群体行为可观测性与协议层治理。</p></div>
+    <div class="card"><h3>从"信任模型"转向"控制系统"</h3><p>这与 DeepMind 同月的 <b>AI Control Roadmap</b> 一致——把内部 AI Agent 默认视为"潜在的高权限内部威胁"，配套监控、阻断、回滚。</p></div>
+    <div class="card"><h3>需要跨学科</h3><p>论文把"准备工作"定义为<em>大规模、跨学科、全球范围</em>的努力，不再是 ML 研究者内部的事情——涉及经济学、法学、政治学、社会学。</p></div>
+    <div class="card"><h3>对中国/亚太读者的额外含义</h3><p>论文以英文资料、英文制度环境为默认背景；其"治理与制度瓶颈"在不同司法辖区强度不同，<b>不能直接迁移结论</b>，需要本地化研究——这一点论文没有覆盖。<span class="conf"><span class="dot mid"></span>判断 vs 事实：判断</span></p></div>
+  </div>
+</section>
+
+<section id="critique">
+  <h2>批判性评估（不迎合）</h2>
+  <div class="grid cols-2">
+    <div class="card"><h3>论文的真正贡献</h3>
+      <ul class="clean">
+        <li>把"ASI 何时到来"这种<b>无法证伪</b>的问题，转化为"四条路径上各自的瓶颈强度"这样<b>可被独立研究</b>的问题。</li>
+        <li>明确拒绝"奇点"与"绝对不可能"两种叙事极端，给出可操作的中间立场。</li>
+        <li>提供了开放研究问题清单，对学界研究优先级有指导意义。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>它的弱点与未解之处</h3>
+      <ul class="clean">
+        <li><b>非实证</b>：没有新数据，没有新模型；几乎所有论点都依赖类比、理论推演与既有文献综述。</li>
+        <li><b>分类未必互斥也未必周延</b>：例如"工具使用"既可视为 Paradigm，也可视为 Multi-Agent；分类边界存在模糊。</li>
+        <li><b>"宇宙通用智能（AIXI）作为上限"</b>是理论锚点，但与工程实践距离很远，对从业者指导有限。</li>
+        <li><b>利益相关</b>：作者机构是 ASI 议题最主要的商业参与者，论文同时具有<em>研究议程设置</em>与<em>政策叙事塑造</em>的双重作用，读者需保持注意。</li>
+        <li>对开源生态、对中国/欧盟政策路径、对算力供给的现实约束讨论较少。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="takeaway">
+  <h2>对从业者/读者的实操启示</h2>
+  <div class="grid cols-2">
+    <div class="card"><h3>工程团队</h3>
+      <ul class="clean">
+        <li>现在做的<b>多智能体编排架构</b>，其安全前提（监督、权限、可观测）就是未来 ASI 治理的雏形。</li>
+        <li>"信任 + 控制（dual-control）"比"对齐"更可落地——参照 DeepMind 的 D1–D4 / R1–R3 分层。</li>
+        <li>把"AI 写 AI"（CI/CD 里的 AI Agent、自动重构、自动评测）视为<b>递归改进的小型试验</b>，主动加入护栏。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>研究者</h3>
+      <ul class="clean">
+        <li>论文末尾的"开放问题"是<b>免费的命题清单</b>，可直接对照选题。</li>
+        <li>四条路径里被低估的是<b>"集体涌现的非对齐"</b>——可解释性 + 多智能体策略均衡是稀缺方向。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>产品/战略</h3>
+      <ul class="clean">
+        <li>避免"AGI 一次到来"的叙事；按"<b>连续多次能力跃迁</b>"做产品路线图与定价模型。</li>
+        <li>规划 12–36 个月窗口的产品时，把"模型能力翻倍 + 推理成本减半"作为基线，而非乐观假设。</li>
+      </ul>
+    </div>
+    <div class="card"><h3>普通读者</h3>
+      <ul class="clean">
+        <li>当听到"AGI/ASI 时间表"时，记得问：<b>哪条路径？哪些瓶颈？谁有动机这样说？</b></li>
+        <li>真正可信的预测，会说出自己<b>会被什么证据推翻</b>。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>关键事实核验</h2>
+  <details open>
+    <summary>已直接与原始来源核对</summary>
+    <ul class="clean">
+      <li>论文标题、摘要与作者名单：取自 <a class="src" href="https://deepmind.google/research/publications/239142/">DeepMind Publications 页面</a>，DeepMind 标注日期 <b>2026-06-12</b>。<span class="conf"><span class="dot high"></span>高</span></li>
+      <li>arXiv 编号 <b>2606.12683</b>：与多个独立二手来源一致。<span class="conf"><span class="dot high"></span>高</span></li>
+      <li>四条路径的命名："scaling AGI / AI paradigm shifts / recursive improvement / ASI emerging from large-scale multi-agent collectives"——逐字取自 DeepMind 摘要。<span class="conf"><span class="dot high"></span>高</span></li>
+      <li>"约 60 页"长度：来自 cryptobriefing 与 mindstudio 报道，未在 DeepMind 摘要页直接列出，<b>有待原文核对页数</b>。<span class="conf"><span class="dot mid"></span>中</span></li>
+      <li>"DeepMind AGI 层级把当前模型置于 Level 1–2"：来自 MindStudio 二手综述，对应 DeepMind 2023 年原始框架，<b>对当前模型的层级判断属解读，非论文结论</b>。<span class="conf"><span class="dot mid"></span>中</span></li>
+    </ul>
+  </details>
+  <details>
+    <summary>本文中标注为"判断/解读"的部分</summary>
+    <ul class="clean">
+      <li>四条路径之间的耦合图与瓶颈强度表，<b>融合</b>了原文论点与笔者整理，不是逐句翻译。</li>
+      <li>"对中国/亚太读者的含义"为笔者外推，论文未涉及。</li>
+      <li>"对从业者的实操启示"为笔者综合判断，请按情境取舍。</li>
+    </ul>
+  </details>
+</section>
+
+<section id="sources">
+  <h2>主要来源</h2>
+  <div class="card src">
+    <ul class="clean">
+      <li><a href="https://deepmind.google/research/publications/239142/">From AGI to ASI — Google DeepMind 官方页面</a>（含摘要、作者列表、PDF 下载链接）</li>
+      <li><a href="https://arxiv.org/abs/2606.12683">arXiv:2606.12683 — From AGI to ASI</a></li>
+      <li><a href="https://deepmind.google/blog/securing-the-future-of-ai-agents/">DeepMind Blog: Securing the future of AI agents（AI Control Roadmap, 2026-06-18）</a></li>
+      <li><a href="https://www.mindstudio.ai/blog/google-deepmind-agi-to-asi-paper">MindStudio 综述：Four Pathways to Superintelligence（2026-06-20，二手解读，已交叉核对）</a></li>
+      <li><a href="https://cryptobriefing.com/deepmind-agi-asi-pathways-paper/">Crypto Briefing: DeepMind explores pathways from AGI to ASI（独立报道）</a></li>
+      <li><a href="https://www.explainx.ai/blog/deepmind-agi-to-asi-paper-four-pathways-2026">ExplainX：DeepMind's AGI-to-ASI Paper: 4 Pathways Explained</a></li>
+      <li><a href="https://openai.com/research/index/publication/">OpenAI Research（同期对比候选）</a></li>
+      <li><a href="https://www.anthropic.com/research">Anthropic Research（同期对比候选）</a></li>
+    </ul>
+  </div>
+</section>
+
+<div class="footer">
+  <p>本报告由"AI 每日论文解读"自动任务于 <b>2026-06-29</b> 生成。仅作研究学习用途；事实陈述以脚注链接为准，标注为"判断/解读"的部分代表作者观点，可能存在错误，欢迎质疑与修正。</p>
+</div>
+</div>
+</body>
+</html>

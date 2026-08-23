@@ -1,0 +1,2171 @@
+Vision-Default, Prior-Override: Causal Mechanisms of
+Perception-Knowledge Conflict in Vision-Language Models
+Niclas Lietzow1 , Danielle Bitterman2 , Carsten Eickhoff1 ,
+William Rudman3 , Michal Golovanevsky2
+1
+University of Tübingen 2 Harvard University 3 The University of Texas at Austin
+Correspondence: niclas.lietzow@student.uni-tuebingen.de
+
+§ https://github.com/nlietzow/vision-default-prior-override.git
+Abstract
+
+arXiv:2606.28273v1 [cs.CL] 26 Jun 2026
+
+Vision-language models must reconcile visual
+evidence with memorized world knowledge
+when the two conflict. How they resolve this
+conflict shapes the reliability of multimodal
+systems, yet prior work characterizes it behaviorally without a component-level causal
+account. We combine activation patching
+across three granularities (residual stream, attention heads, and MLP sublayers) with modelcomponent ablation studies and mechanistic
+analysis. Across three VLM families, we
+find that visual grounding emerges by default,
+whereas prior grounding depends on a small
+set of causally necessary attention heads (2.5–
+4.8%) concentrated in the second half of the network. These heads enable answers from stored
+world knowledge (e.g., “red” for a strawberry)
+despite conflicting visual input. Ablating them
+flips predictions from knowledge-grounded to
+visually grounded answers in 68–96% of cases
+under prior-knowledge prompts, but changes
+only 0.8–7.5% of visually grounded predictions, establishing an asymmetric causal structure. The identified heads decompose into routing heads, which modulate information flow,
+and writing heads, which directly project answer tokens into the residual stream. This structure is consistent across model families and
+scales, revealing a sparse causal circuit underlying perception-knowledge conflict in VLMs.
+
+1
+
+Figure 1: Vision-language models resolve perceptionknowledge conflict asymmetrically: visual grounding
+emerges by default, while prior knowledge depends on
+sparse late-layer routing and writing attention heads.
+
+rely on prior knowledge rather than the image, the
+model frequently continues to respond based on the
+observed visual input (Golovanevsky et al., 2025a).
+This suggests that visual evidence can incorrectly
+override learned semantic knowledge even when
+the prompt requires a knowledge-grounded answer.
+Understanding this interaction is important for improving the reliability of multimodal systems, particularly in determining when models should trust
+visual input versus retrieved world knowledge.
+The perception-knowledge conflict has been
+studied from several complementary perspectives.
+Prior work has localized the conflict to mid-to-late
+network layers (Hua et al., 2025; Golovanevsky
+et al., 2025a), identified candidate routing heads
+(Hua et al., 2025; Ortu et al., 2025), and shown
+that activation-level interventions can shift models
+between visual and prior grounding modes (Ortu
+et al., 2025; Golovanevsky et al., 2025a). Other
+studies suggest that visual information degrades
+in late layers (Liu et al., 2025) while remaining
+partially recoverable from interpretable token representations (Neo et al., 2025), and that modality
+selection under conflict follows predictable uncertainty dynamics (Zhang et al., 2025). These findings characterize where the conflict emerges and
+
+Introduction
+
+Recent work has increasingly questioned how Vision Language Models (VLMs) balance perceptual
+evidence with memorized world knowledge, especially when the two conflict (Golovanevsky et al.,
+2025a; Hua et al., 2025; Ortu et al., 2025; Zhang
+et al., 2025). For instance, when shown a visually
+conflicting image such as a blue strawberry and
+asked “what color is this strawberry?”, VLMs often
+correctly report blue. Yet when asked “what color
+is a strawberry usually?”, a question that should
+1
+
+show that the behavior can be controlled, but they
+do not explain the underlying mechanism by which
+VLMs resolve conflicts between visual evidence
+and stored knowledge.
+
+partially interpretable even as visual information
+degrades in later layers (Liu et al., 2025). Correlational analyses identified candidate routing heads
+in image-versus-caption (Hua et al., 2025) and
+factual-versus-counterfactual (Ortu et al., 2025) settings, while activation-level interventions demonstrated that model behavior can be shifted between
+Visual grounding (following visual evidence) and
+Prior grounding (following stored world knowledge) (Golovanevsky et al., 2025a). Uncertaintybased frameworks further predict which modality
+dominates under conflict (Zhang et al., 2025).
+However, existing approaches remain largely behavioral or correlational. Steering-vector methods
+manipulate activations without identifying the responsible circuitry, while correlational analyses
+cannot establish causal necessity.
+Nooralahzadeh et al. (2026) moves toward a
+causal analysis through residual-stream patching,
+but studies the complementary setting in which
+models answer from prior knowledge despite a
+visual prompt. We instead study the more common regime in which visual evidence overrides
+prior knowledge, while also operating at finer granularity through per-head and per-MLP interventions. Unlike the relatively balanced trade-offs
+observed for parametric-versus-retrieval conflict
+in unimodal language models (Jin et al., 2024),
+we find a strongly asymmetric structure in VLMs,
+where visual grounding surfaces by default and
+prior knowledge requires active override.
+
+1. We provide the first component-level causal
+account of perception-knowledge conflict in
+VLMs, identifying specific attention heads
+and MLP sublayers that mediate the decision.
+These components decompose into early routing heads that modulate information flow and
+late writing heads that directly project answer
+tokens into the residual stream.
+2. We establish an asymmetric causal structure
+across all evaluated models: visual grounding surfaces by default, while prior grounding
+depends on active injection by a sparse 2.5–
+4.8% of attention heads concentrated in the
+second half of the network. Ablating these
+heads flips 68–96% of conflict predictions under prior grounding, but only 0.8–7.5% under
+visual grounding. MLP sublayers show the
+same directional asymmetry at substantially
+weaker magnitudes, consistent with an amplifier rather than a primary routing role.
+3. We show that this routing-and-writing circuit generalizes across three architecturally
+distinct VLM families and multiple model
+scales (Qwen-VL 3B/7B, LLaVA-NeXT 7B,
+PaliGemma 3B/10B). However, the routing implementation diverges across architectures: Qwen-VL and LLaVA-NeXT redistribute attention between image and text tokens, whereas PaliGemma routes through
+differences in the attended representations.
+These results reveal a shared causal architecture governing how VLMs resolve conflicts
+between what they see and what they know.
+
+2
+
+Mechanistic Interpretability of VLMs. Mechanistic interpretability in VLMs builds on frameworks developed for language models, including
+causal mediation analysis for identifying sparse
+mediators of model behavior (Vig et al., 2020),
+causal tracing for localizing factual associations
+(Meng et al., 2023), and logit lens, which projects
+intermediate representations into vocabulary space
+to inspect what token-level information they encode (nostalgebraist, 2020). Methodological work
+on activation patching has further emphasized indistribution corruption and logit-difference metrics
+as reliable choices for causal intervention studies
+(Zhang and Nanda, 2024).
+Palit et al. (2023) introduced activation patching
+for the text decoder of VLMs, and Golovanevsky
+et al. (2025b) generalized activation patching to
+parallel causal interventions over both text and image representations, finding shared attention heads
+across image and text encoders. Jiang et al. (2025)
+
+Related Work
+
+Perception-Knowledge Conflict in VLMs. Recent work has studied the perception-knowledge
+conflict in VLMs from behavioral, representational,
+and intervention-based perspectives. Multiple studies showed that VLMs frequently override memorized world knowledge with conflicting visual evidence under counterfactual inputs (Golovanevsky
+et al., 2025a; Ortu et al., 2025; Zhang et al., 2025).
+Other work localized the conflict to mid-to-late
+network layers (Hua et al., 2025; Golovanevsky
+et al., 2025a), where visual representations remain
+2
+
+further extended logit-lens-style analysis to VLM
+image tokens. Other mechanistic analyses identified sparse task-specific attention heads in vision
+transformers (Hojel et al., 2024), localized factual
+retrieval in multimodal models through causal tracing (Basu et al., 2024), analyzed head importance
+under semantic image edits (Wang et al., 2026),
+and linked compositional failures in CLIP vision
+encoders to neuron-level superposition in MLP layers (Aravindan et al., 2025).
+
+visual evidence and memorized knowledge produce competing answers (see Table 1 for example
+prompts and image variants).
+We evaluate five model sizes spanning three architecturally distinct VLM families: Qwen-VL-2.5
+(3B, 7B) (Wang et al., 2024), LLaVA-NeXT 7B
+with a Mistral backbone (Liu et al., 2024), and
+PaliGemma (3B, 10B) with a Gemma 2 backbone
+(Steiner et al., 2024). Parameter counts range from
+3B to 10B. These models are the standard testbed
+for prior interpretability work on counterfactual and
+conflict-resolution VLM settings (Golovanevsky
+et al., 2025a,b; Ortu et al., 2025; Hua et al., 2025),
+enabling direct comparison with the existing literature. All models are accessed via NNsight (FiottoKaufman et al., 2025), which provides activationlevel read and write access during the forward pass
+without modifying model code.
+All quantitative analyses are restricted to correctly conflicting examples: those where the unmodified model produces the counterfactual color
+under Visual grounding and the original color under Prior grounding on the counterfactual image,
+each matching the expected answer (see Table 3).
+This ensures that every measurement reflects a genuine conflict resolution rather than noise from examples where the model already fails at one or both
+grounding modes.
+
+Multimodal Information Routing. Recent work
+has studied how VLMs route information between
+visual and textual modalities, including which layers process image tokens (Neo et al., 2025), where
+text-copying resides (Rudman et al., 2026), how
+cross-modal attention patterns develop (Kaduri
+et al., 2024), and where modality-specific circuits
+diverge (Nikankin et al., 2025). Liu et al. (2025)
+found that mid-layer image value tokens encode
+sufficient information for perception tasks, but that
+visual information degrades in later layers, where
+input-agnostic key tokens actively suppress perception. These findings suggest that late-layer components play a central role in multimodal arbitration
+and information routing.
+Our results connect these representational findings to the underlying routing mechanism, identifying the sparse components that determine whether
+a VLM follows visual evidence or prior knowledge
+under conflict.
+
+3
+
+Methods
+
+3.1
+
+Task Setting
+
+3.2
+
+Activation Patching
+
+We perform activation patching at the last token
+position (the position where the model generates
+its answer) in both swap directions (P2V and V2P,
+defined below), to identify which components carry
+information that causally determines how the conflict is resolved. Prior work identifies this position
+as the most salient site for patching instructiontuned models (Golovanevsky et al., 2025b; Minder
+et al., 2025).
+
+We use the Visual-Counterfact dataset (Golovanevsky et al., 2025a), which contains 469 counterfactual color images: everyday objects recolored to conflict with world knowledge (e.g., a blue
+strawberry, an orange elephant), each paired with
+a color-identification question. Two image variants exist: the original (real-world colors) and the
+counterfactual (recolored). We evaluate the model
+under two grounding modes: Visual (“What color
+is this {object} here?”), which prompts the model
+to report what it sees, and Prior (“What color is
+{a(n) object} usually?”), which asks for memorized
+world knowledge. We refer to a forward pass under
+the Visual prompt as visual-grounded and under
+the Prior prompt as prior-grounded. The conflict
+condition is Prior grounding on the counterfactual image: the model sees a blue strawberry but
+is asked what color a strawberry usually is. Here,
+
+Notation. For each counterfactual image, let xV
+and xP denote the model inputs under Visual and
+Prior grounding (same image, different prompt),
+and let logitt (x) denote the model’s last-token logit
+for token t on a clean forward pass on input x. We
+write ac (x) for the activation at component c at the
+last token position during that clean forward pass,
+and define the patched-run logit
+ℓ̃tc (x | x′ ) = logitt (x) ac ← ac (x′ ) ,
+
+(1)
+
+the last-token logit on input x when the activation
+at c has been replaced by the value cached from a
+3
+
+(i)
+
+clean forward pass on x′ .
+For each dataset example, we run the model under both grounding modes on the same counterfactual image, caching intermediate activations at the
+target component. Because the image is held fixed
+and only the prompt varies, this contrast targets
+components that mediate which information source
+the model surfaces. We then patch one grounding’s
+cached activation into the other grounding’s forward pass and measure the effect on the prediction.
+This yields two patching directions:
+
+xS ) denote the patched argmax and t∗i :=
+(i)
+arg maxt logitt (xT ) the clean argmax. The flip
+rate over N examples is:
+
+Fd (c) =
+
+In words, Fd (c) is the share of examples in which
+intervention on component c changes the model’s
+top answer. Concretely, FV2P (c) = 0.33 means
+that for 33% of examples, patching c’s visualgrounded activation into the prior-grounded run
+flips the top prediction from the prior-consistent
+answer (e.g., red for a strawberry) to the visualconsistent answer (e.g., blue).
+Component classification. For each component, we compute the average restoration vector
+(RP2V , RV2P ) across examples. PCA is then applied across all components, and those beyond
+±2σ on the first principal component are classified
+as promoting (high restoration in both directions)
+or suppressing (negative restoration opposing the
+patched direction). The procedure is applied separately to attention heads and MLP sublayers.
+
+• V2P (Visual → Prior; target xP , source xV ):
+Patch a visual-grounded activation into the
+prior-grounded forward pass, testing whether
+the component carries visual-relevant information.
+We patch at three granularities, each evaluated
+at the last token position:
+ (ℓ) (ℓ)
+r , zh , m(ℓ)
+
+(2)
+3.3
+
+where r(ℓ) is the residual-stream output at layer ℓ
+(the full layer output combining attention, MLP,
+(ℓ)
+and residual connections), zh is the output vector
+of attention head h at the WO input at layer ℓ, and
+m(ℓ) is the MLP sublayer output at layer ℓ.
+
+patched
+
+∆d
+
+target
+
+(c) − ∆d
+
+target
+
+∆source
+− ∆d
+d
+
+Causal Component Ablation
+
+Activation patching tests sufficiency: can a component restore a behavior? Component ablation test
+necessity: Does removing the component remove
+the behavior?
+We zero-ablate the target head or MLP output at
+the last token position during the forward pass. We
+test both individual ablations (one component at
+a time) and group ablations (all promoting or suppressing components simultaneously). Comparing
+the two reveals whether the effect is concentrated in
+single components or distributed across the group.
+As with all analyses (Section 3.1), ablations are
+restricted to correctly conflicting examples. We
+report the flip rate: the fraction of examples where
+the prediction changes from the expected answer to
+the competing answer under each grounding mode.
+
+Restoration score. For a component c patched
+in direction d ∈ {P2V, V2P}, we define:
+Rd (c) =
+
+(4)
+
+i=1
+
+• P2V (Prior → Visual; target xV , source xP ):
+Patch a prior-grounded component activation
+into the visual-grounded forward pass. If the
+prediction shifts toward the prior answer, that
+component carries prior-relevant information.
+
+ac ∈
+
+N
+
+1 X  c
+1 t̂i ̸= t∗i .
+N
+
+(3)
+
+where ∆ = logit(torig )−logit(tcf ) is the logit difference between the original-color and counterfactualcolor answer tokens, and the superscripts denote
+the clean source run, the clean target run, and the
+target run after patching component c, respectively.
+A restoration score of 1 means the patch fully restores the source run’s logit difference; 0 means no
+effect.
+
+3.4
+
+Mechanistic Characterization
+
+Patching and model component ablation establish
+which components matter; mechanistic analysis
+characterizes how they achieve their causal effects.
+We perform two complementary analyses on all
+classified heads.
+
+Flip rate. As a discrete complement to Rd (c),
+we report the fraction of examples where patching
+changes the argmax prediction. For each exam(i)
+ple i in direction d, let t̂ic := arg maxt ℓ̃tc (xT |
+4
+
+Prior
+
+Model
+
+Orig
+
+CF
+
+∆ Orig
+
+CF
+
+∆
+
+Qwen-VL 3B
+Qwen-VL 7B
+LLaVA-NeXT 7B
+PaliGemma 3B
+PaliGemma 10B
+
+92.1
+93.4
+91.9
+92.3
+91.7
+
+91.9
+86.1
+86.4
+88.1
+87.0
+
+0.2
+7.3
+5.5
+4.2
+4.7
+
+17.7
+55.7
+21.7
+32.4
+44.6
+
+77.4
+40.0
+73.0
+59.3
+48.4
+
+95.1
+95.7
+94.7
+91.7
+93.0
+
+(a) Qwen-VL 3B
+
+1.00
+
+Restoration score
+
+Visual
+
+0.75
+
+0.25
+0.00
+0
+
+Table 1: Accuracy (%) across grounding modes and
+image variants. Visual asks “What color is this strawberry?”; Prior asks “What color is a strawberry usually?”. Orig = real-color image; CF = counterfactual;
+∆ = Orig − CF. Visual grounding is robust (∆ ≤ 7.3),
+while Prior collapses under conflict (∆ = 40.0–77.4).
+
+20
+
+Behavioral Evidence of Visual Override
+
+20
+
+Layer
+
+0
+
+10
+
+20
+
+Layer
+
+3B to 10B improves from 32.4% to 44.6%), but no
+model eliminates it. At matched 7B scale, QwenVL achieves 55.7% accuracy under conflict, while
+LLaVA-NeXT reaches only 21.7%. This replicates the general phenomenon observed by Golovanevsky et al. (2025a), while showing that differences in conflict behavior cannot be explained by
+model scale alone, motivating the need for crossarchitecture causal analysis.
+
+Logit lens on head-output differences. We extract each classified head’s output vector at the
+last token position (before recombination via WO )
+under both grounding modes, compute the difference vector hvisual − hprior , and project it through
+the output projection matrix WO and the model’s
+unembedding matrix into vocabulary logit space.
+We then check whether the original-color and
+counterfactual-color answer tokens appear in the
+top-k or bottom-k positions (k=20) of the resulting distribution. A high hit rate indicates the head
+directly encodes the answer token difference into
+the residual stream.
+
+4.1
+
+0
+
+Figure 2: Residual stream restoration scores Rd (ℓ) by
+layer for three representative models. P2V (dashed) and
+V2P (solid) patching directions are shown; the shaded
+region highlights the V2P–P2V asymmetry, and vertical dashed lines mark the critical window boundaries.
+Across models, V2P restoration rises earlier and more
+strongly than P2V, indicating that visual information is
+established before prior knowledge. Different architectures exhibit distinct transition dynamics, ranging from
+sharp late-layer shifts to gradual multi-layer accumulation. See Appendix B, Figure 6 for all five models.
+
+Attention pattern analysis. For each classified
+head, we extract attention weights at the last token
+position under both grounding modes on the counterfactual image. We aggregate attention over all
+image token positions into a single image-attention
+fraction and compute the delta (visual − prior
+grounding). A positive delta indicates greater attention to image tokens under visual grounding and
+a shift toward text tokens under prior grounding,
+consistent with dynamic attention routing.
+
+Results
+
+(c) PaliGemma 3B
+
+0.50
+
+Layer
+
+4
+
+(b) LLaVA-NeXT 7B
+
+V2P
+P2V
+
+4.2
+
+The Decision Forms in a Critical Window
+
+We first ask where in the network the conflict is
+resolved. Residual-stream patching localizes this
+to a critical window in the second half of the network. Letting ∆Rd (ℓ) = Rd (ℓ) − Rd (ℓ − 1) denote the per-layer increment in restoration score
+for direction d (with Rd (0) = 0), we define
+the critical window for each direction d as the
+smallest
+consecutive layer
+Pℓb
+P range [ℓa , ℓb ] for which
+ℓ ∆Rd (ℓ). Across all five
+ℓ=ℓa ∆Rd (ℓ) ≥ 0.8
+models, these windows span 7–16 layers and begin
+at 52–76% of network depth. Although broad at the
+layer level, the underlying circuit becomes sparse
+at the component level (Section 4.3).
+Within this window, V2P restoration (patching
+visual information into the prior-grounded run) consistently reaches high flip rates before P2V restoration (patching prior information into the visualgrounded run). The gap in layer where each direction first reaches 50% flip rate (Fd = 0.5) ranges
+from 3 layers in Qwen-VL 7B to 19 in LLaVANeXT 7B (Appendix B, Table 4). This ordering
+holds despite distinct architectural dynamics (Fig-
+
+Table 1 summarizes inference accuracy across all
+conditions. When no conflict exists ( Visual with
+either image variant, and Prior on the original
+image), all five models achieve 86–96% accuracy
+regardless of architecture or scale. The conflict condition ( Prior grounding with counterfactual image) produces a dramatic collapse: accuracy drops
+to 17.7–55.7%, as models report what they see
+rather than what they know. Larger models resist
+visual override more effectively (Qwen-VL 3B to
+7B improves from 17.7% to 55.7%; PaliGemma
+5
+
+(b) LLaVA-NeXT 7B
+(38/1024)
+
+(c) PaliGemma 3B
+(10/208)
+
+100
+
+Flip rate (%)
+
+V2P restoration
+
+0.2
+
+(a) Qwen-VL 3B
+(15/576)
+
+0.1
+0.0
+Promoting
+Suppressing
+
+0.0
+
+0.2
+
+P2V restoration
+
+0.0
+
+P2V restoration
+
+0.1
+
+0.0
+
+89
+
+75
+
+68
+
+60
+
+Prior flip rate
+Visual flip rate
+
+40
+20
+0
+Qwen
+3B
+
+0.2
+
+Qwen
+7B
+
+LLaVA
+7B
+
+PG
+3B
+
+PG
+10B
+
+P2V restoration
+
+Figure 4: Flip rates under promoting-head group ablation. Qwen = Qwen-VL; LLaVA = LLaVA-NeXT; PG =
+PaliGemma. Dark bars show prior-grounding flips; light
+bars show visual-grounding flips. Ablating promoting
+heads disrupts prior grounding (68–96%) while leaving
+visual grounding largely intact (0.8–7.5%), consistent
+with vision as the default pathway.
+
+Figure 3: Attention head classification by patching
+restoration score. Each point is one head, positioned by
+mean P2V and V2P restoration. Promoting heads are
+shown in red and suppressing heads in blue; the dashed
+line indicates the first principal component. Across all
+models, most heads cluster near zero, with only a sparse
+subset (2.5–4.8%) strongly mediating the conflict. See
+Appendix C, Figure 7 for all five models.
+
+Attention
+
+ure 2; additional models in Appendix B, Figure 6):
+Qwen-VL shows a sharp late rise, LLaVA-NeXT
+plateaus before a final-layer jump, and PaliGemma
+accumulates gradually across many layers.
+This pattern provides the first evidence of the
+vision-default, prior-override mechanism: visual
+information appears earlier in the residual stream,
+while prior knowledge emerges later. If both
+grounding modes were processed symmetrically,
+V2P and P2V restoration would accumulate at similar rates. Instead, the consistent lag of P2V suggests that visual grounding is the default pathway,
+while prior knowledge requires additional computation, which we test directly through componentlevel patching and ablation.
+4.3
+
+80
+
+96
+85
+
+Supp.
+
+MLP
+
+Model
+
+Prom.
+
+Prom.
+
+Qwen-VL 3B
+Qwen-VL 7B
+LLaVA 7B
+PG 3B
+PG 10B
+
+84.9 / 1.4 19.2 / 0.0 74.0 / 1.4
+68.4 / 2.4 0.5 / 0.9 28.8 / 1.4
+75.0 / 7.5 6.2 / 0.0
+–
+95.9 / 0.8 5.8 / 0.0
+–
+88.7 / 1.7 6.2 / 0.0
+–
+
+Supp.
+11.0 / 0.0
+–
+23.8 / 1.2
+18.2 / 0.0
+11.3 / 1.1
+
+Table 2: Group ablation flip rates (Prior / Visual). Promoting attention-head ablations consistently flip priorgrounded predictions (68–96%) while minimally affecting visual grounding (0.8–7.5%). MLP effects are
+weaker but directionally similar. “–” indicates that no
+classified MLPs were available for ablation.
+
+they actively mediate the routing decision. Heads
+with negative projections are labeled suppressing:
+patching them pushes predictions away from the
+source answer, indicating opposition to the patched
+direction. In Figure 3, promoting heads appear in
+red and suppressing heads in blue.
+The classification recovers the predicted sparse
+circuit across all models: only 2.5–4.8% of heads
+are classified. These heads concentrate primarily
+in the second half of the network, overlapping with
+the critical window identified by residual-stream
+patching. The residual-stream asymmetry also
+sharpens at head level: promoting heads produce
+strong V2P flip rates but minimal P2V effects, consistent with visual grounding as the default pathway and prior grounding as an active override. By
+contrast, MLP effects are weaker and substantially
+less consistent across architectures, suggesting that
+attention heads dominate the routing mechanism.
+
+A Sparse Set of Heads Drives the Decision
+
+Having localized the decision to a critical layer
+window, we next ask which specific attention heads
+carry the causal signal. The vision-default, prioroverride hypothesis predicts that this set should
+be sparse: if visual grounding is the default pathway, only a small minority of heads should actively inject prior knowledge. Figure 3 plots each
+head by its mean P2V and V2P restoration scores
+(RP2V , RV2P ) averaged over correctly conflicting
+examples. Most heads cluster near the origin, indicating a negligible causal effect.
+To identify the sparse subset that departs from
+this baseline, we project each head’s restoration
+vector onto the first principal component (PC1) of
+the joint distribution and classify heads beyond
+±2σ. Heads with positive PC1 projections are labeled promoting: patching them restores the sourcegrounding answer in both directions, indicating that
+
+4.4
+
+Vision as the Default Pathway
+
+The activation patching results show that a sparse
+set of heads carries information relevant to the con6
+
+flict resolution. Model-component ablation now
+tests the complementary question: are these heads
+necessary? The answer establishes the central finding of this paper.
+Ablating all promoting attention heads flips
+prior-grounded predictions in 68–96% of correctly
+conflicting examples across all five models, while
+changing visual-grounded predictions in only 0.8–
+7.5% (Table 2, Figure 4). Thus, removing these
+heads largely eliminates prior grounding while leaving visual grounding intact. The same heads are
+both sufficient to restore prior grounding when
+patched in (per-head V2P flip rates 26.9–74.0%
+versus P2V 0.0–2.6%) and necessary to sustain it
+under ablation, establishing visual grounding as the
+default pathway and prior grounding as an active
+override.
+Suppressing-head group ablations produce
+weaker effects, with prior grounding flip rates of
+only 0.5–19.2%. Their removal does not substantially affect either grounding mode, indicating that
+they are not necessary for routing.
+MLP group ablations show the same directional
+asymmetry as attention heads (11–74% prior flips
+versus 0–1.4% visual flips), but at substantially
+weaker magnitudes. Qwen-VL 3B exhibits the
+strongest MLP effects, reaching 74.0% prior flip
+rate compared to 84.9% for attention heads, while
+PaliGemma and LLaVA-NeXT contain no promoting MLP layers and reach at most 23.8% prior flip
+rate through suppressing-layer ablations. These results suggest that MLPs amplify memorized prior
+knowledge once a routing pathway is selected,
+rather than serving as primary routing components,
+consistent with prior work identifying MLP sublayers as the main site of factual knowledge storage
+in transformers (Geva et al., 2021, 2022; Dai et al.,
+2022; Meng et al., 2023). Larger models further
+weaken MLP effects, reinforcing the amplifier interpretation.
+One remaining question is whether the observed
+asymmetry reflects the prompt-based contrast used
+throughout the paper, which varies the grounding
+prompt while holding the image fixed and therefore does not directly isolate circuits that read visual color information. As a robustness check, we
+repeat the analysis with a complementary visualcircuit contrast that varies the image while holding
+the prompt fixed. Under this contrast, ablating
+promoting attention heads flips visual-grounded
+predictions in 1.8–40.6% of examples, still well
+below the 68–96% prior-grounding flips produced
+
+by the primary analysis. Both contrasts, therefore,
+support the same conclusion: visual grounding is
+more robust than prior grounding.
+4.5
+
+Routing and Writing Attention Heads
+
+Attention routing. Two architecturally distinct
+routing mechanisms emerge from the attention
+analysis (Figure 5). In Qwen-VL and LLaVANeXT, classified heads dynamically shift attention between image and text tokens depending on
+the grounding mode, with mean image-attention
+deltas (visual − prior) of +0.19 to +0.24. Under prior grounding, these heads redirect attention
+away from image tokens toward the textual context. In PaliGemma, classified heads maintain high
+image-attention (0.5–0.9) under both conditions,
+with near-zero mean deltas. Although equally
+causally important, these heads operate through
+changes in the attended representations rather than
+through attention redistribution. Both promoting
+and suppressing heads follow the same architecturespecific pattern.
+Routing versus writing heads. Projecting headoutput differences into vocabulary space reveals
+which classified heads directly encode the answer
+token. In every model, a small set of late-layer
+heads places the counterfactual color among the
+top-20 predicted tokens in over 80% of examples,
+while most other classified heads show near-zero
+hit rates despite strong causal effects. Two functional roles therefore emerge: early routing heads,
+which redirect information flow, and late writing
+heads, which project the final decision into vocabulary space. This routing-then-writing decomposition holds consistently across architectures despite
+differences in the routing mechanism itself.
+4.6
+
+Cross-Architecture Generalization
+
+The central claim of vision-default, prior-override
+holds across all three VLM families and five model
+sizes. Six properties generalize consistently:
+1. Ablation asymmetry: prior flip 68–96%, visual flip 0.8–7.5%.
+2. Critical window in the second half of the
+network (52–100% depth).
+3. V2P precedes P2V by 3–19 layers.
+4. Both head types present, with 2.5–4.8% of
+heads classified.
+5. Two-stage routing→writing mechanism
+(0%→>80% logit lens hit rate).
+7
+
+(a) Qwen-VL 3B
+promoting
+
+suppressing
+
+0.8
+
+(b) PaliGemma 3B
+
+1.0
+
+Visual
+Prior
+
+Image-attn. fraction
+
+0.6
+0.4
+0.2
+0.0
+
+promoting
+
+suppressing
+
+0.8
+
+Visual
+Prior
+
+0.6
+0.4
+0.2
+L25H5
+
+L17H4
+
+L25H4
+
+L25H2
+
+L24H3
+
+L22H1
+
+L20H3
+
+L17H7
+
+L15H7
+
+L26H0
+L26H5
+L26H6
+L27H1
+L27H4
+L28H3
+L31H3
+L31H7
+L34H14
+L26H3
+L27H2
+L28H4
+L30H3
+L31H8
+L34H10
+
+0.0
+L16H4
+
+Image-attn. fraction
+
+1.0
+
+Figure 5: Image-attention fraction for classified heads under Visual (blue) and Prior (red) grounding. Qwen-VL
+3B (a) shifts attention between image and text tokens depending on the grounding mode (mean delta +0.22),
+while PaliGemma 3B (b) maintains high image-attention under both modes with near-zero delta (+0.05). These
+patterns illustrate two routing regimes: attention-routing (Qwen-VL, LLaVA-NeXT) and representation-routing
+(PaliGemma). See Appendix H, Figure 10 for all five models.
+
+6. MLP asymmetry in the same direction as
+heads but 1.2–8× weaker.
+
+VLMs to ignore.
+Although the mechanism generalizes across architectures, the implementation differs substantially. Qwen-VL and LLaVA-NeXT reroute attention between image and text tokens, while
+PaliGemma changes the representations extracted
+from attended tokens without strongly changing
+the attention pattern itself. The same behavioral
+asymmetry therefore emerges from different internal computations, suggesting that future control
+methods may need to be architecture-specific.
+
+Four properties are architecture-specific. Most
+notably, Qwen-VL and LLaVA-NeXT route by redistributing attention between image and text tokens (mean image-attention delta +0.19 to +0.24),
+while PaliGemma routes through differences in the
+attended representations with near-zero attention
+deltas. Accumulation dynamics also differ: sigmoid in Qwen-VL, plateau-then-jump in LLaVANeXT, and gradual in PaliGemma. Only Qwen-VL
+contains promoting MLP layers, and redundancy
+varies substantially across architectures. Despite
+these implementation differences, the core asymmetry remains consistent, suggesting a convergent
+computational strategy.
+
+5
+
+6
+
+Conclusion
+
+VLMs resolve perception-knowledge conflicts
+through an asymmetric mechanism in which visual
+grounding surfaces by default while prior knowledge requires active injection by a sparse set of
+causally necessary attention heads. These heads,
+comprising only 2.5–4.8% of all heads and concentrated primarily in the second half of the network, decompose into early routing heads that modulate information flow and late writing heads that
+directly encode answer tokens into the residual
+stream, with MLP sublayers contributing weaker,
+same-direction effects. The mechanism generalizes across three architecturally distinct VLM families (Qwen-VL, LLaVA-NeXT, and PaliGemma),
+though the routing implementation diverges between attention redistribution and modulation of
+the attended representations. The components we
+identify provide concrete targets for controllable
+multimodal reasoning, enabling principled interventions over when a VLM should rely on visual
+evidence versus stored knowledge.
+
+Discussion
+
+Our results suggest that perception-knowledge conflict in VLMs is not primarily a failure of perception or missing world knowledge. Models often
+perceive the counterfactual image correctly and
+retain the relevant semantic knowledge, yet still
+default to the visual input even when the task requires prior knowledge instead. This has important
+implications for reliability. Improving perception
+alone will not fix cases where models must ignore
+misleading visual evidence, and improving factual
+knowledge alone will not ensure that the knowledge is used.
+The sparse prior-grounding circuit we identify
+gives this asymmetry a concrete mechanistic basis.
+Prior knowledge depends on a small set of attention
+heads, whereas visual grounding remains robust
+when those heads are removed. This helps explain
+why conflicting visual evidence is so difficult for
+8
+
+Limitations
+
+build predictions by promoting concepts in the vocabulary space. Preprint, arXiv:2203.14680.
+
+Our study focuses on color-property conflicts using the Visual-Counterfact dataset, which provides
+a controlled and interpretable setting for isolating
+mechanisms of visual-textual conflict resolution.
+While this allows for clean causal analysis, it remains an open question whether the same mechanisms extend to other forms of conflict, such as
+shape, size, or spatial relations. Additionally, we
+evaluate models in the 3B–10B parameter range,
+following scales commonly used in prior mechanistic interpretability work (Golovanevsky et al.,
+2025a; Hua et al., 2025; Ortu et al., 2025) and enabling tractable intervention-based analysis; larger
+models may nevertheless develop different strategies as their capacity and memorized knowledge
+increase. Finally, our interventions target the last token position, where the model produces its answer,
+consistent with standard practice in mechanistic
+interpretability studies of autoregressive models
+(Minder et al., 2025). As a result, our analysis may
+not capture components that could contribute earlier in the sequence, such as during the processing
+of image tokens.
+
+Mor Geva, Roei Schuster, Jonathan Berant, and Omer
+Levy. 2021. Transformer feed-forward layers are
+key-value memories. Preprint, arXiv:2012.14913.
+Michal Golovanevsky, William Rudman, Michael Lepori, Amir Bar, Ritambhara Singh, and Carsten Eickhoff. 2025a. Pixels versus priors: Controlling knowledge priors in vision-language models through visual
+counterfacts. Preprint, arXiv:2505.17127.
+Michal Golovanevsky, William Rudman, Vedant Palit,
+Ritambhara Singh, and Carsten Eickhoff. 2025b.
+What do VLMs NOTICE? a mechanistic interpretability pipeline for gaussian-noise-free text-image corruption and evaluation. Preprint, arXiv:2406.16320.
+Alberto Hojel, Yutong Bai, Trevor Darrell, Amir Globerson, and Amir Bar. 2024. Finding visual task vectors.
+Preprint, arXiv:2404.05729.
+Tianze Hua, Tian Yun, and Ellie Pavlick. 2025. How do
+vision-language models process conflicting information across modalities? Preprint, arXiv:2507.01790.
+Nick Jiang, Anish Kachinthaya, Suzie Petryk, and Yossi
+Gandelsman. 2025. Interpreting and editing visionlanguage representations to mitigate hallucinations.
+Preprint, arXiv:2410.02762.
+Zhuoran Jin, Pengfei Cao, Hongbang Yuan, Yubo Chen,
+Jiexin Xu, Huaijun Li, Xiaojian Jiang, Kang Liu,
+and Jun Zhao. 2024. Cutting off the head ends the
+conflict: A mechanism for interpreting and mitigating
+knowledge conflicts in language models. Preprint,
+arXiv:2402.18154.
+
+References
+Ashwath Vaithinathan Aravindan, Abha Jha, and Mihir
+Kulkarni. 2025. Do VLMs have bad eyes? diagnosing compositional failures via mechanistic interpretability. Preprint, arXiv:2508.16652.
+
+Omri Kaduri, Shai Bagon, and Tali Dekel. 2024. What’s
+in the image? a deep-dive into the vision of vision
+language models. Preprint, arXiv:2411.17491.
+
+Samyadeep Basu, Martin Grayson, Cecily Morrison,
+Besmira Nushi, Soheil Feizi, and Daniela Massiceti.
+2024. Understanding information storage and transfer in multi-modal large language models. Preprint,
+arXiv:2406.04236.
+
+Benlin Liu, Amita Kamath, Madeleine GrundeMcLaughlin, Winson Han, and Ranjay Krishna. 2025.
+Visual representations inside the language model.
+Preprint, arXiv:2510.04819.
+
+Damai Dai, Li Dong, Yaru Hao, Zhifang Sui, Baobao
+Chang, and Furu Wei. 2022. Knowledge neurons in
+pretrained transformers. In Proceedings of the 60th
+Annual Meeting of the Association for Computational
+Linguistics (Volume 1: Long Papers), pages 8493–
+8502, Dublin, Ireland. Association for Computational
+Linguistics.
+
+Haotian Liu, Chunyuan Li, Yuheng Li, Bo Li, Yuanhan Zhang, Sheng Shen, and Yong Jae Lee. 2024.
+LLaVA-NeXT: Improved reasoning, OCR, and world
+knowledge.
+Kevin Meng, David Bau, Alex Andonian, and Yonatan
+Belinkov. 2023. Locating and editing factual associations in gpt. Preprint, arXiv:2202.05262.
+
+Jaden Fiotto-Kaufman, Alexander R. Loftus, Eric Todd,
+Jannik Brinkmann, Koyena Pal, Dmitrii Troitskii,
+Michael Ripa, Adam Belfki, Can Rager, Caden Juang,
+Aaron Mueller, Samuel Marks, Arnab Sen Sharma,
+Francesca Lucchetti, Nikhil Prakash, Carla Brodley,
+Arjun Guha, Jonathan Bell, Byron C. Wallace, and
+David Bau. 2025. NNsight and NDIF: Democratizing access to open-weight foundation model internals.
+Preprint, arXiv:2407.14561.
+
+Julian Minder, Clément Dumas, Caden Juang, Bilal
+Chughtai, and Neel Nanda. 2025. Overcoming sparsity artifacts in crosscoders to interpret chat-tuning.
+Preprint, arXiv:2504.02922.
+Clement Neo, Luke Ong, Philip Torr, Mor Geva, David
+Krueger, and Fazl Barez. 2025. Towards interpreting visual information processing in vision-language
+models. Preprint, arXiv:2410.07149.
+
+Mor Geva, Avi Caciularu, Kevin Ro Wang, and Yoav
+Goldberg. 2022. Transformer feed-forward layers
+
+9
+
+Yaniv Nikankin, Dana Arad, Yossi Gandelsman, and
+Yonatan Belinkov. 2025. Same task, different circuits: Disentangling modality-specific mechanisms
+in VLMs. Preprint, arXiv:2506.09047.
+Farhad Nooralahzadeh, Omid Rohanian, Yi Zhang,
+Jonathan Fürst, and Kurt Stockinger. 2026. Arbitration failure, not perceptual blindness: How visionlanguage models resolve visual-linguistic conflicts.
+Preprint, under review.
+
+Model
+
+Total
+
+Correct conflict
+
+Qwen-VL 3B
+Qwen-VL 7B
+LLaVA-NeXT 7B
+PaliGemma 3B
+PaliGemma 10B
+
+467
+467
+467
+467
+467
+
+73
+212
+80
+121
+177
+
+Table 3: Number of correctly conflicting examples per
+model, used for all quantitative analyses.
+
+nostalgebraist. 2020. Interpreting GPT: The logit lens.
+Francesco Ortu, Zhijing Jin, Diego Doimo, and Alberto Cazzaniga. 2025. When seeing overrides knowing: Disentangling knowledge conflicts in visionlanguage models. Preprint, arXiv:2507.13868.
+Vedant Palit, Rohan Pandey, Aryaman Arora, and
+Paul Pu Liang. 2023. Towards vision-language mechanistic interpretability: A causal tracing tool for blip.
+In Proceedings of the IEEE/CVF International Conference on Computer Vision, pages 2856–2861.
+
+Model
+
+V2P
+
+P2V
+
+Gap
+
+Qwen-VL 3B
+Qwen-VL 7B
+LLaVA-NeXT 7B
+PaliGemma 3B
+PaliGemma 10B
+
+24
+18
+12
+13
+31
+
+28
+21
+31
+25
+40
+
+4
+3
+19
+12
+9
+
+Table 4: Layer at which V2P and P2V patching directions first reach 50% flip rate (Gap = P2V − V2P). V2P
+consistently precedes P2V, with gaps ranging from 3 to
+19 layers.
+
+William Rudman, Michal Golovanevsky, Dana Arad,
+Yonatan Belinkov, Ritambhara Singh, Carsten Eickhoff, and Kyle Mahowald. 2026. Mechanisms
+of prompt-induced hallucination in vision-language
+models. arXiv preprint arXiv:2601.05201.
+
+Zhuoran Zhang, Tengyue Wang, Xilin Gong, Yang Shi,
+Haotian Wang, Di Wang, and Lijie Hu. 2025. When
+modalities conflict: How unimodal reasoning uncertainty governs preference dynamics in MLLMs.
+Preprint, arXiv:2511.02243.
+
+Andreas Steiner, André Susano Pinto, Michael Tschannen, Daniel Keysers, Xiao Wang, Yonatan Bitton, Alexey Gritsenko, Matthias Minderer, Anthony
+Sherbondy, Shangbang Long, Siyang Qin, Reeve
+Ingle, Emanuele Bugliarello, Sahar Kazemzadeh,
+Thomas Mesnard, Ibrahim Alabdulmohsin, Lucas
+Beyer, and Xiaohua Zhai. 2024. PaliGemma 2: A
+family of versatile VLMs for transfer. Preprint,
+arXiv:2412.03555.
+
+A
+
+Dataset and Example Selection
+
+The Visual-Counterfact dataset (Golovanevsky
+et al., 2025a) contains 469 examples of common
+objects with digitally recolored images. Each example pairs an object (e.g., banana, elephant) with
+its original color (e.g., yellow, gray) and a counterfactual color (e.g., blue, orange). Two examples
+(radish and spider) were excluded due to overlapping original and counterfactual colors, leaving 467
+examples for analysis.
+All quantitative analyses are restricted to correctly conflicting examples as defined in Section 3.1. Table 3 reports the number per model.
+
+Jesse Vig, Sebastian Gehrmann, Yonatan Belinkov,
+Sharon Qian, Daniel Nevo, Simas Sakenis, Jason
+Huang, Yaron Singer, and Stuart Shieber. 2020.
+Causal mediation analysis for interpreting neural nlp:
+The case of gender bias. Preprint, arXiv:2004.12265.
+Peng Wang, Shuai Bai, Sinan Tan, Shijie Wang, Zhihao Fan, Jinze Bai, Keqin Chen, Xuejing Liu, Jialin
+Wang, Wenbin Ge, Yang Fan, Kai Dang, Mengfei
+Du, Xuancheng Ren, Rui Men, Dayiheng Liu,
+Chang Zhou, Jingren Zhou, and Junyang Lin. 2024.
+Qwen2-VL: Enhancing vision-language model’s perception of the world at any resolution. Preprint,
+arXiv:2409.12191.
+
+B
+
+Full Residual Stream Curves
+
+Figure 6 shows residual stream patching restoration scores for all five models. The main paper
+(Figure 2) shows three representative models; this
+figure adds Qwen-VL 7B and PaliGemma 10B.
+
+Qidong Wang, Junjie Hu, and Ming Jiang. 2026. Vseam: Visual semantic editing and attention modulating for causal interpretability of vision-language
+models. Preprint, arXiv:2509.14837.
+
+C
+
+Head Classification Details
+
+Figure 7 shows classification scatters for all five
+models. Tables 5 and 6 list all classified heads by
+model.
+
+Fred Zhang and Neel Nanda. 2024. Towards best practices of activation patching in language models: Metrics and methods. Preprint, arXiv:2309.16042.
+
+10
+
+Qwen-VL 3B
+
+Restoration score
+
+1.00
+
+Qwen-VL 7B
+
+LLaVA-NeXT 7B
+
+PaliGemma 3B
+
+PaliGemma 10B
+
+0.75
+V2P
+P2V
+
+0.50
+0.25
+0.00
+0
+
+10
+
+20
+
+30
+
+0
+
+10
+
+Layer
+
+20
+
+0
+
+10
+
+Layer
+
+20
+
+30 0
+
+10
+
+Layer
+
+20
+
+0
+
+20
+
+Layer
+
+40
+
+Layer
+
+Figure 6: Residual stream restoration scores for all five models. P2V (dashed) and V2P (solid) patching directions.
+The main paper (Figure 2) shows three representative models; this figure includes Qwen-VL 7B and PaliGemma
+10B.
+
+V2P restoration
+
+Qwen-VL 3B (15/576)
+
+Qwen-VL 7B (29/784)
+
+0.3
+
+0.15
+
+0.2
+
+0.10
+
+0.1
+
+0.05
+
+LLaVA-NeXT 7B (38/1024)
+
+0.20
+
+0.10
+
+0.05
+
+0.0
+
+0.2
+
+P2V restoration
+
+Promoting
+Suppressing
+
+0.05
+
+0.00
+0.05
+
+0.05
+
+0.1
+
+0.10
+
+0.10
+
+0.00
+
+PaliGemma 10B (17/672)
+0.15
+
+0.15
+0.05
+
+0.00
+
+0.0
+
+PaliGemma 3B (10/208)
+
+0.0
+
+0.1
+
+P2V restoration
+
+0.00
+
+0.05
+0.05
+
+0.00
+
+0.05
+
+0.10
+
+P2V restoration
+
+0.0
+
+0.1
+
+P2V restoration
+
+0.2
+
+0.0
+
+0.1
+
+P2V restoration
+
+Figure 7: Attention head classification scatters for all five models; the dashed line shows the PC1 axis used for the
+±2σ classification. The main paper (Figure 3) shows three representative models; this figure adds Qwen-VL 7B and
+PaliGemma 10B.
+
+D
+
+Individual Knockout Ablation Results
+
+F
+
+Table 7 shows individual head ablation flip rates
+for the two leading promoting heads in each model.
+
+E
+
+Visual-Circuit Ablation (Robustness
+Check)
+
+As a robustness check on the central asymmetry
+reported in Section 4.4, we run an alternative ablation experiment using a visual-circuit contrast:
+hold the prompt fixed while varying the image between original and counterfactual variants. This
+contrast targets components that read color from
+the image rather than components that mediate the
+prompt-driven choice. We re-run the full PCA classification on the resulting restoration scores and
+ablate the classified groups. Results are shown in
+Table 8.
+Residual-stream patching under the visualcircuit contrast localizes restoration to a critical
+window in the second half of each model, spanning
+7–16 layers and starting at 52–76% of network
+depth, matching the primary contrast’s localization
+(Section 4.2, Figure 8). MLP patching under this
+contrast produces sparse, low-magnitude effects,
+mirroring the MLP-as-amplifier pattern from the
+primary analysis. PCA classification on the visualcircuit attention-head restoration scores identifies
+a comparably sparse set (1.6–5.8% of heads per
+model, versus 2.5–4.8% under the primary contrast), with 61% of visual-circuit-classified heads
+also classified under the primary contrast, further
+evidence that the two contrasts engage overlapping
+
+Compensation and Redundancy
+Analysis
+
+To quantify redundancy among the promoting
+heads, we ask how often a single-head ablation
+flips the prediction on examples that the group ablation flips. In Qwen-VL 7B, 85.5% of examples
+flipped by the group ablation cannot be flipped by
+any single head: the effect is distributed across
+21 promoting heads, each making partial contributions that are individually insufficient but collectively necessary. In PaliGemma 3B, the effect is far
+more concentrated: only 35.3% of group-flipped
+examples are fully compensated, and a single head
+(L15H7) alone accounts for 60.3% of the group
+effect. Even when the effect is distributed, individual head ablations still reduce the prior answer’s
+logit margin by +0.2 to +1.7 points, confirming
+that each head makes a genuine partial contribution
+even when that contribution is insufficient to flip
+the prediction on its own. The rate of redundancy is
+thus architecture-dependent, not a uniform property
+of the mechanism.
+11
+
+Model
+
+Count
+
+Promoting heads
+
+Qwen-VL 3B
+Qwen-VL 7B
+
+9
+21
+
+LLaVA 7B
+
+24
+
+PG 3B
+PG 10B
+
+8
+12
+
+L26H0, L26H5, L26H6, L27H1, L27H4, L28H3, L31H3, L31H7, L34H14
+L17H21, L18H8, L18H9, L18H24, L19H22, L19H23, L19H24, L20H1, L20H3, L20H5, L21H5,
+L21H19, L22H1, L22H13, L23H6, L23H11, L24H21, L24H27, L26H24, L26H25, L26H26
+L13H27, L15H7, L16H0, L16H1, L16H10, L17H0, L17H5, L17H21, L18H8, L18H10, L18H12,
+L19H9, L20H21, L22H20, L24H21, L24H22, L28H13, L29H2, L29H12, L29H14, L30H29,
+L31H22, L31H25, L31H27
+L15H7, L16H4, L17H7, L20H3, L22H1, L24H3, L25H2, L25H4
+L27H15, L32H11, L33H4, L36H1, L36H2, L37H12, L39H0, L39H2, L39H7, L39H13, L40H6,
+L40H10
+
+Table 5: All promoting attention heads (PCA > +2σ) by model. LLaVA = LLaVA-NeXT; PG = PaliGemma.
+Model
+
+Count
+
+Suppressing heads
+
+Qwen-VL 3B
+Qwen-VL 7B
+LLaVA 7B
+
+6
+8
+14
+
+PG 3B
+PG 10B
+
+2
+5
+
+L26H3, L27H2, L28H4, L30H3, L31H8, L34H10
+L18H7, L20H2, L20H21, L21H14, L22H25, L25H25, L26H22, L27H3
+L14H14, L16H2, L16H3, L17H24, L18H9, L18H11, L18H28, L21H6, L22H29, L24H20,
+L28H14, L29H0, L29H13, L31H20
+L17H4, L25H5
+L30H8, L31H7, L32H10, L40H7, L40H11
+
+Table 6: All suppressing attention heads (PCA < −2σ) by model. LLaVA = LLaVA-NeXT; PG = PaliGemma.
+
+Model
+
+Head
+
+Qwen-VL 3B
+Qwen-VL 3B
+Qwen-VL 7B
+Qwen-VL 7B
+LLaVA-NeXT 7B
+LLaVA-NeXT 7B
+PaliGemma 3B
+PaliGemma 3B
+PaliGemma 10B
+PaliGemma 10B
+
+L26H5
+L31H3
+L20H5
+L23H6
+L31H27
+L31H22
+L15H7
+L20H3
+L40H6
+L37H12
+
+gesting active suppression of the patched direction.
+
+Prior flip (%)
+41.1
+37.0
+9.4
+7.1
+26.2
+22.5
+58.7
+36.4
+18.1
+10.2
+
+H
+
+Figure 10 reports per-head image-attention fractions under both grounding modes for all classified
+heads across the five models, extending the twomodel view in the main paper (Figure 5). Figure 11
+reports logit-lens top-20 hit rates for all classified
+heads across the five models.
+
+Table 7: Individual head ablation flip rates for top promoting heads. PaliGemma 3B shows concentrated effects (L15H7 alone at 58.7%), while Qwen-VL 7B is
+distributed (maximum 9.4%).
+
+rather than separate components.
+
+G
+
+Attention Patterns and Logit Lens
+
+MLP Analysis Details
+
+MLP patching restoration scores are sparse across
+all models (Figure 9). Only Qwen-VL models have
+classified promoting MLP layers (L30–32 in QwenVL 3B; L25, L27 in Qwen-VL 7B). LLaVA-NeXT
+and PaliGemma models have only suppressing classifications or near-zero effects.
+PaliGemma 10B shows near-zero MLP restoration scores across all layers (≤ 0.02), suggesting
+minimal MLP involvement in the conflict decision
+for this architecture. Late-layer MLPs in several
+models produce negative restoration scores, sug12
+
+Qwen-VL 3B
+
+Restoration score
+
+1.00
+
+Qwen-VL 7B
+
+LLaVA-NeXT 7B
+
+PaliGemma 3B
+
+PaliGemma 10B
+
+0.75
+CF → Orig
+Orig → CF
+
+0.50
+0.25
+0.00
+0
+
+10
+
+20
+
+30
+
+0
+
+Layer
+
+10
+
+20
+
+0
+
+10
+
+Layer
+
+20
+
+30 0
+
+10
+
+Layer
+
+20
+
+0
+
+Layer
+
+20
+
+40
+
+Layer
+
+Figure 8: Residual-stream restoration scores under the visual-circuit contrast (vary image, hold prompt) for all five
+models. Dashed: patching original-image activations into the counterfactual-image forward pass. Solid: patching
+counterfactual-image activations into the original-image forward pass. Shaded region marks the critical window
+(smallest range covering >80% of restoration). The window locations (7–16 layer span, starting at 52–76% of
+network depth) match the primary contrast’s localization (Figure 6).
+Qwen-VL 3B
+
+Restoration score
+
+0.4
+
+Qwen-VL 7B
+
+LLaVA-NeXT 7B
+
+PaliGemma 3B
+
+PaliGemma 10B
+
+0.2
+V2P
+P2V
+
+0.0
+0.2
+
+0
+
+10
+
+20
+
+30
+
+0
+
+Layer
+
+10
+
+20
+
+0
+
+Layer
+
+10
+
+20
+
+Layer
+
+30 0
+
+5
+
+10
+
+15
+
+Layer
+
+20
+
+25 0
+
+10
+
+20
+
+30
+
+40
+
+Layer
+
+Figure 9: MLP restoration scores across layers for all five models. Effects are sparse, with only a few layers showing
+moderate contributions.
+
+Flip rate (%)
+Model
+
+Ablation
+
+Prior
+
+Visual
+
+Qwen-VL 3B
+
+Attn prom.
+Attn supp.
+MLP prom.
+MLP supp.
+
+1.4
+0.0
+71.0
+10.1
+
+40.6
+0.0
+0.0
+0.0
+
+Qwen-VL 7B
+
+Attn prom.
+Attn supp.
+MLP prom.
+MLP supp.
+
+0.5
+0.5
+28.5
+–
+
+9.0
+0.0
+1.5
+–
+
+LLaVA 7B
+
+Attn prom.
+Attn supp.
+MLP prom.
+MLP supp.
+
+3.8
+9.0
+–
+38.5
+
+32.1
+0.0
+–
+1.3
+
+PG 3B
+
+Attn prom.
+Attn supp.
+MLP prom.
+MLP supp.
+
+35.7
+6.1
+–
+16.5
+
+17.4
+0.0
+–
+0.0
+
+PG 10B
+
+Attn prom.
+Attn supp.
+MLP prom.
+MLP supp.
+
+25.7
+1.2
+–
+10.5
+
+1.8
+0.0
+–
+1.2
+
+Table 8: Group ablation flip rates for visual-circuitclassified components across five VLMs. Visual flip
+rates (1.8–40.6%) stay well below the 68–96% prior-flip
+rate produced by the primary prompt-contrast ablations
+(Table 2). PaliGemma models show high prior flip rates
+under attention-head promoting ablation. Dashes indicate no components classified in that category. LLaVA
+= LLaVA-NeXT; PG = PaliGemma.
+
+13
+
+Qwen-VL 3B
+
+Qwen-VL 7B
+
+LLaVA-NeXT 7B
+L13H27
+L15H7
+L16H0
+L16H1
+L16H10
+L17H0
+L17H5
+L17H21
+L18H8
+L18H10
+L18H12
+L19H9
+L20H21
+L22H20
+L24H21
+L24H22
+L28H13
+L29H2
+L29H12
+L29H14
+L30H29
+L31H22
+L31H25
+L31H27
+L14H14
+L16H2
+L16H3
+L17H24
+L18H9
+L18H11
+L18H28
+L21H6
+L22H29
+L24H20
+L28H14
+L29H0
+L29H13
+L31H20
+
+L17H21
+L18H8
+L18H9
+L18H24
+L19H22
+L19H23
+L19H24
+L20H1
+L20H3
+L20H5
+L21H5
+L21H19
+L22H1
+L22H13
+L23H6
+L23H11
+L24H21
+L24H27
+L26H24
+L26H25
+L26H26
+L18H7
+L20H2
+L20H21
+L21H14
+L22H25
+L25H25
+L26H22
+L27H3
+
+L26H0
+L26H5
+L26H6
+L27H1
+L27H4
+L28H3
+L31H3
+L31H7
+L34H14
+L26H3
+L27H2
+L28H4
+L30H3
+L31H8
+L34H10
+
+0.0
+
+0.5
+
+1.0
+
+PaliGemma 3B
+
+0.0
+
+Image-attn. frac.
+
+0.5
+
+1.0
+
+L27H15
+
+L15H7
+
+L32H11
+L16H4
+
+L33H4
+L36H1
+
+L17H7
+
+L36H2
+L37H12
+
+L20H3
+
+L39H0
+L39H2
+
+L22H1
+
+Visual
+Prior
+
+L39H7
+L24H3
+
+L39H13
+L40H6
+
+L25H2
+
+L40H10
+L30H8
+
+L25H4
+
+L31H7
+L17H4
+
+L32H10
+L40H7
+
+L25H5
+
+0.0
+
+Image-attn. frac.
+
+PaliGemma 10B
+
+0.5
+
+1.0
+
+L40H11
+
+0.0
+
+Image-attn. frac.
+
+0.5
+
+1.0
+
+0.0
+
+Image-attn. frac.
+
+0.5
+
+1.0
+
+Image-attn. frac.
+
+Figure 10: Image-attention fraction for all classified heads across five models, under Visual (blue) and Prior
+(red) grounding. Promoting and suppressing heads are separated by the dashed line within each panel. Qwen-VL
+and LLaVA-NeXT show large visual−prior gaps (attention routing); PaliGemma maintains high image-attention
+under both conditions (representation-routing).
+
+Qwen-VL 3B
+
+Qwen-VL 7B
+
+LLaVA-NeXT 7B
+L13H27
+L15H7
+L16H0
+L16H1
+L16H10
+L17H0
+L17H5
+L17H21
+L18H8
+L18H10
+L18H12
+L19H9
+L20H21
+L22H20
+L24H21
+L24H22
+L28H13
+L29H2
+L29H12
+L29H14
+L30H29
+L31H22
+L31H25
+L31H27
+L14H14
+L16H2
+L16H3
+L17H24
+L18H9
+L18H11
+L18H28
+L21H6
+L22H29
+L24H20
+L28H14
+L29H0
+L29H13
+L31H20
+
+L17H21
+L18H8
+L18H9
+L18H24
+L19H22
+L19H23
+L19H24
+L20H1
+L20H3
+L20H5
+L21H5
+L21H19
+L22H1
+L22H13
+L23H6
+L23H11
+L24H21
+L24H27
+L26H24
+L26H25
+L26H26
+L18H7
+L20H2
+L20H21
+L21H14
+L22H25
+L25H25
+L26H22
+L27H3
+
+L26H0
+L26H5
+L26H6
+L27H1
+L27H4
+L28H3
+L31H3
+L31H7
+L34H14
+L26H3
+L27H2
+L28H4
+L30H3
+L31H8
+L34H10
+
+0
+
+50
+
+Hit rate (%)
+
+100
+
+0
+
+50
+
+Hit rate (%)
+
+100
+
+PaliGemma 3B
+
+PaliGemma 10B
+L27H15
+
+L15H7
+
+L32H11
+L16H4
+
+L33H4
+L36H1
+
+L17H7
+
+L36H2
+L37H12
+
+L20H3
+
+L39H0
+L39H2
+
+L22H1
+
+Promoting
+Suppressing
+Top-20
+Bottom-20
+
+L39H7
+L24H3
+
+L39H13
+L40H6
+
+L25H2
+
+L40H10
+L30H8
+
+L25H4
+
+L31H7
+L17H4
+
+L32H10
+
+L25H5
+
+L40H11
+
+L40H7
+
+0
+
+50
+
+100
+
+Hit rate (%)
+
+0
+
+50
+
+Hit rate (%)
+
+100
+
+0
+
+50
+
+100
+
+Hit rate (%)
+
+Figure 11: Logit-lens hit rates on head-output differences for all classified heads across five models. Top-20 hit
+rate indicates how often the counterfactual color appears among the 20 highest-ranked tokens in the projected head
+output difference. Late-layer heads consistently show high hit rates (>80%), while earlier classified heads show 0%.
+
+14
+
+

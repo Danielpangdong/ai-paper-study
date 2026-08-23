@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 论文每日精读 · 2026-06-12 · OpenAI 推翻单位距离猜想</title>
+<style>
+  :root{
+    --bg:#0b0e14;
+    --bg-2:#11151f;
+    --card:#161b27;
+    --card-2:#1c2230;
+    --border:#252c3d;
+    --text:#e6e9ef;
+    --muted:#9aa3b2;
+    --accent:#7aa2ff;
+    --accent-2:#9d7bff;
+    --good:#4ade80;
+    --warn:#fbbf24;
+    --bad:#f87171;
+    --grid:#2a3142;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;line-height:1.65;}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 24px 96px;}
+  header.hero{
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:36px 32px;
+    background:
+      radial-gradient(1200px 400px at 80% -10%, rgba(122,162,255,.15), transparent 60%),
+      radial-gradient(800px 300px at 10% 110%, rgba(157,123,255,.12), transparent 60%),
+      linear-gradient(180deg,var(--bg-2),var(--card));
+    margin-bottom:28px;
+    position:relative;
+    overflow:hidden;
+  }
+  .tag{display:inline-block;font-size:12px;letter-spacing:.08em;color:var(--accent);background:rgba(122,162,255,.08);border:1px solid rgba(122,162,255,.25);padding:4px 10px;border-radius:999px;margin-right:6px}
+  .tag.warn{color:var(--warn);background:rgba(251,191,36,.08);border-color:rgba(251,191,36,.3)}
+  .tag.good{color:var(--good);background:rgba(74,222,128,.08);border-color:rgba(74,222,128,.3)}
+  h1{font-size:32px;line-height:1.25;margin:14px 0 8px;font-weight:800;letter-spacing:-.01em}
+  h2{font-size:22px;margin:36px 0 14px;letter-spacing:-.01em;border-left:3px solid var(--accent);padding-left:12px}
+  h3{font-size:17px;margin:22px 0 8px;color:#cdd3df}
+  p{color:#d6dae3}
+  .meta{color:var(--muted);font-size:14px;margin-top:6px}
+  .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:24px}
+  .kpi .item{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+  .kpi .num{font-size:22px;font-weight:700;color:#fff;letter-spacing:-.01em}
+  .kpi .lbl{font-size:12px;color:var(--muted);margin-top:4px}
+  .grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:14px}
+  .quote{
+    border-left:3px solid var(--accent-2);
+    padding:10px 14px;background:rgba(157,123,255,.06);border-radius:0 10px 10px 0;color:#dfe2ea;margin:10px 0;
+  }
+  .quote .author{display:block;margin-top:8px;color:var(--muted);font-size:13px}
+  .row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .pill{
+    border:1px solid var(--border);background:var(--card-2);border-radius:10px;padding:10px 12px
+  }
+  .pill .h{font-size:12px;color:var(--muted)}
+  .pill .v{font-size:15px;color:#fff;margin-top:4px}
+  table{width:100%;border-collapse:collapse;margin-top:10px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);font-size:14px}
+  th{color:var(--muted);font-weight:600;background:var(--card-2)}
+  .conf{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:6px}
+  .conf.h{background:rgba(74,222,128,.12);color:var(--good);border:1px solid rgba(74,222,128,.3)}
+  .conf.m{background:rgba(251,191,36,.12);color:var(--warn);border:1px solid rgba(251,191,36,.3)}
+  .conf.l{background:rgba(248,113,113,.12);color:var(--bad);border:1px solid rgba(248,113,113,.3)}
+  code{background:rgba(255,255,255,.06);padding:1px 6px;border-radius:5px;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;color:#fff}
+  .formula{background:#0e1320;border:1px solid var(--border);padding:14px;border-radius:10px;text-align:center;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:15px;color:#cfd6e6;margin:10px 0}
+  .timeline{position:relative;padding-left:18px;margin-top:8px}
+  .timeline:before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--accent),var(--accent-2))}
+  .ev{position:relative;padding:6px 0 14px 14px}
+  .ev:before{content:"";position:absolute;left:-4px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .ev .yr{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.04em}
+  .ev .ti{color:#fff;font-size:15px;margin-top:2px}
+  .ev .ds{color:var(--muted);font-size:13px;margin-top:2px}
+  .src{font-size:14px;color:var(--muted)}
+  .src a{display:block;padding:6px 0}
+  .footer{margin-top:30px;color:var(--muted);font-size:13px;text-align:center}
+  svg .grid-line{stroke:var(--grid);stroke-width:1}
+  svg .pt{fill:#fff}
+  svg .edge{stroke:rgba(122,162,255,.55);stroke-width:1}
+  svg .new-pt{fill:#9d7bff}
+  svg .new-edge{stroke:rgba(157,123,255,.6);stroke-width:1}
+  .legend{display:flex;gap:18px;font-size:13px;color:var(--muted);margin-top:8px;justify-content:center;flex-wrap:wrap}
+  .legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .toc a{font-size:13px;background:var(--card-2);padding:6px 10px;border:1px solid var(--border);border-radius:8px;color:#cfd6e6}
+  details{background:var(--card-2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;margin:8px 0}
+  summary{cursor:pointer;color:#cfd6e6;font-weight:600}
+  ul{padding-left:18px}
+  li{margin:4px 0}
+  @media (max-width:760px){
+    .kpi{grid-template-columns:repeat(2,1fr)}
+    .grid2{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr 1fr}
+    h1{font-size:26px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div>
+    <span class="tag">2026-06-12 · 每日精读</span>
+    <span class="tag warn">AI × 数学</span>
+    <span class="tag good">里程碑</span>
+  </div>
+  <h1>AI 自主推翻 80 年悬而未决的数学猜想<br/>
+  <span style="color:var(--muted);font-weight:600;font-size:18px">OpenAI 模型攻破 Erdős 单位距离猜想：从研究助手到研究贡献者</span></h1>
+  <div class="meta">
+    原文：<a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/" target="_blank">An OpenAI model has disproved a central conjecture in discrete geometry</a> · OpenAI Research · 2026-05-20<br/>
+    同行评议伴随论文：<a href="https://arxiv.org/abs/2605.20695" target="_blank">arXiv:2605.20695</a>（Alon、Bloom、Gowers、Litt、Sawin、Shankar、Tsimerman、Wang、Wood，2026-05-20）
+  </div>
+
+  <div class="kpi">
+    <div class="item"><div class="num">80<span style="font-size:14px;color:var(--muted)"> 年</span></div><div class="lbl">猜想悬而未决时间（Erdős 1946）</div></div>
+    <div class="item"><div class="num">δ ≥ 0.014</div><div class="lbl">新构造对原猜想的多项式改进幅度</div></div>
+    <div class="item"><div class="num">O(n<sup>4/3</sup>)</div><div class="lbl">现有最佳上界（Spencer-Szemerédi-Trotter，1984）</div></div>
+    <div class="item"><div class="num">9 位</div><div class="lbl">同行评议数学家（含 1 位 Fields 奖得主）</div></div>
+  </div>
+
+  <div class="toc">
+    <a href="#why">① 为什么选这篇</a>
+    <a href="#problem">② 单位距离问题</a>
+    <a href="#contribution">③ AI 的贡献</a>
+    <a href="#math">④ 用到的数学</a>
+    <a href="#viz">⑤ 可视化对比</a>
+    <a href="#voices">⑥ 数学家评价</a>
+    <a href="#impact">⑦ 含义与局限</a>
+    <a href="#confidence">⑧ 置信度盘点</a>
+    <a href="#sources">⑨ 原始资料</a>
+  </div>
+</header>
+
+<section id="why">
+<h2>① 为什么今天选这篇</h2>
+<div class="card">
+<p>过去 30 天 OpenAI、Anthropic、Google DeepMind、Meta AI、arXiv 发布了大量内容。从“是否真正改变研究范式”这个标准筛，本篇是<strong>唯一一篇业内一线数学家公开背书、用专业期刊标准评为“无须犹豫接受发表”的 AI 自主成果</strong>。它的意义不在“AI 答对了某个题”，而在三个层面：</p>
+<ul>
+<li><strong>它是首次</strong>：AI 在没有数学专用训练、没有人为脚手架、没有针对该问题做特殊化的情况下，自主提出原创证明思路，推翻一个被广泛相信的数学猜想（高置信）。</li>
+<li><strong>它跨界</strong>：把代数数论（无穷类域塔、Golod–Shafarevich 理论）引入平面组合几何，几乎没有人事先想到这条路径（高置信）。</li>
+<li><strong>它把“评审”做成了公开记录</strong>：9 位数学家把 AI 的论证消化、补全、独立验证，并发表了配套论文；这种交付方式可能会成为未来 AI 数学产出的范式（中-高置信）。</li>
+</ul>
+<p style="color:var(--muted);font-size:13px">注：本篇严格属于 AI 应用于数学的研究里程碑，不属于经典“架构 / 训练算法”意义上的论文。但按用户每日任务“精选一篇精读”的标准，它在当前窗口期的研究影响力高于同期其他候选（如 OpenAI 的 CoT 监测可读性、Anthropic 的 AI Pause 报告、DeepMind 的 Co-Scientist），故选定。</p>
+</div>
+</section>
+
+<section id="problem">
+<h2>② 单位距离问题：一个 80 年的“简单题”</h2>
+<div class="card">
+<h3>问题陈述</h3>
+<p>在平面上放置 <code>n</code> 个点，定义 <code>u(n)</code> 为这些点之间<strong>恰好相距 1</strong> 的点对的最大数量。问：<code>u(n)</code> 增长得多快？</p>
+<div class="formula">u(n) = max<sub>P⊂ℝ², |P|=n</sub> #{ (x,y) ∈ P×P : ‖x − y‖ = 1 }</div>
+
+<h3>过去 80 年的结果</h3>
+<div class="row">
+<div class="pill"><div class="h">1946 · Erdős 下界</div><div class="v">缩放方格构造给出 <code>n<sup>1 + C/log log n</sup></code></div></div>
+<div class="pill"><div class="h">1984 · 上界</div><div class="v">Spencer-Szemerédi-Trotter：<code>O(n<sup>4/3</sup>)</code></div></div>
+<div class="pill"><div class="h">Erdős 猜想</div><div class="v">下界本质最优，真实增长 ≈ <code>n<sup>1+o(1)</sup></code></div></div>
+</div>
+
+<h3>为什么是“硬骨头”</h3>
+<p>这是组合几何里最有名的开放问题之一，写在 Brass-Moser-Pach 的标准教科书里被称为<em>“可能是组合几何中最广为人知、最容易陈述的问题”</em>。下界 80 年没本质改进，上界也几乎卡死。社区主流相信 Erdős 猜的 <code>n<sup>1+o(1)</sup></code> 才是真相 —— 也就是说，<strong>大家以为方格已经几乎最优</strong>。</p>
+</div>
+</section>
+
+<section id="contribution">
+<h2>③ AI 这次到底做了什么</h2>
+<div class="grid2">
+  <div class="card">
+    <h3>核心结论</h3>
+    <p>OpenAI 内部一款<strong>通用推理模型</strong>给出了一个反例族：对于无穷多个 <code>n</code>，存在 <code>n</code> 点的平面构造，单位距离对数至少为 <code>n<sup>1+δ</sup></code>，其中 <code>δ > 0</code> 是固定常数。</p>
+    <div class="formula">u(n) ≥ n<sup>1+δ</sup>, &nbsp; δ ≥ 0.014</div>
+    <p>这<strong>否证</strong>了 Erdős 的 <code>n<sup>1+o(1)</sup></code> 猜想 —— 增长比所有人猜的都要快一个真正的多项式因子。<small style="color:var(--muted)">（具体 δ=0.014 是普林斯顿 Will Sawin 的后续精化，原始 AI 证明只给出存在性。）</small></p>
+  </div>
+  <div class="card">
+    <h3>方法上的“不同”</h3>
+    <ul>
+      <li>所用模型是<strong>通用推理模型</strong>，不是数学专用模型；</li>
+      <li>没有针对该问题做<strong>脚手架（scaffolding）</strong>，没有外部证明搜索引擎；</li>
+      <li>题目作为 Erdős 问题集的一部分被批量测试，模型在该题给出了完整证明；</li>
+      <li>证明的关键思想来自<strong>代数数论</strong>，而非传统组合几何工具 —— 是真正的“跨界”。</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+<section id="math">
+<h2>④ 用了哪些数学工具</h2>
+<div class="card">
+<p>Erdős 原始下界用<strong>高斯整数</strong> <code>a+bi</code> 实现：方格点之间有大量距离 1。新证明的思路是把高斯整数换成<strong>更复杂的代数数域（algebraic number fields）</strong>里的整数环，借助它们更丰富的对称性产生指数级更多的单位长度差。</p>
+
+<table>
+<thead><tr><th>工具</th><th>原属领域</th><th>在证明中的作用</th></tr></thead>
+<tbody>
+<tr><td>无穷类域塔（infinite class field towers）</td><td>代数数论</td><td>保证所需要的数域确实存在且有足够多的类</td></tr>
+<tr><td>Golod–Shafarevich 理论</td><td>群论 / 数论</td><td>给出无穷类域塔的存在性判据</td></tr>
+<tr><td>Hajir–Maire–Ramakrishna 思想</td><td>数论</td><td>构造分歧受控的数域塔</td></tr>
+<tr><td>Ellenberg–Venkatesh 视角</td><td>算术统计 / 几何</td><td>把数域参数翻译为几何点配置</td></tr>
+</tbody>
+</table>
+
+<details>
+<summary>展开：为什么数论会跑出来解决一个平面几何问题？</summary>
+<p style="color:var(--muted);font-size:14px">直观上：平面上“距离 1”的关系是一种代数关系（坐标差的平方和等于 1）。如果你能在某个数域里造出大量满足这种关系的元素对，并把它们映回平面，就能造出大量的单位距离对。问题转化为：能不能找到一个“类群足够大、又能控制分歧”的数域。无穷类域塔 + Golod–Shafarevich 正好给出这种存在性证明。这条转化路径正是过去 80 年没人想到的。</p>
+</details>
+</div>
+</section>
+
+<section id="viz">
+<h2>⑤ 可视化：方格构造 vs 新构造（示意）</h2>
+<div class="card">
+<p style="color:var(--muted);font-size:14px">注：精确的“新构造”嵌入维度高、依赖数论参数，无法二维直接画出。下图用<strong>示意性 SVG</strong> 表达对比：左侧是传统方格（每个点的单位距离邻居有限），右侧示意基于代数数域的更密集邻接结构 —— 同等点数下单位距离对数显著更多。</p>
+<svg viewBox="0 0 700 320" width="100%" style="display:block;margin:8px 0">
+  <!-- Left: square grid -->
+  <g transform="translate(20,20)">
+    <text x="150" y="-2" fill="#cfd6e6" font-size="14" text-anchor="middle">传统：缩放方格构造</text>
+    <!-- grid -->
+    <g>
+    <!-- Generate 6x6 grid -->
+    <!-- points -->
+    <!-- horizontal/vertical unit edges -->
+    </g>
+    <!-- hand-coded -->
+    <!-- 6x6 grid -->
+    <!-- spacing 40 -->
+    <!-- grid lines -->
+    <g stroke="var(--grid)" stroke-width="1">
+      <line x1="20" y1="20" x2="220" y2="20"/>
+      <line x1="20" y1="60" x2="220" y2="60"/>
+      <line x1="20" y1="100" x2="220" y2="100"/>
+      <line x1="20" y1="140" x2="220" y2="140"/>
+      <line x1="20" y1="180" x2="220" y2="180"/>
+      <line x1="20" y1="220" x2="220" y2="220"/>
+      <line x1="20" y1="20" x2="20" y2="220"/>
+      <line x1="60" y1="20" x2="60" y2="220"/>
+      <line x1="100" y1="20" x2="100" y2="220"/>
+      <line x1="140" y1="20" x2="140" y2="220"/>
+      <line x1="180" y1="20" x2="180" y2="220"/>
+      <line x1="220" y1="20" x2="220" y2="220"/>
+    </g>
+    <!-- unit-distance edges (just the grid edges) -->
+    <g class="edge" stroke="rgba(122,162,255,.55)">
+      <!-- horizontal -->
+      <line x1="20" y1="20" x2="60" y2="20"/><line x1="60" y1="20" x2="100" y2="20"/><line x1="100" y1="20" x2="140" y2="20"/><line x1="140" y1="20" x2="180" y2="20"/><line x1="180" y1="20" x2="220" y2="20"/>
+      <line x1="20" y1="60" x2="60" y2="60"/><line x1="60" y1="60" x2="100" y2="60"/><line x1="100" y1="60" x2="140" y2="60"/><line x1="140" y1="60" x2="180" y2="60"/><line x1="180" y1="60" x2="220" y2="60"/>
+      <line x1="20" y1="100" x2="60" y2="100"/><line x1="60" y1="100" x2="100" y2="100"/><line x1="100" y1="100" x2="140" y2="100"/><line x1="140" y1="100" x2="180" y2="100"/><line x1="180" y1="100" x2="220" y2="100"/>
+      <line x1="20" y1="140" x2="60" y2="140"/><line x1="60" y1="140" x2="100" y2="140"/><line x1="100" y1="140" x2="140" y2="140"/><line x1="140" y1="140" x2="180" y2="140"/><line x1="180" y1="140" x2="220" y2="140"/>
+      <line x1="20" y1="180" x2="60" y2="180"/><line x1="60" y1="180" x2="100" y2="180"/><line x1="100" y1="180" x2="140" y2="180"/><line x1="140" y1="180" x2="180" y2="180"/><line x1="180" y1="180" x2="220" y2="180"/>
+      <line x1="20" y1="220" x2="60" y2="220"/><line x1="60" y1="220" x2="100" y2="220"/><line x1="100" y1="220" x2="140" y2="220"/><line x1="140" y1="220" x2="180" y2="220"/><line x1="180" y1="220" x2="220" y2="220"/>
+      <!-- vertical -->
+      <line x1="20" y1="20" x2="20" y2="60"/><line x1="20" y1="60" x2="20" y2="100"/><line x1="20" y1="100" x2="20" y2="140"/><line x1="20" y1="140" x2="20" y2="180"/><line x1="20" y1="180" x2="20" y2="220"/>
+      <line x1="60" y1="20" x2="60" y2="60"/><line x1="60" y1="60" x2="60" y2="100"/><line x1="60" y1="100" x2="60" y2="140"/><line x1="60" y1="140" x2="60" y2="180"/><line x1="60" y1="180" x2="60" y2="220"/>
+      <line x1="100" y1="20" x2="100" y2="60"/><line x1="100" y1="60" x2="100" y2="100"/><line x1="100" y1="100" x2="100" y2="140"/><line x1="100" y1="140" x2="100" y2="180"/><line x1="100" y1="180" x2="100" y2="220"/>
+      <line x1="140" y1="20" x2="140" y2="60"/><line x1="140" y1="60" x2="140" y2="100"/><line x1="140" y1="100" x2="140" y2="140"/><line x1="140" y1="140" x2="140" y2="180"/><line x1="140" y1="180" x2="140" y2="220"/>
+      <line x1="180" y1="20" x2="180" y2="60"/><line x1="180" y1="60" x2="180" y2="100"/><line x1="180" y1="100" x2="180" y2="140"/><line x1="180" y1="140" x2="180" y2="180"/><line x1="180" y1="180" x2="180" y2="220"/>
+      <line x1="220" y1="20" x2="220" y2="60"/><line x1="220" y1="60" x2="220" y2="100"/><line x1="220" y1="100" x2="220" y2="140"/><line x1="220" y1="140" x2="220" y2="180"/><line x1="220" y1="180" x2="220" y2="220"/>
+    </g>
+    <!-- points -->
+    <g class="pt" fill="#ffffff">
+      <circle cx="20" cy="20" r="3.5"/><circle cx="60" cy="20" r="3.5"/><circle cx="100" cy="20" r="3.5"/><circle cx="140" cy="20" r="3.5"/><circle cx="180" cy="20" r="3.5"/><circle cx="220" cy="20" r="3.5"/>
+      <circle cx="20" cy="60" r="3.5"/><circle cx="60" cy="60" r="3.5"/><circle cx="100" cy="60" r="3.5"/><circle cx="140" cy="60" r="3.5"/><circle cx="180" cy="60" r="3.5"/><circle cx="220" cy="60" r="3.5"/>
+      <circle cx="20" cy="100" r="3.5"/><circle cx="60" cy="100" r="3.5"/><circle cx="100" cy="100" r="3.5"/><circle cx="140" cy="100" r="3.5"/><circle cx="180" cy="100" r="3.5"/><circle cx="220" cy="100" r="3.5"/>
+      <circle cx="20" cy="140" r="3.5"/><circle cx="60" cy="140" r="3.5"/><circle cx="100" cy="140" r="3.5"/><circle cx="140" cy="140" r="3.5"/><circle cx="180" cy="140" r="3.5"/><circle cx="220" cy="140" r="3.5"/>
+      <circle cx="20" cy="180" r="3.5"/><circle cx="60" cy="180" r="3.5"/><circle cx="100" cy="180" r="3.5"/><circle cx="140" cy="180" r="3.5"/><circle cx="180" cy="180" r="3.5"/><circle cx="220" cy="180" r="3.5"/>
+      <circle cx="20" cy="220" r="3.5"/><circle cx="60" cy="220" r="3.5"/><circle cx="100" cy="220" r="3.5"/><circle cx="140" cy="220" r="3.5"/><circle cx="180" cy="220" r="3.5"/><circle cx="220" cy="220" r="3.5"/>
+    </g>
+    <text x="120" y="270" fill="#9aa3b2" font-size="12" text-anchor="middle">36 个点 · 单位距离对 ≈ 60</text>
+    <text x="120" y="288" fill="#9aa3b2" font-size="12" text-anchor="middle">渐近 ≈ n<tspan baseline-shift="super" font-size="9">1+C/log log n</tspan></text>
+  </g>
+
+  <!-- Right: schematic of new construction -->
+  <g transform="translate(380,20)">
+    <text x="150" y="-2" fill="#cfd6e6" font-size="14" text-anchor="middle">新构造（示意）：代数数域 + 类域塔</text>
+    <!-- a clustered, denser unit-distance graph -->
+    <g class="new-edge" stroke="rgba(157,123,255,.55)">
+      <!-- center -->
+      <line x1="150" y1="120" x2="120" y2="100"/>
+      <line x1="150" y1="120" x2="180" y2="100"/>
+      <line x1="150" y1="120" x2="120" y2="140"/>
+      <line x1="150" y1="120" x2="180" y2="140"/>
+      <line x1="150" y1="120" x2="150" y2="80"/>
+      <line x1="150" y1="120" x2="150" y2="160"/>
+      <line x1="150" y1="120" x2="110" y2="120"/>
+      <line x1="150" y1="120" x2="190" y2="120"/>
+      <!-- ring 1 cross-links -->
+      <line x1="120" y1="100" x2="150" y2="80"/>
+      <line x1="180" y1="100" x2="150" y2="80"/>
+      <line x1="120" y1="100" x2="110" y2="120"/>
+      <line x1="180" y1="100" x2="190" y2="120"/>
+      <line x1="110" y1="120" x2="120" y2="140"/>
+      <line x1="190" y1="120" x2="180" y2="140"/>
+      <line x1="120" y1="140" x2="150" y2="160"/>
+      <line x1="180" y1="140" x2="150" y2="160"/>
+      <!-- outer cluster -->
+      <line x1="150" y1="80" x2="130" y2="55"/>
+      <line x1="150" y1="80" x2="170" y2="55"/>
+      <line x1="130" y1="55" x2="170" y2="55"/>
+      <line x1="150" y1="160" x2="130" y2="185"/>
+      <line x1="150" y1="160" x2="170" y2="185"/>
+      <line x1="130" y1="185" x2="170" y2="185"/>
+      <line x1="110" y1="120" x2="85" y2="100"/>
+      <line x1="110" y1="120" x2="85" y2="140"/>
+      <line x1="85" y1="100" x2="85" y2="140"/>
+      <line x1="190" y1="120" x2="215" y2="100"/>
+      <line x1="190" y1="120" x2="215" y2="140"/>
+      <line x1="215" y1="100" x2="215" y2="140"/>
+      <!-- long cross -->
+      <line x1="130" y1="55" x2="85" y2="100"/>
+      <line x1="170" y1="55" x2="215" y2="100"/>
+      <line x1="130" y1="185" x2="85" y2="140"/>
+      <line x1="170" y1="185" x2="215" y2="140"/>
+      <line x1="120" y1="100" x2="120" y2="140"/>
+      <line x1="180" y1="100" x2="180" y2="140"/>
+    </g>
+    <g class="new-pt" fill="#9d7bff">
+      <circle cx="150" cy="120" r="3.8"/>
+      <circle cx="120" cy="100" r="3.8"/>
+      <circle cx="180" cy="100" r="3.8"/>
+      <circle cx="120" cy="140" r="3.8"/>
+      <circle cx="180" cy="140" r="3.8"/>
+      <circle cx="150" cy="80" r="3.8"/>
+      <circle cx="150" cy="160" r="3.8"/>
+      <circle cx="110" cy="120" r="3.8"/>
+      <circle cx="190" cy="120" r="3.8"/>
+      <circle cx="130" cy="55" r="3.8"/>
+      <circle cx="170" cy="55" r="3.8"/>
+      <circle cx="130" cy="185" r="3.8"/>
+      <circle cx="170" cy="185" r="3.8"/>
+      <circle cx="85" cy="100" r="3.8"/>
+      <circle cx="85" cy="140" r="3.8"/>
+      <circle cx="215" cy="100" r="3.8"/>
+      <circle cx="215" cy="140" r="3.8"/>
+    </g>
+    <text x="150" y="270" fill="#9aa3b2" font-size="12" text-anchor="middle">同等点数下，单位距离对显著更多</text>
+    <text x="150" y="288" fill="#9aa3b2" font-size="12" text-anchor="middle">渐近 ≥ n<tspan baseline-shift="super" font-size="9">1+δ</tspan>，δ ≥ 0.014</text>
+  </g>
+</svg>
+<div class="legend">
+  <span><span class="dot" style="background:#ffffff"></span>方格点</span>
+  <span><span class="dot" style="background:#9d7bff"></span>新构造点（示意）</span>
+  <span><span class="dot" style="background:rgba(122,162,255,.7)"></span>单位距离边（旧）</span>
+  <span><span class="dot" style="background:rgba(157,123,255,.7)"></span>单位距离边（新）</span>
+</div>
+<p style="color:var(--muted);font-size:13px;margin-top:14px"><strong>关键差异</strong>：方格构造下，单位距离对的数量随 n 的增长几乎是线性的（仅多一个微弱的 log-log 因子）；而新构造把代数数域的对称性嵌入平面后，使得<strong>同一个点平均拥有更多单位距离邻居</strong>，从而把指数推到了 <code>1+δ</code>，δ 是一个真正的正常数。</p>
+</div>
+</section>
+
+<section id="voices">
+<h2>⑥ 数学家们怎么评价</h2>
+<div class="card">
+<div class="quote">
+"如果一个人类写出这篇论文并投到 Annals of Mathematics 要我快速给意见，我会毫无犹豫地推荐接受。<strong>此前没有任何 AI 生成的证明接近这个水平。</strong>"
+<span class="author">— Tim Gowers（Fields 奖得主）</span>
+</div>
+
+<div class="quote">
+"这是 Erdős 最喜欢的问题之一……每一位做组合几何的数学家都想过它。OpenAI 内部模型给出的解答，无疑是一项杰出成就。<strong>真正答案不是 n<sup>1+o(1)</sup> 让人意外</strong>，构造和分析以优雅而巧妙的方式动用了代数数论的复杂工具。"
+<span class="author">— Noga Alon（普林斯顿大学）</span>
+</div>
+
+<div class="quote">
+"模型的思维链非常有趣。<strong>它绝大部分思考都在尝试构造反例，而不是去证上界</strong>——这意味着模型有直觉、敢于尝试社区视为长尾的方向，并倾向于'造构造'。这篇论文证明当前 AI 已超越助手角色，能产生原创洞见并把它走到完整。"
+<span class="author">— Arul Shankar（多伦多大学，数论学家）</span>
+</div>
+
+<div class="quote">
+"很可信、很令人印象深刻。我自己也短暂尝试过这个问题、想造反例，没成功……即便你知道答案，要把这个构造完整看懂都很吃力，自己去玩通更难。"
+<span class="author">— Jacob Tsimerman（多伦多大学）</span>
+</div>
+</div>
+</section>
+
+<section id="impact">
+<h2>⑦ 含义、风险与局限</h2>
+<div class="grid2">
+<div class="card">
+<h3>真正改变了什么</h3>
+<ul>
+<li><strong>AI 已不再只是助手</strong>：在没有题目相关的脚手架时给出原创证明。</li>
+<li><strong>评审范式更新</strong>：AI 给出的论证由一线数学家“消化-补全-再发表”这种模式可能会成为常态。</li>
+<li><strong>跨界提示</strong>：组合几何里的不少老问题可能会被数论工具重新攻打 —— Thomas Bloom 在伴随论文里明确表示“无疑会有更多代数数论学家开始重新看这些问题”。</li>
+</ul>
+</div>
+<div class="card">
+<h3>不要被新闻标题误导</h3>
+<ul>
+<li>这<strong>没有解决</strong>单位距离问题，只是<strong>否证了原猜想</strong>。真实的渐近行为仍然未知（上界 O(n<sup>4/3</sup>) 与新下界 n<sup>1+δ</sup> 之间还有巨大空隙）。</li>
+<li>OpenAI 在博客里没披露：是哪个具体模型、用了多少推理时算力、第几次尝试出结果、失败比例多高。<strong>无法独立复现</strong>。</li>
+<li>验证依靠人类专家，而非自动化形式化证明（如 Lean）。论文目前是人类消化版，<strong>不是机器可校验的形式化定理</strong>。</li>
+<li>"AI 自主"这个表述需谨慎：模型生成 + 数学家验证 + Will Sawin 显式精化 δ 值 —— 这是一条人机协作流水线，而不是端到端的自主科学发现。</li>
+</ul>
+</div>
+</div>
+
+<div class="card">
+<h3>对其他领域的最强反驳（用户偏好：先给最强反驳）</h3>
+<p><strong>反驳一</strong>：组合几何 / 数论问题<strong>有清晰的对错判定</strong>，而生物学、材料学等领域的"研究"主要不是给定问题的求解，而是问题本身的提出与实验设计。把这套成果直接外推到"AI 加速科学"过于乐观。</p>
+<p><strong>反驳二</strong>：成功率很可能很低、但因为答案可被廉价验证（数学家读得懂），所以哪怕模型在大量 Erdős 问题里只成功一两个，新闻效应也巨大。<strong>这更像彩票而非稳定生产</strong>。在缺乏成功率与算力披露的情况下，无法判定"AI 数学研究员"是否已经诞生。</p>
+<p><strong>反驳三</strong>：把"思维链显示模型在尝试构造反例"等同于"模型有数学直觉"是过度解读。CoT 是面向训练目标的有用语篇，并不一定忠实反映内部计算路径（这正是 OpenAI 自己 CoT monitorability 论文中关心的"忠实性"问题）。</p>
+</div>
+</section>
+
+<section id="confidence">
+<h2>⑧ 置信度盘点</h2>
+<div class="card">
+<table>
+<thead><tr><th>陈述</th><th>置信度</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>OpenAI 模型生成了对 Erdős 单位距离猜想的反例证明</td><td><span class="conf h">高</span></td><td>OpenAI 官博 + arXiv 2605.20695 + 9 位数学家署名</td></tr>
+<tr><td>δ ≥ 0.014（Will Sawin 精化）</td><td><span class="conf h">高</span></td><td>OpenAI 官博明确给出</td></tr>
+<tr><td>使用了 Golod–Shafarevich 与无穷类域塔</td><td><span class="conf h">高</span></td><td>OpenAI 官博 + arXiv 摘要均提到</td></tr>
+<tr><td>所用模型是"通用推理模型"而非数学专用模型</td><td><span class="conf m">中</span></td><td>OpenAI 文字声明，但未公布模型名、版本与算力</td></tr>
+<tr><td>这是 AI 首次"自主解决"一个一流开放问题</td><td><span class="conf m">中</span></td><td>由 OpenAI 自己声明并被多位数学家在引言级别认可；"自主"程度的边界主观</td></tr>
+<tr><td>会催化代数数论 ×（组合）几何的研究浪潮</td><td><span class="conf m">中</span></td><td>Bloom 在伴随论文里如此预测，但尚需时间检验</td></tr>
+<tr><td>该方法可外推到生物 / 材料 / 工程领域加速科研</td><td><span class="conf l">低</span></td><td>没有直接证据；数学的可验证性是这次成功的关键前提</td></tr>
+<tr><td>真实 u(n) 的渐近上界会被显著刷新</td><td><span class="conf l">低</span></td><td>新结果只动了下界；上界仍是 O(n<sup>4/3</sup>)</td></tr>
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="timeline">
+<h2>⑨ 关键时间线</h2>
+<div class="card">
+<div class="timeline">
+  <div class="ev"><div class="yr">1946</div><div class="ti">Erdős 提出平面单位距离问题</div><div class="ds">给出 n<sup>1+C/log log n</sup> 下界并悬赏求解</div></div>
+  <div class="ev"><div class="yr">1984</div><div class="ti">Spencer-Szemerédi-Trotter 上界 O(n<sup>4/3</sup>)</div><div class="ds">证明上下界之间的关键鸿沟</div></div>
+  <div class="ev"><div class="yr">2026-05-20</div><div class="ti">OpenAI 公布反例 + arXiv 2605.20695 同步发布</div><div class="ds">9 位数学家联署的"消化版"论文同日上线</div></div>
+  <div class="ev"><div class="yr">2026-05–06</div><div class="ti">Will Sawin 精化常数</div><div class="ds">显式取 δ = 0.014，给出具体多项式改进幅度</div></div>
+  <div class="ev"><div class="yr">未来 6–12 个月</div><div class="ti">预期：代数数论方法被应用到更多组合几何开放问题</div><div class="ds">Bloom 在伴随论文中的预测，需观察</div></div>
+</div>
+</div>
+</section>
+
+<section id="sources">
+<h2>⑩ 原始资料</h2>
+<div class="card src">
+  <a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/" target="_blank">OpenAI — An OpenAI model has disproved a central conjecture in discrete geometry（2026-05-20）</a>
+  <a href="https://arxiv.org/abs/2605.20695" target="_blank">arXiv:2605.20695 — Remarks on the disproof of the unit distance conjecture（Alon 等，2026-05-20）</a>
+  <a href="https://cdn.openai.com/pdf/74c24085-19b0-4534-9c90-465b8e29ad73/unit-distance-proof.pdf" target="_blank">OpenAI — 原始证明 PDF</a>
+  <a href="https://cdn.openai.com/pdf/74c24085-19b0-4534-9c90-465b8e29ad73/unit-distance-remarks.pdf" target="_blank">OpenAI — 伴随说明 PDF（数学家版本）</a>
+  <a href="https://cdn.openai.com/pdf/1625eff6-5ac1-40d8-b1db-5d5cf925de8b/unit-distance-cot.pdf" target="_blank">OpenAI — 模型 Chain-of-Thought 节选 PDF</a>
+  <a href="https://news.ycombinator.com/item?id=48212493" target="_blank">Hacker News 讨论串</a>
+  <a href="https://phys.org/news/2026-05-ai-major-breakthrough-math-problem.html" target="_blank">Phys.org — AI makes a major breakthrough in a math problem (2026-05)</a>
+</div>
+</section>
+
+<div class="footer">
+  AI 论文每日精读 · 2026-06-12 · 内容均依据公开英文资料整理 · 仅以中文呈现，不二次添加未核实事实
+</div>
+
+</div>
+</body>
+</html>
