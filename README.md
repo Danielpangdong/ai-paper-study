@@ -93,3 +93,4 @@ gh repo create ai-paper-study --public --source=. --remote=origin --push
 - **部署后页面空白**：确认 Pages Source 选了 **GitHub Actions**，并在 Actions 页看部署日志
 - **想换平台**（Cloudflare Pages / Netlify / Vercel）：它们都支持"连接 GitHub 仓库自动部署"，把仓库公开后按平台向导接入即可，无需改代码
 
+Sun Aug 23 14:38:56 CST 2026
